@@ -57,7 +57,11 @@ const FloorForm = () => {
 
   return (
     <>
+<<<<<<< HEAD
       <TitleCard title="Add Floor">
+=======
+      <TitleCard title="Add Floor" topMargin={"mt-4"}>
+>>>>>>> origin/rodas
       <form onSubmit={handleSubmit} className="space-y-4">
         
         <div className="flex flex-col">

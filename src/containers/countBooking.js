@@ -14,7 +14,11 @@ function TotalBookings() {
     useEffect(() => {
         const fetchTotalBookings = async () => {
             try {
+<<<<<<< HEAD
                 const response = await axios.get('https://website.smartbingogames.com/api/booking/count/total');
+=======
+                const response = await axios.get('');
+>>>>>>> origin/rodas
                 const newCount = response.data.totalBookings; // Total bookings from API
 
                 // Get the previous count from localStorage
