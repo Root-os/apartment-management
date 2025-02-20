@@ -18,6 +18,25 @@ import InboxArrowDownIcon from '@heroicons/react/24/outline/InboxArrowDownIcon'
 import UsersIcon from '@heroicons/react/24/outline/UsersIcon'
 import KeyIcon from '@heroicons/react/24/outline/KeyIcon'
 import DocumentDuplicateIcon from '@heroicons/react/24/outline/DocumentDuplicateIcon'
+import FlagIcon from '@heroicons/react/24/outline/FlagIcon'
+import TagIcon from '@heroicons/react/24/outline/TagIcon'
+import BookOpenIcon from '@heroicons/react/24/outline/BookOpenIcon'
+import QuestionMarkCircleIcon from '@heroicons/react/24/outline/QuestionMarkCircleIcon'
+import CalendarIcon from '@heroicons/react/24/outline/CalendarIcon'
+import HomeIcon from '@heroicons/react/24/outline/HomeIcon'
+import ServerIcon from '@heroicons/react/24/outline/ServerIcon'
+import ClipboardDocumentListIcon from '@heroicons/react/24/outline/ClipboardDocumentListIcon'
+import PhoneIcon from '@heroicons/react/24/outline/PhoneIcon'
+import BriefcaseIcon from '@heroicons/react/24/outline/BriefcaseIcon'
+import GlobeAltIcon from '@heroicons/react/24/outline/GlobeAltIcon'
+import FilmIcon from '@heroicons/react/24/outline/FilmIcon'
+
+
+import PlusIcon from '@heroicons/react/24/outline/PlusIcon'
+import EyeIcon from '@heroicons/react/24/outline/EyeIcon'
+
+
+
 
 const iconClasses = `h-6 w-6`
 const submenuIconClasses = `h-5 w-5`
@@ -25,113 +44,212 @@ const submenuIconClasses = `h-5 w-5`
 const routes = [
 
   {
-    path: '/app/dashboard',
+    path: '/app',
     icon: <Squares2X2Icon className={iconClasses}/>, 
     name: 'Dashboard',
   },
-  {
-    path: '/app/leads', // url
-    icon: <InboxArrowDownIcon className={iconClasses}/>, // icon component
-    name: 'Leads', // name that appear in Sidebar
-  },
-  {
-    path: '/app/transactions', // url
-    icon: <CurrencyDollarIcon className={iconClasses}/>, // icon component
-    name: 'Transactions', // name that appear in Sidebar
-  },
-  {
-    path: '/app/charts', // url
-    icon: <ChartBarIcon className={iconClasses}/>, // icon component
-    name: 'Analytics', // name that appear in Sidebar
-  },
-  {
-    path: '/app/integration', // url
-    icon: <BoltIcon className={iconClasses}/>, // icon component
-    name: 'Integration', // name that appear in Sidebar
-  },
-  {
-    path: '/app/calendar', // url
-    icon: <CalendarDaysIcon className={iconClasses}/>, // icon component
-    name: 'Calendar', // name that appear in Sidebar
-  },
+  // {
+  //   path: '', 
+  //   icon: <DocumentDuplicateIcon className={`${iconClasses} inline` }/>, 
+  //   name: 'Pages', 
+  //   submenu : [
+  //     {
+  //       path: '/login',
+  //       icon: <ArrowRightOnRectangleIcon className={submenuIconClasses}/>,
+  //       name: 'Login',
+  //     },
+  //     {
+  //       path: '/register', 
+  //       icon: <UserIcon className={submenuIconClasses}/>, 
+  //       name: 'Register',
+  //     },
+  //     {
+  //       path: '/forgot-password',
+  //       icon: <KeyIcon className={submenuIconClasses}/>,
+  //       name: 'Forgot Password',
+  //     },
+  //     {
+  //       path: '/app/blank',
+  //       icon: <DocumentIcon className={submenuIconClasses}/>,
+  //       name: 'Blank Page',
+  //     },
+  //     {
+  //       path: '/app/404',
+  //       icon: <ExclamationTriangleIcon className={submenuIconClasses}/>,
+  //       name: '404',
+  //     },
+  //   ]
+  // },
+  // {
+  //   path: '', 
+  //   icon: <Cog6ToothIcon className={`${iconClasses} inline` }/>,
+  //   name: 'Settings', 
+  //   submenu : [
+  //     {
+  //       path: '/app/settings-profile', 
+  //       icon: <UserIcon className={submenuIconClasses}/>,
+  //       name: 'Profile', 
+  //     },
+  //    
+  //    
+  //   ]
+  // },
+  //
+  
 
   {
-    path: '', //no url needed as this has submenu
-    icon: <DocumentDuplicateIcon className={`${iconClasses} inline` }/>, // icon component
-    name: 'Pages', // name that appear in Sidebar
+    path: '', 
+    icon: <HomeIcon className={`${iconClasses} inline` }/>, 
+    name: 'Floor', 
     submenu : [
       {
-        path: '/login',
-        icon: <ArrowRightOnRectangleIcon className={submenuIconClasses}/>,
-        name: 'Login',
+        path: '/app/floor-add',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Add Floor Info',
       },
       {
-        path: '/register', //url
-        icon: <UserIcon className={submenuIconClasses}/>, // icon component
-        name: 'Register', // name that appear in Sidebar
-      },
-      {
-        path: '/forgot-password',
-        icon: <KeyIcon className={submenuIconClasses}/>,
-        name: 'Forgot Password',
-      },
-      {
-        path: '/app/blank',
-        icon: <DocumentIcon className={submenuIconClasses}/>,
-        name: 'Blank Page',
-      },
-      {
-        path: '/app/404',
-        icon: <ExclamationTriangleIcon className={submenuIconClasses}/>,
-        name: '404',
+        path: '/app/floor-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Floor Lists',
       },
     ]
   },
   {
-    path: '', //no url needed as this has submenu
-    icon: <Cog6ToothIcon className={`${iconClasses} inline` }/>, // icon component
-    name: 'Settings', // name that appear in Sidebar
+    path: '', 
+    icon: <PhoneIcon className={`${iconClasses} inline` }/>, 
+    name: 'Unit', 
     submenu : [
       {
-        path: '/app/settings-profile', //url
-        icon: <UserIcon className={submenuIconClasses}/>, // icon component
-        name: 'Profile', // name that appear in Sidebar
+        path: '/app/unit-add',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add unit Info',
       },
       {
-        path: '/app/settings-billing',
-        icon: <WalletIcon className={submenuIconClasses}/>,
-        name: 'Billing',
-      },
-      {
-        path: '/app/settings-team', // url
-        icon: <UsersIcon className={submenuIconClasses}/>, // icon component
-        name: 'Team Members', // name that appear in Sidebar
+        path: '/app/unit-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Unit Lists',
       },
     ]
   },
   {
-    path: '', //no url needed as this has submenu
-    icon: <DocumentTextIcon className={`${iconClasses} inline` }/>, // icon component
-    name: 'Documentation', // name that appear in Sidebar
+    path: '', 
+    icon: <DocumentDuplicateIcon className={`${iconClasses} inline` }/>, 
+    name: 'Bill Type ', 
     submenu : [
       {
-        path: '/app/getting-started', // url
-        icon: <DocumentTextIcon className={submenuIconClasses}/>, // icon component
-        name: 'Getting Started', // name that appear in Sidebar
+        path: '/app/bill-type-view',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Bill Payment',
       },
       {
-        path: '/app/features',
-        icon: <TableCellsIcon className={submenuIconClasses}/>, 
-        name: 'Features',
+        path: '/app/bill-type-add',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Bill Payments',
       },
-      {
-        path: '/app/components',
-        icon: <CodeBracketSquareIcon className={submenuIconClasses}/>, 
-        name: 'Components',
-      }
     ]
   },
-  
+  {
+    path: '', 
+    icon: <DocumentDuplicateIcon className={`${iconClasses} inline` }/>, 
+    name: 'Bill Payment for Gov.t', 
+    submenu : [
+      {
+        path: '/app/payment-goverment-add',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Add Bill Payment',
+      },
+      {
+        path: '/app/payment-goverment-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Payments for gov.t ',
+      },
+    ]
+  },
+  {
+    path: '', 
+    icon: <WalletIcon className={`${iconClasses} inline` }/>, 
+    name: 'Expense', 
+    submenu : [
+      {
+        path: '/app/expense-add',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Add Expense',
+      },
+      {
+        path: '/app/expense-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Expenses ',
+      },
+    ]
+  },
+  {
+    path: '', 
+    icon: <UserIcon className={`${iconClasses} inline` }/>, 
+    name: 'Tenant', 
+    submenu : [
+      {
+        path: '/app/tenant-add',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Add Tenant info',
+      },
+      {
+        path: '/app/tenant-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Tenants ',
+      },
+    ]
+  },
+  {
+    path: '', 
+    icon: <WalletIcon className={`${iconClasses} inline` }/>, 
+    name: 'Bills Paid by Tenant', 
+    submenu : [
+      {
+        path: '/app/tenant-bill-add',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Add Tenant Bills',
+      },
+      {
+        path: '/app/tenant-bill-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Tenant Bills ',
+      },
+    ]
+  },
+  {
+    path: '', 
+    icon: <WalletIcon className={`${iconClasses} inline` }/>, 
+    name: 'Rent collection', 
+    submenu : [
+      {
+        path: '/app/rent-collection-add',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Collected Rent',
+      },
+      {
+        path: '/app/rent-collection-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Collected Rents ',
+      },
+    ]
+  },
+  {
+    path: '', 
+    icon: <WalletIcon className={`${iconClasses} inline` }/>, 
+    name: 'Parking', 
+    submenu : [
+      {
+        path: '/app/parking-add',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Parking Info',
+      },
+      {
+        path: '/app/parking-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Parking Informations ',
+      },
+    ]
+  },
 ]
 
 export default routes

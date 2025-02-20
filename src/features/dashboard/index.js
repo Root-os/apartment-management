@@ -1,78 +1,110 @@
-import DashboardStats from './components/DashboardStats'
-import AmountStats from './components/AmountStats'
-import PageStats from './components/PageStats'
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { FaBuilding, FaBook, FaTicketAlt, FaQuestionCircle, FaImage, FaShoppingCart, FaUsers, FaCogs, FaHandsHelping, FaSlidersH, FaUserTie } from 'react-icons/fa';
 
-import UserGroupIcon  from '@heroicons/react/24/outline/UserGroupIcon'
-import UsersIcon  from '@heroicons/react/24/outline/UsersIcon'
-import CircleStackIcon  from '@heroicons/react/24/outline/CircleStackIcon'
-import CreditCardIcon  from '@heroicons/react/24/outline/CreditCardIcon'
-import UserChannels from './components/UserChannels'
-import LineChart from './components/LineChart'
-import BarChart from './components/BarChart'
-import DashboardTopBar from './components/DashboardTopBar'
-import { useDispatch } from 'react-redux'
-import {showNotification} from '../common/headerSlice'
-import DoughnutChart from './components/DoughnutChart'
-import { useState } from 'react'
+const Dashboard = () => {
+  const [counts, setCounts] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-const statsData = [
-    {title : "New Users", value : "34.7k", icon : <UserGroupIcon className='w-8 h-8'/>, description : "↗︎ 2300 (22%)"},
-    {title : "Total Sales", value : "$34,545", icon : <CreditCardIcon className='w-8 h-8'/>, description : "Current month"},
-    {title : "Pending Leads", value : "450", icon : <CircleStackIcon className='w-8 h-8'/>, description : "50 in hot leads"},
-    {title : "Active Users", value : "5.6k", icon : <UsersIcon className='w-8 h-8'/>, description : "↙ 300 (18%)"},
-]
+  const cardVisibility = {
+    apartments: true,
+    blogs: true,
+    bookings: false,
+    categories: true,
+    contacts: true,
+    faqs: true,
+    galleries: true,
+    partners: true,
+    resources: true,
+    reviews: true,
+    services: true,
+    sliders: true,
+    testimonies: true,
+    users: true,
+  };
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://website.smartbingogames.com/api/about/dashboard');
+        setCounts(response.data); // Store the counts in state
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false); // Set loading to false once the data is fetched
+      }
+    };
 
+    fetchData();
+  }, []);
 
-function Dashboard(){
-
-    const dispatch = useDispatch()
- 
-
-    const updateDashboardPeriod = (newRange) => {
-        // Dashboard range changed, write code to refresh your values
-        dispatch(showNotification({message : `Period updated to ${newRange.startDate} to ${newRange.endDate}`, status : 1}))
+  // Dynamic color generation
+  const generateRandomColor = () => {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
     }
+    return color;
+  };
 
-    return(
-        <>
-        {/** ---------------------- Select Period Content ------------------------- */}
-            <DashboardTopBar updateDashboardPeriod={updateDashboardPeriod}/>
-        
-        {/** ---------------------- Different stats content 1 ------------------------- */}
-            <div className="grid lg:grid-cols-4 mt-2 md:grid-cols-2 grid-cols-1 gap-6">
-                {
-                    statsData.map((d, k) => {
-                        return (
-                            <DashboardStats key={k} {...d} colorIndex={k}/>
-                        )
-                    })
-                }
+  // Icons mapping based on the counts data
+  const iconMapping = {
+    aboutCompanies: <FaBuilding size={30} />,
+    apartments: <FaBuilding size={30} />,
+    blogs: <FaBook size={30} />,
+    bookings: <FaTicketAlt size={30} />,
+    categories: <FaQuestionCircle size={30} />,
+    contacts: <FaImage size={30} />,
+    faqs: <FaQuestionCircle size={30} />,
+    galleries: <FaImage size={30} />,
+    partners: <FaUserTie size={30} />,
+    resources: <FaCogs size={30} />,
+    reviews: <FaHandsHelping size={30} />,
+    services: <FaCogs size={30} />,
+    sliders: <FaSlidersH size={30} />,
+    testimonies: <FaTicketAlt size={30} />,
+    users: <FaUsers size={30} />,
+  };
+
+  // If still loading, show a loading spinner or placeholder
+  if (loading) {
+    return <div>Loading...</div>; // You can replace this with a more fancy loading spinner if needed
+  }
+
+  return (
+    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
+      {counts &&
+        Object.keys(counts).map((key) => {
+          if (!cardVisibility[key]) {
+            return null; // Skip rendering the card if it's disabled
+          }
+
+          const count = counts[key];
+          return (
+            <div
+              key={key}
+              className="card hover:shadow-xl transition-all transform hover:scale-105"
+              style={{ backgroundColor: generateRandomColor() }}
+            >
+              <div className="card-body p-6 mt-10">
+                <div className="flex items-center space-x-4">
+                  <div className="flex-shrink-0">
+                    <div className="text-black">{iconMapping[key]}</div>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-black">
+                      {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase())}
+                    </h3>
+                    <p className="text-lg text-black">{count}</p>
+                  </div>
+                </div>
+              </div>
             </div>
+          );
+        })}
+    </div>
+  );
+};
 
-
-
-        {/** ---------------------- Different charts ------------------------- */}
-            <div className="grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6">
-                <LineChart />
-                <BarChart />
-            </div>
-            
-        {/** ---------------------- Different stats content 2 ------------------------- */}
-        
-            <div className="grid lg:grid-cols-2 mt-10 grid-cols-1 gap-6">
-                <AmountStats />
-                <PageStats />
-            </div>
-
-        {/** ---------------------- User source channels table  ------------------------- */}
-        
-            <div className="grid lg:grid-cols-2 mt-4 grid-cols-1 gap-6">
-                <UserChannels />
-                <DoughnutChart />
-            </div>
-        </>
-    )
-}
-
-export default Dashboard
+export default Dashboard;

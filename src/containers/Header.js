@@ -7,7 +7,8 @@ import MoonIcon from '@heroicons/react/24/outline/MoonIcon'
 import SunIcon from '@heroicons/react/24/outline/SunIcon'
 import { openRightDrawer } from '../features/common/rightDrawerSlice';
 import { RIGHT_DRAWER_TYPES } from '../utils/globalConstantUtil'
-
+import TotalBookings from '../containers/countBooking'
+import ContactCount from '../containers/contactCount'
 import { NavLink,  Routes, Link , useLocation} from 'react-router-dom'
 
 
@@ -77,15 +78,16 @@ function Header(){
                 <SunIcon data-set-theme="light" data-act-class="ACTIVECLASS" className={"fill-current w-6 h-6 "+(currentTheme === "dark" ? "swap-on" : "swap-off")}/>
                 <MoonIcon data-set-theme="dark" data-act-class="ACTIVECLASS" className={"fill-current w-6 h-6 "+(currentTheme === "light" ? "swap-on" : "swap-off")} />
             </label>
-
+                 <TotalBookings/>
+                 <ContactCount/>
 
                 {/* Notification icon */}
-                <button className="btn btn-ghost ml-4  btn-circle" onClick={() => openNotification()}>
+                {/* <button className="btn btn-ghost ml-4  btn-circle" onClick={() => openNotification()}>
                     <div className="indicator">
                         <BellIcon className="h-6 w-6"/>
                         {noOfNotifications > 0 ? <span className="indicator-item badge badge-secondary badge-sm">{noOfNotifications}</span> : null }
                     </div>
-                </button>
+                </button> */}
 
 
                 {/* Profile icon, opening menu on click */}

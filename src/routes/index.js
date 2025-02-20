@@ -3,46 +3,34 @@
 import { lazy } from 'react'
 
 const Dashboard = lazy(() => import('../pages/protected/Dashboard'))
-const Welcome = lazy(() => import('../pages/protected/Welcome'))
 const Page404 = lazy(() => import('../pages/protected/404'))
 const Blank = lazy(() => import('../pages/protected/Blank'))
-const Charts = lazy(() => import('../pages/protected/Charts'))
-const Leads = lazy(() => import('../pages/protected/Leads'))
-const Integration = lazy(() => import('../pages/protected/Integration'))
-const Calendar = lazy(() => import('../pages/protected/Calendar'))
-const Team = lazy(() => import('../pages/protected/Team'))
-const Transactions = lazy(() => import('../pages/protected/Transactions'))
 const Bills = lazy(() => import('../pages/protected/Bills'))
 const ProfileSettings = lazy(() => import('../pages/protected/ProfileSettings'))
-const GettingStarted = lazy(() => import('../pages/GettingStarted'))
-const DocFeatures = lazy(() => import('../pages/DocFeatures'))
-const DocComponents = lazy(() => import('../pages/DocComponents'))
 
+const FloorAdd = lazy(() => import('../pages/protected/FloorAdd'))
+const FloorView = lazy(() => import('../pages/protected/FloorView'))
+const UnitAdd = lazy(() => import('../pages/protected/UnitAdd'))
+const UnitView = lazy(() => import('../pages/protected/UnitView'))
+const BillPaymentView = lazy(() => import('../pages/protected/BillPaymentView'))
+const BillPaymentAdd = lazy(() => import('../pages/protected/BillPaymentAdd'))
+const GovBillPaymentPage = lazy(() => import('../pages/protected/GovPaymentView'))
+const GovBillPaymentAdd = lazy(() => import('../pages/protected/GovPaymentAdd'))
+const ExpenseAdd = lazy(() => import('../pages/protected/ExpenseAdd'))
+const ExpenseView = lazy(() => import('../pages/protected/ExpenseView'))
+const TenantAdd = lazy(() => import('../pages/protected/TenantAdd'))
+const TenantView = lazy(() => import('../pages/protected/TenantView'))
+const TenantBillAdd = lazy(() => import('../pages/protected/TenantBillAdd'))
+const TenantBillView = lazy(() => import('../pages/protected/TenantBillView'))
+const RentAdd = lazy(() => import('../pages/protected/RentAdd'))
+const RentView = lazy(() => import('../pages/protected/RentView'))
+const ParkingAdd = lazy(() => import('../pages/protected/ParkingAdd'))
+const ParkingView = lazy(() => import('../pages/protected/ParkingView'))
 
 const routes = [
   {
-    path: '/dashboard', // the url
+    path: '/', // the url
     component: Dashboard, // view rendered
-  },
-  {
-    path: '/welcome', // the url
-    component: Welcome, // view rendered
-  },
-  {
-    path: '/leads',
-    component: Leads,
-  },
-  {
-    path: '/settings-team',
-    component: Team,
-  },
-  {
-    path: '/calendar',
-    component: Calendar,
-  },
-  {
-    path: '/transactions',
-    component: Transactions,
   },
   {
     path: '/settings-profile',
@@ -53,26 +41,6 @@ const routes = [
     component: Bills,
   },
   {
-    path: '/getting-started',
-    component: GettingStarted,
-  },
-  {
-    path: '/features',
-    component: DocFeatures,
-  },
-  {
-    path: '/components',
-    component: DocComponents,
-  },
-  {
-    path: '/integration',
-    component: Integration,
-  },
-  {
-    path: '/charts',
-    component: Charts,
-  },
-  {
     path: '/404',
     component: Page404,
   },
@@ -80,6 +48,80 @@ const routes = [
     path: '/blank',
     component: Blank,
   },
+
+
+  {
+    path: '/floor-add', 
+    component: FloorAdd, 
+  },
+  {
+    path: '/floor-view', 
+    component: FloorView, 
+  },
+  {
+    path: '/unit-add', 
+    component: UnitAdd, 
+  },
+  {
+    path: '/unit-view', 
+    component: UnitView, 
+  },
+  {
+    path: '/bill-type-add', 
+    component: BillPaymentAdd, 
+  },
+  {
+    path: '/bill-type-view', 
+    component: BillPaymentView, 
+  },
+  {
+    path: '/payment-goverment-view', 
+    component: GovBillPaymentPage, 
+  },
+  {
+    path: '/payment-goverment-add', 
+    component: GovBillPaymentAdd, 
+  },
+  {
+    path: '/expense-add', 
+    component: ExpenseAdd, 
+  },
+  {
+    path: '/expense-view', 
+    component: ExpenseView, 
+  },
+  {
+    path: '/tenant-add', 
+    component: TenantAdd, 
+  },
+  {
+    path: '/tenant-view', 
+    component: TenantView, 
+  },
+  {
+    path: '/tenant-bill-add', 
+    component: TenantBillAdd, 
+  },
+  {
+    path: '/tenant-bill-view', 
+    component: TenantBillView, 
+  },
+  {
+    path: '/rent-collection-add', 
+    component: RentAdd, 
+  },
+  {
+    path: '/rent-collection-view', 
+    component: RentView, 
+  },
+  {
+    path: '/parking-add', 
+    component: ParkingAdd, 
+  },
+  {
+    path: '/parking-view', 
+    component: ParkingView, 
+  }
 ]
 
 export default routes
