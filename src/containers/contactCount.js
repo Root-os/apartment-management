@@ -12,11 +12,7 @@ function ContactCount() {
     useEffect(() => {
         const fetchContactCount = async () => {
             try {
-<<<<<<< HEAD
-                const response = await axios.get('https://website.smartbingogames.com/api/contact/count');
-=======
                 const response = await axios.get('');
->>>>>>> origin/rodas
                 
                 const newCount = response.data.count;
 

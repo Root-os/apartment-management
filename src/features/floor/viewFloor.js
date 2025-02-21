@@ -1,26 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-<<<<<<< HEAD
-=======
 import { useNavigate } from "react-router-dom";
 import TableComponent from "../../components/table";
->>>>>>> origin/rodas
 
 const FloorManagement = () => {
   const [floors, setFloors] = useState([]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState(null);
-<<<<<<< HEAD
-  const [newFloorData, setNewFloorData] = useState({});
-
-  // Fetch floors
-  useEffect(() => {
-    axios.get("https://apartment.houseethiopia.com/api/floor")
-      .then(response => {
-        setFloors(response.data);
-        console.log(response.data);
-=======
   const [newFloorData, setNewFloorData] = useState({
     name: '',
     totalUnits: '',
@@ -35,7 +22,6 @@ const FloorManagement = () => {
     axios.get(`${process.env.REACT_APP_BASE_URL}floor`)
       .then(response => {
         setFloors(response.data);
->>>>>>> origin/rodas
       })
       .catch(error => {
         console.error("Error fetching floors:", error);
@@ -55,11 +41,7 @@ const FloorManagement = () => {
   };
 
   const handleEditSubmit = () => {
-<<<<<<< HEAD
-    axios.put(`https://apartment.houseethiopia.com/api/floor/${selectedFloor.id}`, newFloorData)
-=======
     axios.put(`${process.env.REACT_APP_BASE_URL}floor/${selectedFloor.id}`, newFloorData)
->>>>>>> origin/rodas
       .then(() => {
         setFloors(floors.map(floor => (floor.id === selectedFloor.id ? { ...floor, ...newFloorData } : floor)));
         setIsEditModalOpen(false);
@@ -76,11 +58,7 @@ const FloorManagement = () => {
   };
 
   const handleDeleteConfirm = () => {
-<<<<<<< HEAD
-    axios.delete(`https://apartment.houseethiopia.com/api/floor/${selectedFloor.id}`)
-=======
     axios.delete(`${process.env.REACT_APP_BASE_URL}floor/${selectedFloor.id}`)
->>>>>>> origin/rodas
       .then(() => {
         setFloors(floors.filter(floor => floor.id !== selectedFloor.id));
         setIsDeleteModalOpen(false);
@@ -90,48 +68,6 @@ const FloorManagement = () => {
       });
   };
 
-<<<<<<< HEAD
-  return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Floor Management</h1>
-      <div className="overflow-x-auto bg-base-100 rounded-lg shadow-md">
-        <table className="min-w-full table-auto">
-          <thead>
-            <tr className="bg-base-300 text-left">
-              <th className="px-6 py-3">Name</th>
-              <th className="px-6 py-3">Total Units</th>
-              <th className="px-6 py-3">Rented Units</th>
-              <th className="px-6 py-3">Free Units</th>
-              <th className="px-6 py-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {floors.map(floor => (
-              <tr key={floor.id}>
-                <td className="px-6 py-3">{floor.name}</td>
-                <td className="px-6 py-3">{floor.totalUnits}</td>
-                <td className="px-6 py-3">{floor.rentedUnits}</td>
-                <td className="px-6 py-3">{floor.freeUnits}</td>
-                <td className="px-6 py-3">
-                  <button
-                    onClick={() => handleEditClick(floor)}
-                    className="bg-blue-500 text-white py-1 px-4 rounded mr-2"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteClick(floor)}
-                    className="bg-red-500 text-white py-1 px-4 rounded"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-=======
   const columns = [
     { key: 'name', label: 'Name' },
     { key: 'totalUnits', label: 'Total Units' },
@@ -180,7 +116,6 @@ const FloorManagement = () => {
         exportable={true}
         onAdd={handleAddClick}
       />
->>>>>>> origin/rodas
 
       {/* Edit Modal */}
       {isEditModalOpen && (
@@ -205,27 +140,6 @@ const FloorManagement = () => {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
-<<<<<<< HEAD
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Rented Units</label>
-              <input
-                type="number"
-                value={newFloorData.rentedUnits}
-                onChange={(e) => setNewFloorData({ ...newFloorData, rentedUnits: e.target.value })}
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Free Units</label>
-              <input
-                type="number"
-                value={newFloorData.freeUnits}
-                onChange={(e) => setNewFloorData({ ...newFloorData, freeUnits: e.target.value })}
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-=======
->>>>>>> origin/rodas
             <div className="flex justify-between">
               <button onClick={() => setIsEditModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
               <button onClick={handleEditSubmit} className="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
@@ -242,10 +156,7 @@ const FloorManagement = () => {
             <div className="flex justify-between">
               <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
               <button onClick={handleDeleteConfirm} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
-<<<<<<< HEAD
-=======
               
->>>>>>> origin/rodas
             </div>
           </div>
         </div>
@@ -254,8 +165,4 @@ const FloorManagement = () => {
   );
 };
 
-<<<<<<< HEAD
 export default FloorManagement;
-=======
-export default FloorManagement;
->>>>>>> origin/rodas
