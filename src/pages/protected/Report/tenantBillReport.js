@@ -1,19 +1,19 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { setPageTitle } from '../../../features/common/headerSlice'
-import TenantReport from '../../../features/report/tenantReport'
+import TenantBillReport from '../../../features/report/tenatBillReport'
 
-function TenantReportPageTwo(){
+function TenantReportPage(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Tenant  Report"}))
+        dispatch(setPageTitle({ title : "Tenant Bill Report"}))
       }, [])
 
 
     return(
-        <TenantReport />
+        <TenantBillReport />
     )
 }
 
-export default TenantReportPageTwo
+export default TenantReportPage

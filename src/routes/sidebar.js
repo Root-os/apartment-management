@@ -38,6 +38,9 @@ import EyeIcon from '@heroicons/react/24/outline/EyeIcon'
 
 
 
+
+
+
 const iconClasses = `h-6 w-6`
 const submenuIconClasses = `h-5 w-5`
 
@@ -166,7 +169,7 @@ const routes = [
     submenu : [
       {
         path: '/app/payment-goverment-add',
-        icon: <EyeIcon className={submenuIconClasses}/>,
+        icon: <PlusIcon className={submenuIconClasses}/>,
         name: 'Add Bill Payment',
       },
       {
@@ -185,7 +188,7 @@ const routes = [
     submenu : [
       {
         path: '/app/expense-add',
-        icon: <EyeIcon className={submenuIconClasses}/>,
+        icon: <PlusIcon className={submenuIconClasses}/>,
         name: 'Add Expense',
       },
       {
@@ -204,7 +207,7 @@ const routes = [
     submenu : [
       {
         path: '/app/tenant-add',
-        icon: <EyeIcon className={submenuIconClasses}/>,
+        icon: <PlusIcon className={submenuIconClasses}/>,
         name: 'Add Tenant info',
       },
       {
@@ -223,7 +226,7 @@ const routes = [
     submenu : [
       {
         path: '/app/tenant-bill-add',
-        icon: <EyeIcon className={submenuIconClasses}/>,
+        icon: <PlusIcon className={submenuIconClasses}/>,
         name: 'Add Tenant Bills',
       },
       {
@@ -280,14 +283,16 @@ const routes = [
     submenu : [
       {
         path: '/app/tenantBill-report',
-        icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Tenant Report',
+        icon: <DocumentDuplicateIcon className={submenuIconClasses}/>,
+        name: 'Tenant Bill Report',
       },
       {
-        path: '/app/parking-view',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Parking Informations ',
+        path: '/app/tenant-report',
+        icon: <DocumentDuplicateIcon className={submenuIconClasses}/>,
+        name: 'Tenant Report',
       },
+
+    
     ]
   },
 ]
