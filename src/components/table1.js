@@ -10,8 +10,7 @@ const TableComponent = ({
   rowsPerPageOptions = [5, 10, 15], 
   showSearch = true, 
   exportable = true, 
-  onAdd,
-  customHeader
+  onAdd
 }) => {
   const [search, setSearch] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: columns[0]?.key, direction: 'asc' });
@@ -44,10 +43,6 @@ const TableComponent = ({
     window.print();
   };
 
-  const toggleDensity = () => {
-    setDensity(density === 'comfortable' ? 'compact' : 'comfortable');
-  };
-
   const filterData = useMemo(() => {
     return data.filter(item => {
       return columns.some(column => {
@@ -77,10 +72,10 @@ const TableComponent = ({
   const rowPadding = density === 'comfortable' ? 'py-4' : 'py-2';
 
   return (
-    <div className="p-6 bg-base-100 rounded-lg shadow-md w-full overflow-x-auto">
+    <div className="p-6 bg-base-100 rounded-lg shadow-md ">
       {/* Title Card */}
-      <div className="flex justify-between items-center mb-4 mt-6">
-        <h2 className="text-2xl font-bold">{title}</h2>
+      <div className="flex justify-between items-center mb-4 mt-10">
+        <h2 className="text-xl font-semibold">{title}</h2>
         <div className="flex items-center space-x-2">
           {onAdd && (
             <button 
@@ -97,13 +92,13 @@ const TableComponent = ({
                 filename={`${title}.csv`}
                 className="px-2 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm"
               >
-                <FaDownload /> Export CSV
+                <FaDownload />  CSV
               </CSVLink>
               <button
                 className="px-2 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm"
                 onClick={handleExportPDF}
               >
-                <FaDownload /> Export PDF
+                <FaDownload />  PDF
               </button>
               <button
                 className="px-2 py-1 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 text-sm"
@@ -115,8 +110,8 @@ const TableComponent = ({
           )}
         </div>
       </div>
-
-      <div className="flex justify-between items-center mb-4">  
+     <div className="flex justify-between space-y-4"> 
+      {/* Search Bar */}
       {showSearch && (
         <div className="mb-4 flex items-center border p-2 rounded-lg">
           <FaSearch className="mr-2" />
@@ -129,20 +124,28 @@ const TableComponent = ({
           />
         </div>
       )}
-         {customHeader}
-      {/* Density Toggle */}
-      <div className="mb-4 flex items-center space-x-2">
-        <FaThList onClick={toggleDensity} className="cursor-pointer" />
+
+      {/* Density Dropdown */}
+      <div className="mb-8 flex items-center space-x-2">
+        <FaThList />
+        <select 
+          onChange={(e) => setDensity(e.target.value)} 
+          value={density}
+          className="border rounded-lg p-1 bg-base-100"
+        >
+          <option value="comfortable">Comfortable</option>
+          <option value="compact">Compact</option>
+        </select>
       </div>
       </div>
       {/* Table */}
       <table className="min-w-full table-auto border-collapse" id="table">
         <thead>
-          <tr className="border-b bg-base-300 ">
+          <tr className="border-b bg-gray-100">
             {columns.map((column) => (
               <th
                 key={column.key}
-                className="px-4 py-2 text-left font-medium text-white-700 cursor-pointer"
+                className="px-4 py-2 text-left font-medium text-gray-700 cursor-pointer"
                 onClick={() => handleSort(column.key)}
               >
                 {column.label}
@@ -169,8 +172,8 @@ const TableComponent = ({
       {/* Pagination */}
       <div className="flex justify-between items-center mt-4">
         {/* Rows per page */}
-        <div className="flex items-center space-x-2 bg-base-200">
-          {/* <span>Rows per page:</span> */}
+        <div className="flex items-center space-x-2">
+          <span>Rows per page:</span>
           <select 
             onChange={(e) => setRowsPerPage(Number(e.target.value))} 
             value={rowsPerPage}
@@ -188,7 +191,7 @@ const TableComponent = ({
         <div className="flex space-x-2">
           <button
             onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : 1)}
-            className="px-3 py-1 rounded-lg border bg-base-200"
+            className="px-3 py-1 rounded-lg border bg-white"
           >
             <FaChevronLeft />
           </button>
@@ -196,14 +199,14 @@ const TableComponent = ({
             <button
               key={index}
               onClick={() => setCurrentPage(index + 1)}
-              className={`px-3 py-1 rounded-lg border ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-base-200'}`}
+              className={`px-3 py-1 rounded-lg border ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-white'}`}
             >
               {index + 1}
             </button>
           ))}
           <button
             onClick={() => setCurrentPage(currentPage < totalPages ? currentPage + 1 : totalPages)}
-            className="px-3 py-1 rounded-lg border bg-base-200"
+            className="px-3 py-1 rounded-lg border bg-white"
           >
             <FaChevronRight />
           </button>

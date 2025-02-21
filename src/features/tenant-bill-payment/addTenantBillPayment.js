@@ -196,11 +196,12 @@ const AddBillPayment = () => {
 
       {/* Modal for displaying success or error message */}
       {isModalOpen && (
-        <Modal onClose={() => setIsModalOpen(false)}>
-          <div className={isSuccess ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}>
-            {isSuccess ? successMessage : error}
-          </div>
-        </Modal>
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          type={isSuccess ? "success" : "error"}
+          message={isSuccess ? successMessage : error}
+        />
       )}
     </div>
   );
