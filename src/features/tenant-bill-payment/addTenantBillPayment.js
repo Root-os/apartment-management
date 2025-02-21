@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const AddBillPayment = () => {
@@ -8,11 +8,43 @@ const AddBillPayment = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [status, setStatus] = useState("Pending");
+  const [tenants, setTenants] = useState([]);
+  const [billTypes, setBillTypes] = useState([]);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
+  useEffect(() => {
+    // Fetch tenants
+    const fetchTenants = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
+        setTenants(response.data);
+      } catch (error) {
+        console.error("Error fetching tenants:", error);
+      }
+    };
+
+    // Fetch bill types
+    const fetchBillTypes = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-type`);
+        setBillTypes(response.data);
+      } catch (error) {
+        console.error("Error fetching bill types:", error);
+      }
+    };
+
+    fetchTenants();
+    fetchBillTypes();
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!tenantId || !billPaymentTypeId) {
+      setError("Please select a tenant and a bill payment type.");
+      return;
+    }
 
     const payload = {
       tenantId: parseInt(tenantId),
@@ -24,7 +56,7 @@ const AddBillPayment = () => {
     };
 
     try {
-      const response = await axios.post("https://apartment.houseethiopia.com/api/tenant-payments", payload);
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}tenant-payments`, payload);
       setSuccessMessage("Payment added successfully!");
       setError(null);
       console.log(response.data);  // Log the response for debugging
@@ -50,28 +82,44 @@ const AddBillPayment = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Tenant ID */}
         <div>
-          <label htmlFor="tenantId" className="block text-sm font-medium text-gray-700">Tenant ID</label>
-          <input
-            type="number"
+          <label htmlFor="tenantId" className="block text-sm font-medium text-gray-700">Tenant</label>
+          <select
             id="tenantId"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded hover:cursor-pointer"
             value={tenantId}
             onChange={(e) => setTenantId(e.target.value)}
             required
-          />
+          >
+            <option value="">Select Tenant</option>
+            {tenants.length > 0 ? (
+              tenants.map((tenant) => (
+                <option key={tenant.id} value={tenant.id}>{tenant.name}</option>
+              ))
+            ) : (
+              <option disabled>No tenants available</option>
+            )}
+          </select>
         </div>
 
         {/* Bill Payment Type ID */}
         <div>
-          <label htmlFor="billPaymentTypeId" className="block text-sm font-medium text-gray-700">Bill Payment Type ID</label>
-          <input
-            type="number"
+          <label htmlFor="billPaymentTypeId" className="block text-sm font-medium text-gray-700">Bill Payment Type</label>
+          <select
             id="billPaymentTypeId"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded hover:cursor-pointer "
             value={billPaymentTypeId}
             onChange={(e) => setBillPaymentTypeId(e.target.value)}
             required
-          />
+          >
+            <option value="">Select Bill Payment Type</option>
+            {billTypes.length > 0 ? (
+              billTypes.map((billType) => (
+                <option key={billType.id} value={billType.id}>{billType.typeName}</option>
+              ))
+            ) : (
+              <option disabled>No bill payment types available</option>
+            )}
+          </select>
         </div>
 
         {/* Amount */}
