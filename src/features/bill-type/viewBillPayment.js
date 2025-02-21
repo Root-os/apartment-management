@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import TitleCard from '../../components/Cards/TitleCard';
 
 const Form = ({ onSubmit }) => {
   const [formData, setFormData] = useState({

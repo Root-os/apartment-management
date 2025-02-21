@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table'; // Import the TableComponent
 import Modal from 'react-modal';
+import TitleCard from '../../components/Cards/TitleCard';
 
 const BillTablePage = () => {
   const [billData, setBillData] = useState([]); // To store fetched bill data

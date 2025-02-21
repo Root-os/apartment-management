@@ -51,7 +51,8 @@ function App() {
         <Route
           path="/app/*"
           element={
-            isAuthenticated ? (
+            // isAuthenticated 
+            true ? (
               <Layout />  // Protected route content
             ) : (
               <Navigate to="/login" replace />  // Redirect to login if not authenticated
