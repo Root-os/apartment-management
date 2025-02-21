@@ -279,9 +279,9 @@ const routes = [
     name: 'Report', 
     submenu : [
       {
-        path: '/app/parking-add',
+        path: '/app/tenantBill-report',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Parking Info',
+        name: 'Tenant Report',
       },
       {
         path: '/app/parking-view',

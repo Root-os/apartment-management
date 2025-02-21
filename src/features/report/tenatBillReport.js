@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TableComponent from '../../components/table'
 
-const ViewBillPayment = () => {
+const TenantBillReport = () => {
 
 
     const [floors, setFloors] = useState([]);
@@ -19,7 +19,7 @@ const ViewBillPayment = () => {
   
     // Fetch floors
     useEffect(() => {
-      axios.get(`${process.env.REACT_APP_BASE_URL}tenant-payments`)
+      axios.get(`${process.env.REACT_APP_BASE_URL}tenant-payments/reports`)
         .then(response => {
           setFloors(response.data);
         })
@@ -82,20 +82,9 @@ const ViewBillPayment = () => {
               onClick={() => handleEditClick(floor)}
               className="bg-blue-500 text-white py-1 px-4 rounded mr-2"
             >
-              Edit
-            </button>
-            <button
-              onClick={() => handleDeleteClick(floor)}
-              className="bg-red-500 text-white py-1 px-4 rounded mr-2"
-            >
-              Delete
-            </button>
-            <button
-              onClick={() => handleDeleteClick(floor)}
-              className="bg-grey-500 text-white py-1 px-4 rounded"
-            >
               Detail
             </button>
+           
           </>
         )
       }
@@ -166,4 +155,4 @@ const ViewBillPayment = () => {
     );
 };
 
-export default ViewBillPayment;
+export default TenantBillReport;

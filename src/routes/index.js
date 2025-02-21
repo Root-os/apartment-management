@@ -8,10 +8,16 @@ const Blank = lazy(() => import('../pages/protected/Blank'))
 const Bills = lazy(() => import('../pages/protected/Bills'))
 const ProfileSettings = lazy(() => import('../pages/protected/ProfileSettings'))
 
+
+//floor
 const FloorAdd = lazy(() => import('../pages/protected/FloorAdd'))
 const FloorView = lazy(() => import('../pages/protected/FloorView'))
+
+//unit
 const UnitAdd = lazy(() => import('../pages/protected/UnitAdd'))
 const UnitView = lazy(() => import('../pages/protected/UnitView'))
+
+
 const BillPaymentView = lazy(() => import('../pages/protected/BillPaymentView'))
 const BillPaymentAdd = lazy(() => import('../pages/protected/BillPaymentAdd'))
 const GovBillPaymentPage = lazy(() => import('../pages/protected/GovPaymentView'))
@@ -26,6 +32,14 @@ const RentAdd = lazy(() => import('../pages/protected/RentAdd'))
 const RentView = lazy(() => import('../pages/protected/RentView'))
 const ParkingAdd = lazy(() => import('../pages/protected/ParkingAdd'))
 const ParkingView = lazy(() => import('../pages/protected/ParkingView'))
+
+//Report
+const TenantReportPage = lazy(() => import('../pages/protected/Report/tenantReport'))
+
+
+
+
+
 
 const routes = [
   {
@@ -121,7 +135,15 @@ const routes = [
   {
     path: '/parking-view', 
     component: ParkingView, 
+  },
+
+  //report
+
+  {
+    path: '/tenantBill-report', 
+    component: TenantReportPage, 
   }
+
 ]
 
 export default routes
