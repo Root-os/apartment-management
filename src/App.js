@@ -50,7 +50,8 @@ function App() {
         {/* Protected routes */}
         <Route
           path="/app/*"
-          element={/*isAuthenticated*/
+          element={
+            // isAuthenticated 
             true ? (
               <Layout />  // Protected route content
             ) : (

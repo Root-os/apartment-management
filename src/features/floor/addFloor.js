@@ -61,7 +61,7 @@ const FloorForm = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         
         <div className="flex flex-col">
-          <label htmlFor="floorNumber" className="text-sm font-medium text-gray-700">Floor Number</label>
+          <label htmlFor="floorNumber" className="text-sm font-medium text-white-700">Floor Number</label>
           <input
             type="text"
             id="floorNumber"
@@ -69,13 +69,13 @@ const FloorForm = () => {
             value={formData.floorNumber}
             onChange={handleInputChange}
             required
-            className="mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="bg-base-100 mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
         {/* Number of Units */}
         <div className="flex flex-col">
-          <label htmlFor="noUnits" className="text-sm font-medium text-gray-700">Number of Units</label>
+          <label htmlFor="noUnits" className="text-sm font-medium text-white-700">Number of Units</label>
           <input
             type="number"
             id="noUnits"
@@ -83,19 +83,19 @@ const FloorForm = () => {
             value={formData.noUnits}
             onChange={handleInputChange}
             required
-            className="mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="bg-base-100 mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
         {/* Status */}
         <div className="flex flex-col">
-          <label htmlFor="status" className="text-sm font-medium text-gray-700">Status</label>
+          <label htmlFor="status" className="text-sm font-medium text-white-700">Status</label>
           <select
             id="status"
             name="status"
             value={formData.status}
             onChange={handleInputChange}
-            className="mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="bg-base-100 mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             <option value="available">Available</option>
             <option value="unavailable">Occupied</option>
@@ -106,7 +106,7 @@ const FloorForm = () => {
         <div className="text-center">
           <button
             type="submit"
-            className="px-4 py-2 w-1/2 text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="px-4 py-2 w-1/2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             {loading ? 'Submmiting...' : 'Add Floor'}
           </button>

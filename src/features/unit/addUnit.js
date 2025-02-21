@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import TitleCard from '../../components/Cards/TitleCard';
+import Modal from '../../components/Modal';
 
 const AddFloorUnit = () => {
   // Form state
@@ -17,10 +19,14 @@ const AddFloorUnit = () => {
   const [error, setError] = useState('');
   const [floors, setFloors] = useState([]);
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  const [message, setMessage] =useState(null);
+
   useEffect(() => {
     const fetchFloors = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/floor');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}floor`);
         setFloors(response.data);
       } catch (err) {
         setError('Failed to fetch floors.');
@@ -80,12 +86,14 @@ const AddFloorUnit = () => {
     try {
       // Make the POST request
       const response = await axios.post(
-        'https://apartment.houseethiopia.com/api/unit',
+        `${process.env.REACT_APP_BASE_URL}unit`,
         data
       );
 
-      // Handle success
-      console.log('Floor unit added successfully:', response.data);
+      setModalOpen(true);
+      setMessageType('success')
+      setMessage('Unit Added Successfully')
+
       // Reset form after submission
       setUnitNumber('');
       setSize('');
@@ -99,15 +107,16 @@ const AddFloorUnit = () => {
       setFloorId('');
       setLoading(false);
     } catch (err) {
-      // Handle error
-      setError('Failed to add floor unit.');
       setLoading(false);
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Unable to add Unit, try again!');
     }
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Add Floor Unit</h2>
+    <>
+      <TitleCard title="Add Floor Unit" topMargin={"mt-4"}>
 
       {error && <div className="bg-red-300 p-3 mb-4 text-red-800">{error}</div>}
 
@@ -120,7 +129,7 @@ const AddFloorUnit = () => {
             value={unitNumber}
             onChange={(e) => setUnitNumber(e.target.value)}
             required
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           />
         </div>
 
@@ -132,7 +141,7 @@ const AddFloorUnit = () => {
             value={size}
             onChange={(e) => setSize(e.target.value)}
             required
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           />
         </div>
 
@@ -142,7 +151,7 @@ const AddFloorUnit = () => {
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           >
             <option value="available">Available</option>
             <option value="occupied">Occupied</option>
@@ -158,14 +167,14 @@ const AddFloorUnit = () => {
               value={newEquipment}
               onChange={(e) => setNewEquipment(e.target.value)}
               placeholder="Enter equipment"
-              className="w-full p-3 border border-gray-300 rounded-md"
+              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             />
             <button
               type="button"
               onClick={handleAddEquipment}
               className="ml-2 bg-blue-500 text-white p-3 rounded-md"
             >
-              Add
+              Add 
             </button>
           </div>
           <ul>
@@ -193,7 +202,7 @@ const AddFloorUnit = () => {
               value={newProblem}
               onChange={(e) => setNewProblem(e.target.value)}
               placeholder="Enter problem"
-              className="w-full p-3 border border-gray-300 rounded-md"
+              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             />
             <button
               type="button"
@@ -226,7 +235,7 @@ const AddFloorUnit = () => {
             type="date"
             value={rentedDate}
             onChange={(e) => setRentedDate(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-black-300 rounded-md"
           />
         </div>
 
@@ -237,7 +246,7 @@ const AddFloorUnit = () => {
             type="date"
             value={vacatedDate}
             onChange={(e) => setVacatedDate(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           />
         </div>
 
@@ -247,7 +256,7 @@ const AddFloorUnit = () => {
           <select
             value={floorId}
             onChange={(e) => setFloorId(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           >
             <option value="">Select a Floor</option>
             {floors.map((floor) => (
@@ -265,37 +274,21 @@ const AddFloorUnit = () => {
             disabled={loading}
             className={`w-full p-3 bg-blue-500 text-white rounded-md ${loading ? 'opacity-50' : ''}`}
           >
-            {loading ? (
-              <span className="flex justify-center">
-                <svg
-                  className="w-5 h-5 animate-spin"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    className="opacity-25"
-                  ></circle>
-                  <path
-                    fill="currentColor"
-                    d="M4 12a8 8 0 0116 0"
-                    className="opacity-75"
-                  ></path>
-                </svg>
-              </span>
-            ) : (
+            {loading ? 'Submitting' :
               'Add Unit'
-            )}
+            }
           </button>
         </div>
       </form>
-    </div>
+      </TitleCard>
+
+      <Modal
+      isOpen={modalOpen}
+      onClose={()=> setModalOpen(false)}
+      type={messageType}
+      message={message}
+      />
+    </>
   );
 };
 

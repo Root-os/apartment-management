@@ -23,7 +23,7 @@ import TagIcon from '@heroicons/react/24/outline/TagIcon'
 import BookOpenIcon from '@heroicons/react/24/outline/BookOpenIcon'
 import QuestionMarkCircleIcon from '@heroicons/react/24/outline/QuestionMarkCircleIcon'
 import CalendarIcon from '@heroicons/react/24/outline/CalendarIcon'
-import HomeIcon from '@heroicons/react/24/outline/HomeIcon'
+import {HomeIcon,BuildingOffice2Icon} from '@heroicons/react/24/outline'
 import ServerIcon from '@heroicons/react/24/outline/ServerIcon'
 import ClipboardDocumentListIcon from '@heroicons/react/24/outline/ClipboardDocumentListIcon'
 import PhoneIcon from '@heroicons/react/24/outline/PhoneIcon'
@@ -109,7 +109,7 @@ const routes = [
     submenu : [
       {
         path: '/app/floor-add',
-        icon: <EyeIcon className={submenuIconClasses}/>,
+        icon: <PlusIcon className={submenuIconClasses}/>,
         name: 'Add Floor Info',
       },
       {
@@ -124,7 +124,7 @@ const routes = [
   //unit
   {
     path: '', 
-    icon: <PhoneIcon className={`${iconClasses} inline` }/>, 
+    icon: <BuildingOffice2Icon className={`${iconClasses} inline` }/>, 
     name: 'Unit', 
     submenu : [
       {

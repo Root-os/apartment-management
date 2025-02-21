@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import TitleCard from '../../components/Cards/TitleCard';
 
 const AddTenant = () => {
   // State variables for form fields
@@ -16,7 +17,7 @@ const AddTenant = () => {
   const [leaseEndDate, setLeaseEndDate] = useState('');
   const [paymentStatus, setPaymentStatus] = useState('');
   const [additionalNotes, setAdditionalNotes] = useState('');
-  const [advanced, setAdvanced] = useState('');
+  const [advanced, setAdvanced] = useState(0);
   const [password, setPassword] = useState('');
   const [floors, setFloors] = useState([]);
   const [units, setUnits] = useState([]);
@@ -105,8 +106,7 @@ const AddTenant = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-6">Add Tenant Information</h2>
+    <><TitleCard title={'Add Tenant'}  >
 
       {error && <div className="bg-red-300 p-3 mb-4 text-red-800">{error}</div>}
 
@@ -306,7 +306,8 @@ const AddTenant = () => {
           </button>
         </div>
       </form>
-    </div>
+      </TitleCard>
+    </>
   );
 };
 

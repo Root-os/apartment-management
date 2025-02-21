@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
+import TableComponent from '../../components/table';
 
 const TenantList = () => {
   const [tenants, setTenants] = useState([]);
@@ -33,6 +34,7 @@ const TenantList = () => {
       try {
         const response = await axios.get('https://apartment.houseethiopia.com/api/tenant');
         setTenants(response.data);
+        console.log('Fetched tenants:', response.data);
         setLoading(false);
       } catch (err) {
         setError('Failed to fetch tenant data.');
@@ -98,7 +100,7 @@ const TenantList = () => {
       });
 
       await axios.put(`https://apartment.houseethiopia.com/api/tenant/${selectedTenant.id}`, formData, {
-        headers: {
+        labels: {
           'Content-Type': 'multipart/form-data',
         },
       });
@@ -134,6 +136,109 @@ const TenantList = () => {
     setIsDetailModalOpen(true);
   };
 
+  const floorLookup = floors.reduce((acc, floor) => {
+    acc[floor.id] = floor.name;
+    return acc;
+  }, {});
+  const unitLookup = units.reduce((acc, unit) => {
+    acc[unit.id] = unit.unitNumber;
+    return acc;
+  }, {});
+
+  const columns = [
+    {
+      label: "Full Name",
+      key: "fullName",
+    },
+    {
+      label: "Phone Number",
+      key: "phoneNumber",
+    },
+    // {
+    //   label: "National ID",
+    //   key: "nationalId",
+    // },
+    // {
+    //   label: "Lease Start Date",
+    //   key: "leaseStartDate",
+    //   Cell: ({ value }) => (value ? new Date(value).toLocaleDateString() : 'N/A'),
+    // },
+    // {
+    //   label: "Lease End Date",
+    //   key: "leaseEndDate",
+    //   Cell: ({ value }) => (value ? new Date(value).toLocaleDateString() : 'N/A'),
+    // },
+    {
+      label: "Payment Status",
+      key: "paymentStatus",
+    },
+    {
+      label: "Advance",
+      key: "advance",
+    },
+    // {
+    //   label: "Car Plate",
+    //   key: "carPlate",
+    // },
+    {
+      label: "Unit Number",
+      key: "unitNumber",
+      Cell: ({ value }) => unitLookup[value] || "N/A",  
+    },
+    {
+      label: "Floor",
+      key: "floorId",
+      Cell: ({ value }) => floorLookup[value] || "N/A",
+    },
+    {
+      label: "Status",
+      key: "status",
+    },
+    // {
+    //   label: "Document",
+    //   key: "document",
+    //   Cell: ({ value }) => (
+    //     value ? (
+    //       isImage(value) ? (
+    //         <img src={getDocumentUrl(value)} alt="Document" className="w-16 h-16 object-cover" />
+    //       ) : (
+    //         <a href={getDocumentUrl(value)} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+    //           View Document
+    //         </a>
+    //       )
+    //     ) : (
+    //       'N/A'
+    //     )
+    //   ),
+    // },
+    {
+      label: "Actions",
+      key: "actions",
+      render: (row ) => (
+        <div className="flex space-x-2">
+          <button
+            onClick={() => handleEditClick(row)}
+            className="bg-blue-500 text-white py-1 px-2 rounded"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => handleDeleteClick(row)}
+            className="bg-red-500 text-white py-1 px-2 rounded"
+          >
+            Delete
+          </button>
+          <button
+            onClick={() => handleDetailClick(row)}
+            className="bg-gray-400 text-white py-1 px-2 rounded"
+          >
+            Detail
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="max-w-6xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-4">Tenant List</h2>
@@ -145,65 +250,15 @@ const TenantList = () => {
       {loading ? (
         <div className="text-center p-4">Loading tenants...</div>
       ) : (
-        <table className="min-w-full bg-base-100 rounded-lg shadow-md">
-          <thead>
-            <tr className="bg-base-100">
-              <th className="px-4 py-2 ">Full Name</th>
-              <th className="px-4 py-2">Phone Number</th>
-              <th className="px-4 py-2">Payment Status</th>
-              <th className="px-4 py-2 ">Unit Number</th>
-              <th className="px-4 py-2 ">Floor Number</th>
-              <th className="px-4 py-2 ">Status</th>
-              <th className="px-4 py-2 ">Document</th>
-              <th className="px-4 py-2 ">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tenants.map((tenant) => (
-              <tr key={tenant.id}>
-                <td className="px-4 py-2  text-sm">{tenant.fullName}</td>
-                <td className="px-4 py-2  text-sm">{tenant.phoneNumber}</td>
-                <td className="px-4 py-2 text-sm">{tenant.paymentStatus}</td>
-                <td className="px-4 py-2 text-sm">{tenant.Unit ? tenant.Unit.unitNumber : 'N/A'}</td>
-                <td className="px-4 py-2 text-sm">{tenant.Floor ? tenant.Floor.floorNumber : 'N/A'}</td>
-                <td className="px-4 py-2 text-sm">{tenant.status}</td>
-                <td className="px-4 py-2 text-sm">
-                  {tenant.document ? (
-                    isImage(tenant.document) ? (
-                      <img src={getDocumentUrl(tenant.document)} alt="Document" className="w-16 h-16 object-cover" />
-                    ) : (
-                      <a href={getDocumentUrl(tenant.document)} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
-                        View Document
-                      </a>
-                    )
-                  ) : (
-                    'N/A'
-                  )}
-                </td>
-                <td className="px-4 py-2 text-sm">
-                  <button
-                    onClick={() => handleEditClick(tenant)}
-                    className="bg-blue-500 text-white py-1 px-4 rounded mr-2"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteClick(tenant)}
-                    className="bg-red-500 text-white py-1 px-4 rounded"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => handleDetailClick(tenant)}
-                    className="bg-grey-400 text-white py-1 px-4 rounded"
-                  >
-                    Detail
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <TableComponent
+  title="Tenant List"
+  data={tenants}
+  columns={columns}
+
+  rowsPerPageOptions={[5, 10, 15]}
+  showSearch={true}
+  exportable={true}
+/>
       )}
 
       {/* Edit Modal */}
@@ -214,7 +269,7 @@ const TenantList = () => {
           contentLabel="Edit Tenant"
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
         >
-          <div className="bg-white p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
+          <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl mb-4">Edit Tenant</h2>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Full Name</label>
