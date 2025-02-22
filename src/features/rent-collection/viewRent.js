@@ -18,6 +18,14 @@ const RentCollectionPage = () => {
   const [modalMessage, setModalMessage] = useState('');
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [filterParams, setFilterParams] = useState({
+    paymentDateFrom: '',
+    paymentDateTo: '',
+    nextDueDateFrom: '',
+    nextDueDateTo: '',
+    paymentFrequency: '',
+    status: ''
+  });
 
   // Fetch Rent Collection Data
   const fetchRentData = async () => {
@@ -118,6 +126,27 @@ const RentCollectionPage = () => {
     }
   };
 
+  // Handle Filter Submit
+  const handleFilter = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}rent-collection/filter`, filterParams);
+      setRentData(response.data);
+      setLoading(false);
+    } catch (error) {
+      console.error('No rent collections found matching the filters:', error);
+      setModalMessage('No rent collections found matching the filters. Please try again other option.');
+      setIsErrorModalOpen(true);
+      setLoading(false);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFilterParams({ ...filterParams, [name]: value });
+  };
+
   const columns = [
     { key: 'tenantName', label: 'Tenant Name', render: (rent) => rent.Tenant.fullName },
     { key: 'amountPaid', label: 'Amount Paid' },
@@ -160,6 +189,87 @@ const RentCollectionPage = () => {
 
   return (
     <div className="p-8">
+      <form onSubmit={handleFilter} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+        <div>
+          <label htmlFor="paymentDateFrom" className="block text-sm font-medium text-gray-700">Payment Date From</label>
+          <input
+            type="date"
+            id="paymentDateFrom"
+            name="paymentDateFrom"
+            value={filterParams.paymentDateFrom}
+            onChange={handleInputChange}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div>
+          <label htmlFor="paymentDateTo" className="block text-sm font-medium text-gray-700">Payment Date To</label>
+          <input
+            type="date"
+            id="paymentDateTo"
+            name="paymentDateTo"
+            value={filterParams.paymentDateTo}
+            onChange={handleInputChange}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div>
+          <label htmlFor="nextDueDateFrom" className="block text-sm font-medium text-gray-700">Next Due Date From</label>
+          <input
+            type="date"
+            id="nextDueDateFrom"
+            name="nextDueDateFrom"
+            value={filterParams.nextDueDateFrom}
+            onChange={handleInputChange}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div>
+          <label htmlFor="nextDueDateTo" className="block text-sm font-medium text-gray-700">Next Due Date To</label>
+          <input
+            type="date"
+            id="nextDueDateTo"
+            name="nextDueDateTo"
+            value={filterParams.nextDueDateTo}
+            onChange={handleInputChange}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+        <div>
+          <label htmlFor="paymentFrequency" className="block text-sm font-medium text-gray-700">Payment Frequency</label>
+          <select
+            id="paymentFrequency"
+            name="paymentFrequency"
+            value={filterParams.paymentFrequency}
+            onChange={handleInputChange}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded"
+          >
+            <option value="">Select Frequency</option>
+            <option value="Monthly">Monthly</option>
+            <option value="Quarterly">Quarterly</option>
+            <option value="Yearly">Yearly</option>
+          </select>
+        </div>
+        <div>
+          <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
+          <select
+            id="status"
+            name="status"
+            value={filterParams.status}
+            onChange={handleInputChange}
+            className="mt-1 block w-full p-2 border border-gray-300 rounded"
+          >
+            <option value="">Select Status</option>
+            <option value="Paid">Paid</option>
+            <option value="Pending">Pending</option>
+          </select>
+        </div>
+        <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex justify-end">
+          <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700">
+            Filter Data
+          </button>
+        </div>
+      </form>
+
       <TableComponent
         title="Rent Collection"
         data={rentData}
@@ -182,7 +292,7 @@ const RentCollectionPage = () => {
       {/* Edit Modal */}
       {editModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-base-100 p-6 rounded-lg w-96">
+          <div className="bg-base-100 p-6 rounded-lg w-full max-w-lg mx-4">
             <h2 className="text-xl mb-4">Edit Rent Collection</h2>
             <form onSubmit={handleEditSubmit}>
               <div className="mb-4">
@@ -217,8 +327,8 @@ const RentCollectionPage = () => {
                   className="bg-base-100 w-full p-2 border border-gray-300 rounded"
                 >
                   <option value="Cash">Cash</option>
-                  <option value="Bank">Bank </option>
-                  <option value="Mobile">Mobile </option>
+                  <option value="Bank">Bank</option>
+                  <option value="Mobile">Mobile</option>
                 </select>
               </div>
               <div className="mb-4">
@@ -256,7 +366,7 @@ const RentCollectionPage = () => {
       {/* Delete Confirmation Modal */}
       {deleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg w-96">
+          <div className="bg-white p-6 rounded-lg w-full max-w-lg mx-4">
             <h2 className="text-xl mb-4">Are you sure you want to delete this rent collection?</h2>
             <div className="flex justify-between">
               <button onClick={closeModals} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
@@ -269,7 +379,7 @@ const RentCollectionPage = () => {
       {/* Detail Modal */}
       {detailsModalOpen && currentRent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 px-4">
-          <div className="bg-white p-6 rounded-lg w-full max-w-2xl">
+          <div className="bg-white p-6 rounded-lg w-full max-w-2xl mx-4">
             <h2 className="text-xl mb-4">Details for {currentRent.Tenant.fullName}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <p><strong>Tenant Name:</strong> {currentRent.Tenant.fullName}</p>
