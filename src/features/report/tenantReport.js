@@ -10,6 +10,8 @@ const TenantReport = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [currentTenant, setCurrentTenant] = useState(null);
 
   const [filterParams, setFilterParams] = useState({
     paymentStatus: "",
@@ -65,14 +67,31 @@ const TenantReport = () => {
     }
   };
 
+  const openDetailsModal = (tenant) => {
+    setCurrentTenant(tenant);
+    setDetailsModalOpen(true);
+  };
+
   const columns = [
-    { key: 'tenantName', label: 'Tenant Name', render: (data) => data.Tenant?.fullName },
-    { key: 'unitNumber', label: 'Unit Number', render: (data) => data.Tenant?.Unit.unitNumber },
-    { key: 'floorNumber', label: 'Floor Number', render: (data) => data.Tenant?.Floor.floorNumber },
+    { key: 'tenantName', label: 'Tenant Name', render: (data) => data.fullName },
+    { key: 'unitNumber', label: 'Unit Number', render: (data) => data.Unit?.unitNumber },
+    { key: 'floorNumber', label: 'Floor Number', render: (data) => data.Floor?.floorNumber },
     { key: 'paymentStatus', label: 'Payment Status', render: (data) => data.paymentStatus },
-    { key: 'leaseStartDate', label: 'Lease Start Date', render: (data) => new Date(data.leaseStartDate).toLocaleDateString() },
-    { key: 'leaseEndDate', label: 'Lease End Date', render: (data) => new Date(data.leaseEndDate).toLocaleDateString() },
-    { key: 'status', label: 'Status', render: (data) => data.status }
+    { key: 'leaseStartDate', label: 'Lease Start Date', render: (data) => data.leaseStartDate ? new Date(data.leaseStartDate).toLocaleDateString() : 'N/A' },
+    { key: 'leaseEndDate', label: 'Lease End Date', render: (data) => data.leaseEndDate ? new Date(data.leaseEndDate).toLocaleDateString() : 'N/A' },
+    { key: 'status', label: 'Status', render: (data) => data.status },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (data) => (
+        <button
+          onClick={() => openDetailsModal(data)}
+          className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-700"
+        >
+          Details
+        </button>
+      )
+    }
   ];
 
   return (
@@ -81,127 +100,126 @@ const TenantReport = () => {
         <h2 className="text-2xl font-bold mb-6">Tenant Report</h2>
 
         <form onSubmit={handleFilterSubmit} className="grid grid-cols-4 gap-4">
-  {/* Payment Status */}
-  <div>
-    <label htmlFor="paymentStatus" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Status</label>
-    <select
-      id="paymentStatus"
-      className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-      value={filterParams.paymentStatus}
-      onChange={(e) => setFilterParams({ ...filterParams, paymentStatus: e.target.value })}
-    >
-      <option value="">Select Payment Status</option>
-      <option value="paid">Paid</option>
-      <option value="unpaid">Unpaid</option>
-    </select>
-  </div>
+          {/* Payment Status */}
+          <div>
+            <label htmlFor="paymentStatus" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Status</label>
+            <select
+              id="paymentStatus"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+              value={filterParams.paymentStatus}
+              onChange={(e) => setFilterParams({ ...filterParams, paymentStatus: e.target.value })}
+            >
+              <option value="">Select Payment Status</option>
+              <option value="paid">Paid</option>
+              <option value="unpaid">Unpaid</option>
+            </select>
+          </div>
 
-  {/* Lease Start Date From */}
-  <div>
-    <label htmlFor="leaseStartDateFrom" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Lease Start Date From</label>
-    <input
-      type="date"
-      id="leaseStartDateFrom"
-      className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-      value={filterParams.leaseStartDateFrom}
-      onChange={(e) => setFilterParams({ ...filterParams, leaseStartDateFrom: e.target.value })}
-    />
-  </div>
+          {/* Lease Start Date From */}
+          <div>
+            <label htmlFor="leaseStartDateFrom" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Lease Start Date From</label>
+            <input
+              type="date"
+              id="leaseStartDateFrom"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+              value={filterParams.leaseStartDateFrom}
+              onChange={(e) => setFilterParams({ ...filterParams, leaseStartDateFrom: e.target.value })}
+            />
+          </div>
 
-  {/* Lease Start Date To */}
-  <div>
-    <label htmlFor="leaseStartDateTo" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Lease Start Date To</label>
-    <input
-      type="date"
-      id="leaseStartDateTo"
-      className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-      value={filterParams.leaseStartDateTo}
-      onChange={(e) => setFilterParams({ ...filterParams, leaseStartDateTo: e.target.value })}
-    />
-  </div>
+          {/* Lease Start Date To */}
+          <div>
+            <label htmlFor="leaseStartDateTo" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Lease Start Date To</label>
+            <input
+              type="date"
+              id="leaseStartDateTo"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+              value={filterParams.leaseStartDateTo}
+              onChange={(e) => setFilterParams({ ...filterParams, leaseStartDateTo: e.target.value })}
+            />
+          </div>
 
-  {/* Lease End Date From */}
-  <div>
-    <label htmlFor="leaseEndDateFrom" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Lease End Date From</label>
-    <input
-      type="date"
-      id="leaseEndDateFrom"
-      className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-      value={filterParams.leaseEndDateFrom}
-      onChange={(e) => setFilterParams({ ...filterParams, leaseEndDateFrom: e.target.value })}
-    />
-  </div>
+          {/* Lease End Date From */}
+          <div>
+            <label htmlFor="leaseEndDateFrom" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Lease End Date From</label>
+            <input
+              type="date"
+              id="leaseEndDateFrom"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+              value={filterParams.leaseEndDateFrom}
+              onChange={(e) => setFilterParams({ ...filterParams, leaseEndDateFrom: e.target.value })}
+            />
+          </div>
 
-  {/* Lease End Date To */}
-  <div>
-    <label htmlFor="leaseEndDateTo" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Lease End Date To</label>
-    <input
-      type="date"
-      id="leaseEndDateTo"
-      className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-      value={filterParams.leaseEndDateTo}
-      onChange={(e) => setFilterParams({ ...filterParams, leaseEndDateTo: e.target.value })}
-    />
-  </div>
+          {/* Lease End Date To */}
+          <div>
+            <label htmlFor="leaseEndDateTo" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Lease End Date To</label>
+            <input
+              type="date"
+              id="leaseEndDateTo"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+              value={filterParams.leaseEndDateTo}
+              onChange={(e) => setFilterParams({ ...filterParams, leaseEndDateTo: e.target.value })}
+            />
+          </div>
 
-  {/* Status */}
-  <div>
-    <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
-    <select
-      id="status"
-      className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-      value={filterParams.status}
-      onChange={(e) => setFilterParams({ ...filterParams, status: e.target.value })}
-    >
-      <option value="">Select Status</option>
-      <option value="active">Active</option>
-      <option value="inactive">Inactive</option>
-    </select>
-  </div>
+          {/* Status */}
+          <div>
+            <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+            <select
+              id="status"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+              value={filterParams.status}
+              onChange={(e) => setFilterParams({ ...filterParams, status: e.target.value })}
+            >
+              <option value="">Select Status</option>
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
 
-  {/* Unit */}
-  <div>
-    <label htmlFor="unitId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit</label>
-    <select
-      id="unitId"
-      className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-      value={filterParams.unitId}
-      onChange={(e) => setFilterParams({ ...filterParams, unitId: e.target.value })}
-    >
-      <option value="">Select Unit</option>
-      {units.map((unit) => (
-        <option key={unit.id} value={unit.id}>{unit.unitNumber}</option>
-      ))}
-    </select>
-  </div>
+          {/* Unit */}
+          <div>
+            <label htmlFor="unitId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit</label>
+            <select
+              id="unitId"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+              value={filterParams.unitId}
+              onChange={(e) => setFilterParams({ ...filterParams, unitId: e.target.value })}
+            >
+              <option value="">Select Unit</option>
+              {units.map((unit) => (
+                <option key={unit.id} value={unit.id}>{unit.unitNumber}</option>
+              ))}
+            </select>
+          </div>
 
-  {/* Floor */}
-  <div>
-    <label htmlFor="floorId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Floor</label>
-    <select
-      id="floorId"
-      className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-      value={filterParams.floorId}
-      onChange={(e) => setFilterParams({ ...filterParams, floorId: e.target.value })}
-    >
-      <option value="">Select Floor</option>
-      {floors.map((floor) => (
-        <option key={floor.id} value={floor.id}>{floor.name}</option>
-      ))}
-    </select>
-  </div>
+          {/* Floor */}
+          <div>
+            <label htmlFor="floorId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Floor</label>
+            <select
+              id="floorId"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+              value={filterParams.floorId}
+              onChange={(e) => setFilterParams({ ...filterParams, floorId: e.target.value })}
+            >
+              <option value="">Select Floor</option>
+              {floors.map((floor) => (
+                <option key={floor.id} value={floor.id}>{floor.name}</option>
+              ))}
+            </select>
+          </div>
 
-  {/* Submit Button */}
-  <div className="col-span-4 flex justify-end">
-    <button
-      type="submit"
-      className="w-40 bg-blue-500 text-white p-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:text-gray-300"
-    >
-      {isLoading ? "Processing..." : "Filter Data"}
-    </button>
-  </div>
-</form>
-
+          {/* Submit Button */}
+          <div className="col-span-4 flex justify-end">
+            <button
+              type="submit"
+              className="w-40 bg-blue-500 text-white p-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:text-gray-300"
+            >
+              {isLoading ? "Processing..." : "Filter Data"}
+            </button>
+          </div>
+        </form>
       </div>
 
       <TableComponent
@@ -212,6 +230,40 @@ const TenantReport = () => {
         showSearch={true}
         exportable={true}
       />
+
+      {/* Details Modal */}
+      {detailsModalOpen && currentTenant && (
+        <div
+          isOpen={detailsModalOpen}
+          onRequestClose={() => setDetailsModalOpen(false)}
+          contentLabel="Tenant Details"
+          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+        >
+          <div className="bg-white dark:bg-gray-700 dark:text-gray-300 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-xl mb-4">Details for {currentTenant.fullName}</h2>
+            <div className="space-y-2">
+              <p><strong>Phone Number:</strong> {currentTenant.phoneNumber}</p>
+              <p><strong>Email:</strong> {currentTenant.email || 'N/A'}</p>
+              <p><strong>National ID:</strong> {currentTenant.nationalId}</p>
+              <p><strong>Lease Start Date:</strong> {currentTenant.leaseStartDate ? new Date(currentTenant.leaseStartDate).toLocaleDateString() : 'N/A'}</p>
+              <p><strong>Lease End Date:</strong> {currentTenant.leaseEndDate ? new Date(currentTenant.leaseEndDate).toLocaleDateString() : 'N/A'}</p>
+              <p><strong>Payment Status:</strong> {currentTenant.paymentStatus}</p>
+              <p><strong>Additional Notes:</strong> {currentTenant.additionalNotes}</p>
+              <p><strong>Advance:</strong> {currentTenant.advance}</p>
+              <p><strong>TIN:</strong> {currentTenant.tin}</p>
+              <p><strong>Car Plate:</strong> {currentTenant.carPlate}</p>
+              <p><strong>Car Name:</strong> {currentTenant.carName}</p>
+              <p><strong>Status:</strong> {currentTenant.status}</p>
+              <p><strong>Unit Number:</strong> {currentTenant.Unit?.unitNumber}</p>
+              <p><strong>Floor Number:</strong> {currentTenant.Floor?.floorNumber}</p>
+              <p><strong>Document:</strong> <a href={`https://apartment.houseethiopia.com/home/houseeth/apartment.houseethiopia.com/uploads${currentTenant.document}`} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 underline">View Document</a></p>
+            </div>
+            <div className="flex justify-center mt-4">
+              <button onClick={() => setDetailsModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal for displaying error message */}
       {isModalOpen && (
