@@ -220,6 +220,11 @@ const routes = [
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Ten Days Tenants ',
       },
+      {
+        path: '/app/tenant-filter',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Tenant Filter ',
+      },
     ]
   },
 

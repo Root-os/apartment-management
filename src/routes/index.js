@@ -29,6 +29,8 @@ const ExpenseView = lazy(() => import('../pages/protected/ExpenseView'))
 const TenantAdd = lazy(() => import('../pages/protected/TenantAdd'))
 const TenantView = lazy(() => import('../pages/protected/TenantView'))
 const TenDays = lazy(() => import('../pages/protected/tendaysTenants'))
+const TenantFilter = lazy(() => import('../pages/protected/tenantfilterlist'))
+
 
 
 
@@ -127,6 +129,12 @@ const routes = [
     path: '/ten-days-tenant', 
     component: TenDays, 
   },
+  {
+    path: '/tenant-filter', 
+    component: TenantFilter, 
+  },
+  
+  
 
 
   {
