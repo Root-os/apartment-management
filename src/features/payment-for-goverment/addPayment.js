@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import TitleCard from '../../components/Cards/TitleCard'
+import TitleCard from '../../components/Cards/TitleCard';
+import Modal from '../../components/Modal';
 
 const AddGovBillPayment = () => {
   // States for form inputs
@@ -17,14 +18,15 @@ const AddGovBillPayment = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   // Fetch Bill Types on Component Mount
   useEffect(() => {
     const fetchBillTypes = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/bill-type');
-        setBillTypes(response.data); // Assuming API returns an array of bill types
-        setBillTypeId(response.data.length > 0 ? response.data[0].id : ''); // Default to first bill type
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-type`);
+        setBillTypes(response.data); 
       } catch (err) {
         setError('Failed to fetch bill types. Please try again.');
       }
@@ -52,35 +54,45 @@ const AddGovBillPayment = () => {
     };
 
     try {
-      const response = await axios.post('https://apartment.houseethiopia.com/api/bill-payments', payload);
+      await axios.post(`${process.env.REACT_APP_BASE_URL}bill-payments`, payload);
       setLoading(false);
-      setMessage(response.data.message);
+      setMessage('Bill payment added successfully!');
+      setIsSuccess(true);
+      setIsModalOpen(true);
     } catch (err) {
       setLoading(false);
       setError('Error adding bill payment. Please try again.');
+      setIsSuccess(false);
+      setIsModalOpen(true);
     }
   };
 
-  return (
-       <>
-        <TitleCard title="Add Bill Payments for Government">
-        {/* Success or Error Message */}
-        {message && <div className="text-green-500 text-center mb-4">{message}</div>}
-        {error && <div className="text-red-500 text-center mb-4">{error}</div>}
+  // Validate description length
+  const validateDescription = (desc) => {
+    if (desc.length < 15) {
+      setError('Description must be at least 15 characters.');
+    } else {
+      setError('');
+    }
+    setDescription(desc);
+  };
 
+  return (
+    <>
+      <TitleCard title="Add Bill Payments for Government">
         {/* Bill Payment Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Bill Type Dropdown */}
           <div>
-            <label htmlFor="billTypeId" className="block text-sm font-medium text-white-700">Bill Type</label>
+            <label htmlFor="billTypeId" className="block text-sm font-medium text-gray-700">Bill Type</label>
             <select
               id="billTypeId"
               value={billTypeId}
               onChange={(e) => setBillTypeId(e.target.value)}
-              className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-gray-200 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
-              <option value="">Select Bill Type</option>
+              <option value="" disabled>Select Bill Type</option>
               {billTypes.map((billType) => (
                 <option key={billType.id} value={billType.id}>
                   {billType.typeName}
@@ -90,50 +102,50 @@ const AddGovBillPayment = () => {
           </div>
 
           <div>
-            <label htmlFor="amount" className="block text-sm font-medium text-white-700">Amount</label>
+            <label htmlFor="amount" className="block text-sm font-medium text-gray-700">Amount</label>
             <input
               type="number"
               id="amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-gray-200 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           <div className="flex space-x-4">
             <div className="w-full">
-              <label htmlFor="startDate" className="block text-sm font-medium text-white-700">Start Date</label>
+              <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Start Date</label>
               <input
                 type="date"
                 id="startDate"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-gray-200 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
 
             <div className="w-full">
-              <label htmlFor="endDate" className="block text-sm font-medium text-white-700">End Date</label>
+              <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">End Date</label>
               <input
                 type="date"
                 id="endDate"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-gray-200 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-white-700">Description</label>
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
             <textarea
               id="description"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => validateDescription(e.target.value)}
+              className="bg-gray-200 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows="4"
               required
             />
@@ -141,12 +153,12 @@ const AddGovBillPayment = () => {
 
           <div className="flex space-x-4">
             <div className="w-full">
-              <label htmlFor="status" className="block text-sm font-medium text-white-700">Status</label>
+              <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
               <select
                 id="status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-gray-200 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="pending">Pending</option>
                 <option value="paid">Paid</option>
@@ -154,16 +166,16 @@ const AddGovBillPayment = () => {
             </div>
 
             <div className="w-full">
-              <label htmlFor="paymentMethod" className="block text-sm font-medium text-white-700">Payment Method</label>
+              <label htmlFor="paymentMethod" className="block text-sm font-medium text-gray-700">Payment Method</label>
               <select
                 id="paymentMethod"
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
-                className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-gray-200 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="Bank Transfer">Bank Transfer</option>
                 <option value="Cash">Cash</option>
-                <option value="Mobile Payment">Mobile Payment</option>
+                <option value="Mobile">Mobile</option>
               </select>
             </div>
           </div>
@@ -176,8 +188,18 @@ const AddGovBillPayment = () => {
             {loading ? 'Submitting...' : 'Add Payment'}
           </button>
         </form>
-    </TitleCard>
- </>
+      </TitleCard>
+
+      {/* Modal for displaying success or error message */}
+      {isModalOpen && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          type={isSuccess ? "success" : "error"}
+          message={isSuccess ? message : error}
+        />
+      )}
+    </>
   );
 };
 

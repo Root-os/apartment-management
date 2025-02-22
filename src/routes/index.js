@@ -36,6 +36,8 @@ const ParkingView = lazy(() => import('../pages/protected/ParkingView'))
 //Report
 const TenantReportPage = lazy(() => import('../pages/protected/Report/tenantBillReport'))
 const TenantReportPageTwo = lazy(() => import('../pages/protected/Report/tenantReport'))
+const GovtReport = lazy(() => import('../pages/protected/Report/govtBillReport'))
+
 
 
 
@@ -148,6 +150,10 @@ const routes = [
   {
     path: '/tenant-report', 
     component: TenantReportPageTwo, 
+  },
+  {
+    path: '/govt-report', 
+    component: GovtReport, 
   }
 
 ]

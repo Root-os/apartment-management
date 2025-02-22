@@ -291,6 +291,11 @@ const routes = [
         icon: <DocumentDuplicateIcon className={submenuIconClasses}/>,
         name: 'Tenant Report',
       },
+      {
+        path: '/app/govt-report',
+        icon: <DocumentDuplicateIcon className={submenuIconClasses}/>,
+        name: 'Govt Bill Report',
+      },
 
     
     ]

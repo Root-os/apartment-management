@@ -191,7 +191,7 @@ const RentCollectionPage = () => {
     <div className="p-8">
       <form onSubmit={handleFilter} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
         <div>
-          <label htmlFor="paymentDateFrom" className="block text-sm font-medium text-gray-700">Payment Date From</label>
+          <label htmlFor="paymentDateFrom" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Date From</label>
           <input
             type="date"
             id="paymentDateFrom"
@@ -202,7 +202,7 @@ const RentCollectionPage = () => {
           />
         </div>
         <div>
-          <label htmlFor="paymentDateTo" className="block text-sm font-medium text-gray-700">Payment Date To</label>
+          <label htmlFor="paymentDateTo" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Date To</label>
           <input
             type="date"
             id="paymentDateTo"
@@ -213,7 +213,7 @@ const RentCollectionPage = () => {
           />
         </div>
         <div>
-          <label htmlFor="nextDueDateFrom" className="block text-sm font-medium text-gray-700">Next Due Date From</label>
+          <label htmlFor="nextDueDateFrom" className="dark:text-gray-300 block text-sm font-medium text-gray-700">Next Due Date From</label>
           <input
             type="date"
             id="nextDueDateFrom"
@@ -224,7 +224,7 @@ const RentCollectionPage = () => {
           />
         </div>
         <div>
-          <label htmlFor="nextDueDateTo" className="block text-sm font-medium text-gray-700">Next Due Date To</label>
+          <label htmlFor="nextDueDateTo" className="dark:text-gray-300 block text-sm font-medium text-gray-700">Next Due Date To</label>
           <input
             type="date"
             id="nextDueDateTo"
@@ -235,7 +235,7 @@ const RentCollectionPage = () => {
           />
         </div>
         <div>
-          <label htmlFor="paymentFrequency" className="block text-sm font-medium text-gray-700">Payment Frequency</label>
+          <label htmlFor="paymentFrequency" className="dark:text-gray-300 block text-sm font-medium text-gray-700">Payment Frequency</label>
           <select
             id="paymentFrequency"
             name="paymentFrequency"
@@ -250,7 +250,7 @@ const RentCollectionPage = () => {
           </select>
         </div>
         <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
+          <label htmlFor="status" className=" dark:text-gray-300 block text-sm font-medium text-gray-700">Status</label>
           <select
             id="status"
             name="status"
