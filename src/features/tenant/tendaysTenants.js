@@ -4,8 +4,6 @@ import TableComponent from '../../components/table';
 
 const TenDaysTenant = () => {
   const [tenants, setTenants] = useState([]);
-  const [units, setUnits] = useState([]);
-  const [floors, setFloors] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedTenant, setSelectedTenant] = useState(null);
@@ -23,27 +21,7 @@ const TenDaysTenant = () => {
       }
     };
 
-    const fetchUnits = async () => {
-      try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/unit');
-        setUnits(response.data);
-      } catch (err) {
-        setError('Failed to fetch units.');
-      }
-    };
-
-    const fetchFloors = async () => {
-      try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/floor');
-        setFloors(response.data);
-      } catch (err) {
-        setError('Failed to fetch floors.');
-      }
-    };
-
     fetchTenants();
-    fetchUnits();
-    fetchFloors();
   }, []);
 
   const getDocumentUrl = (document) => {
@@ -53,15 +31,6 @@ const TenDaysTenant = () => {
   const openDetailsModal = (tenant) => {
     setSelectedTenant(tenant);
   };
-
-  const floorLookup = floors.reduce((acc, floor) => {
-    acc[floor.id] = floor.name;
-    return acc;
-  }, {});
-  const unitLookup = units.reduce((acc, unit) => {
-    acc[unit.id] = unit.unitNumber;
-    return acc;
-  }, {});
 
   const columns = [
     {
@@ -83,12 +52,12 @@ const TenDaysTenant = () => {
     {
       label: "Unit Number",
       key: "unitNumber",
-      Cell: ({ value }) => unitLookup[value] || "N/A",  
+      render: (row) => row.Unit?.unitNumber || "N/A",
     },
     {
       label: "Floor",
-      key: "floorId",
-      Cell: ({ value }) => floorLookup[value] || "N/A",
+      key: "floorNumber",
+      render: (row) => row.Floor?.floorNumber || "N/A",
     },
     {
       label: "Status",
@@ -97,7 +66,7 @@ const TenDaysTenant = () => {
     {
       label: "Actions",
       key: "actions",
-      render: (row ) => (
+      render: (row) => (
         <div className="flex space-x-2">
           <button
             onClick={() => openDetailsModal(row)}

@@ -154,20 +154,7 @@ const TenantList = () => {
       label: "Phone Number",
       key: "phoneNumber",
     },
-    // {
-    //   label: "National ID",
-    //   key: "nationalId",
-    // },
-    // {
-    //   label: "Lease Start Date",
-    //   key: "leaseStartDate",
-    //   Cell: ({ value }) => (value ? new Date(value).toLocaleDateString() : 'N/A'),
-    // },
-    // {
-    //   label: "Lease End Date",
-    //   key: "leaseEndDate",
-    //   Cell: ({ value }) => (value ? new Date(value).toLocaleDateString() : 'N/A'),
-    // },
+    
     {
       label: "Payment Status",
       key: "paymentStatus",
@@ -176,41 +163,22 @@ const TenantList = () => {
       label: "Advance",
       key: "advance",
     },
-    // {
-    //   label: "Car Plate",
-    //   key: "carPlate",
-    // },
+   
     {
       label: "Unit Number",
       key: "unitNumber",
-      Cell: ({ value }) => unitLookup[value] || "N/A",  
+      render: (row) => row.Unit?.unitNumber || "N/A",
     },
     {
       label: "Floor",
-      key: "floorId",
-      Cell: ({ value }) => floorLookup[value] || "N/A",
+      key: "floorNumber",
+      render: (row) => row.Floor?.floorNumber || "N/A",
     },
     {
       label: "Status",
       key: "status",
     },
-    // {
-    //   label: "Document",
-    //   key: "document",
-    //   Cell: ({ value }) => (
-    //     value ? (
-    //       isImage(value) ? (
-    //         <img src={getDocumentUrl(value)} alt="Document" className="w-16 h-16 object-cover" />
-    //       ) : (
-    //         <a href={getDocumentUrl(value)} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
-    //           View Document
-    //         </a>
-    //       )
-    //     ) : (
-    //       'N/A'
-    //     )
-    //   ),
-    // },
+    
     {
       label: "Actions",
       key: "actions",
@@ -440,7 +408,7 @@ const TenantList = () => {
           isOpen={isDetailModalOpen}
           onRequestClose={() => setIsDetailModalOpen(false)}
           contentLabel="Tenant Details"
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center mt-12"
+          className="fixed inset-0 bg-black bg-opacity-20 flex justify-center items-center mt-12"
         >
           <div className="bg-base-300 p-6 rounded-lg min-w-[72vh] max-h-[90vh] overflow-y-auto mt-10 ml-6">
             <h2 className="text-xl mb-4">Tenant Details</h2>
