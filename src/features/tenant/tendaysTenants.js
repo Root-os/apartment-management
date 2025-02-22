@@ -1,0 +1,166 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import TableComponent from '../../components/table';
+
+const TenDaysTenant = () => {
+  const [tenants, setTenants] = useState([]);
+  const [units, setUnits] = useState([]);
+  const [floors, setFloors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [selectedTenant, setSelectedTenant] = useState(null);
+
+  // Fetch tenant data from the API
+  useEffect(() => {
+    const fetchTenants = async () => {
+      try {
+        const response = await axios.get('https://apartment.houseethiopia.com/api/tenant/10days/remaining');
+        setTenants(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to fetch tenant data.');
+        setLoading(false);
+      }
+    };
+
+    const fetchUnits = async () => {
+      try {
+        const response = await axios.get('https://apartment.houseethiopia.com/api/unit');
+        setUnits(response.data);
+      } catch (err) {
+        setError('Failed to fetch units.');
+      }
+    };
+
+    const fetchFloors = async () => {
+      try {
+        const response = await axios.get('https://apartment.houseethiopia.com/api/floor');
+        setFloors(response.data);
+      } catch (err) {
+        setError('Failed to fetch floors.');
+      }
+    };
+
+    fetchTenants();
+    fetchUnits();
+    fetchFloors();
+  }, []);
+
+  const getDocumentUrl = (document) => {
+    return `https://apartment.houseethiopia.com${document}`;
+  };
+
+  const openDetailsModal = (tenant) => {
+    setSelectedTenant(tenant);
+  };
+
+  const floorLookup = floors.reduce((acc, floor) => {
+    acc[floor.id] = floor.name;
+    return acc;
+  }, {});
+  const unitLookup = units.reduce((acc, unit) => {
+    acc[unit.id] = unit.unitNumber;
+    return acc;
+  }, {});
+
+  const columns = [
+    {
+      label: "Full Name",
+      key: "fullName",
+    },
+    {
+      label: "Phone Number",
+      key: "phoneNumber",
+    },
+    {
+      label: "Payment Status",
+      key: "paymentStatus",
+    },
+    {
+      label: "Advance",
+      key: "advance",
+    },
+    {
+      label: "Unit Number",
+      key: "unitNumber",
+      Cell: ({ value }) => unitLookup[value] || "N/A",  
+    },
+    {
+      label: "Floor",
+      key: "floorId",
+      Cell: ({ value }) => floorLookup[value] || "N/A",
+    },
+    {
+      label: "Status",
+      key: "status",
+    },
+    {
+      label: "Actions",
+      key: "actions",
+      render: (row ) => (
+        <div className="flex space-x-2">
+          <button
+            onClick={() => openDetailsModal(row)}
+            className="bg-gray-400 text-white py-1 px-2 rounded"
+          >
+            Detail
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <div className="max-w-6xl mx-auto p-6">
+      <h2 className="text-2xl font-bold mb-4">Tenants with Lease Ending in 10 Days</h2>
+
+      {/* Error message if fetching failed */}
+      {error && <div className="bg-red-300 p-3 mb-4 text-red-800">{error}</div>}
+
+      {/* Loading state */}
+      {loading ? (
+        <div className="text-center p-4">Loading tenants...</div>
+      ) : (
+        <TableComponent
+          title="Tenant List"
+          data={tenants}
+          columns={columns}
+          rowsPerPageOptions={[5, 10, 15]}
+          showSearch={true}
+          exportable={true}
+        />
+      )}
+
+      {/* Details Modal */}
+      {selectedTenant && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white dark:bg-gray-700 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-xl mb-4">Details for {selectedTenant.fullName}</h2>
+            <div className="space-y-2">
+              <p><strong>Phone Number:</strong> {selectedTenant.phoneNumber}</p>
+              <p><strong>Email:</strong> {selectedTenant.email || 'N/A'}</p>
+              <p><strong>National ID:</strong> {selectedTenant.nationalId}</p>
+              <p><strong>Lease Start Date:</strong> {selectedTenant.leaseStartDate ? new Date(selectedTenant.leaseStartDate).toLocaleDateString() : 'N/A'}</p>
+              <p><strong>Lease End Date:</strong> {selectedTenant.leaseEndDate ? new Date(selectedTenant.leaseEndDate).toLocaleDateString() : 'N/A'}</p>
+              <p><strong>Payment Status:</strong> {selectedTenant.paymentStatus}</p>
+              <p><strong>Additional Notes:</strong> {selectedTenant.additionalNotes}</p>
+              <p><strong>Advance:</strong> {selectedTenant.advance}</p>
+              <p><strong>TIN:</strong> {selectedTenant.tin}</p>
+              <p><strong>Car Plate:</strong> {selectedTenant.carPlate}</p>
+              <p><strong>Car Name:</strong> {selectedTenant.carName}</p>
+              <p><strong>Status:</strong> {selectedTenant.status}</p>
+              <p><strong>Unit Number:</strong> {selectedTenant.Unit?.unitNumber}</p>
+              <p><strong>Floor Number:</strong> {selectedTenant.Floor?.floorNumber}</p>
+              <p><strong>Document:</strong> <a href={`https://apartment.houseethiopia.com${selectedTenant.document}`} target="_blank" rel="noopener noreferrer">View Document</a></p>
+            </div>
+            <div className="flex justify-center mt-4">
+              <button onClick={() => setSelectedTenant(null)} className="bg-gray-400 text-white px-4 py-2 rounded">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default TenDaysTenant;

@@ -24,8 +24,15 @@ const GovBillPaymentPage = lazy(() => import('../pages/protected/GovPaymentView'
 const GovBillPaymentAdd = lazy(() => import('../pages/protected/GovPaymentAdd'))
 const ExpenseAdd = lazy(() => import('../pages/protected/ExpenseAdd'))
 const ExpenseView = lazy(() => import('../pages/protected/ExpenseView'))
+
+//tenant
 const TenantAdd = lazy(() => import('../pages/protected/TenantAdd'))
 const TenantView = lazy(() => import('../pages/protected/TenantView'))
+const TenDays = lazy(() => import('../pages/protected/tendaysTenants'))
+
+
+
+
 const TenantBillAdd = lazy(() => import('../pages/protected/TenantBillAdd'))
 const TenantBillView = lazy(() => import('../pages/protected/TenantBillView'))
 const RentAdd = lazy(() => import('../pages/protected/RentAdd'))
@@ -116,6 +123,12 @@ const routes = [
     path: '/tenant-view', 
     component: TenantView, 
   },
+  {
+    path: '/ten-days-tenant', 
+    component: TenDays, 
+  },
+
+
   {
     path: '/tenant-bill-add', 
     component: TenantBillAdd, 
