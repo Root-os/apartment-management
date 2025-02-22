@@ -122,8 +122,8 @@ const AddCollectedRent = () => {
               required
             >
               <option value="Cash">Cash</option>
-              <option value="Bank Transfer">Bank Transfer</option>
-              <option value="Mobile Payment">Mobile Payment</option>
+              <option value="Bank">Bank</option>
+              <option value="Mobile">Mobile</option>
             </select>
           </div>
 
@@ -137,9 +137,9 @@ const AddCollectedRent = () => {
               className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
-              <option value="by day">By Day</option>
-              <option value="by week">By Week</option>
-              <option value="by month">By Month</option>
+              <option value="Monthly">Monthly</option>
+              <option value="Quarterly">Quarterly</option>
+              <option value="Yearly">Yearly</option>
             </select>
           </div>
 
@@ -167,7 +167,7 @@ const AddCollectedRent = () => {
               required
             >
               <option value="paid">Paid</option>
-              <option value="pending">Pending</option>
+              <option value="pending">pending</option>
             </select>
           </div>
 

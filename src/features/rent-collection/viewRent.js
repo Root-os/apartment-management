@@ -182,8 +182,8 @@ const RentCollectionPage = () => {
                   className="bg-base-100 w-full p-2 border border-gray-300 rounded"
                 >
                   <option value="Cash">Cash</option>
-                  <option value="Bank Transfer">Bank Transfer</option>
-                  <option value="Mobile Payment">Mobile Payment</option>
+                  <option value="Bank">Bank </option>
+                  <option value="Mobile">Mobile </option>
                 </select>
               </div>
               <div className="mb-4">
@@ -193,9 +193,9 @@ const RentCollectionPage = () => {
                   onChange={(e) => setCurrentRent({ ...currentRent, paymentFrequency: e.target.value })}
                   className="bg-base-100 w-full p-2 border border-gray-300 rounded"
                 >
-                  <option value="by day">By Day</option>
-                  <option value="by week">By Week</option>
-                  <option value="by month">By Month</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="Quarterly">Quarterly</option>
+                  <option value="Yearly">Yearly</option>
                 </select>
               </div>
               <div className="mb-4">
@@ -205,7 +205,7 @@ const RentCollectionPage = () => {
                   onChange={(e) => setCurrentRent({ ...currentRent, status: e.target.value })}
                   className="bg-base-100 w-full p-2 border border-gray-300 rounded"
                 >
-                  <option value="paid">Paid</option>
+                  <option value="Paid">Paid</option>
                   <option value="pending">Pending</option>
                 </select>
               </div>
@@ -239,9 +239,12 @@ const RentCollectionPage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <p><strong>Tenant Name:</strong> {currentRent.Tenant.fullName}</p>
               <p><strong>Phone Number:</strong> {currentRent.Tenant.phoneNumber}</p>
+              <p><strong>Tenant Email:</strong> {currentRent.Tenant.email || 'No Email'}</p>
+
               <p><strong>Unit Number:</strong> {currentRent.Tenant.Unit.unitNumber}</p>
               <p><strong>Floor Number:</strong> {currentRent.Tenant.Floor.floorNumber}</p>
               <p><strong>Paid Days:</strong> {currentRent.paidDays}</p>
+              <p><strong>Payment Frequency:</strong> {currentRent.paymentFrequency}</p>
               <p><strong>Next Due Date:</strong> {new Date(currentRent.nextDueDate).toLocaleDateString()}</p>
             </div>
             <div className="flex justify-center mt-4">
