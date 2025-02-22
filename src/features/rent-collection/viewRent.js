@@ -2,10 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import HistoryModal from './HistoryModal';
 
 const RentCollectionPage = () => {
   const [rentData, setRentData] = useState([]);
   const [tenantData, setTenantData] = useState([]);
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [paymentHistory, setPaymentHistory] = useState([]);
+  const [tenantInfo, setTenantInfo] = useState(null);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
@@ -42,6 +46,20 @@ const RentCollectionPage = () => {
     fetchTenantData();
   }, []);
 
+  // Handle history modal open
+  const openHistoryModal = async (tenantId) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}rent-collection/${tenantId}`);
+      setPaymentHistory(response.data.rentPayments);
+      setTenantInfo(response.data.tenant);
+      setHistoryModalOpen(true);
+    } catch (error) {
+      console.error('Error fetching payment history:', error);
+      setModalMessage('Error fetching payment history. Please try again.');
+      setIsErrorModalOpen(true);
+    }
+  };
+
   // Handle edit modal open
   const openEditModal = (rent) => {
     setCurrentRent(rent);
@@ -65,6 +83,7 @@ const RentCollectionPage = () => {
     setEditModalOpen(false);
     setDeleteModalOpen(false);
     setDetailsModalOpen(false);
+    setHistoryModalOpen(false);
   };
 
   // Handle Edit Form Submission (PUT Request)
@@ -128,6 +147,12 @@ const RentCollectionPage = () => {
           >
             Details
           </button>
+          <button
+            onClick={() => openHistoryModal(rent.tenantId)}
+            className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-700"
+          >
+            Payment History
+          </button>
         </div>
       )
     }
@@ -143,6 +168,16 @@ const RentCollectionPage = () => {
         showSearch={true}
         exportable={true}
       />
+
+      {/* History Modal */}
+      {historyModalOpen && (
+        <HistoryModal
+          isOpen={historyModalOpen}
+          onClose={closeModals}
+          tenantInfo={tenantInfo}
+          paymentHistory={paymentHistory}
+        />
+      )}
 
       {/* Edit Modal */}
       {editModalOpen && (
@@ -240,7 +275,6 @@ const RentCollectionPage = () => {
               <p><strong>Tenant Name:</strong> {currentRent.Tenant.fullName}</p>
               <p><strong>Phone Number:</strong> {currentRent.Tenant.phoneNumber}</p>
               <p><strong>Tenant Email:</strong> {currentRent.Tenant.email || 'No Email'}</p>
-
               <p><strong>Unit Number:</strong> {currentRent.Tenant.Unit.unitNumber}</p>
               <p><strong>Floor Number:</strong> {currentRent.Tenant.Floor.floorNumber}</p>
               <p><strong>Paid Days:</strong> {currentRent.paidDays}</p>
