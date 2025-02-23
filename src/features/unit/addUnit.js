@@ -228,26 +228,15 @@ const AddFloorUnit = () => {
           </ul>
         </div>
 
-        {/* Rented Date */}
-        <div>
-          <label className="block text-sm font-semibold mb-2">Rented Date</label>
-          <input
-            type="date"
-            value={rentedDate}
-            onChange={(e) => setRentedDate(e.target.value)}
-            className="bg-base-100 w-full p-3 border border-black-300 rounded-md"
-          />
-        </div>
-
         {/* Vacated Date */}
         <div>
-          <label className="block text-sm font-semibold mb-2">Vacated Date</label>
+          {/* <label className="block text-sm font-semibold mb-2">Vacated Date</label>
           <input
             type="date"
             value={vacatedDate}
             onChange={(e) => setVacatedDate(e.target.value)}
-            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-          />
+            classNa4me="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+          /> */}
         </div>
 
         {/* Floor ID */}

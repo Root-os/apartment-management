@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard';
+import Modal from '../../components/Modal';
 
 const AddTenant = () => {
   // State variables for form fields
@@ -23,6 +24,10 @@ const AddTenant = () => {
   const [units, setUnits] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  const [message, setMessage] = useState(''); 
 
   // Fetch floor data for dropdown
   useEffect(() => {
@@ -99,9 +104,17 @@ const AddTenant = () => {
       setAdvanced('');
       setPassword('');
       setLoading(false);
+
+      setModalOpen(true);
+      setMessageType('success');
+      setMessage('Tenant added successfully.');
     } catch (err) {
       setError('Failed to add tenant.');
       setLoading(false);
+
+      setModalOpen(true); 
+      setMessageType('error');
+      setMessage('Failed to add tenant.');
     }
   };
 
@@ -119,7 +132,7 @@ const AddTenant = () => {
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             required
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           />
         </div>
 
@@ -129,7 +142,7 @@ const AddTenant = () => {
           <input
             type="file"
             onChange={(e) => setDocument(e.target.files[0])}
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           />
         </div>
 
@@ -137,11 +150,11 @@ const AddTenant = () => {
         <div>
           <label className="block text-sm font-semibold mb-2">Phone Number</label>
           <input
-            type="text"
+            type="number"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             required
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           />
         </div>
 
@@ -152,7 +165,7 @@ const AddTenant = () => {
             type="text"
             value={carName}
             onChange={(e) => setCarName(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           />
         </div>
 
@@ -163,7 +176,7 @@ const AddTenant = () => {
             type="text"
             value={carPlate}
             onChange={(e) => setCarPlate(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           />
         </div>
 
@@ -175,7 +188,7 @@ const AddTenant = () => {
             value={nationalId}
             onChange={(e) => setNationalId(e.target.value)}
             required
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           />
         </div>
 
@@ -186,7 +199,7 @@ const AddTenant = () => {
             type="text"
             value={tin}
             onChange={(e) => setTin(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           />
         </div>
 
@@ -196,7 +209,7 @@ const AddTenant = () => {
           <select
             value={floorId}
             onChange={(e) => setFloorId(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             required
           >
             <option value="">Select a Floor</option>
@@ -214,7 +227,7 @@ const AddTenant = () => {
           <select
             value={unitId}
             onChange={(e) => setUnitId(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             required
           >
             <option value="">Select a Unit</option>
@@ -233,7 +246,7 @@ const AddTenant = () => {
             type="date"
             value={leaseStartDate}
             onChange={(e) => setLeaseStartDate(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           />
         </div>
 
@@ -244,7 +257,7 @@ const AddTenant = () => {
             type="date"
             value={leaseEndDate}
             onChange={(e) => setLeaseEndDate(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           />
         </div>
 
@@ -254,7 +267,7 @@ const AddTenant = () => {
           <select
             value={paymentStatus}
             onChange={(e) => setPaymentStatus(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             required
           >
             <option value="paid">Paid</option>
@@ -268,7 +281,7 @@ const AddTenant = () => {
           <textarea
             value={additionalNotes}
             onChange={(e) => setAdditionalNotes(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           />
         </div>
 
@@ -276,10 +289,10 @@ const AddTenant = () => {
         <div>
           <label className="block text-sm font-semibold mb-2">Advanced Payment</label>
           <input
-            type="text"
+            type="number"
             value={advanced}
             onChange={(e) => setAdvanced(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           />
         </div>
 
@@ -291,7 +304,7 @@ const AddTenant = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full p-3 border border-gray-300 rounded-md"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           />
         </div>
 
@@ -307,7 +320,13 @@ const AddTenant = () => {
         </div>
       </form>
       </TitleCard>
-    </>
+      <Modal
+        isOpen={modalOpen}
+        setIsOpen={setModalOpen}
+        message={message}
+        messageType={messageType}     
+      />
+      </>
   );
 };
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard'
+import Modal from '../../components/Modal'; 
 
 const AddGovBillPayment = () => {
   // States for form inputs
@@ -18,13 +19,17 @@ const AddGovBillPayment = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  // const [message, setMessage] = useState('');
+
   // Fetch Bill Types on Component Mount
   useEffect(() => {
     const fetchBillTypes = async () => {
       try {
         const response = await axios.get('https://apartment.houseethiopia.com/api/bill-type');
-        setBillTypes(response.data); // Assuming API returns an array of bill types
-        setBillTypeId(response.data.length > 0 ? response.data[0].id : ''); // Default to first bill type
+        setBillTypes(response.data);
+        setBillTypeId(response.data.length > 0 ? response.data[0].id : ''); 
       } catch (err) {
         setError('Failed to fetch bill types. Please try again.');
       }
@@ -54,10 +59,16 @@ const AddGovBillPayment = () => {
     try {
       const response = await axios.post('https://apartment.houseethiopia.com/api/bill-payments', payload);
       setLoading(false);
-      setMessage(response.data.message);
+
+      setModalOpen(true);
+      setMessageType('success');
+      setMessage('Bill Payment added successfully');
     } catch (err) {
       setLoading(false);
-      setError('Error adding bill payment. Please try again.');
+
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('An error occurred while adding the bill payment.');
     }
   };
 
@@ -148,7 +159,7 @@ const AddGovBillPayment = () => {
                 onChange={(e) => setStatus(e.target.value)}
                 className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="pending">Pending</option>
+                <option value="pending">unPaid</option>
                 <option value="paid">Paid</option>
               </select>
             </div>
@@ -177,6 +188,12 @@ const AddGovBillPayment = () => {
           </button>
         </form>
     </TitleCard>
+    <Modal
+      isOpen={modalOpen}
+      onClose={() => setModalOpen(false)}
+      messageType={messageType}
+      message={message} 
+      />
  </>
   );
 };

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
+import TableComponent from '../../components/table';
+import {FaSearch} from 'react-icons/fa';
 
 const GovBillPaymentPage = () => {
   const [billPayments, setBillPayments] = useState([]);
@@ -10,6 +12,7 @@ const GovBillPaymentPage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [selectedStatus, setSelectedStatus] = useState('');
   const [editData, setEditData] = useState({
     billTypeId: '',
     amount: '',
@@ -44,6 +47,31 @@ const GovBillPaymentPage = () => {
     fetchBillPayments();
     fetchBillTypes();
   }, []);
+
+  const handleStatusChange = (status) => {
+    setSelectedStatus(status);
+  };
+
+  const handleSearchClick = async () => {
+    try {
+      let response;
+      if (selectedStatus === "paid") {
+        response = await axios.get('https://apartment.houseethiopia.com/api/bill-payments/by-status/paid');
+      } else if (selectedStatus === "unpaid") {
+        response = await axios.get('https://apartment.houseethiopia.com/api/bill-payments/by-status/unpaid');
+      } else {
+        response = await axios.get('https://apartment.houseethiopia.com/api/bill-payments');
+      }
+      if (response.data.length === 0) {
+        setError('No bills found.');
+      } else {
+        setError(null);
+      }
+      setBillPayments(response.data);
+    } catch (err) {
+      setError('An error occurred while fetching the bill payments.');
+    }
+  };
 
   const handleEditClick = (payment) => {
     setSelectedPayment(payment);
@@ -84,9 +112,83 @@ const GovBillPaymentPage = () => {
     }
   };
 
+  const columns = [
+    {
+      label: "Bill Type",
+      key: "BillPaymentType.typeName",
+      Cell: ({ row }) => row.BillPaymentType ? row.BillPaymentType.typeName : 'N/A',
+    },
+    {
+      label: "Amount",
+      key: "amount",
+    },
+    {
+      label: "Start Date",
+      key: "startDate",
+      Cell: ({ value }) => new Date(value).toLocaleDateString(),
+    },
+    {
+      label: "End Date",
+      key: "endDate",
+      Cell: ({ value }) => new Date(value).toLocaleDateString(),
+    },
+    {
+      label: "Status",
+      key: "status",
+    },
+    {
+      label: "Payment Method",
+      key: "paymentMethod",
+    },
+    {
+      label: "Description",
+      key: "description",
+    },
+    {
+      label: "Actions",
+      key: "actions",
+      render: (row ) => (
+        <div className="flex space-x-2">
+          <button
+            onClick={() => handleEditClick(row)}
+            className="bg-blue-500 text-white py-1 px-2 rounded"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => handleDeleteClick(row)}
+            className="bg-red-500 text-white py-1 px-2 rounded"
+          >
+            Delete
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  const statusFilter = (
+    <div className="flex items-center mb-4">
+      <select
+        value={selectedStatus}
+        onChange={(e) => handleStatusChange(e.target.value)}
+        className="mr-2 px-4 py-2 rounded bg-gray-200 text-black"
+      >
+        <option value="">Select Status</option>
+        <option value="paid">Paid</option>
+        <option value="unpaid">Unpaid</option>
+      </select>
+      <button
+        className="bg-blue-500 text-white px-4 py-2 rounded"
+        onClick={handleSearchClick}
+      >
+        <FaSearch /> Search
+      </button>
+    </div>
+  );
+
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold text-center mb-6">Bill Payments</h1>
+
       {error && (
         <div className="p-4 mb-6 bg-red-100 text-red-700 border border-red-400 rounded-md">
           {error}
@@ -97,49 +199,15 @@ const GovBillPaymentPage = () => {
           <p>Loading...</p>
         </div>
       ) : (
-        <>
-          <table className="min-w-full table-auto border-collapse">
-            <thead className="bg-base-100 text-white">
-              <tr>
-                <th className="p-3 border-b text-left">Bill Type</th>
-                <th className="p-3 border-b text-left">Amount</th>
-                <th className="p-3 border-b text-left">Start Date</th>
-                <th className="p-3 border-b text-left">End Date</th>
-                <th className="p-3 border-b text-left">Status</th>
-                <th className="p-3 border-b text-left">Payment Method</th>
-                <th className="p-3 border-b text-left">Description</th>
-                <th className="p-3 border-b text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {billPayments.map((payment) => (
-                <tr key={payment.id} className="border-b">
-                  <td className="p-3">{payment.BillPaymentType.typeName}</td>
-                  <td className="p-3">{payment.amount}</td>
-                  <td className="p-3">{new Date(payment.startDate).toLocaleDateString()}</td>
-                  <td className="p-3">{new Date(payment.endDate).toLocaleDateString()}</td>
-                  <td className="p-3">{payment.status || 'N/A'}</td>
-                  <td className="p-3">{payment.paymentMethod}</td>
-                  <td className="p-3">{payment.description}</td>
-                  <td className="p-3">
-                    <button
-                      onClick={() => handleEditClick(payment)}
-                      className="bg-blue-500 text-white py-1 px-4 rounded mr-2"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClick(payment)}
-                      className="bg-red-500 text-white py-1 px-4 rounded"
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
+        <TableComponent
+        title="Bill Payments"
+        data={billPayments}
+        columns={columns}
+        rowsPerPageOptions={[5, 10, 15]}
+        showSearch={true}
+        exportable={true}
+        statusFilter={statusFilter}
+      />
       )}
 
       {/* Edit Modal */}
@@ -150,7 +218,7 @@ const GovBillPaymentPage = () => {
           contentLabel="Edit Bill Payment"
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
         >
-          <div className="bg-white p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
+          <div className="bg-base-100  p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl mb-4">Edit Bill Payment</h2>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Bill Type</label>
@@ -202,7 +270,7 @@ const GovBillPaymentPage = () => {
               >
                 <option value="Pending">Pending</option>
                 <option value="Paid">Paid</option>
-                <option value="Overdue">Overdue</option>
+                <option value="unPaid">unPaid</option>
               </select>
             </div>
             <div className="mb-4">
@@ -248,7 +316,7 @@ const GovBillPaymentPage = () => {
           contentLabel="Delete Confirmation"
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
         >
-          <div className="bg-white p-6 rounded-lg w-96">
+          <div className="bg-base-100 p-6 rounded-lg w-96">
             <h2 className="text-xl mb-4">Are you sure you want to delete this bill payment?</h2>
             <div className="flex justify-between">
               <button

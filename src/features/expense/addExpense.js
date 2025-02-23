@@ -1,16 +1,22 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import TitleCard from '../../components/Cards/TitleCard';
+import Modal from '../../components/Modal';
 
 const AddExpense = () => {
-  const [name, setName] = useState(''); // Expense name
-  const [description, setDescription] = useState(''); // Expense description
-  const [loading, setLoading] = useState(false); // To track loading state
-  const [error, setError] = useState(null); // To handle error state
-  const [successMessage, setSuccessMessage] = useState(null); // To display success message
+  const [name, setName] = useState('')
+  const [description, setDescription] = useState(''); 
+  const [loading, setLoading] = useState(false); 
+  const [error, setError] = useState(null); // 
+  const [successMessage, setSuccessMessage] = useState(null); 
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  const [message, setMessage] = useState('');
 
   // Handle form submit
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent the default form submission
+    e.preventDefault(); 
 
     // Simple validation
     if (!name || !description) {
@@ -18,32 +24,34 @@ const AddExpense = () => {
       return;
     }
 
-    setLoading(true); // Set loading state to true while sending the request
-    setError(null); // Reset error message
-    setSuccessMessage(null); // Reset success message
+    setLoading(true);
+    setError(null); 
+    setSuccessMessage(null); 
 
-    // Send the POST request to the API
+
     try {
       const response = await axios.post('https://apartment.houseethiopia.com/api/expense-type', {
         name,
         description,
       });
-      
-      // On successful response, display success message
-      setSuccessMessage('Expense added successfully!');
-      setName(''); // Clear the form fields
+      setModalOpen(true);
+      setMessageType('success');
+      setMessage('Expense added successfully');
+      setName(''); 
       setDescription('');
       window.location.href='/app/expense-view'
     } catch (err) {
       setError('An error occurred while adding the expense.');
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('An error occurred while adding the expense.');
     } finally {
-      setLoading(false); // Set loading to false once the request is complete
+      setLoading(false); 
     }
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold text-center mb-6">Add Expense</h1>
+    <><TitleCard title={'Add Expense'}>
 
       {/* Error Message */}
       {error && (
@@ -68,7 +76,7 @@ const AddExpense = () => {
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded bg-base-300"
+            className="w-full p-2 border border-gray-300 rounded bg-base-100"
             required
           />
         </div>
@@ -79,7 +87,7 @@ const AddExpense = () => {
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded bg-base-300"
+            className=" w-full p-2 border border-gray-300 rounded bg-base-100"
             required
           />
         </div>
@@ -88,14 +96,21 @@ const AddExpense = () => {
         <div>
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-500"
+            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-400"
             disabled={loading}
           >
             {loading ? 'Adding Expense...' : 'Add Expense'}
           </button>
         </div>
       </form>
-    </div>
+      </TitleCard>
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        type={messageType}
+        message={message}
+        />
+    </>
   );
 };
 

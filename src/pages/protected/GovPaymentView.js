@@ -7,7 +7,7 @@ function InternalPage(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Bill Type Lists"}))
+        dispatch(setPageTitle({ title : "Payment For Government"}))
       }, [])
 
 

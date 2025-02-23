@@ -99,11 +99,11 @@ const routes = [
     component: TenantView, 
   },
   {
-    path: '/tenant-bill-add', 
+    path: '/tenant-bill-view', 
     component: TenantBillAdd, 
   },
   {
-    path: '/tenant-bill-view', 
+    path: '/tenant-bill-add', 
     component: TenantBillView, 
   },
   {

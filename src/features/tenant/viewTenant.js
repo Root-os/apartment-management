@@ -241,8 +241,6 @@ const TenantList = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-4">Tenant List</h2>
-
       {/* Error message if fetching failed */}
       {error && <div className="bg-red-300 p-3 mb-4 text-red-800">{error}</div>}
 

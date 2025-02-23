@@ -137,12 +137,12 @@ const routes = [
     name: 'Bill Type ', 
     submenu : [
       {
-        path: '/app/bill-type-view',
+        path: '/app/bill-type-add',
         icon: <PlusIcon className={submenuIconClasses}/>,
         name: 'Add Bill Payment',
       },
       {
-        path: '/app/bill-type-add',
+        path: '/app/bill-type-view',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Bill Payments',
       },
