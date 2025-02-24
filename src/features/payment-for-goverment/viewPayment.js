@@ -185,6 +185,9 @@ const GovBillPaymentPage = () => {
       </button>
     </div>
   );
+  const handleAddClick = () => {
+    window.location.href = '/payment-government-add'
+  };
 
   return (
     <div className="p-6">
@@ -207,6 +210,7 @@ const GovBillPaymentPage = () => {
         showSearch={true}
         exportable={true}
         statusFilter={statusFilter}
+        onAdd={handleAddClick}
       />
       )}
 

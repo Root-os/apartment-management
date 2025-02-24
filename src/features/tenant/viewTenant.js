@@ -239,6 +239,10 @@ const TenantList = () => {
     },
   ];
 
+  const handleAddClick = () => {
+    window.location.href = '/tenant-add';
+  }
+
   return (
     <div className="max-w-6xl mx-auto p-6">
       {/* Error message if fetching failed */}
@@ -256,6 +260,7 @@ const TenantList = () => {
   rowsPerPageOptions={[5, 10, 15]}
   showSearch={true}
   exportable={true}
+  onAdd={handleAddClick}
 />
       )}
 
