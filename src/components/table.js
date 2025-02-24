@@ -11,7 +11,8 @@ const TableComponent = ({
   showSearch = true, 
   exportable = true, 
   onAdd,
-  customHeader
+  customHeader,
+  statusFilter
 }) => {
   const [search, setSearch] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: columns[0]?.key, direction: 'asc' });
@@ -130,6 +131,7 @@ const TableComponent = ({
         </div>
       )}
          {customHeader}
+         {statusFilter}
       {/* Density Toggle */}
       <div className="mb-4 flex items-center space-x-2">
         <FaThList onClick={toggleDensity} className="cursor-pointer" />

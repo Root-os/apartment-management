@@ -289,7 +289,7 @@ const UnitList = () => {
           </button>
           <button
             onClick={() => handleDetailClick(row)}
-            className="bg-green-500 text-white py-1 px-3 rounded"
+             className="bg-gray-400 text-white py-1 px-2 rounded"
           >
             Details
           </button>

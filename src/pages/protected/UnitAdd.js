@@ -7,7 +7,7 @@ function InternalPage(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Add Floor Unit"}))
+        dispatch(setPageTitle({ title : " Unit"}))
       }, [])
 
 
