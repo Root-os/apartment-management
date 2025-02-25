@@ -58,6 +58,7 @@ const bulkNotfication=lazy(() => import('../pages/protected/Notfication/bulkNotf
 //Email
 const singleEmail=lazy(() => import('../pages/protected/email/addsingleEmail'))
 const BulkEmail=lazy(() => import ('../pages/protected/email/bulkEmail'))
+const sentEmails=lazy(() => import('../pages/protected/email/sentEmail'))
 
 
 
@@ -224,7 +225,11 @@ const routes = [
   {
     path: '/send-bulk-email', 
     component: BulkEmail, 
-  }
+  },
+  {
+    path: '/send-emails', 
+    component: sentEmails, 
+  },
 
 ]
 

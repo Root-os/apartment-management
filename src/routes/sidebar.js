@@ -405,9 +405,9 @@ const routes = [
         name: 'Send Bulk Email ',
       },
       {
-        path:"/app/all-notfication",
+        path:"/app/send-emails",
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'All Notfication ',
+        name: 'All Emails ',
       }
 
      
