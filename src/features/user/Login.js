@@ -42,8 +42,8 @@ function Login() {
         localStorage.setItem('fname', decodedToken.fname);
         localStorage.setItem('lname', decodedToken.lname);
         localStorage.setItem('role', decodedToken.role);
-        localStorage.setItem('iat', decodedToken.iat);
-        localStorage.setItem('exp', decodedToken.exp);
+        localStorage.setItem('email', decodedToken.email);
+        localStorage.setItem('phone', decodedToken.phone);
 
         setLoading(false);
         // Redirect to the welcome page or dashboard
