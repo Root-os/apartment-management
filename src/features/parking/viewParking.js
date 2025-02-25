@@ -145,7 +145,7 @@ const ParkingPage = () => {
 
   const handleAddClick = () => {
     window.confirm.href = '/parking-add';
-  }
+  };
 
   return (
     <div>

@@ -1,115 +1,149 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
 
 const AddExpense = () => {
-  const [name, setName] = useState('')
-  const [description, setDescription] = useState(''); 
-  const [loading, setLoading] = useState(false); 
-  const [error, setError] = useState(null); // 
-  const [successMessage, setSuccessMessage] = useState(null); 
+  const [amount, setAmount] = useState('');
+  const [date, setDate] = useState('');
+  const [description, setDescription] = useState('');
+  const [expenseTypeId, setExpenseTypeId] = useState('');
+  const [expenseTypes, setExpenseTypes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
 
-  // Handle form submit
+  // Fetch expense types from API
+  useEffect(() => {
+    const fetchExpenseTypes = async () => {
+      try {
+        const response = await axios.get('https://apartment.houseethiopia.com/api/expense-type');
+        setExpenseTypes(response.data);
+        console.log(response.data);
+      } catch (err) {
+        setError('Failed to fetch expense types.');
+      }
+    };
+
+    fetchExpenseTypes();
+  }, []);
+
+  // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
-
-    // Simple validation
-    if (!name || !description) {
-      setError('Both name and description are required.');
-      return;
-    }
-
+    e.preventDefault();
     setLoading(true);
-    setError(null); 
-    setSuccessMessage(null); 
+    setError('');
+    setSuccessMessage('');
 
+    const expenseData = {
+      amount,
+      date,
+      description,
+      expenseTypeId,
+    };
 
     try {
-      const response = await axios.post('https://apartment.houseethiopia.com/api/expense-type', {
-        name,
-        description,
-      });
+      const response = await axios.post('https://apartment.houseethiopia.com/api/expense', expenseData);
+      // Reset form
+      setAmount('');
+      setDate('');
+      setDescription('');
+      setExpenseTypeId('');
+
       setModalOpen(true);
       setMessageType('success');
-      setMessage('Expense added successfully');
-      setName(''); 
-      setDescription('');
-      window.location.href='/app/expense-view'
+      setMessage('Expense added successfully.');
+
+      window.location.href = '/expense'
     } catch (err) {
-      setError('An error occurred while adding the expense.');
       setModalOpen(true);
       setMessageType('error');
-      setMessage('An error occurred while adding the expense.');
+      setMessage('Failed to add expense.');
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
   return (
-    <><TitleCard title={'Add Expense'}>
+    <>
+      <TitleCard title="Add Expense" topMargin={'mt-4'}>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Amount */}
+          <div>
+            <label className="block text-sm font-semibold mb-2">Amount</label>
+            <input
+              type="number"
+              step="0.01"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              required
+              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+            />
+          </div>
 
-      {/* Error Message */}
-      {error && (
-        <div className="p-4 mb-6 bg-red-100 text-red-700 border border-red-400 rounded-md">
-          {error}
-        </div>
-      )}
+          {/* Date */}
+          <div>
+            <label className="block text-sm font-semibold mb-2">Date</label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              required
+              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+            />
+          </div>
 
-      {/* Success Message */}
-      {successMessage && (
-        <div className="p-4 mb-6 bg-green-100 text-green-700 border border-green-400 rounded-md">
-          {successMessage}
-        </div>
-      )}
+          {/* Description */}
+          <div>
+            <label className="block text-sm font-semibold mb-2">Description</label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              required
+              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+            />
+          </div>
 
-      {/* Expense Form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-white-700" htmlFor="name">Expense Name</label>
-          <input
-            type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full p-2 border border-gray-300 rounded bg-base-100"
-            required
-          />
-        </div>
+          {/* Expense Type */}
+          <div>
+            <label className="block text-sm font-semibold mb-2">Expense Type</label>
+            <select
+              value={expenseTypeId}
+              onChange={(e) => setExpenseTypeId(e.target.value)}
+              required
+              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+            >
+              <option value="">Select Expense Type</option>
+              {expenseTypes.map((expenseType) => (
+                <option key={expenseType.id} value={expenseType.id}>
+                  {expenseType.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div>
-          <label className="block text-white-700" htmlFor="description">Expense Description</label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className=" w-full p-2 border border-gray-300 rounded bg-base-100"
-            required
-          />
-        </div>
-
-        {/* Submit Button */}
-        <div>
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-400"
-            disabled={loading}
-          >
-            {loading ? 'Adding Expense...' : 'Add Expense'}
-          </button>
-        </div>
-      </form>
+          {/* Submit Button */}
+          <div>
+            <button
+              type="submit"
+              disabled={loading}
+              className={`w-full p-3 bg-blue-500 text-white rounded-md ${loading ? 'opacity-50' : ''}`}
+            >
+              {loading ? 'Submitting...' : 'Add Expense'}
+            </button>
+          </div>
+        </form>
       </TitleCard>
-      <Modal
+      <Modal 
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        type={messageType}
+        messageType={messageType}
         message={message}
-        />
+      />
     </>
   );
 };

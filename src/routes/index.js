@@ -12,47 +12,41 @@ const ProfileSettings = lazy(() => import('../pages/protected/ProfileSettings'))
 //floor
 const FloorAdd = lazy(() => import('../pages/protected/FloorAdd'))
 const FloorView = lazy(() => import('../pages/protected/FloorView'))
-
-//unit
 const UnitAdd = lazy(() => import('../pages/protected/UnitAdd'))
 const UnitView = lazy(() => import('../pages/protected/UnitView'))
-
-
 const BillPaymentView = lazy(() => import('../pages/protected/BillPaymentView'))
 const BillPaymentAdd = lazy(() => import('../pages/protected/BillPaymentAdd'))
+
 const GovBillPaymentPage = lazy(() => import('../pages/protected/GovPaymentView'))
 const GovBillPaymentAdd = lazy(() => import('../pages/protected/GovPaymentAdd'))
+
 const ExpenseAdd = lazy(() => import('../pages/protected/ExpenseAdd'))
 const ExpenseView = lazy(() => import('../pages/protected/ExpenseView'))
 
-//tenant
+const ExpenseTypeAdd = lazy(() => import('../pages/protected/ExpenseTypeAdd'))
+const ExpenseTypeView = lazy(() => import('../pages/protected/ExpenseTypeView'))
+
 const TenantAdd = lazy(() => import('../pages/protected/TenantAdd'))
 const TenantView = lazy(() => import('../pages/protected/TenantView'))
+const TenantBillAdd = lazy(() => import('../pages/protected/TenantBillAdd'))
+const TenantBillView = lazy(() => import('../pages/protected/TenantBillView'))
 const TenDays = lazy(() => import('../pages/protected/tendaysTenants'))
 const TenantFilter = lazy(() => import('../pages/protected/tenantfilterlist'))
 
-
-
-
-
-const TenantBillAdd = lazy(() => import('../pages/protected/TenantBillAdd'))
-const TenantBillView = lazy(() => import('../pages/protected/TenantBillView'))
 const RentAdd = lazy(() => import('../pages/protected/RentAdd'))
 const RentView = lazy(() => import('../pages/protected/RentView'))
+
 const ParkingAdd = lazy(() => import('../pages/protected/ParkingAdd'))
 const ParkingView = lazy(() => import('../pages/protected/ParkingView'))
 
-//Report
-const TenantReportPage = lazy(() => import('../pages/protected/Report/tenantBillReport'))
-const TenantReportPageTwo = lazy(() => import('../pages/protected/Report/tenantReport'))
-const GovtReport = lazy(() => import('../pages/protected/Report/govtBillReport'))
 
+const ItemTypeAdd = lazy(() => import('../pages/protected/ItemTypeAdd'))
+const ItemTypeView = lazy(() => import('../pages/protected/ItemTypeView'))
+const ItemAdd = lazy(() => import('../pages/protected/ItemAdd'))
+const ItemView = lazy(() => import('../pages/protected/ItemView'))
 
-
-
-
-
-
+const PaymentRequestAdd = lazy(() => import('../pages/protected/PaymentRequestAdd'))
+const PaymentRequestView = lazy(() => import('../pages/protected/PaymentRequestView'))
 
 const routes = [
   {
@@ -118,6 +112,14 @@ const routes = [
     component: ExpenseView, 
   },
   {
+    path: '/expense-type-add', 
+    component: ExpenseTypeAdd, 
+  },
+  {
+    path: '/expense-type-view', 
+    component: ExpenseTypeView, 
+  },
+  {
     path: '/tenant-add', 
     component: TenantAdd, 
   },
@@ -161,20 +163,29 @@ const routes = [
     path: '/parking-view', 
     component: ParkingView, 
   },
-
-  //report
-
   {
-    path: '/tenantBill-report', 
-    component: TenantReportPage, 
+    path: '/item-type-add', 
+    component: ItemTypeAdd, 
   },
   {
-    path: '/tenant-report', 
-    component: TenantReportPageTwo, 
+    path: '/item-type-view', 
+    component: ItemTypeView, 
   },
   {
-    path: '/govt-report', 
-    component: GovtReport, 
+    path: '/item-add', 
+    component: ItemAdd, 
+  },
+  {
+    path: '/item-view', 
+    component: ItemView, 
+  },
+  {
+    path: '/payment-request-add', 
+    component: PaymentRequestAdd, 
+  },
+  {
+    path: '/payment-request-view', 
+    component: PaymentRequestView, 
   }
 
 ]

@@ -119,7 +119,7 @@ const BillTablePage = () => {
     }
   };
 
-  const handleAddClick = () => {window.location.href = '/bill-type-view';};
+  const handleAddClick = () => {window.location.href = '/bill-type-add';};
 
   return (
     <div className="p-6">

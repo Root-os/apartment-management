@@ -106,7 +106,7 @@ const FloorForm = () => {
         <div className="text-center">
           <button
             type="submit"
-            className="px-4 py-2 w-1/2 text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="px-4 py-2 w-full text-white bg-blue-500 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             {loading ? 'Submmiting...' : 'Add Floor'}
           </button>

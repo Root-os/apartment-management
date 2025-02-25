@@ -1,147 +1,153 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 
 const ExpensePage = () => {
   const [expenses, setExpenses] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null); 
-  const [showModal, setShowModal] = useState(false); 
-  const [selectedExpense, setSelectedExpense] = useState(null); 
-  const [expenseName, setExpenseName] = useState('');
-  const [expenseDescription, setExpenseDescription] = useState('');
-
+  const [columns, setColumns] = useState([]);
+  const [selectedExpense, setSelectedExpense] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [expenseToDelete, setExpenseToDelete] = useState(null);
-
+  const [amount, setAmount] = useState('');
+  const [date, setDate] = useState('');
+  const [description, setDescription] = useState('');
+  const [expenseTypeId, setExpenseTypeId] = useState('');
+  const [expenseTypes, setExpenseTypes] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    const fetchExpenses = async () => {
-      try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/expense-type');
-        setExpenses(response.data);
-      } catch (err) {
-        setError('Error fetching data');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchExpenses();
+    // Fetch expense data from the API
+    axios.get('https://apartment.houseethiopia.com/api/expense')
+      .then((response) => {
+        // Map response to desired data format
+        const expenseData = response.data.map(expense => ({
+          id: expense.id,
+          amount: expense.amount,
+          date: new Date(expense.date).toLocaleDateString(), // Format date
+          description: expense.description,
+          expenseType: expense.expenseType.name, // Extract expenseType name
+        }));
+
+        setExpenses(expenseData);
+
+        // Set columns based on your needs
+        setColumns([
+          { label: 'Amount', key: 'amount' },
+          { label: 'Date', key: 'date' },
+          { label: 'Description', key: 'description' },
+          { label: 'Expense Type', key: 'expenseType' },
+          {
+            label: 'Actions',
+            key: 'actions',
+            render: (row) => (
+              <>
+                <button
+                  onClick={() => handleEditClick(row)}
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDeleteClick(row)}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md"
+                >
+                  Delete
+                </button>
+              </>
+            ),
+          },
+        ]);
+      })
+      .catch((error) => {
+        console.error('Error fetching expenses:', error);
+      });
+
+    // Fetch expense types from API
+    axios.get('https://apartment.houseethiopia.com/api/expense-type')
+      .then((response) => {
+        setExpenseTypes(response.data);
+      })
+      .catch((error) => {
+        console.error('Error fetching expense types:', error);
+      });
   }, []);
 
-  // Open modal with data to edit
-  const handleEdit = (expense) => {
+  // Handle edit button click
+  const handleEditClick = (expense) => {
     setSelectedExpense(expense);
-    setExpenseName(expense.name);
-    setExpenseDescription(expense.description);
-    setShowModal(true);
+    setAmount(expense.amount);
+    setDate(new Date(expense.date).toISOString().split('T')[0]); // Convert date to YYYY-MM-DD format
+    setDescription(expense.description);
+    setExpenseTypeId(expense.expenseTypeId);
+    setIsEditModalOpen(true);
   };
 
-  // Close modal
-  const closeModal = () => {
-    setShowModal(false);
-    setSelectedExpense(null);
-    setExpenseName('');
-    setExpenseDescription('');
+  // Handle delete button click
+  const handleDeleteClick = (expense) => {
+    setSelectedExpense(expense);
+    setIsDeleteModalOpen(true);
   };
 
-  // Handle Edit form submit (PUT request)
-  const handleSubmitEdit = async (e) => {
-    e.preventDefault();
+  // Handle edit request
+  const handleEdit = async () => {
+    setLoading(true);
     try {
-      await axios.put(`https://apartment.houseethiopia.com/api/expense-type/${selectedExpense.id}`, {
-        name: expenseName,
-        description: expenseDescription,
-      });
-      setExpenses((prevExpenses) =>
-        prevExpenses.map((expense) =>
-          expense.id === selectedExpense.id ? { ...expense, name: expenseName, description: expenseDescription } : expense
-        )
+      const updatedExpense = {
+        amount,
+        date,
+        description,
+        expenseTypeId,
+      };
+
+      const response = await axios.put(`https://apartment.houseethiopia.com/api/expense/${selectedExpense.id}`, updatedExpense);
+      const updatedData = expenses.map((expense) =>
+        expense.id === selectedExpense.id ? response.data : expense
       );
-      closeModal();
+      setExpenses(updatedData);
+      setIsEditModalOpen(false);
+      setSelectedExpense(null);
+
       setModalOpen(true);
       setMessageType('success');
       setMessage('Expense updated successfully');
-    } catch (err) {
-     setModalOpen(true);
-     setMessageType('error');
-     setMessage('An error occurred while updating the expense.');
+    } catch (error) {
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Unable to update expense');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleDeleteClick = (expense) => {
-  setExpenseToDelete(expense);
-  setIsDeleteModalOpen(true);
-};
-
-  // Handle Delete request
+  // Handle delete request
   const handleDelete = async () => {
+    setLoading(true);
     try {
-      await axios.delete(`https://apartment.houseethiopia.com/api/expense-type/${expenseToDelete.id}`);
-      setExpenses((prevExpenses) => prevExpenses.filter((expense) => expense.id !== expenseToDelete.id));
+      await axios.delete(`https://apartment.houseethiopia.com/api/expense/${selectedExpense.id}`);
+      setExpenses(expenses.filter((expense) => expense.id !== selectedExpense.id));
       setIsDeleteModalOpen(false);
-      setExpenseToDelete(null);
+      setSelectedExpense(null);
+
       setModalOpen(true);
       setMessageType('success');
       setMessage('Expense deleted successfully');
-    } catch (err) {
-       setModalOpen(true);
-       setMessageType('error');
-      setMessage('An error occurred while deleting the expense.');
+    } catch (error) {
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Unable to delete expense');
+    } finally {
+      setLoading(false);
     }
   };
-
-  const columns = [
-    {
-      label: "Name",
-      key: "name",
-    },
-    {
-      label: "Description",
-      key: "description",
-    },
-    {
-      label: "Actions",
-      key: "actions",
-      render: (row) => (
-        <div className="flex space-x-2">
-          <button
-            onClick={() => handleEdit(row)}
-            className="bg-blue-500 text-white px-4 py-1 rounded-md mr-2"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => handleDeleteClick(row.id)}
-            className="bg-red-500 text-white px-4 py-1 rounded-md"
-          >
-            Delete
-          </button>
-        </div>
-      ),
-    },
-  ];
-  const handleAddClick = () => {window.location.href = '/app/expense-add'};
-
+ const handleAddClick = () => {window.location.href = '/expense-add';} 
   return (
-    <div className="p-6">
-      {/* Error Message */}
-      {/* {error && (
-        <div className="p-4 mb-6 bg-red-100 text-red-700 border border-red-400 rounded-md">
-          {error}
-        </div>
-      )} */}
-
-      {/* Loading Message */}
-      {loading ? (
-        <div className="text-center">Loading...</div>
-      ) : (
-        <TableComponent
-        title="Expense Types"
+    <div >
+      <TableComponent
+        title="Expenses"
         data={expenses}
         columns={columns}
         rowsPerPageOptions={[5, 10, 15]}
@@ -149,52 +155,79 @@ const ExpensePage = () => {
         exportable={true}
         onAdd={handleAddClick}
       />
-      )}
 
       {/* Edit Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-base-600 bg-opacity-50 flex items-center justify-center">
-          <div className="bg-base-300 p-6 rounded-md w-1/3">
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-base-100 p-6 rounded-md w-1/3">
             <h2 className="text-2xl font-bold mb-4">Edit Expense</h2>
-            <form onSubmit={handleSubmitEdit}>
+            <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
               <div className="mb-4">
-                <label htmlFor="name" className="block text-white-700">
-                  Name
+                <label htmlFor="amount" className="block text-sm font-medium text-white-700">
+                  Amount
                 </label>
                 <input
-                  type="text"
-                  id="name"
-                  value={expenseName}
-                  onChange={(e) => setExpenseName(e.target.value)}
-                  className="w-full bg-base-100 p-2 border border-grey-300 rounded-md"
-                  required
+                  type="number"
+                  id="amount"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="description" className="block text-white-700">
+                <label htmlFor="date" className="block text-sm font-medium text-white-700">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  id="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="description" className="block text-sm font-medium text-white-700">
                   Description
                 </label>
                 <textarea
                   id="description"
-                  value={expenseDescription}
-                  onChange={(e) => setExpenseDescription(e.target.value)}
-                  className="w-full bg-base-100 p-2 border border-gray-300 rounded-md"
-                  required
-                ></textarea>
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
-              <div className="flex justify-between">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="bg-base-400 text-white px-4 py-1 rounded-md"
+              <div className="mb-4">
+                <label htmlFor="expenseTypeId" className="block text-sm font-medium text-white-700">
+                  Expense Type
+                </label>
+                <select
+                  id="expenseTypeId"
+                  value={expenseTypeId}
+                  onChange={(e) => setExpenseTypeId(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  Cancel
-                </button>
+                  <option value="">Select Expense Type</option>
+                  {expenseTypes.map((expenseType) => (
+                    <option key={expenseType.id} value={expenseType.id}>
+                      {expenseType.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="bg-blue-500 text-white px-4 py-1 rounded-md"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
                 >
-                  Save Changes
+                  Save
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="bg-gray-400 text-white px-4 py-2 rounded-md"
+                >
+                  Cancel
                 </button>
               </div>
             </form>
@@ -202,11 +235,12 @@ const ExpensePage = () => {
         </div>
       )}
 
-{isDeleteModalOpen && (
+      {/* Delete Modal */}
+      {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-base-300 p-6 rounded-lg w-96">
-            <h2 className="text-xl mb-4">Are you sure you want to delete this floor?</h2>
-            <div className="flex justify-between">
+          <div className="bg-base-300 p-6 rounded-lg w-98">
+            <h2 className="text-xl mb-4">Are you sure you want to delete this expense?</h2>
+            <div className="flex justify-end space-x-4 ">
               <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
               <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
             </div>
@@ -214,14 +248,13 @@ const ExpensePage = () => {
         </div>
       )}
 
-<Modal 
+<Modal
 isOpen={modalOpen}
 onClose={() => setModalOpen(false)}
 messageType={messageType}
 message={message}
 />
     </div>
-   
   );
 };
 

@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { FaPlus, FaSortUp, FaSortDown, FaDownload, FaSearch, FaThList, FaChevronLeft, FaChevronRight, FaPrint } from 'react-icons/fa';
 import { CSVLink } from 'react-csv';
-import { jsPDF } from 'jspdf';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const TableComponent = ({ 
   title, 
@@ -37,7 +38,12 @@ const TableComponent = ({
   const handleExportPDF = () => {
     const doc = new jsPDF();
     doc.text(title, 10, 10);
-    doc.autoTable({ html: '#table' });
+    const tableColumn = columns.map(col => col.label);
+    const tableRows = data.map(row => columns.map(col => row[col.key]));
+    doc.autoTable({
+      head: [tableColumn],
+      body: tableRows,
+    });
     doc.save(`${title}.pdf`);
   };
 

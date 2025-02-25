@@ -127,7 +127,7 @@ const FloorManagement = () => {
           </button>
           <button
             onClick={() => handleDetailClick(floor)}
-            className="bg-yellow-500 text-white py-1 px-4 rounded"
+            className="bg-gray-400 text-white py-1 px-2 rounded"
           >
             Detail
           </button>
@@ -137,7 +137,7 @@ const FloorManagement = () => {
   ];
 
   const handleAddClick = () => {
-    navigate('/floor-add');
+   window.location.href = '/floor-add';
   };
 
   return (
