@@ -108,6 +108,19 @@ const routes = [
   // },
   //
   
+//User
+{
+path:'',
+icon: <HomeIcon className={`${iconClasses} inline` }/>, 
+name: 'User', 
+submenu : [
+  {
+    path: '/app/All-User',
+    icon: <EyeIcon className={submenuIconClasses}/>,
+    name: 'All User',
+  },]
+},
+
 
   //Home
 

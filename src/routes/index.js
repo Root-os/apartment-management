@@ -61,7 +61,8 @@ const BulkEmail=lazy(() => import ('../pages/protected/email/bulkEmail'))
 const sentEmails=lazy(() => import('../pages/protected/email/sentEmail'))
 
 
-
+//User
+const ALlUser=lazy(() => import ('../pages/protected/user/alluser'))
 
 const routes = [
   {
@@ -230,6 +231,12 @@ const routes = [
     path: '/send-emails', 
     component: sentEmails, 
   },
+
+  {
+    path: '/All-User', 
+    component: ALlUser, 
+  },
+  //User
 
 ]
 
