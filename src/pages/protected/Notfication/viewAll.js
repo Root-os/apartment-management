@@ -1,19 +1,19 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { setPageTitle } from '../../../features/common/headerSlice'
-import AddNotification from '../../../features/notfication/addNotfication'
+import ViewNotification from '../../../features/notfication/viewNotfication'
 
-function AddNotfi(){
+function AllNotfi(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Add Notfication"}))
+        dispatch(setPageTitle({ title : "All Notfication"}))
       }, [])
 
 
     return(
-        <AddNotification />
+        <ViewNotification />
     )
 }
 
-export default AddNotfi
+export default AllNotfi

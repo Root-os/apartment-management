@@ -370,7 +370,13 @@ const routes = [
         path:"/app/add-notfication",
         icon: <PlusIcon className={submenuIconClasses}/>,
         name: 'Add Notfication ',
+      },
+      {
+        path:"/app/all-notfication",
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'All Notfication ',
       }
+
      
     ]
   },
