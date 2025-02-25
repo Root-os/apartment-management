@@ -1,11 +1,9 @@
-import moment from "moment";
 import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import TitleCard from "../../../components/Cards/TitleCard";
 import { showNotification } from "../../common/headerSlice";
 import InputText from "../../../components/Input/InputText";
-import TextAreaInput from "../../../components/Input/TextAreaInput";
-import ToogleInput from "../../../components/Input/ToogleInput";
+import Modal from "../../../components/Modal";
 
 function ProfileSettings() {
     const dispatch = useDispatch();
@@ -15,11 +13,12 @@ function ProfileSettings() {
         email: "",
         role: "",
         phone: "",
-        status: "",
-        createdAt: "",
-        updatedAt: "",
-        deletedAt: null,
     });
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const [modalMessage, setModalMessage] = useState("");
+    const [modalMessageType, setModalMessageType] = useState("");
 
     useEffect(() => {
         const fetchProfileFromLocalStorage = () => {
@@ -36,11 +35,10 @@ function ProfileSettings() {
         fetchProfileFromLocalStorage();
     }, []);
 
-    // Call API to update profile settings changes
     const updateProfile = async () => {
         try {
             const token = localStorage.getItem("token");
-            const response = await fetch(`${process.env.REACT_APP_BASE_URL}auth/update`, {
+            const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/update`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -57,17 +55,56 @@ function ProfileSettings() {
             const data = await response.json();
             if (data.success) {
                 dispatch(showNotification({ message: "Profile Updated", status: 1 }));
-                // Update local storage with the new profile data
                 localStorage.setItem("fname", profile.fname);
                 localStorage.setItem("lname", profile.lname);
                 localStorage.setItem("phone", profile.phone);
                 localStorage.setItem("role", profile.role);
+                setModalMessageType("success");
+                setModalMessage("Profile updated successfully.");
             } else {
-                dispatch(showNotification({ message: "Failed to update profile", status: 0 }));
+                setModalMessageType("error");
+                setModalMessage("Failed to update profile.");
             }
         } catch (error) {
             console.error("Error updating profile:", error);
-            dispatch(showNotification({ message: "Failed to update profile", status: 0 }));
+            setModalMessageType("error");
+            setModalMessage("Failed to update profile.");
+        }
+    };
+
+    const changePassword = async () => {
+        if (currentPassword === newPassword) {
+            setPasswordError("New password should be different from the current password.");
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch(`${process.env.REACT_APP_BASE_URL}auth/change-password`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    currentPassword,
+                    newPassword,
+                }),
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                setCurrentPassword("");
+                setNewPassword("");
+                setPasswordError("");
+                setModalMessageType("success");
+                setModalMessage("Password changed successfully.");
+            } else {
+                setPasswordError(data.message || "Failed to change password.");
+            }
+        } catch (error) {
+            console.error("Error changing password:", error);
+            setPasswordError("Failed to change password.");
         }
     };
 
@@ -81,7 +118,7 @@ function ProfileSettings() {
     return (
         <>
             <TitleCard title="Profile Settings" topMargin="mt-2">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <InputText
                         labelTitle="First Name"
                         placeholder={profile.fname}
@@ -103,7 +140,7 @@ function ProfileSettings() {
                         placeholder={profile.phone}
                         updateFormValue={({ value }) => updateFormValue({ updateType: "phone", value })}
                     />
-                    {/* <div>
+                    <div>
                         <label className="label">
                             <span className="label-text">Role</span>
                         </label>
@@ -115,15 +152,56 @@ function ProfileSettings() {
                             <option value="admin">Admin</option>
                             <option value="employee">Employee</option>
                         </select>
-                    </div> */}
+                    </div>
                 </div>
 
                 <div className="mt-16">
-                    <button className="btn btn-primary float-right" onClick={() => updateProfile()}>
+                    <button className="btn btn-primary float-right" onClick={updateProfile}>
                         Update
                     </button>
                 </div>
             </TitleCard>
+
+            <TitleCard title="Change Password" topMargin="mt-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <InputText
+                        labelTitle="Current Password"
+                        type="password"
+                        value={currentPassword}
+                        updateFormValue={({ value }) => setCurrentPassword(value)}
+                    />
+                    <InputText
+                        labelTitle="New Password"
+                        type="password"
+                        value={newPassword}
+                        updateFormValue={({ value }) => setNewPassword(value)}
+                    />
+                    {passwordError && (
+                        <div className="col-span-2 text-red-500">{passwordError}</div>
+                    )}
+                </div>
+
+                <div className="mt-16">
+                    <button className="btn btn-primary float-right" onClick={changePassword}>
+                        Change Password
+                    </button>
+                </div>
+            </TitleCard>
+
+            {/* Success/Error Modal */}
+            <Modal
+                isOpen={modalMessage !== ""}
+                onClose={() => setModalMessage("")}
+                messageType={modalMessageType}
+                message={modalMessage}
+                actions={[
+                    {
+                        label: "Close",
+                        onClick: () => setModalMessage(""),
+                        className: "bg-blue-500 text-white px-4 py-2 rounded",
+                    },
+                ]}
+            />
         </>
     );
 }
