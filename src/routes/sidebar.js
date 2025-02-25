@@ -387,6 +387,8 @@ const routes = [
      
     ]
   },
+
+  //email
   {
     path: '', 
     icon: <EnvelopeIcon className={`${iconClasses} inline` }/>, 
@@ -396,6 +398,11 @@ const routes = [
         path:"/app/send-single-email",
         icon: <PlusIcon className={submenuIconClasses}/>,
         name: 'Send Email ',
+      },
+      {
+        path:"/app/send-bulk-email",
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Send Bulk Email ',
       },
       {
         path:"/app/all-notfication",
