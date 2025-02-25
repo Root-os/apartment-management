@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
-import Modal from 'react-modal';
+import Modal from '../../components/Modal';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -30,7 +30,6 @@ const ViewNotification = () => {
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [modalMessageType, setModalMessageType] = useState('success');
   const [modalMessage, setModalMessage] = useState('');
-
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -263,54 +262,37 @@ const ViewNotification = () => {
       {/* Delete Confirmation Modal */}
       <Modal
         isOpen={isDeleteModalOpen}
-        onRequestClose={() => setIsDeleteModalOpen(false)}
-        contentLabel="Delete Confirmation"
-        className="fixed inset-0  flex justify-center items-center "
-        overlayClassName="fixed inset-0 bg-black bg-opacity-30"
-      >
-        <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg mx-4">
-          <h2 className="text-xl mb-4">Are you sure you want to delete this notification?</h2>
-          <div className="flex justify-between">
-            <button
-              onClick={() => setIsDeleteModalOpen(false)}
-              className="bg-gray-400 text-white px-4 py-2 rounded"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleDelete}
-              className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </Modal>
+        onClose={() => setIsDeleteModalOpen(false)}
+        messageType="warning"
+        message="Are you sure you want to delete this notification?"
+        actions={[
+          {
+            label: "Cancel",
+            onClick: () => setIsDeleteModalOpen(false),
+            className: "bg-gray-400 text-white px-4 py-2 rounded"
+          },
+          {
+            label: "Delete",
+            onClick: handleDelete,
+            className: "bg-red-500 text-white px-4 py-2 rounded"
+          }
+        ]}
+      />
 
       {/* Success/Error Modal */}
       <Modal
         isOpen={modalMessage !== ''}
-        onRequestClose={() => setModalMessage('')}
-        contentLabel="Message"
-        className="fixed inset-0  flex justify-center items-center"
-        overlayClassName="fixed inset-0 bg-black bg-opacity-30"
-
-      >
-        <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg mx-4">
-          <h2 className={`text-xl mb-4 ${modalMessageType === 'success' ? 'text-green-500' : 'text-red-500'}`}>
-            {modalMessageType === 'success' ? 'Success' : 'Error'}
-          </h2>
-          <p>{modalMessage}</p>
-          <div className="flex justify-end mt-4">
-            <button
-              onClick={() => setModalMessage('')}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </Modal>
+        onClose={() => setModalMessage('')}
+        messageType={modalMessageType === 'success' ? 'success' : 'error'}
+        message={modalMessage}
+        actions={[
+          {
+            label: "Close",
+            onClick: () => setModalMessage(''),
+            className: "bg-blue-500 text-white px-4 py-2 rounded"
+          }
+        ]}
+      />
     </div>
   );
 };

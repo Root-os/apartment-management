@@ -6,7 +6,7 @@ const Modal = ({ isOpen, onClose, messageType, message, actions = [] }) => {
   const modalStyles = messageType === 'success' 
     ? 'bg-green-100 text-green-800 border-green-300 dark:text-green-200'
     : messageType === 'warning'
-    ? 'bg-yellow-100 text-yellow-800 border-yellow-300 dark:text-yellow-200'
+    ? 'bg-white text-black border-gray-300 dark:text-yellow-200'
     : 'bg-red-100 text-red-800 border-red-300 dark:text-red-200';
 
   return (

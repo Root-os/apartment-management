@@ -81,15 +81,15 @@ const AddGovBillPayment = () => {
     <>
       <TitleCard title="Add Bill Payments for Government">
         {/* Bill Payment Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 ">
           {/* Bill Type Dropdown */}
           <div>
-            <label htmlFor="billTypeId" className="block text-sm font-medium text-gray-700">Bill Type</label>
+            <label htmlFor="billTypeId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Bill Type</label>
             <select
               id="billTypeId"
               value={billTypeId}
               onChange={(e) => setBillTypeId(e.target.value)}
-              className="bg-gray-200 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className=" dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
               <option value="" disabled>Select Bill Type</option>
@@ -102,50 +102,50 @@ const AddGovBillPayment = () => {
           </div>
 
           <div>
-            <label htmlFor="amount" className="block text-sm font-medium text-gray-700">Amount</label>
+            <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Amount</label>
             <input
               type="number"
               id="amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="bg-gray-200 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           <div className="flex space-x-4">
             <div className="w-full">
-              <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Start Date</label>
+              <label htmlFor="startDate" className=" dark:text-gray-300 block text-sm font-medium text-gray-700">Start Date</label>
               <input
                 type="date"
                 id="startDate"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="bg-gray-200 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
 
             <div className="w-full">
-              <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">End Date</label>
+              <label htmlFor="endDate" className="dark:text-gray-300 block text-sm font-medium text-gray-700">End Date</label>
               <input
                 type="date"
                 id="endDate"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="bg-gray-200 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description</label>
+            <label htmlFor="description" className="dark:text-gray-300 block text-sm font-medium text-gray-700">Description</label>
             <textarea
               id="description"
               value={description}
               onChange={(e) => validateDescription(e.target.value)}
-              className="bg-gray-200 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows="4"
               required
             />
@@ -153,12 +153,12 @@ const AddGovBillPayment = () => {
 
           <div className="flex space-x-4">
             <div className="w-full">
-              <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
+              <label htmlFor="status" className="dark:text-gray-300 block text-sm font-medium text-gray-700">Status</label>
               <select
                 id="status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="bg-gray-200 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="pending">Pending</option>
                 <option value="paid">Paid</option>
@@ -166,12 +166,12 @@ const AddGovBillPayment = () => {
             </div>
 
             <div className="w-full">
-              <label htmlFor="paymentMethod" className="block text-sm font-medium text-gray-700">Payment Method</label>
+              <label htmlFor="paymentMethod" className="dark:text-gray-300 block text-sm font-medium text-gray-700">Payment Method</label>
               <select
                 id="paymentMethod"
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
-                className="bg-gray-200 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="Bank Transfer">Bank Transfer</option>
                 <option value="Cash">Cash</option>
