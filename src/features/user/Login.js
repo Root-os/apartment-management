@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // useHistory hook for redirect
+import { Link, useNavigate } from 'react-router-dom'; // useNavigate hook for redirect
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode'; // Use named import
 import LandingIntro from './LandingIntro';
 import ErrorText from '../../components/Typography/ErrorText';
 import InputText from '../../components/Input/InputText';
@@ -8,7 +9,7 @@ import InputText from '../../components/Input/InputText';
 function Login() {
   const INITIAL_LOGIN_OBJ = {
     password: '',
-    emailId: '',
+    email: '', // Changed to match the API
   };
 
   const [loading, setLoading] = useState(false);
@@ -20,20 +21,30 @@ function Login() {
     e.preventDefault();
     setErrorMessage('');
   
-    if (loginObj.emailId.trim() === '') return setErrorMessage('Email Id is required!');
+    if (loginObj.email.trim() === '') return setErrorMessage('Email is required!');
     if (loginObj.password.trim() === '') return setErrorMessage('Password is required!');
   
     try {
       setLoading(true);
       // Make the POST request to the login API using axios
-      const response = await axios.post('https://website.smartbingogames.com/api/user/login', {
-        username: loginObj.emailId,
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}auth/login`, {
+        email: loginObj.email,
         password: loginObj.password,
       });
   
       if (response.data.token) {
         // Save token to localStorage
         localStorage.setItem('token', response.data.token);
+        
+        const decodedToken = jwtDecode(response.data.token);
+        
+        localStorage.setItem('userId', decodedToken.id);
+        localStorage.setItem('fname', decodedToken.fname);
+        localStorage.setItem('lname', decodedToken.lname);
+        localStorage.setItem('role', decodedToken.role);
+        localStorage.setItem('iat', decodedToken.iat);
+        localStorage.setItem('exp', decodedToken.exp);
+
         setLoading(false);
         // Redirect to the welcome page or dashboard
         navigate('/app');  // Redirects to the app/dashboard route
@@ -68,11 +79,11 @@ function Login() {
             <form onSubmit={submitForm}>
               <div className="mb-4">
                 <InputText
-                  type="username"
-                  defaultValue={loginObj.emailId}
-                  updateType="emailId"
+                  type="email"
+                  defaultValue={loginObj.email}
+                  updateType="email"
                   containerStyle="mt-4"
-                  labelTitle="Email Id"
+                  labelTitle="Email"
                   updateFormValue={updateFormValue}
                 />
                 <InputText

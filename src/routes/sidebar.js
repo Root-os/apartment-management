@@ -38,6 +38,7 @@ import CogIcon from '@heroicons/react/24/outline/CogIcon'
 
 
 
+
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon'
 import EyeIcon from '@heroicons/react/24/outline/EyeIcon'
 
@@ -221,23 +222,7 @@ const routes = [
       },
     ]
   },
-  {
-    path: '', 
-    icon: <CreditCardIcon className={`${iconClasses} inline` }/>, 
-    name: 'Expense Type', 
-    submenu : [
-      {
-        path: '/app/expense-type-add',
-        icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Expense Type',
-      },
-      {
-        path: '/app/expense-type-view',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Expense Types ',
-      },
-    ]
-  },
+ 
 
   //Tenant
   {
@@ -374,6 +359,19 @@ const routes = [
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'View Payment Request',
       },
+    ]
+  },
+  {
+    path: '', 
+    icon: <BellIcon className={`${iconClasses} inline` }/>, 
+    name: 'Notfication', 
+    submenu : [
+      {
+        path:"/app/add-notfication",
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Notfication ',
+      }
+     
     ]
   },
   {

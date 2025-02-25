@@ -48,6 +48,14 @@ const ItemView = lazy(() => import('../pages/protected/ItemView'))
 const PaymentRequestAdd = lazy(() => import('../pages/protected/PaymentRequestAdd'))
 const PaymentRequestView = lazy(() => import('../pages/protected/PaymentRequestView'))
 
+
+
+//Notfication
+const notficationAdd=lazy(() => import('../pages/protected/Notfication/add'))
+
+
+
+
 const routes = [
   {
     path: '/', // the url
@@ -186,6 +194,10 @@ const routes = [
   {
     path: '/payment-request-view', 
     component: PaymentRequestView, 
+  },
+  {
+    path: '/add-notfication', 
+    component: notficationAdd, 
   }
 
 ]
