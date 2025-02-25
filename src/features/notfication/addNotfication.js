@@ -6,7 +6,8 @@ import * as yup from 'yup';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
 
-const token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZm5hbWUiOiJKb2huIiwibG5hbWUiOiJEb2UiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NDA0NzEwNDksImV4cCI6MTc0MDQ4MTg0OX0.ahiq33k0ae2cAMYQHjFltDlJUVyPD_YEmROQmKo3JoU'
+const token = localStorage.getItem('token');
+const userId = localStorage.getItem('UserId');
 
 // Define the validation schema
 const validationSchema = yup.object().shape({
@@ -36,10 +37,10 @@ const AddNotification = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/users`,{
-            headers:{
-                Authorization:`Bearer ${token}`
-            }
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/users`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
         setUsers(response.data.users.filter(user => user.role === 'employee'));
       } catch (err) {
@@ -49,7 +50,11 @@ const AddNotification = () => {
 
     const fetchTenants = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
         setTenants(response.data);
       } catch (err) {
         console.error('Error fetching tenants', err);
@@ -58,10 +63,10 @@ const AddNotification = () => {
 
     const fetchNotificationTypes = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}notification-type`,{
-            headers:{
-                Authorization:`Bearer ${token}`
-            }
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}notification-type`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
         setNotificationTypes(response.data);
       } catch (err) {
@@ -77,10 +82,21 @@ const AddNotification = () => {
   // Handle form submit
   const onSubmit = async (data) => {
     setLoading(true);
-    data.senderId = 1; // Static senderId for now
+    const payload = {
+      receiver_type: data.receiver_type,
+      receiverId: data.receiver_id, // Adjusted key
+      senderId: userId, // Use senderId from localStorage
+      title: data.title,
+      body: data.body,
+      type_id: data.type_id,
+    };
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}notification/create`, data);
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}notification/create`, payload, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
 
       setModalOpen(true);
       setMessageType('success');
@@ -148,7 +164,7 @@ const AddNotification = () => {
             >
               <option value="">Select Tenant</option>
               {tenants.map(tenant => (
-                <option key={tenant.id} value={tenant.id}>{tenant.name}</option>
+                <option key={tenant.id} value={tenant.id}>{tenant.fullName}</option>
               ))}
             </select>
             {errors.receiver_id && <p className="text-red-500">{errors.receiver_id.message}</p>}
