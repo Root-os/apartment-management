@@ -369,6 +369,30 @@ const routes = [
       {
         path:"/app/add-notfication",
         icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Send Notfication ',
+      },
+      {
+        path:"/app/Send-bulk-notfication",
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Send Bulk Notfication ',
+      },
+      {
+        path:"/app/all-notfication",
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'All Notfication ',
+      }
+
+     
+    ]
+  },
+  {
+    path: '', 
+    icon: <BellIcon className={`${iconClasses} inline` }/>, 
+    name: 'Email', 
+    submenu : [
+      {
+        path:"/app/add-notfication",
+        icon: <PlusIcon className={submenuIconClasses}/>,
         name: 'Add Notfication ',
       },
       {

@@ -53,6 +53,7 @@ const PaymentRequestView = lazy(() => import('../pages/protected/PaymentRequestV
 //Notfication
 const notficationAdd=lazy(() => import('../pages/protected/Notfication/add'))
 const allNotfication=lazy(() => import('../pages/protected/Notfication/viewAll'))
+const bulkNotfication=lazy(() => import('../pages/protected/Notfication/bulkNotfi'))
 
 
 
@@ -201,8 +202,12 @@ const routes = [
     component: notficationAdd, 
   },
   {
-    path: '/all-notfication', 
-    component: allNotfication, 
+    path: '/add-notfication', 
+    component: notficationAdd, 
+  },
+  {
+    path: '/Send-bulk-notfication', 
+    component: bulkNotfication, 
   }
 
 ]

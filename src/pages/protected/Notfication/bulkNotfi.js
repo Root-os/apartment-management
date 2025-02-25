@@ -1,19 +1,19 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { setPageTitle } from '../../../features/common/headerSlice'
-import AddNotification from '../../../features/notfication/addNotfication'
+import BulkNotification from '../../../features/notfication/bulkNotfication'
 
-function AddNotfi(){
+function AddBulkNotfi(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Send Single Notfication"}))
+        dispatch(setPageTitle({ title : "Send Bulk Notfication"}))
       }, [])
 
 
     return(
-        <AddNotification />
+        <BulkNotification />
     )
 }
 
-export default AddNotfi
+export default AddBulkNotfi

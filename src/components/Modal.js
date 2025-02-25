@@ -8,8 +8,8 @@ const Modal = ({ isOpen, onClose, messageType, message }) => {
     : 'bg-red-100 text-red-800 border-red-300';
 
   return (
-    <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
-      <div className={`bg-white rounded-lg shadow-lg max-w-sm w-full p-6 border-2 ${modalStyles}`}>
+    <div className="fixed inset-0 flex justify-center items-center  z-50">
+      <div  className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-sm w-full p-6 border-2 ${modalStyles}`}>
         <div className="flex justify-between items-center">
           <h2 className="font-semibold text-xl">{messageType === 'success' ? 'Success' : 'Error'}</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
