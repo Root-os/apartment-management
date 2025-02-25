@@ -34,6 +34,8 @@ import CreditCardIcon from '@heroicons/react/24/outline/CreditCardIcon'
 import CubeIcon from '@heroicons/react/24/outline/CubeIcon'
 import PaperClipIcon from '@heroicons/react/24/outline/PaperClipIcon'
 import CogIcon from '@heroicons/react/24/outline/CogIcon'
+import EnvelopeIcon from '@heroicons/react/24/outline/EnvelopeIcon'
+
 
 
 
@@ -387,13 +389,13 @@ const routes = [
   },
   {
     path: '', 
-    icon: <BellIcon className={`${iconClasses} inline` }/>, 
+    icon: <EnvelopeIcon className={`${iconClasses} inline` }/>, 
     name: 'Email', 
     submenu : [
       {
-        path:"/app/add-notfication",
+        path:"/app/send-single-email",
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Notfication ',
+        name: 'Send Email ',
       },
       {
         path:"/app/all-notfication",

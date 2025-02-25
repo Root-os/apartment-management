@@ -2,10 +2,10 @@ import React from 'react';
 
 const Modal = ({ isOpen, onClose, messageType, message }) => {
   if (!isOpen) return null;
-
   const modalStyles = messageType === 'success' 
-    ? 'bg-green-100 text-green-800 border-green-300'
-    : 'bg-red-100 text-red-800 border-red-300';
+  ? 'bg-green-100 text-green-800 border-green-300  dark:text-green-200 '
+  : 'bg-red-100 text-red-800 border-red-300  dark:text-red-200 ';
+
 
   return (
     <div className="fixed inset-0 flex justify-center items-center  z-50">
@@ -22,7 +22,7 @@ const Modal = ({ isOpen, onClose, messageType, message }) => {
         <div className="mt-6 flex justify-center">
           <button 
             onClick={onClose} 
-            className={`px-4 py-2 rounded-lg ${messageType === 'success' ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-red-600 text-white hover:bg-red-700'}`}
+            className={`px-4 py-2 rounded-lg ${messageType === 'success' ? 'bg-green-600  text-white hover:bg-green-700' : 'bg-red-600 text-white hover:bg-red-700'}`}
           >
             Close
           </button>

@@ -55,6 +55,9 @@ const notficationAdd=lazy(() => import('../pages/protected/Notfication/add'))
 const allNotfication=lazy(() => import('../pages/protected/Notfication/viewAll'))
 const bulkNotfication=lazy(() => import('../pages/protected/Notfication/bulkNotfi'))
 
+//Email
+const singleEmail=lazy(() => import('../pages/protected/email/addsingleEmail'))
+
 
 
 
@@ -208,6 +211,10 @@ const routes = [
   {
     path: '/all-notfication', 
     component: allNotfication, 
+  },
+  {
+    path: '/send-single-email', 
+    component: singleEmail, 
   }
 
 ]
