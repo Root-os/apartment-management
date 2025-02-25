@@ -202,12 +202,12 @@ const routes = [
     component: notficationAdd, 
   },
   {
-    path: '/add-notfication', 
-    component: notficationAdd, 
-  },
-  {
     path: '/Send-bulk-notfication', 
     component: bulkNotfication, 
+  },
+  {
+    path: '/all-notfication', 
+    component: allNotfication, 
   }
 
 ]

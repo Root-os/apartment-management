@@ -265,7 +265,7 @@ const ViewNotification = () => {
         isOpen={isDeleteModalOpen}
         onRequestClose={() => setIsDeleteModalOpen(false)}
         contentLabel="Delete Confirmation"
-        className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center "
+        className="fixed inset-0  flex justify-center items-center "
         overlayClassName="fixed inset-0 bg-black bg-opacity-30"
       >
         <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg mx-4">
@@ -292,7 +292,7 @@ const ViewNotification = () => {
         isOpen={modalMessage !== ''}
         onRequestClose={() => setModalMessage('')}
         contentLabel="Message"
-        className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+        className="fixed inset-0  flex justify-center items-center"
         overlayClassName="fixed inset-0 bg-black bg-opacity-30"
 
       >
