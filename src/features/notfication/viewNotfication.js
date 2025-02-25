@@ -24,11 +24,13 @@ const ViewNotification = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [notificationTypes, setNotificationTypes] = useState([]);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [modalMessageType, setModalMessageType] = useState('success');
   const [modalMessage, setModalMessage] = useState('');
+
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -78,6 +80,7 @@ const ViewNotification = () => {
       setModalMessage('Notification updated successfully');
       setNotifications(notifications.map(notification => notification.id === selectedNotification.id ? response.data : notification));
       setSelectedNotification(null);
+      setIsEditModalOpen(false);
     } catch (err) {
       setModalMessageType('error');
       setModalMessage(err.response?.data?.message || 'An error occurred while updating the notification.');
@@ -91,7 +94,7 @@ const ViewNotification = () => {
     setLoading(true);
 
     try {
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}notification/delete/${selectedNotification.id}`, {
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}notification/delete-admin/${selectedNotification.id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -101,6 +104,7 @@ const ViewNotification = () => {
       setModalMessage('Notification deleted successfully');
       setNotifications(notifications.filter(notification => notification.id !== selectedNotification.id));
       setIsDeleteModalOpen(false);
+      setSelectedNotification(null);
     } catch (err) {
       setModalMessageType('error');
       setModalMessage(err.response?.data?.message || 'An error occurred while deleting the notification.');
@@ -116,6 +120,7 @@ const ViewNotification = () => {
     setValue('body', notification.body);
     setValue('type_id', notification.type_id);
     setValue('isRead', notification.isRead);
+    setIsEditModalOpen(true);
   };
 
   // Open delete confirmation modal
@@ -127,7 +132,7 @@ const ViewNotification = () => {
   const columns = [
     { key: 'title', label: 'Title' },
     { key: 'body', label: 'Body' },
-    { key: 'type', label: 'Type', render: (notification) => notification.type?.name },
+    { key: 'type', label: 'Type', render: (notification) => notification.type ? notification.type.name : 'N/A' },
     { key: 'receiver_type', label: 'Receiver Type' },
     { 
         key: 'isRead', 
@@ -177,9 +182,9 @@ const ViewNotification = () => {
       )}
 
       {/* Edit Form */}
-      {selectedNotification && (
+      {isEditModalOpen && selectedNotification && (
         <div className="fixed inset-0 mt-10 flex justify-center items-center">
-          <div className="bg-white dark:bg-gray-700 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl mb-4">Edit Notification</h2>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
@@ -237,7 +242,7 @@ const ViewNotification = () => {
               <div className="flex justify-between">
                 <button
                   type="button"
-                  onClick={() => setSelectedNotification(null)}
+                  onClick={() => setIsEditModalOpen(false)}
                   className="bg-gray-400 text-white px-4 py-2 rounded"
                 >
                   Close
@@ -260,9 +265,10 @@ const ViewNotification = () => {
         isOpen={isDeleteModalOpen}
         onRequestClose={() => setIsDeleteModalOpen(false)}
         contentLabel="Delete Confirmation"
-        className="fixed inset-0  flex justify-center items-center"
+        className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center "
+        overlayClassName="fixed inset-0 bg-black bg-opacity-30"
       >
-        <div className="bg-white p-6 rounded-lg w-full max-w-lg mx-4">
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg mx-4">
           <h2 className="text-xl mb-4">Are you sure you want to delete this notification?</h2>
           <div className="flex justify-between">
             <button
@@ -286,10 +292,11 @@ const ViewNotification = () => {
         isOpen={modalMessage !== ''}
         onRequestClose={() => setModalMessage('')}
         contentLabel="Message"
-        className="fixed inset-0   flex justify-center items-center"
-         overlayClassName="fixed inset-0 bg-black bg-opacity-30"
+        className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-30"
+
       >
-        <div className="bg-white p-6 rounded-lg w-full max-w-lg mx-4">
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg mx-4">
           <h2 className={`text-xl mb-4 ${modalMessageType === 'success' ? 'text-green-500' : 'text-red-500'}`}>
             {modalMessageType === 'success' ? 'Success' : 'Error'}
           </h2>
