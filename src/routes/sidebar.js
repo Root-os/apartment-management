@@ -30,6 +30,12 @@ import PhoneIcon from '@heroicons/react/24/outline/PhoneIcon'
 import BriefcaseIcon from '@heroicons/react/24/outline/BriefcaseIcon'
 import GlobeAltIcon from '@heroicons/react/24/outline/GlobeAltIcon'
 import FilmIcon from '@heroicons/react/24/outline/FilmIcon'
+import CreditCardIcon from '@heroicons/react/24/outline/CreditCardIcon'
+import CubeIcon from '@heroicons/react/24/outline/CubeIcon'
+import PaperClipIcon from '@heroicons/react/24/outline/PaperClipIcon'
+import CogIcon from '@heroicons/react/24/outline/CogIcon'
+
+
 
 
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon'
@@ -167,7 +173,7 @@ const routes = [
   },
   {
     path: '', 
-    icon: <WalletIcon className={`${iconClasses} inline` }/>, 
+    icon: <CreditCardIcon className={`${iconClasses} inline` }/>, 
     name: 'Expense', 
     submenu : [
       {
@@ -178,7 +184,24 @@ const routes = [
       {
         path: '/app/expense-view',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Expenses ',
+        name: 'Expense ',
+      },
+    ]
+  },
+  {
+    path: '', 
+    icon: <CreditCardIcon className={`${iconClasses} inline` }/>, 
+    name: 'Expense Type', 
+    submenu : [
+      {
+        path: '/app/expense-type-add',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Expense Type',
+      },
+      {
+        path: '/app/expense-type-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Expense Types ',
       },
     ]
   },
@@ -247,6 +270,74 @@ const routes = [
         path: '/app/parking-view',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Parking Informations ',
+      },
+    ]
+  },
+  {
+    path: '', 
+    icon: <CubeIcon className={`${iconClasses} inline` }/>, 
+    name: 'Inventory Item Types', 
+    submenu : [
+      {
+        path: '/app/item-type-add',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Item Type',
+      },
+      {
+        path: '/app/item-type-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View Item Type',
+      },
+    ]
+  },
+  {
+    path: '', 
+    icon: <CubeIcon className={`${iconClasses} inline` }/>, 
+    name: 'Inventory Item', 
+    submenu : [
+      {
+        path: '/app/item-add',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Item ',
+      },
+      {
+        path: '/app/item-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View Items',
+      },
+    ]
+  },
+  {
+    path: '', 
+    icon: <PaperClipIcon className={`${iconClasses} inline` }/>, 
+    name: 'Payment Request', 
+    submenu : [
+      {
+        path: '/app/payment-request-add',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Payment Request',
+      },
+      {
+        path: '/app/payment-request-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View Payment Request',
+      },
+    ]
+  },
+  {
+    path: '', 
+    icon: <CogIcon className={`${iconClasses} inline` }/>, 
+    name: 'Settings', 
+    submenu : [
+      {
+        path: '/app/',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add ',
+      },
+      {
+        path: '/app/',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View ',
       },
     ]
   },
