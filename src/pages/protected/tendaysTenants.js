@@ -1,19 +1,19 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { setPageTitle } from '../../features/common/headerSlice'
-import ViewBillPayment from '../../features/tenant-bill-payment/viewTenantBills'
+import TenDaysTenant from '../../features/tenant/tendaysTenants'
 
-function InternalPage(){
+function TenDays(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Get Tenant Payment"}))
+        dispatch(setPageTitle({ title : "Ten Days Tenant List"}))
       }, [])
 
 
     return(
-        <ViewBillPayment />
+        <TenDaysTenant />
     )
 }
 
-export default InternalPage
+export default TenDays

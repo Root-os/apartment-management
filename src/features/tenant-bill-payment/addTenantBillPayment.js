@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Modal from '../../components/Modal';
 
 const AddBillPayment = () => {
   const [tenantId, setTenantId] = useState("");
@@ -8,11 +9,50 @@ const AddBillPayment = () => {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [status, setStatus] = useState("Pending");
+  const [tenants, setTenants] = useState([]);
+  const [billTypes, setBillTypes] = useState([]);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Fetch tenants
+    const fetchTenants = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
+        setTenants(response.data);
+      } catch (error) {
+        console.error("Error fetching tenants:", error);
+      }
+    };
+
+    // Fetch bill types
+    const fetchBillTypes = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-type`);
+        setBillTypes(response.data);
+      } catch (error) {
+        console.error("Error fetching bill types:", error);
+      }
+    };
+
+    fetchTenants();
+    fetchBillTypes();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Start loading
+
+    if (!tenantId || !billPaymentTypeId) {
+      setError("Please select a tenant and a bill payment type.");
+      setIsSuccess(false);
+      setIsModalOpen(true);
+      setIsLoading(false); // Stop loading
+      return;
+    }
 
     const payload = {
       tenantId: parseInt(tenantId),
@@ -24,14 +64,20 @@ const AddBillPayment = () => {
     };
 
     try {
-      const response = await axios.post("https://apartment.houseethiopia.com/api/tenant-payments", payload);
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}tenant-payments`, payload);
       setSuccessMessage("Payment added successfully!");
       setError(null);
-      console.log(response.data);  // Log the response for debugging
+      setIsSuccess(true);
+      setIsModalOpen(true);
+      console.log(response.data);  
     } catch (error) {
       setError("Error adding payment. Please try again.");
       setSuccessMessage(null);
+      setIsSuccess(false);
+      setIsModalOpen(true);
       console.error(error);
+    } finally {
+      setIsLoading(false); // Stop loading
     }
   };
 
@@ -39,48 +85,56 @@ const AddBillPayment = () => {
     <div className="container mx-auto p-4">
       <h2 className="text-2xl font-bold mb-6">Add Bill Payment</h2>
 
-      {/* Success or Error Message */}
-      {successMessage && (
-        <div className="bg-green-500 text-white p-2 mb-4 rounded">{successMessage}</div>
-      )}
-      {error && (
-        <div className="bg-red-500 text-white p-2 mb-4 rounded">{error}</div>
-      )}
-
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Tenant ID */}
         <div>
-          <label htmlFor="tenantId" className="block text-sm font-medium text-gray-700">Tenant ID</label>
-          <input
-            type="number"
+          <label htmlFor="tenantId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tenant</label>
+          <select
             id="tenantId"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded text-gray-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
             value={tenantId}
             onChange={(e) => setTenantId(e.target.value)}
             required
-          />
+          >
+            <option value="" disabled>Select Tenant</option>
+            {tenants.length > 0 ? (
+              tenants.map((tenant) => (
+                <option key={tenant.id} value={tenant.id} className="text-black dark:text-gray-300">{tenant.fullName}</option>
+              ))
+            ) : (
+              <option disabled>No tenants available</option>
+            )}
+          </select>
         </div>
 
         {/* Bill Payment Type ID */}
         <div>
-          <label htmlFor="billPaymentTypeId" className="block text-sm font-medium text-gray-700">Bill Payment Type ID</label>
-          <input
-            type="number"
+          <label htmlFor="billPaymentTypeId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Bill Payment Type</label>
+          <select
             id="billPaymentTypeId"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded text-gray-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
             value={billPaymentTypeId}
             onChange={(e) => setBillPaymentTypeId(e.target.value)}
             required
-          />
+          >
+            <option value="" disabled>Select Bill Payment Type</option>
+            {billTypes.length > 0 ? (
+              billTypes.map((billType) => (
+                <option key={billType.id} value={billType.id} className="text-black dark:text-gray-300">{billType.typeName}</option>
+              ))
+            ) : (
+              <option disabled>No bill payment types available</option>
+            )}
+          </select>
         </div>
 
         {/* Amount */}
         <div>
-          <label htmlFor="amount" className="block text-sm font-medium text-gray-700">Amount</label>
+          <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Amount</label>
           <input
             type="number"
             id="amount"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             required
@@ -89,11 +143,11 @@ const AddBillPayment = () => {
 
         {/* Start Date */}
         <div>
-          <label htmlFor="startDate" className="block text-sm font-medium text-gray-700">Start Date</label>
+          <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label>
           <input
             type="date"
             id="startDate"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             required
@@ -102,11 +156,11 @@ const AddBillPayment = () => {
 
         {/* End Date */}
         <div>
-          <label htmlFor="endDate" className="block text-sm font-medium text-gray-700">End Date</label>
+          <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">End Date</label>
           <input
             type="date"
             id="endDate"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             required
@@ -115,10 +169,10 @@ const AddBillPayment = () => {
 
         {/* Status */}
         <div>
-          <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
+          <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
           <select
             id="status"
-            className="w-full p-2 border border-gray-300 rounded"
+            className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
             value={status}
             onChange={(e) => setStatus(e.target.value)}
             required
@@ -133,12 +187,22 @@ const AddBillPayment = () => {
         <div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
+            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:text-gray-300"
           >
-            Add Payment
+            {isLoading ? "Processing..." : "Add Payment"}
           </button>
         </div>
       </form>
+
+      {/* Modal for displaying success or error message */}
+      {isModalOpen && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          type={isSuccess ? "success" : "error"}
+          message={isSuccess ? successMessage : error}
+        />
+      )}
     </div>
   );
 };

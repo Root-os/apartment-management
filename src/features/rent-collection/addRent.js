@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import TitleCard from '../../components/Cards/TitleCard'
+import TitleCard from '../../components/Cards/TitleCard';
+import Modal from '../../components/Modal';
 
 const AddCollectedRent = () => {
-  // States for form inputs
   const [tenantId, setTenantId] = useState('');
   const [amountPaid, setAmountPaid] = useState('');
   const [paymentDate, setPaymentDate] = useState('');
@@ -12,36 +12,33 @@ const AddCollectedRent = () => {
   const [nextDueDate, setNextDueDate] = useState('');
   const [status, setStatus] = useState('paid');
 
-  // States for loading, success, and error messages
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // State for tenant data
   const [tenants, setTenants] = useState([]);
 
-  // Fetch tenant data from the API
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/tenant');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
         setTenants(response.data);
       } catch (err) {
         setError('Failed to fetch tenant data.');
+        setIsModalOpen(true);
       }
     };
 
     fetchTenants();
   }, []);
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
     setError('');
 
-    // Prepare the payload data
     const payload = {
       tenantId: parseInt(tenantId),
       amountPaid: parseFloat(amountPaid),
@@ -53,24 +50,20 @@ const AddCollectedRent = () => {
     };
 
     try {
-      // Send POST request to the rent collection API
-      const response = await axios.post('https://apartment.houseethiopia.com/api/rent-collection', payload);
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}rent-collection`, payload);
       setLoading(false);
       setMessage(response.data.message); // Display success message
+      setIsModalOpen(true);
     } catch (err) {
       setLoading(false);
       setError('Error adding rent collection. Please try again.'); // Display error message
+      setIsModalOpen(true);
     }
   };
 
   return (
-   <>
-   <TitleCard title="Add Collected Rent">
-
-        {/* Success or Error Message */}
-        {message && <div className="text-green-500 text-center mb-4">{message}</div>}
-        {error && <div className="text-red-500 text-center mb-4">{error}</div>}
-
+    <>
+      <TitleCard title="Add Collected Rent">
         {/* Rent Collection Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Tenant Dropdown */}
@@ -129,8 +122,8 @@ const AddCollectedRent = () => {
               required
             >
               <option value="Cash">Cash</option>
-              <option value="Bank Transfer">Bank Transfer</option>
-              <option value="Mobile Payment">Mobile Payment</option>
+              <option value="Bank">Bank</option>
+              <option value="Mobile">Mobile</option>
             </select>
           </div>
 
@@ -144,9 +137,9 @@ const AddCollectedRent = () => {
               className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
-              <option value="by day">By Day</option>
-              <option value="by week">By Week</option>
-              <option value="by month">By Month</option>
+              <option value="Monthly">Monthly</option>
+              <option value="Quarterly">Quarterly</option>
+              <option value="Yearly">Yearly</option>
             </select>
           </div>
 
@@ -174,7 +167,7 @@ const AddCollectedRent = () => {
               required
             >
               <option value="paid">Paid</option>
-              <option value="pending">Pending</option>
+              <option value="pending">pending</option>
             </select>
           </div>
 
@@ -187,8 +180,26 @@ const AddCollectedRent = () => {
             {loading ? 'Submitting...' : 'Submit Rent Payment'}
           </button>
         </form>
-        </TitleCard>
-        </>
+      </TitleCard>
+
+      {/* Success and Error Modals */}
+      {message && (
+        <Modal
+          isOpen={true}
+          onClose={() => setMessage('')}
+          type="success"
+          message={message}
+        />
+      )}
+      {error && (
+        <Modal
+          isOpen={true}
+          onClose={() => setError('')}
+          type="error"
+          message={error}
+        />
+      )}
+    </>
   );
 };
 

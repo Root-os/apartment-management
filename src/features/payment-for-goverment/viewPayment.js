@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Modal from 'react-modal';
 import TableComponent from '../../components/table';
-import {FaSearch} from 'react-icons/fa';
+import Modal from 'react-modal';
 
 const GovBillPaymentPage = () => {
   const [billPayments, setBillPayments] = useState([]);
@@ -12,7 +11,6 @@ const GovBillPaymentPage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState(null);
-  const [selectedStatus, setSelectedStatus] = useState('');
   const [editData, setEditData] = useState({
     billTypeId: '',
     amount: '',
@@ -22,11 +20,12 @@ const GovBillPaymentPage = () => {
     paymentMethod: '',
     description: '',
   });
+  const [filterStatus, setFilterStatus] = useState('');
 
   useEffect(() => {
     const fetchBillPayments = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/bill-payments');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-payments`);
         setBillPayments(response.data);
       } catch (err) {
         setError('An error occurred while fetching the bill payments.');
@@ -37,7 +36,7 @@ const GovBillPaymentPage = () => {
 
     const fetchBillTypes = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/bill-type');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-type`);
         setBillTypes(response.data);
       } catch (err) {
         setError('An error occurred while fetching the bill types.');
@@ -47,31 +46,6 @@ const GovBillPaymentPage = () => {
     fetchBillPayments();
     fetchBillTypes();
   }, []);
-
-  const handleStatusChange = (status) => {
-    setSelectedStatus(status);
-  };
-
-  const handleSearchClick = async () => {
-    try {
-      let response;
-      if (selectedStatus === "paid") {
-        response = await axios.get('https://apartment.houseethiopia.com/api/bill-payments/by-status/paid');
-      } else if (selectedStatus === "unpaid") {
-        response = await axios.get('https://apartment.houseethiopia.com/api/bill-payments/by-status/unpaid');
-      } else {
-        response = await axios.get('https://apartment.houseethiopia.com/api/bill-payments');
-      }
-      if (response.data.length === 0) {
-        setError('No bills found.');
-      } else {
-        setError(null);
-      }
-      setBillPayments(response.data);
-    } catch (err) {
-      setError('An error occurred while fetching the bill payments.');
-    }
-  };
 
   const handleEditClick = (payment) => {
     setSelectedPayment(payment);
@@ -89,7 +63,7 @@ const GovBillPaymentPage = () => {
 
   const handleEditSubmit = async () => {
     try {
-      await axios.put(`https://apartment.houseethiopia.com/api/bill-payments/${selectedPayment.id}`, editData);
+      await axios.put(`${process.env.REACT_APP_BASE_URL}bill-payments/${selectedPayment.id}`, editData);
       setBillPayments(billPayments.map((payment) => (payment.id === selectedPayment.id ? { ...payment, ...editData } : payment)));
       setIsEditModalOpen(false);
     } catch (err) {
@@ -104,7 +78,7 @@ const GovBillPaymentPage = () => {
 
   const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(`https://apartment.houseethiopia.com/api/bill-payments/${selectedPayment.id}`);
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}bill-payments/${selectedPayment.id}`);
       setBillPayments(billPayments.filter((payment) => payment.id !== selectedPayment.id));
       setIsDeleteModalOpen(false);
     } catch (err) {
@@ -112,106 +86,98 @@ const GovBillPaymentPage = () => {
     }
   };
 
+  const handleFilterChange = async (e) => {
+    const status = e.target.value;
+    setFilterStatus(status);
+
+    if (status) {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-payments/by-status/${status}`);
+        setBillPayments(response.data);
+      } catch (err) {
+        setError('An error occurred while filtering the bill payments.');
+      }
+    } else {
+      // Fetch all bill payments if no status is selected
+      const fetchBillPayments = async () => {
+        try {
+          const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-payments`);
+          setBillPayments(response.data);
+        } catch (err) {
+          setError('An error occurred while fetching the bill payments.');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchBillPayments();
+    }
+  };
+
   const columns = [
+    { key: 'billType', label: 'Bill Type', render: (payment) => payment.BillType?.typeName },
+    { key: 'amount', label: 'Amount' },
+    { key: 'startDate', label: 'Start Date', render: (payment) => new Date(payment.startDate).toLocaleDateString() },
+    { key: 'endDate', label: 'End Date', render: (payment) => new Date(payment.endDate).toLocaleDateString() },
+    { key: 'status', label: 'Status' },
+    { key: 'paymentMethod', label: 'Payment Method' },
+    { key: 'description', label: 'Description' },
     {
-      label: "Bill Type",
-      key: "BillPaymentType.typeName",
-      Cell: ({ row }) => row.BillPaymentType ? row.BillPaymentType.typeName : 'N/A',
-    },
-    {
-      label: "Amount",
-      key: "amount",
-    },
-    {
-      label: "Start Date",
-      key: "startDate",
-      Cell: ({ value }) => new Date(value).toLocaleDateString(),
-    },
-    {
-      label: "End Date",
-      key: "endDate",
-      Cell: ({ value }) => new Date(value).toLocaleDateString(),
-    },
-    {
-      label: "Status",
-      key: "status",
-    },
-    {
-      label: "Payment Method",
-      key: "paymentMethod",
-    },
-    {
-      label: "Description",
-      key: "description",
-    },
-    {
-      label: "Actions",
-      key: "actions",
-      render: (row ) => (
+      key: 'actions',
+      label: 'Actions',
+      render: (payment) => (
         <div className="flex space-x-2">
           <button
-            onClick={() => handleEditClick(row)}
-            className="bg-blue-500 text-white py-1 px-2 rounded"
+            onClick={() => handleEditClick(payment)}
+            className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-700"
           >
             Edit
           </button>
           <button
-            onClick={() => handleDeleteClick(row)}
-            className="bg-red-500 text-white py-1 px-2 rounded"
+            onClick={() => handleDeleteClick(payment)}
+            className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-700"
           >
             Delete
           </button>
         </div>
-      ),
-    },
+      )
+    }
   ];
 
-  const statusFilter = (
-    <div className="flex items-center mb-4">
-      <select
-        value={selectedStatus}
-        onChange={(e) => handleStatusChange(e.target.value)}
-        className="mr-2 px-4 py-2 rounded bg-gray-200 text-black"
-      >
-        <option value="">Select Status</option>
-        <option value="paid">Paid</option>
-        <option value="unpaid">Unpaid</option>
-      </select>
-      <button
-        className="bg-blue-500 text-white px-4 py-2 rounded"
-        onClick={handleSearchClick}
-      >
-        <FaSearch /> Search
-      </button>
-    </div>
-  );
-  const handleAddClick = () => {
-    window.location.href = '/payment-government-add'
-  };
-
   return (
-    <div className="p-6">
-
+    <div className="p-8">
+      <h1 className="text-2xl font-bold text-center mb-6">Bill Payments</h1>
       {error && (
         <div className="p-4 mb-6 bg-red-100 text-red-700 border border-red-400 rounded-md">
           {error}
         </div>
       )}
+      <div className="mb-4">
+        <label htmlFor="filterStatus" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Status</label>
+        <select
+          id="filterStatus"
+          value={filterStatus}
+          onChange={handleFilterChange}
+          className=" mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <option value="">Select Status</option>
+          <option value="pending">Pending</option>
+          <option value="paid">Paid</option>
+        </select>
+      </div>
       {loading ? (
         <div className="text-center">
           <p>Loading...</p>
         </div>
       ) : (
         <TableComponent
-        title="Bill Payments"
-        data={billPayments}
-        columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
-        showSearch={true}
-        exportable={true}
-        statusFilter={statusFilter}
-        onAdd={handleAddClick}
-      />
+          title="Bill Payments"
+          data={billPayments}
+          columns={columns}
+          rowsPerPageOptions={[5, 10, 15]}
+          showSearch={true}
+          exportable={true}
+        />
       )}
 
       {/* Edit Modal */}
@@ -222,7 +188,7 @@ const GovBillPaymentPage = () => {
           contentLabel="Edit Bill Payment"
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
         >
-          <div className="bg-base-100  p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
+          <div className="bg-white p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl mb-4">Edit Bill Payment</h2>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Bill Type</label>
@@ -231,11 +197,11 @@ const GovBillPaymentPage = () => {
                 onChange={(e) => setEditData({ ...editData, billTypeId: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
               >
-                 {billTypes.map((billType) => (
-                <option key={billType.id} value={billType.id}>
-                  {billType.typeName}
-                </option>
-              ))}
+                {billTypes.map((billType) => (
+                  <option key={billType.id} value={billType.id}>
+                    {billType.typeName}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="mb-4">
@@ -274,7 +240,7 @@ const GovBillPaymentPage = () => {
               >
                 <option value="Pending">Pending</option>
                 <option value="Paid">Paid</option>
-                <option value="unPaid">unPaid</option>
+                <option value="Overdue">Overdue</option>
               </select>
             </div>
             <div className="mb-4">
@@ -320,7 +286,7 @@ const GovBillPaymentPage = () => {
           contentLabel="Delete Confirmation"
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
         >
-          <div className="bg-base-100 p-6 rounded-lg w-96">
+          <div className="bg-white p-6 rounded-lg w-full max-w-lg mx-4">
             <h2 className="text-xl mb-4">Are you sure you want to delete this bill payment?</h2>
             <div className="flex justify-between">
               <button
