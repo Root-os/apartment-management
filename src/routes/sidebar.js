@@ -37,15 +37,8 @@ import CogIcon from '@heroicons/react/24/outline/CogIcon'
 import EnvelopeIcon from '@heroicons/react/24/outline/EnvelopeIcon'
 
 
-
-
-
-
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon'
 import EyeIcon from '@heroicons/react/24/outline/EyeIcon'
-
-
-
 
 
 
@@ -108,21 +101,6 @@ const routes = [
   // },
   //
   
-//User
-{
-path:'',
-icon: <HomeIcon className={`${iconClasses} inline` }/>, 
-name: 'User', 
-submenu : [
-  {
-    path: '/app/All-User',
-    icon: <EyeIcon className={submenuIconClasses}/>,
-    name: 'All User',
-  },]
-},
-
-
-  //Home
 
   {
     path: '', 
@@ -141,9 +119,6 @@ submenu : [
       },
     ]
   },
-
-
-  //unit
   {
     path: '', 
     icon: <BuildingOffice2Icon className={`${iconClasses} inline` }/>, 
@@ -161,10 +136,6 @@ submenu : [
       },
     ]
   },
-
-
-  //Bill Type
-
   {
     path: '', 
     icon: <DocumentDuplicateIcon className={`${iconClasses} inline` }/>, 
@@ -182,8 +153,6 @@ submenu : [
       },
     ]
   },
-
-  //Bill Payment for Gov.t
   {
     path: '', 
     icon: <DocumentDuplicateIcon className={`${iconClasses} inline` }/>, 
@@ -201,8 +170,6 @@ submenu : [
       },
     ]
   },
-
-  //Expense
   {
     path: '', 
     icon: <CreditCardIcon className={`${iconClasses} inline` }/>, 
@@ -237,9 +204,6 @@ submenu : [
       },
     ]
   },
- 
-
-  //Tenant
   {
     path: '', 
     icon: <UserIcon className={`${iconClasses} inline` }/>, 
@@ -255,20 +219,8 @@ submenu : [
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Tenants ',
       },
-      {
-        path: '/app/ten-days-tenant',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Ten Days Tenants ',
-      },
-      {
-        path: '/app/tenant-filter',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Tenant Filter ',
-      },
     ]
   },
-
-  //Bills Paid by Tenant
   {
     path: '', 
     icon: <WalletIcon className={`${iconClasses} inline` }/>, 
@@ -286,8 +238,6 @@ submenu : [
       },
     ]
   },
-
-  //Rent collection
   {
     path: '', 
     icon: <WalletIcon className={`${iconClasses} inline` }/>, 
@@ -305,8 +255,6 @@ submenu : [
       },
     ]
   },
-
-  //Parking
   {
     path: '', 
     icon: <WalletIcon className={`${iconClasses} inline` }/>, 
@@ -324,7 +272,6 @@ submenu : [
       },
     ]
   },
-
   {
     path: '', 
     icon: <CubeIcon className={`${iconClasses} inline` }/>, 
@@ -379,6 +326,57 @@ submenu : [
   {
     path: '', 
     icon: <BellIcon className={`${iconClasses} inline` }/>, 
+    name: 'Notfication Type', 
+    submenu : [
+      {
+        path: '/app/notfication-type-add',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Notfication Type',
+      },
+      {
+        path: '/app/notfication-type-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View Notfication Type',  
+      },
+    ]
+  },
+  {
+    path: '', 
+    icon: <GlobeAltIcon className={`${iconClasses} inline` }/>, 
+    name: 'Charging', 
+    submenu : [
+      {
+        path: '/app/charging-add',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Charging',
+      },
+      {
+        path: '/app/charging-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View Charging Info',  
+      },
+    ]
+  },
+  {
+    path: '', 
+    icon: <CogIcon className={`${iconClasses} inline` }/>, 
+    name: 'Settings', 
+    submenu : [
+      {
+        path: '/app/',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add ',
+      },
+      {
+        path: '/app/',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View ',
+      },
+    ]
+  },
+  {
+    path: '', 
+    icon: <BellIcon className={`${iconClasses} inline` }/>, 
     name: 'Notfication', 
     submenu : [
       {
@@ -400,7 +398,28 @@ submenu : [
      
     ]
   },
-  //Reports
+  {
+    path: '', 
+    icon: <EnvelopeIcon className={`${iconClasses} inline` }/>, 
+    name: 'Email', 
+    submenu : [
+      {
+        path:"/app/send-single-email",
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Send Email ',
+      },
+      {
+        path:"/app/send-bulk-email",
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Send Bulk Email ',
+      },
+      {
+        path:"/app/send-emails",
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'All Emails ',
+      }
+    ]
+  },
   {
     path: '', 
     icon: <EnvelopeIcon className={`${iconClasses} inline` }/>, 
@@ -429,65 +448,10 @@ submenu : [
     },
 
 
-     
     ]
   },
-  //email
-  {
-    path: '', 
-    icon: <EnvelopeIcon className={`${iconClasses} inline` }/>, 
-    name: 'Email', 
-    submenu : [
-      {
-        path:"/app/send-single-email",
-        icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Send Email ',
-      },
-      {
-        path:"/app/send-bulk-email",
-        icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Send Bulk Email ',
-      },
-      {
-        path:"/app/send-emails",
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'All Emails ',
-      }
-
-     
-    ]
-  },
-  {
-    path: '', 
-    icon: <CogIcon className={`${iconClasses} inline` }/>, 
-    name: 'Settings', 
-    submenu : [
-      {
-        path: '/app/',
-        icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add ',
-      },
-      {
-        path: '/app/',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'View ',
-      },
-
-    
-      
-      //profile
-      {
-        path: '/app/profile',
-        icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Update Profile',
-      },
-      {
-        path: '/app/profile',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'View Profile',
-      },
-    ]
-  },
+  
 ]
 
 export default routes
+

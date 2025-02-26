@@ -53,20 +53,6 @@ const AddExpense = () => {
   return (
     <><TitleCard title={'Add Expense'}>
 
-      {/* Error Message */}
-      {error && (
-        <div className="p-4 mb-6 bg-red-100 text-red-700 border border-red-400 rounded-md">
-          {error}
-        </div>
-      )}
-
-      {/* Success Message */}
-      {successMessage && (
-        <div className="p-4 mb-6 bg-green-100 text-green-700 border border-green-400 rounded-md">
-          {successMessage}
-        </div>
-      )}
-
       {/* Expense Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>

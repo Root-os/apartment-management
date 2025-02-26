@@ -8,12 +8,12 @@ const Blank = lazy(() => import('../pages/protected/Blank'))
 const Bills = lazy(() => import('../pages/protected/Bills'))
 const ProfileSettings = lazy(() => import('../pages/protected/ProfileSettings'))
 
-
-//floor
 const FloorAdd = lazy(() => import('../pages/protected/FloorAdd'))
 const FloorView = lazy(() => import('../pages/protected/FloorView'))
+
 const UnitAdd = lazy(() => import('../pages/protected/UnitAdd'))
 const UnitView = lazy(() => import('../pages/protected/UnitView'))
+
 const BillPaymentView = lazy(() => import('../pages/protected/BillPaymentView'))
 const BillPaymentAdd = lazy(() => import('../pages/protected/BillPaymentAdd'))
 
@@ -38,8 +38,7 @@ const RentView = lazy(() => import('../pages/protected/RentView'))
 
 const ParkingAdd = lazy(() => import('../pages/protected/ParkingAdd'))
 const ParkingView = lazy(() => import('../pages/protected/ParkingView'))
-
-
+ //inventory
 const ItemTypeAdd = lazy(() => import('../pages/protected/ItemTypeAdd'))
 const ItemTypeView = lazy(() => import('../pages/protected/ItemTypeView'))
 const ItemAdd = lazy(() => import('../pages/protected/ItemAdd'))
@@ -47,8 +46,6 @@ const ItemView = lazy(() => import('../pages/protected/ItemView'))
 
 const PaymentRequestAdd = lazy(() => import('../pages/protected/PaymentRequestAdd'))
 const PaymentRequestView = lazy(() => import('../pages/protected/PaymentRequestView'))
-
-
 
 //Notfication
 const notficationAdd=lazy(() => import('../pages/protected/Notfication/add'))
@@ -60,15 +57,25 @@ const singleEmail=lazy(() => import('../pages/protected/email/addsingleEmail'))
 const BulkEmail=lazy(() => import ('../pages/protected/email/bulkEmail'))
 const sentEmails=lazy(() => import('../pages/protected/email/sentEmail'))
 
+const NotificationTypeAdd = lazy(() => import('../pages/protected/NotificationTypeAdd'))
+const NotificationTypeView = lazy(() => import('../pages/protected/NotificationTypeView'))
+
+//User
+const ALlUser=lazy(() => import ('../pages/protected/user/alluser'))
+
+const ChargingAdd = lazy(() => import('../pages/protected/ChargingAdd'))
+const ChargingView = lazy(() => import('../pages/protected/ChargingView'))
+
 //Report
 const GovtReport=lazy(() => import('../pages/protected/Report/govtBillReport'))
 const TenantReportPage=lazy(() => import('../pages/protected/Report/tenantBillReport'))
 const TenantReportPageTwo=lazy(() => import('../pages/protected/Report/tenantReport'))
-const expenseReport=lazy(() => import('../pages/protected/Report/ExpenseReport'))
+const ExpenseReportPage=lazy(() => import('../pages/protected/Report/ExpenseReport'))   
 
 
-//User
-const ALlUser=lazy(() => import ('../pages/protected/user/alluser'))
+
+
+
 
 const routes = [
   {
@@ -150,6 +157,15 @@ const routes = [
     component: TenantView, 
   },
   {
+    path: '/tenant-bill-view', 
+    component: TenantBillAdd, 
+  },
+  {
+    path: '/tenant-bill-add', 
+    component: TenantBillView, 
+  },
+  
+  {
     path: '/ten-days-tenant', 
     component: TenDays, 
   },
@@ -157,18 +173,7 @@ const routes = [
     path: '/tenant-filter', 
     component: TenantFilter, 
   },
-  
-  
 
-
-  {
-    path: '/tenant-bill-add', 
-    component: TenantBillAdd, 
-  },
-  {
-    path: '/tenant-bill-view', 
-    component: TenantBillView, 
-  },
   {
     path: '/rent-collection-add', 
     component: RentAdd, 
@@ -209,9 +214,25 @@ const routes = [
     path: '/payment-request-view', 
     component: PaymentRequestView, 
   },
-
-  //notfication
   {
+    path: '/notfication-type-add', 
+    component: NotificationTypeAdd, 
+  },
+  {
+    path: '/notfication-type-view', 
+    component: NotificationTypeView, 
+  },
+  {
+    path: '/Charging-add', 
+    component: ChargingAdd, 
+  },
+  {
+    path: '/Charging-view', 
+    component: ChargingView, 
+  },
+
+   //notfication
+   {
     path: '/add-notfication', 
     component: notficationAdd, 
   },
@@ -238,13 +259,10 @@ const routes = [
     component: sentEmails, 
   },
 
-  //User
   {
     path: '/All-User', 
     component: ALlUser, 
   },
-
-  
   //Report
   {
     path: '/govt-bill-report', 
@@ -260,8 +278,9 @@ const routes = [
   },
   {
     path: '/expense-report', 
-    component: expenseReport, 
+    component: ExpenseReportPage, 
   },
+  
   
 
   
