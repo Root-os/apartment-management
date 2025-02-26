@@ -28,9 +28,10 @@ const ExpenseTypeView = lazy(() => import('../pages/protected/ExpenseTypeView'))
 
 const TenantAdd = lazy(() => import('../pages/protected/TenantAdd'))
 const TenantView = lazy(() => import('../pages/protected/TenantView'))
-
 const TenantBillAdd = lazy(() => import('../pages/protected/TenantBillAdd'))
 const TenantBillView = lazy(() => import('../pages/protected/TenantBillView'))
+const TenDays = lazy(() => import('../pages/protected/tendaysTenants'))
+const TenantFilter = lazy(() => import('../pages/protected/tenantfilterlist'))
 
 const RentAdd = lazy(() => import('../pages/protected/RentAdd'))
 const RentView = lazy(() => import('../pages/protected/RentView'))
@@ -46,11 +47,29 @@ const ItemView = lazy(() => import('../pages/protected/ItemView'))
 const PaymentRequestAdd = lazy(() => import('../pages/protected/PaymentRequestAdd'))
 const PaymentRequestView = lazy(() => import('../pages/protected/PaymentRequestView'))
 
+//Notfication
+const notficationAdd=lazy(() => import('../pages/protected/Notfication/add'))
+const allNotfication=lazy(() => import('../pages/protected/Notfication/viewAll'))
+const bulkNotfication=lazy(() => import('../pages/protected/Notfication/bulkNotfi'))
+
+//Email
+const singleEmail=lazy(() => import('../pages/protected/email/addsingleEmail'))
+const BulkEmail=lazy(() => import ('../pages/protected/email/bulkEmail'))
+const sentEmails=lazy(() => import('../pages/protected/email/sentEmail'))
+
 const NotificationTypeAdd = lazy(() => import('../pages/protected/NotificationTypeAdd'))
 const NotificationTypeView = lazy(() => import('../pages/protected/NotificationTypeView'))
 
+//User
+const ALlUser=lazy(() => import ('../pages/protected/user/alluser'))
+
 const ChargingAdd = lazy(() => import('../pages/protected/ChargingAdd'))
 const ChargingView = lazy(() => import('../pages/protected/ChargingView'))
+
+//Report
+const GovtReport=lazy(() => import('../pages/protected/Report/govtBillReport'))
+const TenantReportPage=lazy(() => import('../pages/protected/Report/tenantBillReport'))
+const TenantReportPageTwo=lazy(() => import('../pages/protected/Report/tenantReport'))
 
 const routes = [
   {
@@ -139,6 +158,16 @@ const routes = [
     path: '/tenant-bill-add', 
     component: TenantBillView, 
   },
+  ,
+  {
+    path: '/ten-days-tenant', 
+    component: TenDays, 
+  },
+  {
+    path: '/tenant-filter', 
+    component: TenantFilter, 
+  },
+
   {
     path: '/rent-collection-add', 
     component: RentAdd, 
@@ -194,7 +223,54 @@ const routes = [
   {
     path: '/Charging-view', 
     component: ChargingView, 
-  }
+  },
+
+   //notfication
+   {
+    path: '/add-notfication', 
+    component: notficationAdd, 
+  },
+  {
+    path: '/Send-bulk-notfication', 
+    component: bulkNotfication, 
+  },
+  {
+    path: '/all-notfication', 
+    component: allNotfication, 
+  },
+
+  //email
+  {
+    path: '/send-single-email', 
+    component: singleEmail, 
+  },
+  {
+    path: '/send-bulk-email', 
+    component: BulkEmail, 
+  },
+  {
+    path: '/send-emails', 
+    component: sentEmails, 
+  },
+
+  {
+    path: '/All-User', 
+    component: ALlUser, 
+  },
+  //Report
+  {
+    path: '/govt-bill-report', 
+    component: GovtReport, 
+  },
+  {
+    path: '/tenant-bill-report', 
+    component: TenantReportPage, 
+  },
+  {
+    path: '/tenant-report', 
+    component: TenantReportPageTwo, 
+  },
+
 ]
 
 export default routes

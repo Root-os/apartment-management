@@ -54,6 +54,7 @@ const ChargingPage = () => {
 
   // Handle edit button click
   const handleEditClick = (charging) => {
+    console.log('Edit Clicked:', charging);
     setSelectedCharging(charging);
     setCarPlate(charging.carPlate);
     setCarName(charging.carName);
@@ -87,6 +88,8 @@ const ChargingPage = () => {
         status,
       };
 
+      console.log('Updating Charging Data:', updatedCharging);
+
       const response = await axios.put(`${chargingApiUrl}/${selectedCharging.id}`, updatedCharging);
       const updatedData = chargingData.map((charging) =>
         charging.id === selectedCharging.id ? response.data : charging
@@ -99,7 +102,6 @@ const ChargingPage = () => {
       setMessageType('success');
       setMessage('Charging data updated successfully');
     } catch (error) {
-      setIsEditModalOpen(true);
       setMessageType('error');
       setMessage('Unable to update charging data');
     } finally {
@@ -120,7 +122,6 @@ const ChargingPage = () => {
       setMessageType('success');
       setMessage('Charging data deleted successfully');
     } catch (error) {
-      setModalOpen(true);
       setMessageType('error');
       setMessage('Unable to delete charging data');
     } finally {
@@ -337,12 +338,12 @@ const ChargingPage = () => {
         </div>
       )}
 
-    <Modal
-    isOpen={modalOpen}
-    onClose={() => setModalOpen(false)}
-    messageType={messageType}
-    message={message}
-    />
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
+      />
     </div>
   );
 };

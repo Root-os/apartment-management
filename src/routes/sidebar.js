@@ -34,6 +34,7 @@ import CreditCardIcon from '@heroicons/react/24/outline/CreditCardIcon'
 import CubeIcon from '@heroicons/react/24/outline/CubeIcon'
 import PaperClipIcon from '@heroicons/react/24/outline/PaperClipIcon'
 import CogIcon from '@heroicons/react/24/outline/CogIcon'
+import EnvelopeIcon from '@heroicons/react/24/outline/EnvelopeIcon'
 
 
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon'
@@ -373,6 +374,77 @@ const routes = [
       },
     ]
   },
+  {
+    path: '', 
+    icon: <BellIcon className={`${iconClasses} inline` }/>, 
+    name: 'Notfication', 
+    submenu : [
+      {
+        path:"/app/add-notfication",
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Send Notfication ',
+      },
+      {
+        path:"/app/Send-bulk-notfication",
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Send Bulk Notfication ',
+      },
+      {
+        path:"/app/all-notfication",
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'All Notfication ',
+      }
+
+     
+    ]
+  },
+  {
+    path: '', 
+    icon: <EnvelopeIcon className={`${iconClasses} inline` }/>, 
+    name: 'Email', 
+    submenu : [
+      {
+        path:"/app/send-single-email",
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Send Email ',
+      },
+      {
+        path:"/app/send-bulk-email",
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Send Bulk Email ',
+      },
+      {
+        path:"/app/send-emails",
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'All Emails ',
+      }
+    ]
+  },
+  {
+    path: '', 
+    icon: <EnvelopeIcon className={`${iconClasses} inline` }/>, 
+    name: 'Reports',  
+    submenu : [
+     
+     {
+      path: '/app/govt-bill-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Govt Bill Report',
+    },
+    {
+      path: '/app/tenant-bill-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Tenant Bill Report',
+    },
+    {
+      path: '/app/tenant-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Tenant Report',
+    },
+
+    ]
+  },
+  
 ]
 
 export default routes

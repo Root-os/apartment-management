@@ -2,41 +2,36 @@ import React, { lazy, useEffect, useState } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { themeChange } from 'theme-change';
-import checkAuth from './app/auth';  // Import the simplified checkAuth function
+import checkAuth from './app/auth';  
 import initializeApp from './app/init';
 
-
-// Importing pages
 const Layout = lazy(() => import('./containers/Layout'));
 const Login = lazy(() => import('./pages/Login'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const Register = lazy(() => import('./pages/Register'));
 
 
-// Initializing different libraries
 initializeApp();
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(null);  // Initially, null to show loading state
-  const [loading, setLoading] = useState(true);  // Show loading state until authentication check is complete
+  const [isAuthenticated, setIsAuthenticated] = useState(null);  
+  const [loading, setLoading] = useState(true);  
 
   useEffect(() => {
     themeChange(false);
 
-    // Check if the user is authenticated by checking the token stored in localStorage
-    const token = checkAuth();  // This will return the token if available, or null
+    const token = checkAuth();  
     if (token) {
-      setIsAuthenticated(true);  // If token exists, set authenticated state to true
+      setIsAuthenticated(true);  
     } else {
-      setIsAuthenticated(false);  // If no token, set authenticated state to false
+      setIsAuthenticated(false);  
     }
 
-    setLoading(false);  // Once the token check is done, stop loading
-  }, []);  // This effect runs only once on initial load, to check for token
+    setLoading(false);  
+  }, []);  
 
-  // Show a loading spinner while the authentication status is being checked
   if (loading) {
-    return <div>Loading...</div>; // You can replace this with a loading spinner or something else
+    return <div>Loading...</div>; 
   }
 
   return (
