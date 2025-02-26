@@ -60,6 +60,11 @@ const singleEmail=lazy(() => import('../pages/protected/email/addsingleEmail'))
 const BulkEmail=lazy(() => import ('../pages/protected/email/bulkEmail'))
 const sentEmails=lazy(() => import('../pages/protected/email/sentEmail'))
 
+//Report
+const GovtReport=lazy(() => import('../pages/protected/Report/govtBillReport'))
+const TenantReportPage=lazy(() => import('../pages/protected/Report/tenantBillReport'))
+const TenantReportPageTwo=lazy(() => import('../pages/protected/Report/tenantReport'))
+
 
 //User
 const ALlUser=lazy(() => import ('../pages/protected/user/alluser'))
@@ -232,11 +237,29 @@ const routes = [
     component: sentEmails, 
   },
 
+  //User
   {
     path: '/All-User', 
     component: ALlUser, 
   },
-  //User
+
+  
+  //Report
+  {
+    path: '/govt-bill-report', 
+    component: GovtReport, 
+  },
+  {
+    path: '/tenant-bill-report', 
+    component: TenantReportPage, 
+  },
+  {
+    path: '/tenant-report', 
+    component: TenantReportPageTwo, 
+  },
+  
+
+  
 
 ]
 

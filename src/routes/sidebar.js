@@ -400,7 +400,32 @@ submenu : [
      
     ]
   },
+  //Reports
+  {
+    path: '', 
+    icon: <EnvelopeIcon className={`${iconClasses} inline` }/>, 
+    name: 'Reports',  
+    submenu : [
+     
+     {
+      path: '/app/govt-bill-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Govt Bill Report',
+    },
+    {
+      path: '/app/tenant-bill-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Tenant Bill Report',
+    },
+    {
+      path: '/app/tenant-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Tenant Report',
+    },
 
+     
+    ]
+  },
   //email
   {
     path: '', 
@@ -440,6 +465,20 @@ submenu : [
         path: '/app/',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'View ',
+      },
+
+    
+      
+      //profile
+      {
+        path: '/app/profile',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Update Profile',
+      },
+      {
+        path: '/app/profile',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View Profile',
       },
     ]
   },
