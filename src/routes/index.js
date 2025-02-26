@@ -64,6 +64,7 @@ const sentEmails=lazy(() => import('../pages/protected/email/sentEmail'))
 const GovtReport=lazy(() => import('../pages/protected/Report/govtBillReport'))
 const TenantReportPage=lazy(() => import('../pages/protected/Report/tenantBillReport'))
 const TenantReportPageTwo=lazy(() => import('../pages/protected/Report/tenantReport'))
+const expenseReport=lazy(() => import('../pages/protected/Report/ExpenseReport'))
 
 
 //User
@@ -256,6 +257,10 @@ const routes = [
   {
     path: '/tenant-report', 
     component: TenantReportPageTwo, 
+  },
+  {
+    path: '/expense-report', 
+    component: expenseReport, 
   },
   
 

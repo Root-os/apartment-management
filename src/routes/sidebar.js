@@ -422,6 +422,12 @@ submenu : [
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Tenant Report',
     },
+    {
+      path: '/app/expense-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Expense Report',
+    },
+
 
      
     ]
