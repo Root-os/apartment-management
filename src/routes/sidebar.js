@@ -36,8 +36,6 @@ import PaperClipIcon from '@heroicons/react/24/outline/PaperClipIcon'
 import CogIcon from '@heroicons/react/24/outline/CogIcon'
 
 
-
-
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon'
 import EyeIcon from '@heroicons/react/24/outline/EyeIcon'
 
@@ -321,6 +319,40 @@ const routes = [
         path: '/app/payment-request-view',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'View Payment Request',
+      },
+    ]
+  },
+  {
+    path: '', 
+    icon: <BellIcon className={`${iconClasses} inline` }/>, 
+    name: 'Notfication Type', 
+    submenu : [
+      {
+        path: '/app/notfication-type-add',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Notfication Type',
+      },
+      {
+        path: '/app/notfication-type-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View Notfication Type',  
+      },
+    ]
+  },
+  {
+    path: '', 
+    icon: <GlobeAltIcon className={`${iconClasses} inline` }/>, 
+    name: 'Charging', 
+    submenu : [
+      {
+        path: '/app/charging-add',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Charging',
+      },
+      {
+        path: '/app/charging-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View Charging Info',  
       },
     ]
   },

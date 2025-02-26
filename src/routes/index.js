@@ -46,6 +46,11 @@ const ItemView = lazy(() => import('../pages/protected/ItemView'))
 const PaymentRequestAdd = lazy(() => import('../pages/protected/PaymentRequestAdd'))
 const PaymentRequestView = lazy(() => import('../pages/protected/PaymentRequestView'))
 
+const NotificationTypeAdd = lazy(() => import('../pages/protected/NotificationTypeAdd'))
+const NotificationTypeView = lazy(() => import('../pages/protected/NotificationTypeView'))
+
+const ChargingAdd = lazy(() => import('../pages/protected/ChargingAdd'))
+const ChargingView = lazy(() => import('../pages/protected/ChargingView'))
 
 const routes = [
   {
@@ -173,6 +178,22 @@ const routes = [
   {
     path: '/payment-request-view', 
     component: PaymentRequestView, 
+  },
+  {
+    path: '/notfication-type-add', 
+    component: NotificationTypeAdd, 
+  },
+  {
+    path: '/notfication-type-view', 
+    component: NotificationTypeView, 
+  },
+  {
+    path: '/Charging-add', 
+    component: ChargingAdd, 
+  },
+  {
+    path: '/Charging-view', 
+    component: ChargingView, 
   }
 ]
 

@@ -8,7 +8,7 @@ import InputText from '../../components/Input/InputText';
 function Login() {
   const INITIAL_LOGIN_OBJ = {
     password: '',
-    emailId: '',
+    email: '',
   };
 
   const [loading, setLoading] = useState(false);
@@ -20,14 +20,14 @@ function Login() {
     e.preventDefault();
     setErrorMessage('');
   
-    if (loginObj.emailId.trim() === '') return setErrorMessage('Email Id is required!');
+    if (loginObj.email.trim() === '') return setErrorMessage('Email Id is required!');
     if (loginObj.password.trim() === '') return setErrorMessage('Password is required!');
   
     try {
       setLoading(true);
       // Make the POST request to the login API using axios
-      const response = await axios.post('https://website.smartbingogames.com/api/user/login', {
-        username: loginObj.emailId,
+      const response = await axios.post('https://apartment.houseethiopia.com/api/auth/login', {
+        email: loginObj.email,
         password: loginObj.password,
       });
   
@@ -69,8 +69,8 @@ function Login() {
               <div className="mb-4">
                 <InputText
                   type="username"
-                  defaultValue={loginObj.emailId}
-                  updateType="emailId"
+                  defaultValue={loginObj.email}
+                  updateType="email"
                   containerStyle="mt-4"
                   labelTitle="Email Id"
                   updateFormValue={updateFormValue}

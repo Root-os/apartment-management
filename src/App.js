@@ -5,9 +5,10 @@ import { themeChange } from 'theme-change';
 import checkAuth from './app/auth';  // Import the simplified checkAuth function
 import initializeApp from './app/init';
 
+
 // Importing pages
 const Layout = lazy(() => import('./containers/Layout'));
-// const Login = lazy(() => import('./pages/Login'));
+const Login = lazy(() => import('./pages/Login'));
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const Register = lazy(() => import('./pages/Register'));
 
@@ -42,7 +43,7 @@ function App() {
     <Router>
       <Routes>
         {/* Public routes */}
-        {/* <Route path="/login" element={<Login />} /> */}
+        <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
        
@@ -51,8 +52,8 @@ function App() {
         <Route
           path="/app/*"
           element={
-            // isAuthenticated 
-            true ? (
+            isAuthenticated 
+             ? (
               <Layout />  // Protected route content
             ) : (
               <Navigate to="/login" replace />  // Redirect to login if not authenticated
