@@ -131,6 +131,7 @@ const ReturnView = lazy(() => import('../pages/protected/return/allReturn'))
 
 //payment
 const PaymentAdd = lazy(() => import('../pages/protected/payment/addPayment'))
+const PaymentView = lazy(() => import('../pages/protected/payment/allPayment'))
 
 const role = localStorage.getItem('role');
 
@@ -478,6 +479,13 @@ const routes =role==='tenant' ?
   path: '/add-payment', 
   component: PaymentAdd,
 },
+
+{
+  path: '/view-payments', 
+  component: PaymentView,
+},
+
+
 ]
 
 export default routes
