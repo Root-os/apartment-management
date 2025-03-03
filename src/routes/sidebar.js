@@ -649,6 +649,11 @@ const routes = role==='tenant' ?
       icon: <PlusIcon className={submenuIconClasses}/>,
       name: 'Service Type Add',
     },
+    {
+      path: '/app/view-service-types',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Service Type',
+    },
     ]
   },
   
