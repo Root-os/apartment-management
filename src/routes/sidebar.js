@@ -35,6 +35,8 @@ import CubeIcon from '@heroicons/react/24/outline/CubeIcon'
 import PaperClipIcon from '@heroicons/react/24/outline/PaperClipIcon'
 import CogIcon from '@heroicons/react/24/outline/CogIcon'
 import EnvelopeIcon from '@heroicons/react/24/outline/EnvelopeIcon'
+import { BuildingOfficeIcon } from '@heroicons/react/24/outline';
+
 
 import ClipboardIcon from '@heroicons/react/24/outline/ClipboardIcon'
 import ShoppingBagIcon from '@heroicons/react/24/outline/ShoppingBagIcon'
@@ -638,6 +640,8 @@ const routes = role==='tenant' ?
 
     ]
   },
+
+  //Service Type
   {
     path: '', 
     icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
@@ -653,6 +657,26 @@ const routes = role==='tenant' ?
       path: '/app/view-service-types',
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Service Type',
+    },
+    ]
+  },
+
+  //vendor
+  {
+    path: '', 
+    icon: <BuildingOfficeIcon className={`${iconClasses} inline` }/>, 
+    name: 'Vendor',  
+    submenu : [
+     
+     {
+      path: '/app/add-vendor',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Vendor Add',
+    },
+    {
+      path: '/app/view-vendors',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Vendor',
     },
     ]
   },
