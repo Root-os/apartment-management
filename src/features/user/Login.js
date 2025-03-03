@@ -30,12 +30,17 @@ function Login() {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}auth/login`, {
         email: loginObj.email,
         password: loginObj.password,
-      });
-  
+      },
+      // {
+      //   timeout: 10000, // 5 seconds timeout
+      // }
+    );
+  console.log('response ',response);
       if (response.data.token) {
         // Save token to localStorage
-        localStorage.setItem('token', response.data.token);
-        
+        const savedToken = localStorage.setItem('token', response.data.token);
+        console.log('savedToken ',savedToken);
+        // Decode the token to get user details
         const decodedToken = jwtDecode(response.data.token);
         
         localStorage.setItem('userId', decodedToken.id);
@@ -55,6 +60,7 @@ function Login() {
         // Handle errors returned from the API
         setErrorMessage(error.response.data.message || 'An error occurred, please try again.');
       } else {
+        console.log(error);
         // Handle network or other errors
         setErrorMessage('Network error. Please try again later.');
       }

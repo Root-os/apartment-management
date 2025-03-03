@@ -77,7 +77,74 @@ const ExpenseReportPage=lazy(() => import('../pages/protected/Report/ExpenseRepo
 
 
 
-const routes = [
+
+const PurchaseReport=lazy(() => import('../pages/protected/Purchasereport'))
+const ChargingReport=lazy(() => import('../pages/protected/ChargingReport'))
+const MaintenanceReport=lazy(() => import('../pages/protected/MaintenanceReport'))
+
+//complaint tenantside
+const ComplainByTenant=lazy(() => import('../pages/protected/ComplainByTenant'))
+const ComplainByTenantView=lazy(() => import('../pages/protected/ComplainByTenantView'))
+
+//complaints admin side
+const ComplainFromTenant=lazy(() => import('../pages/protected/ComplainFromTenant'))
+const AssignedStaff=lazy(() => import('../pages/protected/AssignedStaff'))
+
+//withdraw request tenant side
+const WithdrawRequestAdd=lazy(() => import('../pages/protected/WithdrawRequestAdd'))
+const MyWithdrawRequest=lazy(() => import('../pages/protected/MyWithdrawRequests'))
+//withdraw request admin side
+const ViewWithdrawRequests=lazy(() => import('../pages/protected/ViewWithdrawRequests'))
+
+//setting
+const SettingAdd =lazy(() => import('../pages/protected/SettingAdd'))  
+const SettingView =lazy(() => import('../pages/protected/SettingView')) 
+
+//purchase
+const PurchaseAdd =lazy(() => import('../pages/protected/PurchaseAdd')) 
+const PurchaseView =lazy(() => import('../pages/protected/PurchaseView')) 
+
+//purchase request
+const PurchaseRequestAdd =lazy(() => import('../pages/protected/PurchaseRequestAdd')) 
+const PurchaseRequestView =lazy(() => import('../pages/protected/PurchaseRequestView')) 
+
+//maintenance
+const MaintenanceAdd =lazy(() => import('../pages/protected/MaintenanceAdd')) 
+const MaintenanceView =lazy(() => import('../pages/protected/MaintenanceView'))
+
+//item assignments
+const ItemAssignmentAdd =lazy(() => import('../pages/protected/ItemAssignmentAdd'))
+const ItemAssignmentView =lazy(() => import('../pages/protected/ItemAssignmentView'))
+
+const role = localStorage.getItem('role');
+
+const routes =role==='tenant' ?
+[
+  {
+    path: '/', // the url
+    component: Dashboard, // view rendered
+  },
+  {
+    path: '/complain-tenant-add', 
+    component: ComplainByTenant, 
+  },
+  {
+    path: '/complain-tenant-view', 
+    component: ComplainByTenantView, 
+  },
+  {
+    path: '/withdraw-request-add', 
+    component: WithdrawRequestAdd, 
+  },
+  {
+    path: '/withdraw-request-view', 
+    component: MyWithdrawRequest, 
+  },
+
+ ]:
+
+ //admin dashboard
+[
   {
     path: '/', // the url
     component: Dashboard, // view rendered
@@ -165,6 +232,7 @@ const routes = [
     component: TenantBillView, 
   },
   
+
   {
     path: '/ten-days-tenant', 
     component: TenDays, 
@@ -284,7 +352,73 @@ const routes = [
   
 
   
+{
+    path: '/purchase-report', 
+    component: PurchaseReport, 
+  },
+  {
+    path: '/charging-report', 
+    component: ChargingReport, 
+  },
+  {
+    path: '/maintenance-report', 
+    component: MaintenanceReport, 
+  },
+//complaint
 
+{
+  path: '/complain-fromT-view', 
+  component: ComplainFromTenant, 
+},
+{
+  path: '/admin-view-assigneds', 
+  component: AssignedStaff, 
+},
+{
+  path: '/view-withdraw-requests', 
+  component: ViewWithdrawRequests, 
+},
+{
+  path: '/add-setting', 
+  component: SettingAdd, 
+},
+{
+  path: '/view-settings', 
+  component: SettingView, 
+},
+{
+  path: '/add-purchase', 
+  component: PurchaseAdd, 
+},
+{
+  path: '/view-purchase', 
+  component: PurchaseView, 
+},
+{
+  path: '/add-purchase-request', 
+  component: PurchaseRequestAdd, 
+},
+{
+  path: '/view-purchase-request', 
+  component: PurchaseRequestView, 
+},
+{
+  path: '/add-maintenance', 
+  component: MaintenanceAdd, 
+},
+{
+  path: '/view-maintenance', 
+  component: MaintenanceView, 
+},
+
+{
+  path: '/add-item-assignments', 
+  component: ItemAssignmentAdd, 
+},
+{
+  path: '/view-item-assignments', 
+  component: ItemAssignmentView, 
+},
 ]
 
 export default routes

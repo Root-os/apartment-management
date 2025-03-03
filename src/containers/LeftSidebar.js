@@ -1,4 +1,5 @@
 import routes from '../routes/sidebar';
+// import tenantRoutes from '../routes/tenantSideBar';
 import { NavLink, useLocation } from 'react-router-dom';
 import SidebarSubmenu from './SidebarSubmenu';
 import XMarkIcon from '@heroicons/react/24/outline/XMarkIcon';
@@ -27,6 +28,20 @@ function LeftSidebar() {
             close();
         }
     };
+
+    const handleRoutes=()=>{
+        const token = localStorage.getItem('token')
+        const role = localStorage.getItem('role')
+        if(token && role === 'admin'){
+            return routes
+        }else if(token && role === 'employee')
+        {
+//return employeeRoutes
+        }
+        else if(token && role === 'tenant'){
+// return tenantRoutes
+        }
+    }
 
     return (
         <div className="drawer-side z-30">

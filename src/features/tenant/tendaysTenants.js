@@ -12,7 +12,7 @@ const TenDaysTenant = () => {
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/tenant/10days/remaining');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant/10days/remaining`);
         setTenants(response.data);
         setLoading(false);
       } catch (err) {

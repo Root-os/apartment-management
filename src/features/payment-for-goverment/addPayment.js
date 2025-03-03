@@ -79,17 +79,15 @@ const AddGovBillPayment = () => {
 
   return (
     <>
-      <TitleCard title="Add Bill Payments for Government">
-        {/* Bill Payment Form */}
+      <TitleCard title="Add Bill Payments for Government" topMargin={'mt-4'}>
         <form onSubmit={handleSubmit} className="space-y-4 ">
-          {/* Bill Type Dropdown */}
           <div>
-            <label htmlFor="billTypeId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Bill Type</label>
+            <label htmlFor="billTypeId" className="block text-sm font-medium text-white-700 dark:text-gray-300">Bill Type</label>
             <select
               id="billTypeId"
               value={billTypeId}
               onChange={(e) => setBillTypeId(e.target.value)}
-              className=" dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-base-100 dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
               <option value="" disabled>Select Bill Type</option>
@@ -102,13 +100,13 @@ const AddGovBillPayment = () => {
           </div>
 
           <div>
-            <label htmlFor="amount" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Amount</label>
+            <label htmlFor="amount" className="block text-sm font-medium text-white-700 dark:text-gray-300">Amount</label>
             <input
               type="number"
               id="amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-base-100 dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>

@@ -32,7 +32,7 @@ const TenantList = () => {
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/tenant');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
         setTenants(response.data);
         console.log('Fetched tenants:', response.data);
         setLoading(false);
@@ -44,7 +44,7 @@ const TenantList = () => {
 
     const fetchUnits = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/unit');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit`);
         setUnits(response.data);
       } catch (err) {
         setError('Failed to fetch units.');
@@ -53,7 +53,7 @@ const TenantList = () => {
 
     const fetchFloors = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/floor');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}floor`);
         setFloors(response.data);
       } catch (err) {
         setError('Failed to fetch floors.');

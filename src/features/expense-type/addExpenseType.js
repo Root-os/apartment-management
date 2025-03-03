@@ -30,7 +30,7 @@ const AddExpense = () => {
 
 
     try {
-      const response = await axios.post('https://apartment.houseethiopia.com/api/expense-type', {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}expense-type`, {
         name,
         description,
       });
@@ -39,7 +39,7 @@ const AddExpense = () => {
       setMessage('Expense added successfully');
       setName(''); 
       setDescription('');
-      window.location.href='/app/expense-view'
+      window.location.href='/app/expense-type-view'
     } catch (err) {
       setError('An error occurred while adding the expense.');
       setModalOpen(true);
@@ -93,7 +93,7 @@ const AddExpense = () => {
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        type={messageType}
+        messageType={messageType}
         message={message}
         />
     </>

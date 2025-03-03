@@ -1,0 +1,61 @@
+# Node.js dependencies
+node_modules/
+
+# Build output
+build/
+dist/
+
+# Testing
+/coverage/
+
+# React Native
+# Uncomment if you're working with React Native
+# /android/ 
+# /ios/
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Next.js and other frameworks related
+.next/
+out/
+
+# IDE/Editor folders
+.idea/
+.vscode/
+*.sublime-workspace
+*.sublime-project
+
+# macOS specific
+.DS_Store
+
+
+# Windows specific
+Thumbs.db
+
+# Optional npm package folders
+npm-debug.log
+yarn-debug.log
+package-lock.json
+
+# Optional: lock files (uncomment if you prefer not to track them)
+# package-lock.json
+# yarn.lock
+
+# TypeScript cache (if you use TypeScript)
+*.tsbuildinfo
+
+# Miscellaneous
+.history
+*.tgz
+*.gz

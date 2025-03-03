@@ -19,7 +19,7 @@ const AddChargingData = () => {
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/tenant');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
         setTenants(response.data);
       } catch (error) {
         console.error('There was an error fetching the tenants:', error);
@@ -43,8 +43,7 @@ const AddChargingData = () => {
     };
 
     try {
-      const response = await axios.post('https://apartment.houseethiopia.com/api/charging', payload);
-      //setMessage(`Charging data added successfully! Cost: ${response.data.chargingCost}`);
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}charging`, payload);
       setCarPlate('');
       setCarName('');
       setTenantId('');
@@ -140,7 +139,6 @@ const AddChargingData = () => {
           {loading ? 'Submitting...' : 'Add Charging Data'}
         </button>
       </form>
-      {/* {message && <div className="mt-4 text-center text-xl font-semibold">{message}</div>} */}
     </TitleCard>
     <Modal
     isOpen={modalOpen}

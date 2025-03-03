@@ -24,8 +24,8 @@ const ChargingPage = () => {
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
 
-  const chargingApiUrl = 'https://apartment.houseethiopia.com/api/charging';
-  const tenantApiUrl = 'https://apartment.houseethiopia.com/api/tenant';
+  const chargingApiUrl = `${process.env.REACT_APP_BASE_URL}charging`;
+  const tenantApiUrl = `${process.env.REACT_APP_BASE_URL}tenant`;
 
   useEffect(() => {
     const fetchChargingData = async () => {
@@ -50,7 +50,7 @@ const ChargingPage = () => {
 
     fetchChargingData();
     fetchTenants();
-  }, []); // Empty dependency array ensures this runs only once when component mounts
+  }, []); 
 
   // Handle edit button click
   const handleEditClick = (charging) => {

@@ -117,7 +117,7 @@ const FloorForm = () => {
        <Modal 
         isOpen={modalOpen} 
         onClose={() => setModalOpen(false)} 
-        type={messageType} 
+        messageType={messageType} 
         message={message} 
       />
    </>

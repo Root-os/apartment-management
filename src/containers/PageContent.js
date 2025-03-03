@@ -1,6 +1,7 @@
 import Header from "./Header"
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import routes from '../routes'
+
 import { Suspense, lazy } from 'react'
 import SuspenseContent from "./SuspenseContent"
 import { useSelector } from 'react-redux'
@@ -19,8 +20,8 @@ function PageContent(){
         mainContentRef.current.scroll({
             top: 0,
             behavior: "smooth"
-          });
-      }, [pageTitle])
+        });
+    }, [pageTitle])
 
     return(
         <div className="drawer-content flex flex-col ">

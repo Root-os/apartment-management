@@ -21,7 +21,7 @@ const ExpensePage = () => {
 
   useEffect(() => {
     // Fetch expense data from the API
-    axios.get('https://apartment.houseethiopia.com/api/expense')
+    axios.get(`${process.env.REACT_APP_BASE_URL}expense`)
       .then((response) => {
         // Map response to desired data format
         const expenseData = response.data.map(expense => ({
@@ -67,7 +67,7 @@ const ExpensePage = () => {
       });
 
     // Fetch expense types from API
-    axios.get('https://apartment.houseethiopia.com/api/expense-type')
+    axios.get(`${process.env.REACT_APP_BASE_URL}expense-type`)
       .then((response) => {
         setExpenseTypes(response.data);
       })
@@ -103,7 +103,7 @@ const ExpensePage = () => {
         expenseTypeId,
       };
 
-      const response = await axios.put(`https://apartment.houseethiopia.com/api/expense/${selectedExpense.id}`, updatedExpense);
+      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}expense/${selectedExpense.id}`, updatedExpense);
       const updatedData = expenses.map((expense) =>
         expense.id === selectedExpense.id ? response.data : expense
       );
@@ -127,7 +127,7 @@ const ExpensePage = () => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await axios.delete(`https://apartment.houseethiopia.com/api/expense/${selectedExpense.id}`);
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}expense/${selectedExpense.id}`);
       setExpenses(expenses.filter((expense) => expense.id !== selectedExpense.id));
       setIsDeleteModalOpen(false);
       setSelectedExpense(null);
@@ -248,13 +248,13 @@ const ExpensePage = () => {
         </div>
       )}
 
-<Modal
-isOpen={modalOpen}
-onClose={() => setModalOpen(false)}
-messageType={messageType}
-message={message}
-/>
-    </div>
+    <Modal
+     isOpen={modalOpen}
+     onClose={() => setModalOpen(false)}
+     messageType={messageType}
+     message={message}
+    />
+</div>
   );
 };
 

@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import TableComponent from '../../components/table'; // Import the TableComponent
+import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 
 const BillTablePage = () => {
-  const [billData, setBillData] = useState([]); // To store fetched bill data
-  const [loading, setLoading] = useState(true); // To handle loading state
-  const [error, setError] = useState(null); // To handle error state
-  const [selectedBill, setSelectedBill] = useState(null); // To store the selected bill for editing
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // To control edit modal visibility
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // To control delete modal visibility
+  const [billData, setBillData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);  
+  const [error, setError] = useState(null); 
+  const [selectedBill, setSelectedBill] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); 
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
   const [newTypeName, setNewTypeName] = useState('');
   const [newDescription, setNewDescription] = useState('');
-  const [billToDelete, setBillToDelete] = useState(null); // To store the bill to be deleted
+  const [billToDelete, setBillToDelete] = useState(null); 
 
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
@@ -58,9 +59,8 @@ const BillTablePage = () => {
     };
 
     fetchBillData();
-  }, []); // Empty dependency array makes this run only once on component mount
+  }, []); 
 
-  // Open Modal for Editing
   const handleEdit = (bill) => {
     setSelectedBill(bill);
     setNewTypeName(bill.typeName);
@@ -68,16 +68,14 @@ const BillTablePage = () => {
     setIsEditModalOpen(true);
   };
 
-  // Handle delete button click
   const handleDeleteClick = (bill) => {
     setBillToDelete(bill);
     setIsDeleteModalOpen(true);
   };
 
-  // Handle delete request
   const handleDelete = async () => {
     try {
-      await axios.delete(`https://apartment.houseethiopia.com/api/bill-type/${billToDelete.id}`);
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}bill-type/${billToDelete.id}`);
       setBillData(billData.filter((bill) => bill.id !== billToDelete.id));
       setIsDeleteModalOpen(false);
       setBillToDelete(null);
@@ -94,13 +92,14 @@ const BillTablePage = () => {
 
   // Handle update request
   const handleUpdate = async () => {
+    setIsLoading(true);
     try {
       const updatedBill = {
         typeName: newTypeName,
         description: newDescription,
       };
 
-      const response = await axios.put(`https://apartment.houseethiopia.com/api/bill-type/${selectedBill.id}`, updatedBill);
+      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}bill-type/${selectedBill.id}`, updatedBill);
 
       const updatedData = billData.map((bill) =>
         bill.id === selectedBill.id ? response.data : bill
@@ -116,7 +115,7 @@ const BillTablePage = () => {
       setModalOpen(true);
       setMessageType('error');
       setMessage('Unable to update the bill.');
-    }
+    }finally {setIsLoading(false);}
   };
 
   const handleAddClick = () => {window.location.href = '/bill-type-add';};
@@ -133,7 +132,7 @@ const BillTablePage = () => {
           title="Bill Payment Types"
           data={billData}
           columns={columns}
-          onAdd={handleAddClick} // Pass the onAdd function to TableComponent
+          onAdd={handleAddClick} 
         />
       )}
 
@@ -169,8 +168,9 @@ const BillTablePage = () => {
               <button
                 onClick={handleUpdate}
                 className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                disabled={isLoading}
               >
-                Save
+                {isLoading ? 'Saving...' : 'Save'}
               </button>
               <button
                 onClick={() => setIsEditModalOpen(false)}

@@ -10,25 +10,24 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const token = localStorage.getItem('token'); // Get token from localStorage
-        const response = await axios.get('https://apartment.houseethiopia.com/api/dashboard', {
+        const token = localStorage.getItem('token'); 
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}dashboard`, {
           headers: {
-            Authorization: `Bearer ${token}`, // Include token in headers
+            Authorization: `Bearer ${token}`, 
           },
         });
-        setCounts(response.data); // Store the counts in state
+        setCounts(response.data); 
       } catch (error) {
         setError('Error loading data: ');
         console.error('Error fetching data');
       } finally {
-        setLoading(false); // Set loading to false once the data is fetched
+        setLoading(false); 
       }
     };
 
     fetchData();
   }, []);
 
-  // Dynamic color generation
   const generateRandomColor = () => {
     const letters = '0123456789ABCDEF';
     let color = '#';
@@ -45,12 +44,9 @@ const Dashboard = () => {
     complaints: <FaExclamationCircle size={30} />,
   };
 
-  // If still loading, show a loading spinner or placeholder
   if (loading) {
-    return <div>Loading...</div>; // You can replace this with a more fancy loading spinner if needed
+    return <div>Loading...</div>;
   }
-
-  // If error, show an error message
   if (error) {
     return <div>{error}</div>;
   }

@@ -38,7 +38,7 @@ const UnitList = () => {
   useEffect(() => {
     const fetchUnitData = async () => {
       try {
-        const response = await axios.get(`https://apartment.houseethiopia.com/api/unit`);
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit`);
         setUnits(response.data); 
         setLoading(false); 
       } catch (err) {
@@ -49,7 +49,7 @@ const UnitList = () => {
 
     const fetchFloorData = async () => {
       try {
-        const response = await axios.get(`https://apartment.houseethiopia.com/api/floor`);
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}floor`);
         setFloors(response.data);
       } catch (err) {
         console.error("Failed to fetch floors.");
@@ -76,7 +76,7 @@ const UnitList = () => {
   };
 
   const handleEditSubmit = () => {
-    axios.put(`https://apartment.houseethiopia.com/api/unit/${selectedUnit.id}`, newUnitData)
+    axios.put(`${process.env.REACT_APP_BASE_URL}unit/${selectedUnit.id}`, newUnitData)
       .then(() => {
         setUnits(units.map(unit => (unit.id === selectedUnit.id ? { ...unit, ...newUnitData } : unit)));
         setIsEditModalOpen(false);
@@ -100,7 +100,7 @@ const UnitList = () => {
   };
 
   const handleDeleteConfirm = () => {
-    axios.delete(`https://apartment.houseethiopia.com/api/unit/${selectedUnit.id}`)
+    axios.delete(`${process.env.REACT_APP_BASE_URL}unit/${selectedUnit.id}`)
       .then(() => {
         setUnits(units.filter(unit => unit.id !== selectedUnit.id));
         setFilteredUnits(filteredUnits.filter(unit => unit.id !== selectedUnit.id));
@@ -534,7 +534,7 @@ const handleAddClick = () => {  window.location.href = '/unit-add';};
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        type={messageType}
+        messageType={messageType}
         message={message}
       />
     </div>

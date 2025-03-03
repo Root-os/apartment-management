@@ -21,7 +21,7 @@ const AddExpense = () => {
   useEffect(() => {
     const fetchExpenseTypes = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/expense-type');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}expense-type`);
         setExpenseTypes(response.data);
         console.log(response.data);
       } catch (err) {
@@ -47,7 +47,7 @@ const AddExpense = () => {
     };
 
     try {
-      const response = await axios.post('https://apartment.houseethiopia.com/api/expense', expenseData);
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}expense`, expenseData);
       // Reset form
       setAmount('');
       setDate('');
@@ -58,7 +58,7 @@ const AddExpense = () => {
       setMessageType('success');
       setMessage('Expense added successfully.');
 
-      window.location.href = '/expense'
+      // window.location.href = '/expense-view'
     } catch (err) {
       setModalOpen(true);
       setMessageType('error');

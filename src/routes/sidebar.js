@@ -36,6 +36,16 @@ import PaperClipIcon from '@heroicons/react/24/outline/PaperClipIcon'
 import CogIcon from '@heroicons/react/24/outline/CogIcon'
 import EnvelopeIcon from '@heroicons/react/24/outline/EnvelopeIcon'
 
+import ClipboardIcon from '@heroicons/react/24/outline/ClipboardIcon'
+import ShoppingBagIcon from '@heroicons/react/24/outline/ShoppingBagIcon'
+import WrenchIcon from '@heroicons/react/24/outline/WrenchIcon'
+import ExclamationCircleIcon from '@heroicons/react/24/outline/ExclamationCircleIcon'
+import MapPinIcon from '@heroicons/react/24/outline/MapPinIcon'
+import ArrowUpIcon from '@heroicons/react/24/outline/ArrowUpIcon'
+import PowerIcon from '@heroicons/react/24/outline/PowerIcon'
+
+
+
 
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon'
 import EyeIcon from '@heroicons/react/24/outline/EyeIcon'
@@ -46,12 +56,63 @@ import EyeIcon from '@heroicons/react/24/outline/EyeIcon'
 const iconClasses = `h-6 w-6`
 const submenuIconClasses = `h-5 w-5`
 
-const routes = [
+const role=localStorage.getItem('role')
+const routes = role==='tenant' ?
+[
+  {
+    path: '/app',
+    icon: <Squares2X2Icon className={iconClasses}/>, 
+    name: 'tenant-Dashboard',  
+  },
+  
+  //complain
+  {
+    path: '', 
+    icon: <EnvelopeIcon className={`${iconClasses} inline` }/>, 
+    name: 'Tenant Complain',  
+    submenu : [
+     
+     {
+      path: '/app/complain-tenant-add',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Complaint',
+    },
+    {
+      path: '/app/complain-tenant-view',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'My complaints',
+    },
+    ]
+  },
+  {
+    path: '', 
+    icon: <ArrowUpIcon className={`${iconClasses} inline` }/>, 
+    name: 'Withdraw Request',  
+    submenu : [
+     
+     {
+      path: '/app/withdraw-request-add',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Request',
+    },
+    {
+      path: '/app/withdraw-request-view',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'My Requests',
+    },
+    ]
+  },
+]:
+
+//admin side
+[
 
   {
     path: '/app',
     icon: <Squares2X2Icon className={iconClasses}/>, 
-    name: 'Dashboard',
+
+    name: 'Dashboard',  
+
   },
   // {
   //   path: '', 
@@ -257,7 +318,9 @@ const routes = [
   },
   {
     path: '', 
-    icon: <WalletIcon className={`${iconClasses} inline` }/>, 
+
+    icon: <MapPinIcon className={`${iconClasses} inline` }/>, 
+
     name: 'Parking', 
     submenu : [
       {
@@ -342,7 +405,9 @@ const routes = [
   },
   {
     path: '', 
-    icon: <GlobeAltIcon className={`${iconClasses} inline` }/>, 
+
+    icon: <PowerIcon className={`${iconClasses} inline` }/>, 
+
     name: 'Charging', 
     submenu : [
       {
@@ -363,12 +428,13 @@ const routes = [
     name: 'Settings', 
     submenu : [
       {
-        path: '/app/',
+
+        path: '/app/add-setting',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add ',
+        name: 'Add Setting ',
       },
       {
-        path: '/app/',
+        path: '/app/view-settings',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'View ',
       },
@@ -422,7 +488,8 @@ const routes = [
   },
   {
     path: '', 
-    icon: <EnvelopeIcon className={`${iconClasses} inline` }/>, 
+
+    icon: <ClipboardDocumentListIcon className={`${iconClasses} inline` }/>, 
     name: 'Reports',  
     submenu : [
      
@@ -447,6 +514,127 @@ const routes = [
       name: 'Expense Report',
     },
 
+{
+      path: '/app/purchase-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Purchase Report',
+    },
+    {
+      path: '/app/charging-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Charging Report',
+    },
+    {
+      path: '/app/maintenance-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Maintenance Report',
+    },
+
+    ]
+  },
+  //complain
+  {
+    path: '', 
+    icon: <ExclamationCircleIcon className={`${iconClasses} inline` }/>, 
+    name: 'Complain from tenant',  
+    submenu : [
+     
+     {
+      path: '/app/complain-fromT-view',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View Complaints',
+    },
+    {
+      path: '/app/admin-view-assigneds',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Assigned Staff',
+    },
+    ]
+  },
+  {
+    path: '', 
+    icon: <ArrowUpIcon className={`${iconClasses} inline` }/>, 
+    name: 'Withdrawal requests from tenant',  
+    submenu : [
+     
+     {
+      path: '/app/view-withdraw-requests',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View Requests',
+    },
+    ]
+  },
+  //purchase
+  {
+    path: '', 
+    icon: <CreditCardIcon className={`${iconClasses} inline` }/>, 
+    name: 'Purchase',  
+    submenu : [
+     
+     {
+      path: '/app/add-purchase',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Purchase',
+    },
+    {
+      path: '/app/view-purchase',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Purchases ',
+    },
+    ]
+  },
+  {
+    path: '', 
+    icon: <ShoppingBagIcon className={`${iconClasses} inline` }/>, 
+    name: 'Purchase Request',  
+    submenu : [
+     
+     {
+      path: '/app/add-purchase-request',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Purchase Request',
+    },
+    {
+      path: '/app/view-purchase-request',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Purchase requests ',
+    },
+    ]
+  },
+  {
+    path: '', 
+    icon: <WrenchIcon className={`${iconClasses} inline` }/>, 
+    name: 'Maintenance ',  
+    submenu : [
+     
+     {
+      path: '/app/add-maintenance',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Maintenance',
+    },
+    {
+      path: '/app/view-maintenance',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View Maintenance info ',
+    },
+    ]
+  },
+  {
+    path: '', 
+    icon: <ClipboardIcon className={`${iconClasses} inline` }/>, 
+    name: 'item-assignments',  
+    submenu : [
+     
+     {
+      path: '/app/add-item-assignments',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Item',
+    },
+    {
+      path: '/app/view-item-assignments',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View Item Assignments',
+    },
 
     ]
   },

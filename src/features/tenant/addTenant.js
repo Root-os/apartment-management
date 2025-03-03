@@ -27,13 +27,13 @@ const AddTenant = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
-  const [message, setMessage] = useState(''); 
+  const [message, setMessage] = useState('');
 
   // Fetch floor data for dropdown
   useEffect(() => {
     const fetchFloors = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/floor');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}floor`);
         setFloors(response.data);
       } catch (err) {
         setError('Failed to fetch floor data.');
@@ -46,9 +46,9 @@ const AddTenant = () => {
   // Fetch units when floor is selected
   const fetchUnits = async (id) => {
     try {
-      const response = await axios.get(`https://apartment.houseethiopia.com/api/unit/floor/${id}`);
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit/floor/${id}`);
       console.log('Fetched units:', response.data); // Debugging line
-      setUnits(Array.isArray(response.data) ? response.data : []);
+      setUnits(Array.isArray(response.data.units) ? response.data.units : []);
     } catch (err) {
       setError('Failed to fetch units.');
     }
@@ -80,7 +80,7 @@ const AddTenant = () => {
 
     try {
       const response = await axios.post(
-        'https://apartment.houseethiopia.com/api/tenant',
+        `${process.env.REACT_APP_BASE_URL}tenant`,
         formData
       );
       console.log('Tenant added successfully:', response.data);
@@ -117,9 +117,7 @@ const AddTenant = () => {
 
   return (
     <>
-      <TitleCard title={'Add Tenant'}  >
-
-        {error && <div className="bg-red-300 p-3 mb-4 text-red-800">{error}</div>}
+      <TitleCard title={'Add Tenant'} topMargin={'mt-2'} >
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Full Name */}
@@ -130,16 +128,6 @@ const AddTenant = () => {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               required
-              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-            />
-          </div>
-
-          {/* Document */}
-          <div>
-            <label className="block text-sm font-semibold mb-2">Document</label>
-            <input
-              type="file"
-              onChange={(e) => setDocument(e.target.files[0])}
               className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             />
           </div>
@@ -306,6 +294,16 @@ const AddTenant = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+            />
+          </div>
+
+            {/* Document */}
+            <div>
+            <label className="block text-sm font-semibold mb-2">Document</label>
+            <input
+              type="file"
+              onChange={(e) => setDocument(e.target.files[0])}
               className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             />
           </div>

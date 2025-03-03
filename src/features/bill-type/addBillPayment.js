@@ -27,14 +27,14 @@ const BillPaymentPage = () => {
       setLoading(true);
 
       const response = await axios.post(
-        'https://apartment.houseethiopia.com/api/bill-type',
+        `${process.env.REACT_APP_BASE_URL}bill-type`,
         formData
       );
       setResponseData(response.data);
       setModalOpen(true);
       setMessageType('success');
       setMessage('Bill type added successfully');
-      window.location.href='/bill-type-view';
+      // window.location.href='/bill-type-view';
       // Reset form fields
       setFormData({
         typeName: '',
@@ -101,7 +101,7 @@ const BillPaymentPage = () => {
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        type={messageType}
+        messageType={messageType}
         message={message}
       />
     </div>

@@ -22,7 +22,7 @@ const ExpensePage = () => {
   useEffect(() => {
     const fetchExpenses = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/expense-type');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}expense-type`);
         setExpenses(response.data);
       } catch (err) {
         setError('Error fetching data');
@@ -53,7 +53,7 @@ const ExpensePage = () => {
   const handleSubmitEdit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`https://apartment.houseethiopia.com/api/expense-type/${selectedExpense.id}`, {
+      await axios.put(`${process.env.REACT_APP_BASE_URL}expense-type/${selectedExpense.id}`, {
         name: expenseName,
         description: expenseDescription,
       });
@@ -73,15 +73,16 @@ const ExpensePage = () => {
     }
   };
 
+  // Handle delete button click
   const handleDeleteClick = (expense) => {
-  setExpenseToDelete(expense);
-  setIsDeleteModalOpen(true);
-};
+    setExpenseToDelete(expense);
+    setIsDeleteModalOpen(true);
+  };
 
   // Handle Delete request
   const handleDelete = async () => {
     try {
-      await axios.delete(`https://apartment.houseethiopia.com/api/expense-type/${expenseToDelete.id}`);
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}expense-type/${expenseToDelete.id}`);
       setExpenses((prevExpenses) => prevExpenses.filter((expense) => expense.id !== expenseToDelete.id));
       setIsDeleteModalOpen(false);
       setExpenseToDelete(null);
@@ -116,7 +117,7 @@ const ExpensePage = () => {
             Edit
           </button>
           <button
-            onClick={() => handleDeleteClick(row.id)}
+            onClick={() => handleDeleteClick(row)}
             className="bg-red-500 text-white px-4 py-1 rounded-md"
           >
             Delete
@@ -125,18 +126,11 @@ const ExpensePage = () => {
       ),
     },
   ];
+
   const handleAddClick = () => {window.location.href = '/app/expense-add'};
 
   return (
     <div className="p-6">
-      {/* Error Message */}
-      {/* {error && (
-        <div className="p-4 mb-6 bg-red-100 text-red-700 border border-red-400 rounded-md">
-          {error}
-        </div>
-      )} */}
-
-      {/* Loading Message */}
       {loading ? (
         <div className="text-center">Loading...</div>
       ) : (
@@ -202,10 +196,11 @@ const ExpensePage = () => {
         </div>
       )}
 
-{isDeleteModalOpen && (
+      {/* Delete Modal */}
+      {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-300 p-6 rounded-lg w-96">
-            <h2 className="text-xl mb-4">Are you sure you want to delete this floor?</h2>
+            <h2 className="text-xl mb-4">Are you sure you want to delete this expense?</h2>
             <div className="flex justify-between">
               <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
               <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
@@ -214,14 +209,13 @@ const ExpensePage = () => {
         </div>
       )}
 
-<Modal 
-isOpen={modalOpen}
-onClose={() => setModalOpen(false)}
-messageType={messageType}
-message={message}
-/>
+      <Modal 
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
+      />
     </div>
-   
   );
 };
 
