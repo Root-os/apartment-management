@@ -676,7 +676,7 @@ const routes = role==='tenant' ?
     {
       path: '/app/view-vendors',
       icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'Vendor',
+      name: 'Vendors',
     },
     ]
   },

@@ -122,6 +122,7 @@ const ServiceTypeView =lazy(() => import('../pages/protected/serviceType/viewAll
 
 //vendor
 const VendorAdd =lazy(() => import('../pages/protected/vendor/add'))
+const VendorView =lazy(() => import('../pages/protected/vendor/allVendor'))
 
 const role = localStorage.getItem('role');
 
@@ -426,6 +427,8 @@ const routes =role==='tenant' ?
   path: '/view-item-assignments', 
   component: ItemAssignmentView, 
 },
+
+//service type
 {
   path: '/add-service-type', 
   component: ServiceTypeAdd,
@@ -434,9 +437,15 @@ const routes =role==='tenant' ?
   path: '/view-service-types', 
   component: ServiceTypeView,  
 },
+
+//vendor
 {
   path: '/add-vendor', 
   component: VendorAdd,
+},
+{
+  path: '/view-vendors', 
+  component: VendorView,  
 },
 ]
 
