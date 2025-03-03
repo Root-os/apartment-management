@@ -9,6 +9,7 @@ import DocumentIcon from '@heroicons/react/24/outline/DocumentIcon'
 import ExclamationTriangleIcon from '@heroicons/react/24/outline/ExclamationTriangleIcon'
 import CalendarDaysIcon from '@heroicons/react/24/outline/CalendarDaysIcon'
 import ArrowRightOnRectangleIcon from '@heroicons/react/24/outline/ArrowRightOnRectangleIcon'
+import ArrowDownIcon from '@heroicons/react/24/outline/ArrowDownIcon';
 import UserIcon from '@heroicons/react/24/outline/UserIcon'
 import Cog6ToothIcon from '@heroicons/react/24/outline/Cog6ToothIcon'
 import BoltIcon from '@heroicons/react/24/outline/BoltIcon'
@@ -680,6 +681,26 @@ const routes = role==='tenant' ?
     },
     ]
   },
+
+  //return
+  { 
+    path: '', 
+    icon: <ArrowDownIcon className={`${iconClasses} inline` }/>, 
+    name: 'Return',  
+    submenu : [
+     
+     {
+      path: '/app/add-return',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Return Add',
+    },
+    {
+      path: '/app/view-returns',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Returns',
+    },
+    ]
+  }
   
 ]
 

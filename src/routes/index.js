@@ -124,6 +124,9 @@ const ServiceTypeView =lazy(() => import('../pages/protected/serviceType/viewAll
 const VendorAdd =lazy(() => import('../pages/protected/vendor/add'))
 const VendorView =lazy(() => import('../pages/protected/vendor/allVendor'))
 
+//return
+const ReturnAdd =lazy(() => import('../pages/protected/return/add'))
+
 const role = localStorage.getItem('role');
 
 const routes =role==='tenant' ?
@@ -446,6 +449,13 @@ const routes =role==='tenant' ?
 {
   path: '/view-vendors', 
   component: VendorView,  
+},
+
+//
+
+{
+  path: '/add-return', 
+  component: ReturnAdd,
 },
 ]
 
