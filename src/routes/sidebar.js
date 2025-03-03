@@ -705,7 +705,30 @@ const routes = role==='tenant' ?
       name: 'Returns',
     },
     ]
+  },
+
+
+  //payment
+  {
+    path: '', 
+    icon: <CreditCardIcon className={`${iconClasses} inline` }/>, 
+    name: 'Payment',  
+    submenu : [
+     
+     {
+      path: '/app/add-payment',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Payment Add',
+    },
+    {
+      path: '/app/view-payments',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Payments',
+    },
+    ]
   }
+  
+
   
 ]
 

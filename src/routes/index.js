@@ -129,6 +129,9 @@ const VendorView =lazy(() => import('../pages/protected/vendor/allVendor'))
 const ReturnAdd =lazy(() => import('../pages/protected/return/add'))
 const ReturnView = lazy(() => import('../pages/protected/return/allReturn'))
 
+//payment
+const PaymentAdd = lazy(() => import('../pages/protected/payment/addPayment'))
+
 const role = localStorage.getItem('role');
 
 const routes =role==='tenant' ?
@@ -467,7 +470,14 @@ const routes =role==='tenant' ?
 {
   path: '/view-returns', 
   component: ReturnView,
-}  
+}  ,
+
+//payment
+
+{
+  path: '/add-payment', 
+  component: PaymentAdd,
+},
 ]
 
 export default routes
