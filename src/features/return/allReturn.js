@@ -117,37 +117,78 @@ const ReturnsPage = () => {
     }
   };
 
+  const handleFilterByItemId = async (id) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}returns/item/${id}`);
+      setReturns(response.data);
+    } catch (error) {
+      console.error('There was an error fetching the returns by item id:', error);
+    }
+  };
+
+  const handleFilterByVendorId = async (id) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}returns/vendor/${id}`);
+      setReturns(response.data);
+    } catch (error) {
+      console.error('There was an error fetching the returns by vendor id:', error);
+    }
+  };
+
   const columns = [
     { key: 'Vendor.fname', label: 'Vendor', render: (row) => `${row.Vendor?.fname} ${row.Vendor?.lname}` },
-    { key: 'Item.itemName', label: 'Item',render: (row) => row.Item?.itemName },
+    { key: 'Item.itemName', label: 'Item', render: (row) => row.Item?.itemName },
     { key: 'quantity', label: 'Quantity' },
     { key: 'reason', label: 'Reason' },
-    { key: 'returnDate', label: 'Return Date',render: (row) => new Date(row.returnDate).toLocaleString() },
+    { key: 'returnDate', label: 'Return Date', render: (row) => new Date(row.returnDate).toLocaleString() },
     {
-      label: 'Actions',
-      key: 'actions',
-      render: (row) => (
-        <>
-          <button
-            onClick={() => handleEditClick(row)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => handleDeleteClick(row)}
-            className="bg-red-500 text-white px-4 py-2 rounded-md"
-          >
-            Delete
-          </button>
-        </>
-      ),
-    },
+        label: 'Actions',
+        key: 'actions',
+        render: (row) => (
+          <>
+            <div className="flex justify-center space-x-2">
+              <button
+                onClick={() => handleEditClick(row)}
+                className="bg-blue-500 text-white px-6 py-3 rounded-md w-full sm:w-auto"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDeleteClick(row)}
+                className="bg-red-500 text-white px-6 py-3 rounded-md w-full sm:w-auto"
+              >
+                Delete
+              </button>
+            </div>
+          </>
+        ),
+      }
+      
   ];
 
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-4">Returns</h1>
+      <div className="flex mb-4">
+        <select
+          className="border p-2 mr-2"
+          onChange={(e) => handleFilterByItemId(e.target.value)}
+        >
+          <option value="">Filter by Item</option>
+          {items.map((item) => (
+            <option key={item.id} value={item.id}>{item.itemName}</option>
+          ))}
+        </select>
+        <select
+          className="border p-2"
+          onChange={(e) => handleFilterByVendorId(e.target.value)}
+        >
+          <option value="">Filter by Vendor</option>
+          {vendors.map((vendor) => (
+            <option key={vendor.id} value={vendor.id}>{vendor.fname} {vendor.lname}</option>
+          ))}
+        </select>
+      </div>
       <TableComponent
         title="Returns List"
         data={returns}
