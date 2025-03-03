@@ -1,0 +1,19 @@
+import { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
+import { setPageTitle } from '../../features/common/headerSlice'
+import SettingForm from '../../features/setting/addSetting'
+
+function InternalPage(){
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        dispatch(setPageTitle({ title : " Setting"}))
+      }, [])
+
+
+    return(
+        <SettingForm />
+    )
+}
+
+export default InternalPage
