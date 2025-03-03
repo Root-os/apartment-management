@@ -532,6 +532,11 @@ const routes = role==='tenant' ?
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Maintenance Report',
     },
+    {
+      path: '/app/return-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Return Report',
+    }
 
     ]
   },
