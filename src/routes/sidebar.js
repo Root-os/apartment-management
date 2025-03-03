@@ -489,6 +489,9 @@ const routes = role==='tenant' ?
       }
     ]
   },
+
+
+  //report
   {
     path: '', 
 
@@ -536,7 +539,12 @@ const routes = role==='tenant' ?
       path: '/app/return-report',
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Return Report',
-    }
+    },
+    {
+      path: '/app/payment-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Payment Report',
+    },
 
     ]
   },

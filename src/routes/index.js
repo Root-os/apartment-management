@@ -72,6 +72,7 @@ const TenantReportPage=lazy(() => import('../pages/protected/Report/tenantBillRe
 const TenantReportPageTwo=lazy(() => import('../pages/protected/Report/tenantReport'))
 const ExpenseReportPage=lazy(() => import('../pages/protected/Report/ExpenseReport'))   
 const ReturnReport=lazy(() => import('../pages/protected/Report/returnReport'))
+const PaymentReport=lazy(() => import('../pages/protected/Report/paymentReport'))
 
 
 
@@ -365,12 +366,8 @@ const routes =role==='tenant' ?
     path: '/expense-report', 
     component: ExpenseReportPage, 
   },
-
   
-  
-
-  
-{
+ {
     path: '/purchase-report', 
     component: PurchaseReport, 
   },
@@ -385,6 +382,10 @@ const routes =role==='tenant' ?
   {
     path: '/return-report', 
     component: ReturnReport,
+  },
+  {
+    path: '/payment-report', 
+    component: PaymentReport,
   },
 //complaint
 

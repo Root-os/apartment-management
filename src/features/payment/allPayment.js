@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import TableComponent from '../../components/table';
-import Modal from '../../components/Modal';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import TableComponent from "../../components/table";
 
 const AllPaymentsPage = () => {
   const [payments, setPayments] = useState([]);
@@ -9,14 +8,13 @@ const AllPaymentsPage = () => {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [vendorId, setVendorId] = useState('');
-  const [price, setPrice] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState('');
-  const [status, setStatus] = useState('');
+  const [vendorId, setVendorId] = useState("");
+  const [price, setPrice] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
+  const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [messageType, setMessageType] = useState('success');
-  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState("success");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     // Fetch payments
@@ -26,7 +24,7 @@ const AllPaymentsPage = () => {
         setPayments(response.data);
       })
       .catch((error) => {
-        console.error('There was an error fetching the payments:', error);
+        console.error("There was an error fetching the payments:", error);
       });
 
     // Fetch vendors
@@ -36,7 +34,7 @@ const AllPaymentsPage = () => {
         setVendors(response.data);
       })
       .catch((error) => {
-        console.error('There was an error fetching the vendors:', error);
+        console.error("There was an error fetching the vendors:", error);
       });
   }, []);
 
@@ -56,6 +54,10 @@ const AllPaymentsPage = () => {
     setIsDeleteModalOpen(true);
   };
 
+  const handleDetailClick = (payment) => {
+    setSelectedPayment(payment);
+  };
+
   // Handle edit request
   const handleEdit = async () => {
     setLoading(true);
@@ -67,7 +69,10 @@ const AllPaymentsPage = () => {
         status,
       };
 
-      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}payments/${selectedPayment.id}`, updatedPayment);
+      const response = await axios.put(
+        `${process.env.REACT_APP_BASE_URL}payments/${selectedPayment.id}`,
+        updatedPayment
+      );
       const updatedData = payments.map((payment) =>
         payment.id === selectedPayment.id ? response.data : payment
       );
@@ -75,13 +80,11 @@ const AllPaymentsPage = () => {
       setIsEditModalOpen(false);
       setSelectedPayment(null);
 
-      setModalOpen(true);
-      setMessageType('success');
-      setMessage('Payment updated successfully');
+      setMessageType("success");
+      setMessage("Payment updated successfully");
     } catch (error) {
-      setModalOpen(true);
-      setMessageType('error');
-      setMessage('Unable to update payment');
+      setMessageType("error");
+      setMessage("Unable to update payment");
     } finally {
       setLoading(false);
     }
@@ -91,52 +94,66 @@ const AllPaymentsPage = () => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}payments/${selectedPayment.id}`);
-      setPayments(payments.filter((payment) => payment.id !== selectedPayment.id));
+      await axios.delete(
+        `${process.env.REACT_APP_BASE_URL}payments/${selectedPayment.id}`
+      );
+      setPayments(
+        payments.filter((payment) => payment.id !== selectedPayment.id)
+      );
       setIsDeleteModalOpen(false);
       setSelectedPayment(null);
 
-      setModalOpen(true);
-      setMessageType('success');
-      setMessage('Payment deleted successfully');
+      setMessageType("success");
+      setMessage("Payment deleted successfully");
     } catch (error) {
-      setModalOpen(true);
-      setMessageType('error');
-      setMessage('Unable to delete payment');
+      setMessageType("error");
+      setMessage("Unable to delete payment");
     } finally {
       setLoading(false);
     }
   };
 
   const columns = [
-    { key: 'Vendor.fname', label: 'Vendor', render: (row) => `${row.Vendor?.fname} ${row.Vendor?.lname}` },
-    { key: 'price', label: 'Price' },
-    { key: 'leftMoney', label: 'Left Money' },
-
-    { key: 'paymentMethod', label: 'Payment Method' },
-    { key: 'status', label: 'Status' },
-    { key: 'paymentDate', label: 'Payment Date', render: (row) => new Date(row.paymentDate).toLocaleString() },
     {
-        label: 'Actions',
-        key: 'actions',
-        render: (row) => (
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => handleEditClick(row)}
-              className="bg-blue-500 text-white px-4 py-2 rounded-md w-full md:w-auto min-w-[100px] text-center"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => handleDeleteClick(row)}
-              className="bg-red-500 text-white px-4 py-2 rounded-md w-full md:w-auto min-w-[100px] text-center"
-            >
-              Delete
-            </button>
-          </div>
-        ),
-      },
-      
+      key: "Vendor.fname",
+      label: "Vendor",
+      render: (row) => `${row.Vendor?.fname} ${row.Vendor?.lname}`,
+    },
+    { key: "price", label: "Price" },
+    { key: "leftMoney", label: "Left Money" },
+    { key: "paymentMethod", label: "Payment Method" },
+    { key: "status", label: "Status" },
+    {
+      key: "paymentDate",
+      label: "Payment Date",
+      render: (row) => new Date(row.paymentDate).toLocaleString(),
+    },
+    {
+      label: "Actions",
+      key: "actions",
+      render: (row) => (
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => handleEditClick(row)}
+            className="bg-blue-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => handleDeleteClick(row)}
+            className="bg-red-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
+          >
+            Delete
+          </button>
+          <button
+            onClick={() => handleDetailClick(row)}
+            className="bg-green-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
+          >
+            Detail
+          </button>
+        </div>
+      ),
+    },
   ];
 
   return (
@@ -155,9 +172,17 @@ const AllPaymentsPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-base-100 p-6 rounded-md w-1/3">
             <h2 className="text-2xl font-bold mb-4">Edit Payment</h2>
-            <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleEdit();
+              }}
+            >
               <div className="mb-4">
-                <label htmlFor="vendorId" className="block text-sm font-medium text-white-700">
+                <label
+                  htmlFor="vendorId"
+                  className="block text-sm font-medium text-white-700"
+                >
                   Vendor
                 </label>
                 <select
@@ -166,14 +191,21 @@ const AllPaymentsPage = () => {
                   onChange={(e) => setVendorId(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="" disabled>Select Vendor</option>
-                  {vendors.map(vendor => (
-                    <option key={vendor.id} value={vendor.id}>{vendor.fname} {vendor.lname}</option>
+                  <option value="" disabled>
+                    Select Vendor
+                  </option>
+                  {vendors.map((vendor) => (
+                    <option key={vendor.id} value={vendor.id}>
+                      {vendor.fname} {vendor.lname}
+                    </option>
                   ))}
                 </select>
               </div>
               <div className="mb-4">
-                <label htmlFor="price" className="block text-sm font-medium text-white-700">
+                <label
+                  htmlFor="price"
+                  className="block text-sm font-medium text-white-700"
+                >
                   Price
                 </label>
                 <input
@@ -185,7 +217,10 @@ const AllPaymentsPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="paymentMethod" className="block text-sm font-medium text-white-700">
+                <label
+                  htmlFor="paymentMethod"
+                  className="block text-sm font-medium text-white-700"
+                >
                   Payment Method
                 </label>
                 <select
@@ -194,7 +229,9 @@ const AllPaymentsPage = () => {
                   onChange={(e) => setPaymentMethod(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="" disabled>Select Payment Method</option>
+                  <option value="" disabled>
+                    Select Payment Method
+                  </option>
                   <option value="cash">Cash</option>
                   <option value="credit">Credit</option>
                   <option value="bank transfer">Bank Transfer</option>
@@ -202,7 +239,10 @@ const AllPaymentsPage = () => {
                 </select>
               </div>
               <div className="mb-4">
-                <label htmlFor="status" className="block text-sm font-medium text-white-700">
+                <label
+                  htmlFor="status"
+                  className="block text-sm font-medium text-white-700"
+                >
                   Status
                 </label>
                 <select
@@ -211,7 +251,9 @@ const AllPaymentsPage = () => {
                   onChange={(e) => setStatus(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="" disabled>Select Status</option>
+                  <option value="" disabled>
+                    Select Status
+                  </option>
                   <option value="complete">Complete</option>
                   <option value="partial">Partial</option>
                   <option value="pending">Pending</option>
@@ -223,7 +265,7 @@ const AllPaymentsPage = () => {
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
                   disabled={loading}
                 >
-                  {loading ? 'Saving...' : 'Save'}
+                  {loading ? "Saving..." : "Save"}
                 </button>
                 <button
                   type="button"
@@ -242,20 +284,86 @@ const AllPaymentsPage = () => {
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 p-6 rounded-lg w-98">
-            <h2 className="text-xl mb-4">Are you sure you want to delete this payment?</h2>
+            <h2 className="text-xl mb-4">
+              Are you sure you want to delete this payment?
+            </h2>
             <div className="flex justify-end space-x-2">
-              <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-              <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
+                className="bg-gray-400 text-white px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="bg-red-500 text-white px-4 py-2 rounded"
+              >
+                Delete
+              </button>
             </div>
           </div>
         </div>
       )}
-      <Modal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        messageType={messageType}
-        message={message}
-      />
+
+      {/* Detail View */}
+      {selectedPayment && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-base-100 p-6 rounded-md w-1/3">
+            <h2 className="text-2xl font-bold mb-4">Payment Details</h2>
+            <div className="mb-4">
+              <p>
+                <strong>Vendor:</strong> {selectedPayment.Vendor.fname}{" "}
+                {selectedPayment.Vendor.lname}
+              </p>
+              <p>
+                <strong>Price:</strong> {selectedPayment.price}
+              </p>
+              <p>
+                <strong>Left Money:</strong> {selectedPayment.leftMoney}
+              </p>
+              <p>
+                <strong>Payment Method:</strong> {selectedPayment.paymentMethod}
+              </p>
+              <p>
+                <strong>Status:</strong> {selectedPayment.status}
+              </p>
+              <p>
+                <strong>Payment Date:</strong>{" "}
+                {new Date(selectedPayment.paymentDate).toLocaleString()}
+              </p>
+              <p>
+                <strong>Vendor Phone:</strong> {selectedPayment.Vendor.phone}
+              </p>
+              <p>
+                <strong>Vendor Email:</strong> {selectedPayment.Vendor.email}
+              </p>
+              <p>
+                <strong>Vendor Address:</strong>{" "}
+                {selectedPayment.Vendor.address}
+              </p>
+              <p>
+                <strong>Contract Terms:</strong>{" "}
+                <a
+                  href={`${process.env.REACT_APP_BASE_URL}${selectedPayment?.Vendor?.contractTerms}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  View Contract
+                </a>
+              </p>
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setSelectedPayment(null)}
+                className="bg-gray-400 text-white px-4 py-2 rounded-md"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
