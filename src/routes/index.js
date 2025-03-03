@@ -116,6 +116,10 @@ const MaintenanceView =lazy(() => import('../pages/protected/MaintenanceView'))
 const ItemAssignmentAdd =lazy(() => import('../pages/protected/ItemAssignmentAdd'))
 const ItemAssignmentView =lazy(() => import('../pages/protected/ItemAssignmentView'))
 
+//service type
+
+const ServiceTypeAdd =lazy(() => import('../pages/protected/serviceType/add'))
+
 const role = localStorage.getItem('role');
 
 const routes =role==='tenant' ?
@@ -418,6 +422,10 @@ const routes =role==='tenant' ?
 {
   path: '/view-item-assignments', 
   component: ItemAssignmentView, 
+},
+{
+  path: '/add-service-type', 
+  component: ServiceTypeAdd,
 },
 ]
 

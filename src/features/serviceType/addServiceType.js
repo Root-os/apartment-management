@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import TitleCard from '../../../components/Cards/TitleCard';
-import Modal from '../../../components/Modal'
+import TitleCard from '../../components/Cards/TitleCard';
+import Modal from '../../components/Modal'
 
-const AddItemType = () => {
+const AddServiceType = () => {
   // State variables for form inputs
-  const [typeName, setTypeName] = useState('');
+  const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -23,7 +23,7 @@ const AddItemType = () => {
     setError('');
     
     // Check if both fields are filled
-    if (!typeName || !description) {
+    if (!name || !description) {
       setError('Both fields are required');
       return;
     }
@@ -32,20 +32,20 @@ const AddItemType = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}item-types`, {
-        typeName,
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}service-type`, {
+        name,
         description
       });
-      setTypeName('');
+      setName('');
       setDescription('');
 
       setModalOpen(true);
       setMessageType('success');
-      setMessage('Item Type added successfully.');
+      setMessage('Service Type added successfully.');
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Unable to add item type');
+      setMessage('Unable to add service type');
     } finally {
       setLoading(false);
     }
@@ -53,16 +53,16 @@ const AddItemType = () => {
 
   return (
     <>
-      <TitleCard title="Add Item Type"  >
-      {/* Form to input item type data */}
+      <TitleCard title="Add Service Type"  >
+      {/* Form to input service type data */}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="typeName" className="block text-sm font-medium text-white-700">Item Type Name</label>
+          <label htmlFor="name" className="block text-sm font-medium text-white-700">Service Type Name</label>
           <input
             type="text"
-            id="typeName"
-            value={typeName}
-            onChange={(e) => setTypeName(e.target.value)}
+            id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
             // placeholder="Enter type name"
             required
@@ -97,10 +97,9 @@ const AddItemType = () => {
       onClose={() => setModalOpen(false)} 
       messageType={messageType} 
       message={message}
-    
     />
    </>
   );
 };
 
-export default AddItemType;
+export default AddServiceType;

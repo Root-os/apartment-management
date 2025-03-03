@@ -638,6 +638,19 @@ const routes = role==='tenant' ?
 
     ]
   },
+  {
+    path: '', 
+    icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
+    name: 'Service Type',  
+    submenu : [
+     
+     {
+      path: '/app/add-service-type',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Service Type Add',
+    },
+    ]
+  },
   
 ]
 
