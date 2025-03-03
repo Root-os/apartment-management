@@ -126,6 +126,7 @@ const VendorView =lazy(() => import('../pages/protected/vendor/allVendor'))
 
 //return
 const ReturnAdd =lazy(() => import('../pages/protected/return/add'))
+const ReturnView = lazy(() => import('../pages/protected/return/allReturn'))
 
 const role = localStorage.getItem('role');
 
@@ -451,12 +452,16 @@ const routes =role==='tenant' ?
   component: VendorView,  
 },
 
-//
+//return
 
 {
   path: '/add-return', 
   component: ReturnAdd,
 },
+{
+  path: '/view-returns', 
+  component: ReturnView,
+}  
 ]
 
 export default routes
