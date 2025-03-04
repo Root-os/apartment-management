@@ -134,6 +134,10 @@ const ReturnView = lazy(() => import('../pages/protected/return/allReturn'))
 const PaymentAdd = lazy(() => import('../pages/protected/payment/addPayment'))
 const PaymentView = lazy(() => import('../pages/protected/payment/allPayment'))
 
+//letter
+const LetterTypeAdd = lazy(() => import('../pages/protected/letter/addLetterType'))
+const letterTypeView = lazy(() => import('../pages/protected/letter/allLetterType'))
+
 const role = localStorage.getItem('role');
 
 const routes =role==='tenant' ?
@@ -485,6 +489,16 @@ const routes =role==='tenant' ?
   path: '/view-payments', 
   component: PaymentView,
 },
+
+//letter
+{
+  path: '/add-letter-type', 
+  component: LetterTypeAdd,
+},
+{
+  path: '/view-letter-types', 
+  component: letterTypeView,
+}
 
 
 ]

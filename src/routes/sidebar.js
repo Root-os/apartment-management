@@ -37,6 +37,8 @@ import PaperClipIcon from '@heroicons/react/24/outline/PaperClipIcon'
 import CogIcon from '@heroicons/react/24/outline/CogIcon'
 import EnvelopeIcon from '@heroicons/react/24/outline/EnvelopeIcon'
 import { BuildingOfficeIcon } from '@heroicons/react/24/outline';
+import { EnvelopeIcon as MailIcon } from '@heroicons/react/24/outline';
+
 
 
 import ClipboardIcon from '@heroicons/react/24/outline/ClipboardIcon'
@@ -734,7 +736,28 @@ const routes = role==='tenant' ?
       name: 'Payments',
     },
     ]
+  },
+
+  //letter
+  {
+    path: '', 
+    icon: <MailIcon className={`${iconClasses} inline` }/>, 
+    name: 'Letter',  
+    submenu : [
+     
+     {
+      path: '/app/add-letter-type',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Letter Type Add',
+    },
+    {
+      path: '/app/view-letter-types',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Letter Types',
+    },
+    ]
   }
+
   
 
   
