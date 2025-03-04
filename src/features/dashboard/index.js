@@ -89,7 +89,7 @@ const Dashboard = () => {
                 <div>
                   <h3 className="text-xl font-semibold text-black">Payments</h3>
                   <p className="text-lg text-black">
-                   {counts.payments.totalPayments} 
+                   {counts.payments?.totalPayments} 
                    {/* | Pending: {counts.payments.pendingPayments} | Completed: {counts.payments.completedPayments} */}
                   </p>
                 </div>
