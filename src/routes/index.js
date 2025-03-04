@@ -41,8 +41,8 @@ const ParkingView = lazy(() => import('../pages/protected/ParkingView'))
  //inventory
 const ItemTypeAdd = lazy(() => import('../pages/protected/ItemTypeAdd'))
 const ItemTypeView = lazy(() => import('../pages/protected/ItemTypeView'))
-const ItemAdd = lazy(() => import('../pages/protected/ItemAdd'))
-const ItemView = lazy(() => import('../pages/protected/ItemView'))
+const ItemAdd = lazy(() => import('../pages/protected/Item/ItemAdd'))
+const ItemView = lazy(() => import('../pages/protected/Item/ItemView'))
 
 const PaymentRequestAdd = lazy(() => import('../pages/protected/PaymentRequestAdd'))
 const PaymentRequestView = lazy(() => import('../pages/protected/PaymentRequestView'))
@@ -70,7 +70,7 @@ const ChargingView = lazy(() => import('../pages/protected/ChargingView'))
 const GovtReport=lazy(() => import('../pages/protected/Report/govtBillReport'))
 const TenantReportPage=lazy(() => import('../pages/protected/Report/tenantBillReport'))
 const TenantReportPageTwo=lazy(() => import('../pages/protected/Report/tenantReport'))
-const PurchaseReport=lazy(() => import('../pages/protected/Purchasereport'))
+const PurchaseReport=lazy(() => import('../pages/protected/Report/Purchasereport'))
 const ChargingReport=lazy(() => import('../pages/protected/ChargingReport'))
 const MaintenanceReport=lazy(() => import('../pages/protected/MaintenanceReport'))
 const ItemAssignmentReport=lazy(() => import('../pages/protected/ItemAssignmentReport'))
@@ -111,6 +111,16 @@ const ItemAssignmentView =lazy(() => import('../pages/protected/ItemAssignmentVi
 
 //stock
 const StockView =lazy(() => import('../pages/protected/StockView'))
+const LowLevelStock =lazy(() => import('../pages/protected/StockOut/LowLevelStock'))
+//inventory in and out
+const InOutAdd =lazy(() => import('../pages/protected/Inventory-in-out/InOutAdd'))
+const ViewInOut =lazy(() => import('../pages/protected/Inventory-in-out/ViewInOut'))
+const tenantViewInOut =lazy(() => import('../pages/protected/Inventory-in-out/tenantViewInOut'))
+
+//Employee Salary
+const MassSalary =lazy(() => import('../pages/protected/Employee-Salary/MassSalary'))
+const SinglePayment =lazy(() => import('../pages/protected/Employee-Salary/SinglePayment'))
+const ViewAllPayment =lazy(() => import('../pages/protected/Employee-Salary/ViewAllPayment'))
 
 const role = localStorage.getItem('role');
 
@@ -135,6 +145,10 @@ const routes =role==='tenant' ?
   {
     path: '/withdraw-request-view', 
     component: MyWithdrawRequest, 
+  },
+  {
+    path: '/tenant-view-in', 
+    component: tenantViewInOut, 
   },
 
  ]:
@@ -414,6 +428,32 @@ const routes =role==='tenant' ?
 {
   path: '/view-stocks', 
   component: StockView, 
+},
+{
+  path: '/view-low-level-stock', 
+  component: LowLevelStock, 
+},
+//inventory-in-out
+{
+  path: '/add-in-out', 
+  component: InOutAdd, 
+},
+{
+  path: '/view-in-out', 
+  component: ViewInOut, 
+},
+//salary
+{
+  path: '/add-mass-salary', 
+  component: MassSalary, 
+},
+{
+  path: '/add-single-salary', 
+  component: SinglePayment, 
+},
+{
+  path: '/view-all-salary', 
+  component: ViewAllPayment, 
 },
 ]
 

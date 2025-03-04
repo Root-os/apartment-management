@@ -70,6 +70,13 @@ const StockOutRequestPage = () => {
   // Handle the status update
   const handleStatusUpdate = async () => {
     try {
+      console.log({
+        id: statusData.id, // Log the ID to check
+        status: status,
+        approvedQuantity: approvedQuantity,
+        approvalReason: approvalReason,
+      });
+
       const token = localStorage.getItem('token');
       const response = await axios.put(
         `${process.env.REACT_APP_BASE_URL}stockout/${statusData.id}`,
@@ -100,9 +107,9 @@ const StockOutRequestPage = () => {
       }
     } catch (error) {
       console.error('Error updating status', error);
-      alert('Error updating status');
+      alert(`Error updating status: ${error.response ? error.response.data.message : error.message}`);
     } finally {
-      setShowModal(false); // Hide the modal after status update attempt
+      setShowModal(false);
     }
   };
 
