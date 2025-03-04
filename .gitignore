@@ -30,3 +30,7 @@ yarn-error.log*
 =======
 node_modules
 >>>>>>> origin/rodas
+/*.env
+/*zip
+/*.log
+
