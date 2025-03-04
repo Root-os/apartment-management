@@ -751,10 +751,20 @@ const routes = role==='tenant' ?
       name: 'Letter Type Add',
     },
     {
+      path: '/app/send-letter',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Send Letter',
+    },
+    {
       path: '/app/view-letter-types',
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Letter Types',
     },
+    {
+      path: '/app/all-sent-letters',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Sent Letters',
+    }
     ]
   }
 

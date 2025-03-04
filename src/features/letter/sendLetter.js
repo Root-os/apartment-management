@@ -7,7 +7,7 @@ const SendLetter = () => {
   // State variables for form inputs
   const [letterTypeId, setLetterTypeId] = useState('');
   const [tenantId, setTenantId] = useState('');
-  const [date, setDate] = useState('');
+  const [Date, setDate] = useState('');
   const [description, setDescription] = useState('');
   const [letterTypes, setLetterTypes] = useState([]);
   const [tenants, setTenants] = useState([]);
@@ -20,7 +20,7 @@ const SendLetter = () => {
   useEffect(() => {
     // Fetch letter types
     axios
-      .get(`${process.env.REACT_APP_BASE_URL}api/letter-type`)
+      .get(`${process.env.REACT_APP_BASE_URL}letter-type`)
       .then((response) => {
         setLetterTypes(response.data);
       })
@@ -30,7 +30,7 @@ const SendLetter = () => {
 
     // Fetch tenants
     axios
-      .get(`${process.env.REACT_APP_BASE_URL}api/tenant`)
+      .get(`${process.env.REACT_APP_BASE_URL}tenant`)
       .then((response) => {
         setTenants(response.data);
       })
@@ -47,7 +47,7 @@ const SendLetter = () => {
     setError('');
   
     // Check if all fields are filled
-    if (!letterTypeId || !tenantId || !date || !description) {
+    if (!letterTypeId || !tenantId || !Date || !description) {
       setError('All fields are required');
       return;
     }
@@ -56,10 +56,10 @@ const SendLetter = () => {
     setLoading(true);
   
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}api/letter`, {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}letter`, {
         letterTypeId,
         tenantId,
-        date,
+        Date,
         description,
       });
   
@@ -130,20 +130,20 @@ const SendLetter = () => {
               </option>
               {tenants.map((tenant) => (
                 <option key={tenant.id} value={tenant.id}>
-                  {tenant.name}
+                  {tenant.fullName}
                 </option>
               ))}
             </select>
           </div>
 
           <div className="mb-4">
-            <label htmlFor="date" className="block text-sm font-medium text-white-700">
+            <label htmlFor="Date" className="block text-sm font-medium text-white-700">
               Date
             </label>
             <input
-              type="date"
-              id="date"
-              value={date}
+              type="Date"
+              id="Date"
+              value={Date}
               onChange={(e) => setDate(e.target.value)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
               required

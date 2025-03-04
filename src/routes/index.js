@@ -137,6 +137,8 @@ const PaymentView = lazy(() => import('../pages/protected/payment/allPayment'))
 //letter
 const LetterTypeAdd = lazy(() => import('../pages/protected/letter/addLetterType'))
 const letterTypeView = lazy(() => import('../pages/protected/letter/allLetterType'))
+const LetterSend = lazy(() => import('../pages/protected/letter/sendLetter'))
+const AllSentLetters=lazy(() => import('../pages/protected/letter/allLetterSent'))
 
 const role = localStorage.getItem('role');
 
@@ -498,6 +500,14 @@ const routes =role==='tenant' ?
 {
   path: '/view-letter-types', 
   component: letterTypeView,
+},
+{
+  path: '/send-letter', 
+  component: LetterSend,
+},
+{
+  path: '/all-sent-letters', 
+  component: AllSentLetters,  
 }
 
 
