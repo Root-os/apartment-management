@@ -26,7 +26,7 @@ const AddPurchaseForm = () => {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const response = await axios.get("https://apartment.houseethiopia.com/api/items");
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}items`);
         setItems(response.data);
       } catch (error) {
         console.error("Error fetching items", error);
@@ -35,7 +35,7 @@ const AddPurchaseForm = () => {
 
     const fetchItemTypes = async () => {
       try {
-        const response = await axios.get("https://apartment.houseethiopia.com/api/item-types/");
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}item-types/`);
         setItemTypes(response.data);
       } catch (error) {
         console.error("Error fetching item types", error);
@@ -64,7 +64,7 @@ const AddPurchaseForm = () => {
     try {
      setLoading(true);
 
-      const response = await axios.post("https://apartment.houseethiopia.com/api/purchases", purchaseData);
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}purchases`, purchaseData);
       console.log("Purchase added successfully", response.data);
       // Reset form
       setVendourName("");

@@ -73,6 +73,7 @@ const TenantReportPageTwo=lazy(() => import('../pages/protected/Report/tenantRep
 const PurchaseReport=lazy(() => import('../pages/protected/Purchasereport'))
 const ChargingReport=lazy(() => import('../pages/protected/ChargingReport'))
 const MaintenanceReport=lazy(() => import('../pages/protected/MaintenanceReport'))
+const ItemAssignmentReport=lazy(() => import('../pages/protected/ItemAssignmentReport'))
 
 //complaint tenantside
 const ComplainByTenant=lazy(() => import('../pages/protected/ComplainByTenant'))
@@ -107,6 +108,9 @@ const MaintenanceView =lazy(() => import('../pages/protected/MaintenanceView'))
 //item assignments
 const ItemAssignmentAdd =lazy(() => import('../pages/protected/ItemAssignmentAdd'))
 const ItemAssignmentView =lazy(() => import('../pages/protected/ItemAssignmentView'))
+
+//stock
+const StockView =lazy(() => import('../pages/protected/StockView'))
 
 const role = localStorage.getItem('role');
 
@@ -347,6 +351,10 @@ const routes =role==='tenant' ?
     path: '/maintenance-report', 
     component: MaintenanceReport, 
   },
+  {
+    path: '/item-assignment-report', 
+    component: ItemAssignmentReport, 
+  },
 //complaint
 
 {
@@ -401,6 +409,11 @@ const routes =role==='tenant' ?
 {
   path: '/view-item-assignments', 
   component: ItemAssignmentView, 
+},
+//stock
+{
+  path: '/view-stocks', 
+  component: StockView, 
 },
 ]
 

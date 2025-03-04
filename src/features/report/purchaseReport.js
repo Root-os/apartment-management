@@ -5,6 +5,7 @@ import Modal from '../../components/Modal';
 
 const PurchaseReport = () => {
   const [itemTypes, setItemTypes] = useState([]);
+  const [vendors, setVendors] = useState([]); // Store vendor list
   const [filteredData, setFilteredData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
@@ -14,9 +15,11 @@ const PurchaseReport = () => {
     startDate: '',
     endDate: '',
     itemTypeId: '',
+    vendorId: '', // Add vendorId to filter params
   });
 
   useEffect(() => {
+    // Fetch item types
     const fetchItemTypes = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}item-types`);
@@ -26,7 +29,18 @@ const PurchaseReport = () => {
       }
     };
 
+    // Fetch vendors
+    const fetchVendors = async () => {
+      try {
+        const response = await axios.get('https://apartment.houseethiopia.com/api/vendors');
+        setVendors(response.data);
+      } catch (error) {
+        console.error('Error fetching vendors:', error);
+      }
+    };
+
     fetchItemTypes();
+    fetchVendors();
   }, []);
 
   const handleFilterSubmit = async (e) => {
@@ -49,8 +63,22 @@ const PurchaseReport = () => {
   };
 
   const columns = [
-    { key: 'vendourName', label: 'Vendor Name' },
-    { key: 'vendourPhone', label: 'Vendor Phone' },
+    {
+      key: 'vendorName',
+      label: 'Vendor Name',
+      render: (data) => {
+        const vendor = data.Vendors;
+        return vendor ? `${vendor.fname} ${vendor.lname}` : 'Unknown Vendor'; 
+      },
+    },
+    {
+      key: 'vendorPhone',
+      label: 'Vendor Phone',
+      render: (data) => {
+        const vendor = data.Vendor;
+        return vendor ? vendor.phone : 'N/A'; 
+      },
+    },
     { key: 'itemName', label: 'Item Name', render: (data) => data.Item.itemName },
     { key: 'amount', label: 'Amount' },
     { key: 'price', label: 'Price' },
@@ -59,6 +87,7 @@ const PurchaseReport = () => {
     { key: 'expirationDate', label: 'Expiration Date', render: (data) => new Date(data.expirationDate).toLocaleDateString() },
     { key: 'description', label: 'Description' },
   ];
+  
 
   return (
     <div className="p-8">
@@ -101,7 +130,25 @@ const PurchaseReport = () => {
             >
               <option value="">Select Item Type</option>
               {itemTypes.map((itemType) => (
-                <option key={itemType.id} value={itemType.id}>{itemType.typeName}</option>
+                <option key={itemType.id} value={itemType.id}>{itemType.categoryName}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Vendor Filter */}
+          <div>
+            <label htmlFor="vendorId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Vendor</label>
+            <select
+              id="vendorId"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+              value={filterParams.vendorId}
+              onChange={(e) => setFilterParams({ ...filterParams, vendorId: e.target.value })}
+            >
+              <option value="">Select Vendor</option>
+              {vendors.map((vendor) => (
+                <option key={vendor.id} value={vendor.id}>
+                  {vendor.fname} {vendor.lname}
+                </option>
               ))}
             </select>
           </div>

@@ -512,6 +512,11 @@ const routes = role==='tenant' ?
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Maintenance Report',
     },
+    {
+      path: '/app/item-assignment-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Item Assignment Report',
+    },
 
     ]
   },
@@ -617,6 +622,24 @@ const routes = role==='tenant' ?
       path: '/app/view-item-assignments',
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'View Item Assignments',
+    },
+    ]
+  },
+  {
+    path: '', 
+    icon: <ClipboardIcon className={`${iconClasses} inline` }/>, 
+    name: 'Stock Out',  
+    submenu : [
+     
+    //  {
+    //   path: '/app/add-item-assignments',
+    //   icon: <PlusIcon className={submenuIconClasses}/>,
+    //   name: 'Add Item',
+    // },
+    {
+      path: '/app/view-stocks',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View Stocks',
     },
     ]
   },

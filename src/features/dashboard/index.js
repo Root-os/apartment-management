@@ -77,7 +77,7 @@ const Dashboard = () => {
           </div>
 
           {/* Payments Card */}
-          <div
+          {/* <div
             className="card hover:shadow-xl transition-all transform hover:scale-105"
             style={{ backgroundColor: generateRandomColor() }}
           >
@@ -90,12 +90,12 @@ const Dashboard = () => {
                   <h3 className="text-xl font-semibold text-black">Payments</h3>
                   <p className="text-lg text-black">
                    {counts.payments.totalPayments} 
-                   {/* | Pending: {counts.payments.pendingPayments} | Completed: {counts.payments.completedPayments} */}
+                   | Pending: {counts.payments.pendingPayments} | Completed: {counts.payments.completedPayments}
                   </p>
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Complaints Card */}
           <div

@@ -5,7 +5,7 @@ import Modal from '../../../components/Modal'
 
 const AddItemType = () => {
   // State variables for form inputs
-  const [typeName, setTypeName] = useState('');
+  const [categoryName, setCategoryName] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -23,7 +23,7 @@ const AddItemType = () => {
     setError('');
     
     // Check if both fields are filled
-    if (!typeName || !description) {
+    if (!categoryName || !description) {
       setError('Both fields are required');
       return;
     }
@@ -32,11 +32,11 @@ const AddItemType = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('https://apartment.houseethiopia.com/api/item-types', {
-        typeName,
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}item-types`, {
+        categoryName,
         description
       });
-      setTypeName('');
+      setCategoryName('');
       setDescription('');
 
       setModalOpen(true);
@@ -61,8 +61,8 @@ const AddItemType = () => {
           <input
             type="text"
             id="typeName"
-            value={typeName}
-            onChange={(e) => setTypeName(e.target.value)}
+            value={categoryName}
+            onChange={(e) => setCategoryName(e.target.value)}
             className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
             // placeholder="Enter type name"
             required

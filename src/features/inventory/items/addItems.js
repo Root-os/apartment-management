@@ -22,7 +22,7 @@ const AddItem = () => {
   
   useEffect(() => {
     axios
-      .get('https://apartment.houseethiopia.com/api/item-types')
+      .get(`${process.env.REACT_APP_BASE_URL}item-types`)
       .then((response) => {
         setItemTypes(response.data);
       })
@@ -43,7 +43,7 @@ const AddItem = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('https://apartment.houseethiopia.com/api/items', {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}items`, {
         itemName,
         expirationDate,
         itemAmount,

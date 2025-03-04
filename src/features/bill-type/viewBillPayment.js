@@ -49,12 +49,12 @@ const BillTablePage = () => {
   useEffect(() => {
     const fetchBillData = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/bill-type');
-        setBillData(response.data); // Set the fetched data to state
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-type`);
+        setBillData(response.data); 
       } catch (err) {
         setError('An error occurred while fetching the bill data.');
       } finally {
-        setLoading(false); // Set loading to false once data is fetched
+        setLoading(false); 
       }
     };
 
