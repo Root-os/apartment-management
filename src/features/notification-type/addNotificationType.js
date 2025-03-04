@@ -23,7 +23,7 @@ const AddNotificationType = () => {
     };
 
     try {
-      const response = await axios.post('https://apartment.houseethiopia.com/api/notification-type', payload, {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}notification-type`, payload, {
         headers: {
           Authorization: `Bearer ${token}`, // Include token in headers
         },

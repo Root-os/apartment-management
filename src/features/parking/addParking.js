@@ -23,7 +23,7 @@ const AddParking = () => {
 
   useEffect(() => {
     axios
-      .get("https://apartment.houseethiopia.com/api/tenant")
+      .get(`${process.env.REACT_APP_BASE_URL}tenant`)
       .then((response) => {
         setTenants(response.data);
       })
@@ -49,7 +49,7 @@ const AddParking = () => {
     };
 
     axios
-      .post("https://apartment.houseethiopia.com/api/parking", parkingData)
+      .post(`${process.env.REACT_APP_BASE_URL}parking`, parkingData)
       .then((response) => {
         setCarPlate("");
         setCarName("");

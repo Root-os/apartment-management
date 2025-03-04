@@ -10,7 +10,6 @@ const PurchasesPage = () => {
   const [itemTypes, setItemTypes] = useState([]);
   const [selectedPurchase, setSelectedPurchase] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [message, setMessage] = useState('');
   const [vendourName, setVendourName] = useState('');
   const [vendourPhone, setVendourPhone] = useState('');
   const [amount, setAmount] = useState('');
@@ -31,7 +30,7 @@ const PurchasesPage = () => {
 
   useEffect(() => {
     axios
-      .get('https://apartment.houseethiopia.com/api/purchases')
+      .get(`${process.env.REACT_APP_BASE_URL}purchases`)
       .then((response) => {
         setData(response.data);
       })
@@ -40,7 +39,7 @@ const PurchasesPage = () => {
       });
 
     axios
-      .get('https://apartment.houseethiopia.com/api/items')
+      .get(`${process.env.REACT_APP_BASE_URL}items`)
       .then((response) => {
         setItems(response.data);
       })
@@ -49,7 +48,7 @@ const PurchasesPage = () => {
       });
 
     axios
-      .get('https://apartment.houseethiopia.com/api/item-types')
+      .get(`${process.env.REACT_APP_BASE_URL}item-types`)
       .then((response) => {
         setItemTypes(response.data);
       })
@@ -86,7 +85,7 @@ const PurchasesPage = () => {
       };
 
       const response = await axios.put(
-        `https://apartment.houseethiopia.com/api/purchases/${selectedPurchase.id}`,
+        `${process.env.REACT_APP_BASE_URL}purchases/${selectedPurchase.id}`,
         updatedPurchase
       );
 
@@ -110,15 +109,15 @@ const PurchasesPage = () => {
   };
 
   const handleDeleteClick = (purchase) => {
-    setSelectedPurchase(purchase); // Set the selected purchase for deletion
-    setIsDeleteModalOpen(true); // Open the delete confirmation modal
+    setSelectedPurchase(purchase); 
+    setIsDeleteModalOpen(true); 
   };
   
   const handleDelete = async (purchaseId) => {
     try {
-      await axios.delete(`https://apartment.houseethiopia.com/api/purchases/${purchaseId}`);
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}purchases/${purchaseId}`);
       setData(data.filter((purchase) => purchase.id !== purchaseId)); // Remove from state after successful delete
-      setIsDeleteModalOpen(false); // Close modal
+      setIsDeleteModalOpen(false); 
       setModalOpen(true);
       setMessageType('success');
       setModalMessage('Purchase deleted successfully');
@@ -136,12 +135,12 @@ const PurchasesPage = () => {
     {
       label: 'Item Type',
       key: 'ItemType.typeName',
-      render: (row) => row.ItemType ? row.ItemType.typeName : 'N/A', // Accessing typeName from the nested ItemType object
+      render: (row) => row.ItemType ? row.ItemType.typeName : 'N/A', 
     },
     {
       label: 'Item Name',
       key: 'Item.itemName',
-      render: (row) => row.Item ? row.Item.itemName : 'N/A', // Accessing itemName from the nested Item object
+      render: (row) => row.Item ? row.Item.itemName : 'N/A',
     },
     { label: 'Description', key: 'description' },
     { label: 'Total Price', key: 'totalPrice' },
@@ -152,7 +151,7 @@ const PurchasesPage = () => {
       render: (row) => {
         if (row.expirationDate) {
           const date = new Date(row.expirationDate);
-          return date.toLocaleDateString('en-US'); // This formats the date as MM/DD/YYYY
+          return date.toLocaleDateString('en-US'); 
         }
         return 'N/A';
       }
@@ -305,8 +304,9 @@ const PurchasesPage = () => {
                 <button
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                  disabled={loading}
                 >
-                  Save
+                  {loading ? 'saving...': 'Save'}
                 </button>
                 <button
                   type="button"
@@ -321,15 +321,13 @@ const PurchasesPage = () => {
         </div>
       )}
 
-<DeleteConfirmationModal
-  isOpen={isDeleteModalOpen}
-  onClose={() => setIsDeleteModalOpen(false)} // Close the modal
-  onDelete={handleDelete} // Trigger the delete function
-  data={selectedPurchase} // Pass the selected purchase data
-/>
+      <DeleteConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)} 
+        onDelete={handleDelete} 
+        data={selectedPurchase} 
+      />
 
-
-      {/* Modal for Success/Error Message */}
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

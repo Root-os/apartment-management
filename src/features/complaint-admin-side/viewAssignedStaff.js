@@ -16,12 +16,12 @@ const ComplaintsPage = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/auth/users', {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setEmployees(response.data.users); // Assuming the response contains a 'users' array
+        setEmployees(response.data.users); 
       } catch (err) {
         setError('Error fetching employees');
         console.error(err);
@@ -30,12 +30,10 @@ const ComplaintsPage = () => {
 
     fetchEmployees();
   }, [token]);
-
-  // Fetch tenants data from API using Axios
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/tenant', {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -54,7 +52,7 @@ const ComplaintsPage = () => {
   const fetchComplaints = async (employeeId) => {
     setLoading(true);
     try {
-      const response = await axios.get(`https://apartment.houseethiopia.com/api/complaints/assigned/${employeeId}`, {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}complaints/assigned/${employeeId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -42,7 +42,7 @@ const ItemAssignmentsPage = () => {
   useEffect(() => {
     const fetchItemAssignments = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/item-assignments');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}item-assignments`);
         setItemAssignments(response.data.data); 
         setLoading(false);
       } catch (err) {
@@ -74,9 +74,8 @@ const ItemAssignmentsPage = () => {
     setLoading(true)
     
     axios
-      .put(`https://apartment.houseethiopia.com/api/item-assignments/${formData.id}`, formData)
+      .put(`${process.env.REACT_APP_BASE_URL}item-assignments/${formData.id}`, formData)
       .then(() => {
-        // Update the itemAssignments array to reflect the updated data
         setItemAssignments((prevAssignments) => 
           prevAssignments.map((assignment) => 
             assignment.id === formData.id ? { ...assignment, ...formData } : assignment
@@ -100,7 +99,7 @@ const ItemAssignmentsPage = () => {
 
   const handleDelete = (id) => {
     axios
-      .delete(`https://apartment.houseethiopia.com/api/item-assignments/${id}`)
+      .delete(`${process.env.REACT_APP_BASE_URL}item-assignments/${id}`)
       .then(() => {
         setItemAssignments(itemAssignments.filter((item) => item.id !== id));
         setOpenDeleteModal(false); 

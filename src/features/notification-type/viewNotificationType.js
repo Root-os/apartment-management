@@ -10,6 +10,7 @@ const NotificationPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
@@ -18,7 +19,7 @@ const NotificationPage = () => {
   useEffect(() => {
     const fetchNotificationData = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/notification-type');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}notification-type`);
         setNotificationData(response.data);
       } catch (error) {
         setError('Error fetching data');
@@ -45,11 +46,11 @@ const NotificationPage = () => {
 
   // Handle edit request
   const handleEdit = async () => {
-    setLoading(true);
+    setIsLoading(true);
     try {
       const updatedNotification = { name };
 
-      const response = await axios.put(`https://apartment.houseethiopia.com/api/notification-type/${selectedNotification.id}`, updatedNotification);
+      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}notification-type/${selectedNotification.id}`, updatedNotification);
       const updatedData = notificationData.map((notification) =>
         notification.id === selectedNotification.id ? response.data : notification
       );
@@ -65,15 +66,15 @@ const NotificationPage = () => {
       setMessageType('error');
       setModalMessage('Unable to update notification type');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   // Handle delete request
   const handleDelete = async () => {
-    setLoading(true);
+    
     try {
-      await axios.delete(`https://apartment.houseethiopia.com/api/notification-type/${selectedNotification.id}`);
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}notification-type/${selectedNotification.id}`);
       setNotificationData(notificationData.filter((notification) => notification.id !== selectedNotification.id));
       setIsDeleteModalOpen(false);
       setSelectedNotification(null);
@@ -85,9 +86,7 @@ const NotificationPage = () => {
       setModalOpen(true);
       setMessageType('error');
       setModalMessage('Unable to delete notification type');
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   const columns = [
@@ -156,8 +155,9 @@ const NotificationPage = () => {
                 <button
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                  disable={isLoading}
                 >
-                  Save
+                  {isLoading ?'saving...':'Save'}
                 </button>
                 <button
                   type="button"

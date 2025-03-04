@@ -55,7 +55,7 @@ const MaintenanceReport = () => {
     setIsLoading(true); // Start loading
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/maintenance/report`, filterParams);
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}maintenance/report`, filterParams);
 
       // Log response data for debugging
       console.log('API response:', response.data);

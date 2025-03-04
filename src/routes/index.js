@@ -83,6 +83,7 @@ const PaymentReport=lazy(() => import('../pages/protected/Report/paymentReport')
 const PurchaseReport=lazy(() => import('../pages/protected/Purchasereport'))
 const ChargingReport=lazy(() => import('../pages/protected/ChargingReport'))
 const MaintenanceReport=lazy(() => import('../pages/protected/MaintenanceReport'))
+const ItemAssignmentReport=lazy(() => import('../pages/protected/ItemAssignmentReport'))
 
 //complaint tenantside
 const ComplainByTenant=lazy(() => import('../pages/protected/ComplainByTenant'))
@@ -139,6 +140,8 @@ const LetterTypeAdd = lazy(() => import('../pages/protected/letter/addLetterType
 const letterTypeView = lazy(() => import('../pages/protected/letter/allLetterType'))
 const LetterSend = lazy(() => import('../pages/protected/letter/sendLetter'))
 const AllSentLetters=lazy(() => import('../pages/protected/letter/allLetterSent'))
+//stock
+const StockView =lazy(() => import('../pages/protected/StockView'))
 
 const role = localStorage.getItem('role');
 
@@ -392,6 +395,8 @@ const routes =role==='tenant' ?
   {
     path: '/payment-report', 
     component: PaymentReport,
+    path: '/item-assignment-report', 
+    component: ItemAssignmentReport, 
   },
 //complaint
 
@@ -508,9 +513,15 @@ const routes =role==='tenant' ?
 {
   path: '/all-sent-letters', 
   component: AllSentLetters,  
-}
+},
 
 
+
+//stock
+{
+  path: '/view-stocks', 
+  component: StockView, 
+},
 ]
 
 export default routes

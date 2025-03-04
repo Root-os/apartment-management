@@ -17,13 +17,12 @@ const ComplaintsPage = () => {
   const [employees, setEmployees] = useState([]);
 
   useEffect(() => {
-    // Fetch complaints data when the component mounts
     const fetchComplaints = async () => {
       try {
-        const token = localStorage.getItem('token'); // Get admin token from localStorage
+        const token = localStorage.getItem('token'); 
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}complaints/all`, {
           headers: {
-            Authorization: `Bearer ${token}`, // Include token in headers
+            Authorization: `Bearer ${token}`, 
           },
         });
         setComplaints(response.data);
@@ -33,16 +32,15 @@ const ComplaintsPage = () => {
       }
     };
 
-    // Fetch employees data when the component mounts
     const fetchEmployees = async () => {
       try {
         const token = localStorage.getItem('token'); // Get admin token from localStorage
-        const response = await axios.get('https://apartment.houseethiopia.com/api/auth/users', {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/users`, {
           headers: {
-            Authorization: `Bearer ${token}`, // Include token in headers
+            Authorization: `Bearer ${token}`, 
           },
         });
-        setEmployees(response.data.users); // Assuming the response contains a 'users' array
+        setEmployees(response.data.users); 
       } catch (error) {
         setError('There was an error fetching the employees data!');
         console.error('There was an error fetching the employees data!', error);
@@ -62,10 +60,10 @@ const ComplaintsPage = () => {
   // Handle delete request
   const handleDelete = async () => {
     try {
-      const token = localStorage.getItem('token'); // Get admin token from localStorage
+      const token = localStorage.getItem('token'); 
       await axios.delete(`${process.env.REACT_APP_BASE_URL}complaints/delete/${complaintToDelete.id}`, {
         headers: {
-          Authorization: `Bearer ${token}`, // Include token in headers
+          Authorization: `Bearer ${token}`, 
         },
       });
       setComplaints((prevComplaints) => prevComplaints.filter((complaint) => complaint.id !== complaintToDelete.id));

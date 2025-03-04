@@ -25,7 +25,7 @@ const PaymentRequestsPage = () => {
   // Fetch data from the API
   useEffect(() => {
     axios
-      .get('https://apartment.houseethiopia.com/api/payment-requests')
+      .get(`${process.env.REACT_APP_BASE_URL}payment-requests`)
       .then((response) => {
         setPaymentRequests(response.data);
       })
@@ -34,7 +34,7 @@ const PaymentRequestsPage = () => {
       });
 
     axios
-      .get('https://apartment.houseethiopia.com/api/tenant')
+      .get(`${process.env.REACT_APP_BASE_URL}tenant`)
       .then((response) => {
         setTenants(response.data);
       })
@@ -43,7 +43,7 @@ const PaymentRequestsPage = () => {
       });
 
     axios
-      .get('https://apartment.houseethiopia.com/api/bill-type')
+      .get(`${process.env.REACT_APP_BASE_URL}bill-type`)
       .then((response) => {
         setBillTypes(response.data);
       })
@@ -85,7 +85,7 @@ const PaymentRequestsPage = () => {
         billPaymentTypeId,
       };
 
-      const response = await axios.put(`https://apartment.houseethiopia.com/api/payment-requests/${selectedRequest.id}`, updatedRequest);
+      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}payment-requests/${selectedRequest.id}`, updatedRequest);
       const updatedData = paymentRequests.map((request) =>
         request.id === selectedRequest.id ? response.data : request
       );
@@ -109,7 +109,7 @@ const PaymentRequestsPage = () => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await axios.delete(`https://apartment.houseethiopia.com/api/payment-requests/${selectedRequest.id}`);
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}payment-requests/${selectedRequest.id}`);
       setPaymentRequests(paymentRequests.filter((request) => request.id !== selectedRequest.id));
       setIsDeleteModalOpen(false);
       setSelectedRequest(null);
@@ -154,7 +154,7 @@ const PaymentRequestsPage = () => {
     {
       key: 'dueDate',
       label: 'Due Date',
-      render: (row) => new Date(row.dueDate).toLocaleDateString(), // Format due date
+      render: (row) => new Date(row.dueDate).toLocaleDateString(), 
     },
     { key: 'repeatedFor', label: 'Repeated For' },
     {
@@ -295,8 +295,9 @@ const PaymentRequestsPage = () => {
                 <button
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                  disabled={loading}
                 >
-                  Save
+                  {loading ? 'saving...':'Save'}
                 </button>
                 <button
                   type="button"

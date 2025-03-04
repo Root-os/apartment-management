@@ -6,6 +6,7 @@ import Modal from '../../components/Modal';
 const AddTenant = () => {
   // State variables for form fields
   const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
   const [document, setDocument] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [carName, setCarName] = useState('');
@@ -57,9 +58,11 @@ const AddTenant = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setLoading(true); // Set loading state before making request
+  
     const formData = new FormData();
     formData.append('fullName', fullName);
+    formData.append('email', email);
     formData.append('document', document);
     formData.append('phoneNumber', phoneNumber);
     formData.append('carName', carName);
@@ -74,18 +77,18 @@ const AddTenant = () => {
     formData.append('additionalNotes', additionalNotes);
     formData.append('advanced', advanced);
     formData.append('password', password);
-
-    setLoading(true);
-    setError('');
-
+  
+    setError(''); // Reset previous errors
+  
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}tenant`,
         formData
       );
       console.log('Tenant added successfully:', response.data);
-      // Reset form after submission
+      // Reset form after successful submission
       setFullName('');
+      setEmail('');
       setDocument(null);
       setPhoneNumber('');
       setCarName('');
@@ -100,21 +103,21 @@ const AddTenant = () => {
       setAdditionalNotes('');
       setAdvanced('');
       setPassword('');
-      setLoading(false);
-
+      
       setModalOpen(true);
       setMessageType('success');
       setMessage('Tenant added successfully.');
     } catch (err) {
+      console.error('Error adding tenant:', err);
       setError('Failed to add tenant.');
-      setLoading(false);
-
-      setModalOpen(true); 
+      setModalOpen(true);
       setMessageType('error');
       setMessage('Failed to add tenant.');
+    } finally {
+      setLoading(false); // Always reset the loading state
     }
   };
-
+  
   return (
     <>
       <TitleCard title={'Add Tenant'} topMargin={'mt-2'} >
@@ -131,6 +134,19 @@ const AddTenant = () => {
               className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             />
           </div>
+
+          {/* Email */}
+        <div>
+          <label className="block text-sm font-semibold mb-2">Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+          />
+        </div>
+
 
           {/* Phone Number */}
           <div>

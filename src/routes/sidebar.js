@@ -546,6 +546,9 @@ const routes = role==='tenant' ?
       path: '/app/payment-report',
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Payment Report',
+      path: '/app/item-assignment-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Item Assignment Report',
     },
 
     ]
@@ -766,10 +769,28 @@ const routes = role==='tenant' ?
       name: 'Sent Letters',
     }
     ]
-  }
+  },
 
   
 
+  {
+    path: '', 
+    icon: <ClipboardIcon className={`${iconClasses} inline` }/>, 
+    name: 'Stock Out',  
+    submenu : [
+     
+    //  {
+    //   path: '/app/add-item-assignments',
+    //   icon: <PlusIcon className={submenuIconClasses}/>,
+    //   name: 'Add Item',
+    // },
+    {
+      path: '/app/view-stocks',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View Stocks',
+    },
+    ]
+  },
   
 ]
 

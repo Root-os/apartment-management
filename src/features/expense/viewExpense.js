@@ -219,8 +219,9 @@ const ExpensePage = () => {
                 <button
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                  disable={loading}
                 >
-                  Save
+                  {loading ? 'Saving...' : 'Save'}
                 </button>
                 <button
                   type="button"

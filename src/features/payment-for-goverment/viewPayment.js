@@ -7,6 +7,7 @@ const GovBillPaymentPage = () => {
   const [billPayments, setBillPayments] = useState([]);
   const [billTypes, setBillTypes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -62,12 +63,16 @@ const GovBillPaymentPage = () => {
   };
 
   const handleEditSubmit = async () => {
+    setIsLoading(true);
     try {
       await axios.put(`${process.env.REACT_APP_BASE_URL}bill-payments/${selectedPayment.id}`, editData);
       setBillPayments(billPayments.map((payment) => (payment.id === selectedPayment.id ? { ...payment, ...editData } : payment)));
       setIsEditModalOpen(false);
+
     } catch (err) {
       setError('An error occurred while updating the bill payment.');
+    }finally {
+      setIsLoading(false);
     }
   };
 
@@ -188,7 +193,7 @@ const GovBillPaymentPage = () => {
           contentLabel="Edit Bill Payment"
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
         >
-          <div className="bg-white p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
+          <div className="bg-base-100 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl mb-4">Edit Bill Payment</h2>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Bill Type</label>
@@ -270,8 +275,9 @@ const GovBillPaymentPage = () => {
               <button
                 onClick={handleEditSubmit}
                 className="bg-blue-500 text-white px-4 py-2 rounded"
+                disabled={isLoading}
               >
-                Save
+                {isLoading ? 'saving...':'Save'}
               </button>
             </div>
           </div>

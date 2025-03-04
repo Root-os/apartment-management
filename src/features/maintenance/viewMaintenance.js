@@ -6,7 +6,7 @@ import Modal from '../../components/Modal'
 
 const MaintenancePage = () => {
   const [maintenanceData, setMaintenanceData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
   const [editingRecord, setEditingRecord] = useState(null);

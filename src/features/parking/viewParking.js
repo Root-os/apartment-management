@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import TableComponent from '../../components/table'; // Assuming you saved the TableComponent code in the same directory
-import Modal from '../../components/Modal'; // Assuming you saved the Modal code in the same directory
+import TableComponent from '../../components/table'; 
+import Modal from '../../components/Modal'; 
 
 const ParkingPage = () => {
   const [parkingData, setParkingData] = useState([]);
@@ -25,7 +25,7 @@ const ParkingPage = () => {
   useEffect(() => {
     const fetchParkingData = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/parking');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}parking`);
         setParkingData(response.data);
       } catch (error) {
         console.error('Error fetching parking data:', error);
@@ -70,7 +70,7 @@ const ParkingPage = () => {
         status,
       };
 
-      const response = await axios.put(`https://apartment.houseethiopia.com/api/parking/${selectedParking.id}`, updatedParking);
+      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}parking/${selectedParking.id}`, updatedParking);
       const updatedData = parkingData.map((parking) =>
         parking.id === selectedParking.id ? response.data : parking
       );
@@ -92,7 +92,7 @@ const ParkingPage = () => {
 
   // Handle delete request
   const handleDelete = async () => {
-    setLoading(true);
+    
     try {
       await axios.delete(`https://apartment.houseethiopia.com/api/parking/${selectedParking.id}`);
       setParkingData(parkingData.filter((parking) => parking.id !== selectedParking.id));
@@ -106,8 +106,6 @@ const ParkingPage = () => {
       setModalOpen(true);
       setMessageType('error');
       setMessage('Unable to delete parking data');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -264,8 +262,9 @@ const ParkingPage = () => {
                 <button
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                  disabled={loading}
                 >
-                  Save
+                  {loading ? 'saving...':'Save'}
                 </button>
                 <button
                   type="button"

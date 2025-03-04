@@ -17,7 +17,7 @@ const ChargingPage = () => {
   const [chargingEndTime, setChargingEndTime] = useState('');
   const [chargingCost, setChargingCost] = useState('');
   const [status, setStatus] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -309,8 +309,9 @@ const ChargingPage = () => {
                 <button
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                  disabled={loading}
                 >
-                  Save
+                  {loading ? 'saving...':'Save'}
                 </button>
                 <button
                   type="button"

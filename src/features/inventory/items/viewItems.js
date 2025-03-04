@@ -24,7 +24,7 @@ const ItemsPage = () => {
   useEffect(() => {
     // Fetch items from the API
     axios
-      .get('https://apartment.houseethiopia.com/api/items')
+      .get(`${process.env.REACT_APP_BASE_URL}items`)
       .then((response) => {
         setItems(response.data);
       })
@@ -34,7 +34,7 @@ const ItemsPage = () => {
 
     // Fetch item types from the API
     axios
-      .get('https://apartment.houseethiopia.com/api/item-types')
+      .get(`${process.env.REACT_APP_BASE_URL}Item-types`)
       .then((response) => {
         setItemTypes(response.data);
       })
@@ -76,7 +76,7 @@ const ItemsPage = () => {
         itemTypeId,
       };
 
-      const response = await axios.put(`https://apartment.houseethiopia.com/api/items/${selectedItem.id}`, updatedItem);
+      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}items/${selectedItem.id}`, updatedItem);
       const updatedData = items.map((item) =>
         item.id === selectedItem.id ? response.data : item
       );
@@ -100,7 +100,7 @@ const ItemsPage = () => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await axios.delete(`https://apartment.houseethiopia.com/api/items/${selectedItem.id}`);
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}items/${selectedItem.id}`);
       setItems(items.filter((item) => item.id !== selectedItem.id));
       setIsDeleteModalOpen(false);
       setSelectedItem(null);
@@ -272,8 +272,9 @@ const ItemsPage = () => {
                 <button
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                  disabled={loading}
                 >
-                  Save
+                  {loading ? 'saving...':'Save'}
                 </button>
                 <button
                   type="button"

@@ -4,38 +4,48 @@ import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 
 const ChargingReport = () => {
-  const [chargingData, setChargingData] = useState([]); // Store charging data
-  const [tenantList, setTenantList] = useState([]); // Store list of tenants
+  const [chargingData, setChargingData] = useState([]); 
+  const [tenants, setTenants] = useState([]);
+  const [carList, setCarList] = useState([]);
   const [filterParams, setFilterParams] = useState({
     carPlate: '',
     carName: '',
     isTenant: false,
-    tenantId: '',  // This will be updated with selected tenant ID
+    tenantId: '',  
     chargingStartTime: '',
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
+  const [messageType, setMessageType] = useState('success')
+  const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch tenant list on component mount
   useEffect(() => {
-    const fetchTenantList = async () => {
+      const fetchTenants = async () => {
+        try {
+          const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
+          setTenants(response.data);
+        } catch (error) {
+          console.error("Error fetching tenants:", error);
+        }
+      };
+
+    const fetchCarList = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`); // Assuming this API endpoint exists
-        setTenantList(response.data); 
-        console.log(response.data);
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}charging`);
+        setCarList(response.data);  
       } catch (error) {
-        console.error('Error fetching tenant list:', error);
+        console.error('Error fetching car list:', error);
       }
     };
 
-    fetchTenantList();
+    fetchTenants();
+    fetchCarList();
   }, []);
 
   // Handle filter submit
   const handleFilterSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Start loading
+    setIsLoading(true);
 
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}charging/report`, filterParams);
@@ -44,17 +54,16 @@ const ChargingReport = () => {
       console.log('API response:', response.data);
 
       // Ensure the response is an array, otherwise set it to an empty array
-      const data = Array.isArray(response.data) ? response.data : [];
+      const data = Array.isArray(response.data.data) ? response.data.data : [];
       setChargingData(data);
     } catch (error) {
       const message = error.response?.status === 404
         ? 'No charging data found with the given filters.'
         : 'Error filtering data. Please try again.';
-      setModalMessage(message);
+      setMessage(message);
       setIsModalOpen(true);
-      console.error('Error filtering data:', error);
     } finally {
-      setIsLoading(false); // Stop loading
+      setIsLoading(false);
     }
   };
 
@@ -64,6 +73,8 @@ const ChargingReport = () => {
     { key: 'chargingStartTime', label: 'Charging Start Time', render: (data) => new Date(data.chargingStartTime).toLocaleString() },
     { key: 'status', label: 'Status' },
     { key: 'chargingCost', label: 'Charging Cost' },
+    { Key: 'tenantId', label: 'Tenant Id', render: (data) => data.Tenant ? data.Tenant.FullName : 'Not a Tenant'}
+
   ];
 
   return (
@@ -73,49 +84,41 @@ const ChargingReport = () => {
 
         {/* Filter form */}
         <form onSubmit={handleFilterSubmit} className="grid grid-cols-4 gap-4">
-          {/* Car Plate */}
+          
           <div>
             <label htmlFor="carPlate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Car Plate</label>
-            <input
-              type="text"
+            <select
               id="carPlate"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.carPlate}
               onChange={(e) => setFilterParams({ ...filterParams, carPlate: e.target.value })}
-            />
-          </div>
-
-          {/* Car Name */}
-          <div>
-            <label htmlFor="carName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Car Name</label>
-            <input
-              type="text"
-              id="carName"
-              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-              value={filterParams.carName}
-              onChange={(e) => setFilterParams({ ...filterParams, carName: e.target.value })}
-            />
-          </div>
-
-          {/* Tenant Dropdown */}
-          <div>
-            <label htmlFor="tenantId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tenant</label>
-            <select
-              id="tenantId"
-              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-              value={filterParams.tenantId}
-              onChange={(e) => setFilterParams({ ...filterParams, tenantId: e.target.value })}
             >
-              <option value="">Select Tenant</option>
-              {tenantList.map((tenant) => (
-                <option key={tenant.id} value={tenant.id}>
-                  {tenant.name}
+              <option value="">Select Car Plate</option>
+              {carList.map((car) => (
+                <option key={car.id} value={car.carPlate}>
+                  {car.carPlate}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Charging Start Time */}
+          <div>
+            <label htmlFor="carName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Car Name</label>
+            <select
+              id="carName"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+              value={filterParams.carName}
+              onChange={(e) => setFilterParams({ ...filterParams, carName: e.target.value })}
+            >
+              <option value="">Select Car Name</option>
+              {carList.map((car) => (
+                <option key={car.id} value={car.carName}>
+                  {car.carName}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <label htmlFor="chargingStartTime" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Charging Start Time</label>
             <input
@@ -127,6 +130,33 @@ const ChargingReport = () => {
             />
           </div>
 
+          {/* Tenant Checkbox */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="isTenant"
+              checked={filterParams.isTenant}
+              onChange={(e) => setFilterParams({ ...filterParams, isTenant: e.target.checked })}
+            />
+            <label htmlFor="isTenant" className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Is Tenant?</label>
+          </div>
+
+          {filterParams.isTenant && (
+             <div>
+             <label htmlFor="tenantId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tenant</label>
+             <select
+               id="tenantId"
+               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+               value={filterParams.tenantId}
+               onChange={(e) => setFilterParams({ ...filterParams, tenantId: e.target.value })}
+             >
+               <option value="">Select Tenant</option>
+               {tenants.map((tenant) => (
+                 <option key={tenant.id} value={tenant.id}>{tenant.fullName}</option>
+               ))}
+             </select>
+           </div>
+          )}
           {/* Submit Button */}
           <div className="col-span-4 flex justify-end">
             <button
@@ -154,8 +184,8 @@ const ChargingReport = () => {
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          type="error"
-          message={modalMessage}
+          messageType={messageType}
+          message={message}
         />
       )}
     </div>

@@ -21,17 +21,16 @@ const TenantComplaintsPage = ({ tenantId }) => {
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
-    // Fetch complaints for a specific tenant by tenantId
     const fetchComplaints = async () => {
       console.log('Fetching complaints for tenant:', userId);
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}complaints/tenant/${userId}`, {
           headers: {
-            Authorization: `Bearer ${token}`, // Include static token in headers
+            Authorization: `Bearer ${token}`,
           },
         });
-        setComplaints(response.data);  // Set complaints data from the API
-        setLoading(false);  // Stop loading when data is fetched
+        setComplaints(response.data);  
+        setLoading(false);  
       } catch (error) {
         console.error('Error fetching complaints:', error);
         setError('There was an error fetching the complaints data!');
@@ -57,7 +56,7 @@ const TenantComplaintsPage = ({ tenantId }) => {
         feedback: feedback,
       }, {
         headers: {
-          Authorization: `Bearer ${token}`, // Include token in headers
+          Authorization: `Bearer ${token}`, 
         },
       });
       setComplaints((prevComplaints) => prevComplaints.map((complaint) =>

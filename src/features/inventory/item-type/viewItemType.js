@@ -8,7 +8,7 @@ const ItemTypesPage = () => {
   const [selectedItemType, setSelectedItemType] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [typeName, setTypeName] = useState('');
+  const [categoryName, setCategoryName] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -29,7 +29,7 @@ const ItemTypesPage = () => {
   // Handle edit button click
   const handleEditClick = (itemType) => {
     setSelectedItemType(itemType);
-    setTypeName(itemType.typeName);
+    setCategoryName(itemType.categoryName);
     setDescription(itemType.description);
     setIsEditModalOpen(true);
   };
@@ -45,7 +45,7 @@ const ItemTypesPage = () => {
     setLoading(true);
     try {
       const updatedItemType = {
-        typeName,
+        categoryName,
         description,
       };
 
@@ -91,7 +91,7 @@ const ItemTypesPage = () => {
   };
 
   const columns = [
-    { key: 'typeName', label: 'Type Name' },
+    { key: 'categoryName', label: 'Category Name' },
     { key: 'description', label: 'Description' },
     {
       label: 'Actions',
@@ -116,8 +116,7 @@ const ItemTypesPage = () => {
   ];
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-4">Item Types</h1>
+    <>
       <TableComponent
         title="Item Types List"
         data={itemTypes}
@@ -133,14 +132,14 @@ const ItemTypesPage = () => {
             <h2 className="text-2xl font-bold mb-4">Edit Item Type</h2>
             <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
               <div className="mb-4">
-                <label htmlFor="typeName" className="block text-sm font-medium text-white-700">
+                <label htmlFor="categoryName" className="block text-sm font-medium text-white-700">
                   Type Name
                 </label>
                 <input
                   type="text"
-                  id="typeName"
-                  value={typeName}
-                  onChange={(e) => setTypeName(e.target.value)}
+                  id="categoryName"
+                  value={categoryName}
+                  onChange={(e) => setCategoryName(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -159,8 +158,9 @@ const ItemTypesPage = () => {
                 <button
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                  disabled={loading}
                 >
-                  Save
+                  {loading ? 'saving...':'Save'}
                 </button>
                 <button
                   type="button"
@@ -193,7 +193,7 @@ const ItemTypesPage = () => {
   messageType={messageType}
   message={message}
  />
-    </div>
+    </>
   );
 };
 

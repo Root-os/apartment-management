@@ -23,7 +23,7 @@ const AddPaymentRequest = () => {
 
   // Fetch tenants and bill types from APIs
   useEffect(() => {
-    axios.get('https://apartment.houseethiopia.com/api/tenant')
+    axios.get(`${process.env.REACT_APP_BASE_URL}tenant`)
       .then(response => {
         setTenants(response.data);
       })
@@ -31,7 +31,7 @@ const AddPaymentRequest = () => {
         setError('Failed to fetch tenants. Please try again.');
       });
 
-    axios.get('https://apartment.houseethiopia.com/api/bill-type')
+    axios.get(`${process.env.REACT_APP_BASE_URL}bill-type`)
       .then(response => {
         setBillTypes(response.data);
         console.log(response.data);
@@ -59,7 +59,7 @@ const AddPaymentRequest = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('https://apartment.houseethiopia.com/api/payment-requests', {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}payment-requests`, {
         tenantId,
         message,
         billPaymentTypeId,
