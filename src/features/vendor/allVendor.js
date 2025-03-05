@@ -70,22 +70,24 @@ const VendorsPage = () => {
   const handleEdit = async () => {
     setLoading(true);
 
-    const payload = {
-      fname,
-      lname,
-      phone,
-      email,
-      address,
-      serviceTypeId,
-    };
+    const formData = new FormData();
+    formData.append("fname", fname);
+    formData.append("lname", lname);
+    formData.append("phone", phone);
+    formData.append("email", email);
+    formData.append("address", address);
+    formData.append("serviceTypeId", serviceTypeId);
+    if (contractTerms) {
+      formData.append("contractTerms", contractTerms);
+    }
 
     try {
       const response = await axios.put(
         `${process.env.REACT_APP_BASE_URL}vendors/${selectedVendor.id}`,
-        payload,
+        formData,
         {
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         }
       );
@@ -295,6 +297,21 @@ const VendorsPage = () => {
                     </option>
                   ))}
                 </select>
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="contractTerms"
+                  className="block text-sm font-medium text-white-700"
+                >
+                  Contract Terms (PDF/DOC) (Optional)
+                </label>
+                <input
+                  type="file"
+                  id="contractTerms"
+                  accept=".pdf,.doc,.docx"
+                  onChange={(e) => setContractTerms(e.target.files[0])}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
               <div className="flex justify-end">
                 <button
