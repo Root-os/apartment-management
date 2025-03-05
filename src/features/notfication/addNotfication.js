@@ -7,7 +7,9 @@ import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
 
 const token = localStorage.getItem('token');
-const userId = localStorage.getItem('UserId');
+const userId = localStorage.getItem('userId');
+
+console.log("user id is",userId);
 
 // Define the validation schema
 const validationSchema = yup.object().shape({
@@ -84,8 +86,8 @@ const AddNotification = () => {
     setLoading(true);
     const payload = {
       receiver_type: data.receiver_type,
-      receiverId: data.receiver_id, // Adjusted key
-      senderId: userId, // Use senderId from localStorage
+      receiver_id: data.receiver_id, 
+      // senderId: userId, 
       title: data.title,
       body: data.body,
       type_id: data.type_id,
