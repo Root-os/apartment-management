@@ -14,6 +14,7 @@ const ReturnsPage = () => {
   const [itemId, setItemId] = useState('');
   const [quantity, setQuantity] = useState('');
   const [reason, setReason] = useState('');
+  const [returnDate, setReturnDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
@@ -55,6 +56,7 @@ const ReturnsPage = () => {
     setItemId(returnItem.itemId);
     setQuantity(returnItem.quantity);
     setReason(returnItem.reason);
+    setReturnDate(returnItem.returnDate);
     setIsEditModalOpen(true);
   };
 
@@ -73,7 +75,8 @@ const ReturnsPage = () => {
         vendorId,
         itemId,
         quantity,
-        reason
+        reason,
+        returnDate,
       };
 
       const response = await axios.put(`${process.env.REACT_APP_BASE_URL}returns/${selectedReturn.id}`, updatedReturn);
@@ -150,28 +153,27 @@ const ReturnsPage = () => {
     { key: 'reason', label: 'Reason' },
     { key: 'returnDate', label: 'Return Date', render: (row) => new Date(row.returnDate).toLocaleString() },
     {
-        label: 'Actions',
-        key: 'actions',
-        render: (row) => (
-          <>
-            <div className="flex justify-center space-x-2">
-              <button
-                onClick={() => handleEditClick(row)}
-                className="bg-blue-500 text-white px-6 py-3 rounded-md w-full sm:w-auto"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDeleteClick(row)}
-                className="bg-red-500 text-white px-6 py-3 rounded-md w-full sm:w-auto"
-              >
-                Delete
-              </button>
-            </div>
-          </>
-        ),
-      }
-      
+      label: 'Actions',
+      key: 'actions',
+      render: (row) => (
+        <>
+          <div className="flex justify-center space-x-2">
+            <button
+              onClick={() => handleEditClick(row)}
+              className="bg-blue-500 text-white px-6 py-3 rounded-md w-full sm:w-auto"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => handleDeleteClick(row)}
+              className="bg-red-500 text-white px-6 py-3 rounded-md w-full sm:w-auto"
+            >
+              Delete
+            </button>
+          </div>
+        </>
+      ),
+    },
   ];
 
   return (
@@ -263,6 +265,18 @@ const ReturnsPage = () => {
                   id="reason"
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="returnDate" className="block text-sm font-medium text-white-700">
+                  Return Date
+                </label>
+                <input
+                  type="date"
+                  id="returnDate"
+                  value={returnDate}
+                  onChange={(e) => setReturnDate(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>

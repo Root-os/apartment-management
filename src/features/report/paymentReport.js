@@ -8,6 +8,8 @@ const PaymentReport = () => {
   const [filterParams, setFilterParams] = useState({
     vendorId: "",
     status: "",
+    startDate: "",
+    endDate: "",
   });
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -87,71 +89,107 @@ const PaymentReport = () => {
       <div className="container mx-auto p-4">
         <h2 className="text-2xl font-bold mb-6">Payment Report</h2>
 
-        {/* Filter form */}
-        <form onSubmit={handleFilterSubmit} className="grid grid-cols-2 gap-4">
-          {/* Vendor ID Dropdown */}
-          <div>
-            <label
-              htmlFor="vendorId"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Vendor
-            </label>
-            <select
-              id="vendorId"
-              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-              value={filterParams.vendorId}
-              onChange={(e) =>
-                setFilterParams({ ...filterParams, vendorId: e.target.value })
-              }
-            >
-              <option value="">Select Vendor</option>
-              {vendors.length > 0 ? (
-                vendors.map((vendor) => (
-                  <option key={vendor.id} value={vendor.id}>
-                    {vendor.fname} {vendor.lname}
-                  </option>
-                ))
-              ) : (
-                <option value="">No vendors available</option>
-              )}
-            </select>
-          </div>
+        <form onSubmit={handleFilterSubmit} className="grid grid-cols-4 gap-4">
+  {/* Vendor ID Dropdown */}
+  <div>
+    <label
+      htmlFor="vendorId"
+      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+    >
+      Vendor
+    </label>
+    <select
+      id="vendorId"
+      className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+      value={filterParams.vendorId}
+      onChange={(e) =>
+        setFilterParams({ ...filterParams, vendorId: e.target.value })
+      }
+    >
+      <option value="">Select Vendor</option>
+      {vendors.length > 0 ? (
+        vendors.map((vendor) => (
+          <option key={vendor.id} value={vendor.id}>
+            {vendor.fname} {vendor.lname}
+          </option>
+        ))
+      ) : (
+        <option value="">No vendors available</option>
+      )}
+    </select>
+  </div>
 
-          {/* Status Dropdown */}
-          <div>
-            <label
-              htmlFor="status"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Status
-            </label>
-            <select
-              id="status"
-              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-              value={filterParams.status}
-              onChange={(e) =>
-                setFilterParams({ ...filterParams, status: e.target.value })
-              }
-            >
-              <option value="">Select Status</option>
-              <option value="cash">Cash</option>
-              <option value="credit">Credit</option>
-              <option value="bank transfer">Bank Transfer</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
+  {/* Status Dropdown */}
+  <div>
+    <label
+      htmlFor="status"
+      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+    >
+      Status
+    </label>
+    <select
+      id="status"
+      className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+      value={filterParams.status}
+      onChange={(e) =>
+        setFilterParams({ ...filterParams, status: e.target.value })
+      }
+    >
+      <option value="">Select Status</option>
+      <option value="Paid">Paid</option>
+      <option value="Unpaid">Unpaid</option>
+    </select>
+  </div>
 
-          {/* Submit Button */}
-          <div className="col-span-2 flex justify-end">
-            <button
-              type="submit"
-              className="w-40 bg-blue-500 text-white p-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:text-gray-300"
-            >
-              {isLoading ? "Processing..." : "Filter Data"}
-            </button>
-          </div>
-        </form>
+  {/* Start Date Picker */}
+  <div>
+    <label
+      htmlFor="startDate"
+      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+    >
+      Start Date
+    </label>
+    <input
+      type="date"
+      id="startDate"
+      className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+      value={filterParams.startDate}
+      onChange={(e) =>
+        setFilterParams({ ...filterParams, startDate: e.target.value })
+      }
+    />
+  </div>
+
+  {/* End Date Picker */}
+  <div>
+    <label
+      htmlFor="endDate"
+      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+    >
+      End Date
+    </label>
+    <input
+      type="date"
+      id="endDate"
+      className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+      value={filterParams.endDate}
+      onChange={(e) =>
+        setFilterParams({ ...filterParams, endDate: e.target.value })
+      }
+    />
+  </div>
+
+  {/* Filter Button at the Bottom */}
+  <div className="col-span-full flex justify-end mt-4">
+    <button
+      type="submit"
+      className="w-40 bg-blue-500 text-white p-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:text-gray-300"
+    >
+      {isLoading ? "Processing..." : "Filter Data"}
+    </button>
+  </div>
+</form>
+
       </div>
 
       {/* Table for displaying payment report */}

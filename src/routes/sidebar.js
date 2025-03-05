@@ -546,6 +546,9 @@ const routes = role==='tenant' ?
       path: '/app/payment-report',
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Payment Report',
+      
+    },
+    {
       path: '/app/item-assignment-report',
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Item Assignment Report',

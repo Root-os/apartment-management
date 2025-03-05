@@ -10,6 +10,8 @@ const ReturnReport = () => {
   const [filterParams, setFilterParams] = useState({
     vendorId: '',
     itemId: '',
+    startDate: '',
+    endDate: '',
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
@@ -62,7 +64,7 @@ const ReturnReport = () => {
 
   const columns = [
     { key: 'Vendor.fname', label: 'Vendor', render: (row) => `${row.Vendor.fname} ${row.Vendor.lname}` },
-    { key: 'Item.itemName', label: 'Item',render: (row) => row.Item.itemName },
+    { key: 'Item.itemName', label: 'Item', render: (row) => row.Item.itemName },
     { key: 'quantity', label: 'Quantity' },
     { key: 'reason', label: 'Reason' },
     { key: 'returnDate', label: 'Return Date', render: (data) => new Date(data.returnDate).toLocaleString() },
@@ -117,6 +119,30 @@ const ReturnReport = () => {
                 <option value="">No items available</option>
               )}
             </select>
+          </div>
+
+          {/* Start Date Picker */}
+          <div>
+            <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label>
+            <input
+              type="date"
+              id="startDate"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+              value={filterParams.startDate}
+              onChange={(e) => setFilterParams({ ...filterParams, startDate: e.target.value })}
+            />
+          </div>
+
+          {/* End Date Picker */}
+          <div>
+            <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">End Date</label>
+            <input
+              type="date"
+              id="endDate"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+              value={filterParams.endDate}
+              onChange={(e) => setFilterParams({ ...filterParams, endDate: e.target.value })}
+            />
           </div>
 
           {/* Submit Button */}

@@ -9,6 +9,7 @@ const PaymentAdd = () => {
   const [price, setPrice] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [status, setStatus] = useState('');
+  const [paymentDate, setPaymentDate] = useState('');
   const [vendors, setVendors] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -36,7 +37,7 @@ const PaymentAdd = () => {
     setError('');
   
     // Check if all fields are filled
-    if (!vendorId || !price || !paymentMethod || !status) {
+    if (!vendorId || !price || !paymentMethod || !status || !paymentDate) {
       setError('All fields are required');
       return;
     }
@@ -50,12 +51,14 @@ const PaymentAdd = () => {
         price,
         paymentMethod,
         status,
+        paymentDate,
       });
   
       setVendorId('');
       setPrice('');
       setPaymentMethod('');
       setStatus('');
+      setPaymentDate('');
   
       setModalOpen(true);
       setMessageType('success');
@@ -168,6 +171,20 @@ const PaymentAdd = () => {
               <option value="partial">Partial</option>
               <option value="pending">Pending</option>
             </select>
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="paymentDate" className="block text-sm font-medium text-white-700">
+              Payment Date
+            </label>
+            <input
+              type="date"
+              id="paymentDate"
+              value={paymentDate}
+              onChange={(e) => setPaymentDate(e.target.value)}
+              className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
+              required
+            />
           </div>
 
           <div className="flex justify-between items-center mt-6">

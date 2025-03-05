@@ -9,6 +9,7 @@ const AddReturn = () => {
   const [itemId, setItemId] = useState('');
   const [quantity, setQuantity] = useState('');
   const [reason, setReason] = useState('');
+  const [returnDate, setReturnDate] = useState('');
   const [vendors, setVendors] = useState([]);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -47,7 +48,7 @@ const AddReturn = () => {
     setError('');
   
     // Check if all fields are filled
-    if (!vendorId || !itemId || !quantity || !reason) {
+    if (!vendorId || !itemId || !quantity || !reason || !returnDate) {
       setError('All fields are required');
       return;
     }
@@ -61,12 +62,14 @@ const AddReturn = () => {
         itemId,
         quantity,
         reason,
+        returnDate,
       });
   
       setVendorId('');
       setItemId('');
       setQuantity('');
       setReason('');
+      setReturnDate('');
   
       setModalOpen(true);
       setMessageType('success');
@@ -169,6 +172,20 @@ const AddReturn = () => {
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
               required
             ></textarea>
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="returnDate" className="block text-sm font-medium text-white-700">
+              Return Date
+            </label>
+            <input
+              type="date"
+              id="returnDate"
+              value={returnDate}
+              onChange={(e) => setReturnDate(e.target.value)}
+              className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
+              required
+            />
           </div>
 
           <div className="flex justify-between items-center mt-6">

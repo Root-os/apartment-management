@@ -72,9 +72,9 @@ const VendorsPage = () => {
       serviceTypeId
     };
 
-    if (contractTerms) {
-      payload.contractTerms = contractTerms;
-    }
+    // if (contractTerms) {
+    //   payload.contractTerms = contractTerms;
+    // }
 
     try {
       const response = await axios.put(`${process.env.REACT_APP_BASE_URL}vendors/${selectedVendor.id}`, payload, {
@@ -244,7 +244,7 @@ const VendorsPage = () => {
                   ))}
                 </select>
               </div>
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label htmlFor="contractTerms" className="block text-sm font-medium text-white-700">
                   Contract Terms (PDF/DOC) (Optional)
                 </label>
@@ -255,7 +255,7 @@ const VendorsPage = () => {
                   onChange={(e) => setContractTerms(e.target.files[0])}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </div>
+              </div> */}
               <div className="flex justify-end">
                 <button
                   type="submit"

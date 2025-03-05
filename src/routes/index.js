@@ -395,6 +395,8 @@ const routes =role==='tenant' ?
   {
     path: '/payment-report', 
     component: PaymentReport,
+  },
+  {
     path: '/item-assignment-report', 
     component: ItemAssignmentReport, 
   },

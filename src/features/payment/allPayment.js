@@ -14,6 +14,7 @@ const AllPaymentsPage = () => {
   const [price, setPrice] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [status, setStatus] = useState("");
+  const [paymentDate, setPaymentDate] = useState("");
   const [loading, setLoading] = useState(false);
   const [messageType, setMessageType] = useState("success");
   const [message, setMessage] = useState("");
@@ -47,6 +48,7 @@ const AllPaymentsPage = () => {
     setPrice(payment.price);
     setPaymentMethod(payment.paymentMethod);
     setStatus(payment.status);
+    setPaymentDate(payment.paymentDate);
     setIsEditModalOpen(true);
   };
 
@@ -70,6 +72,7 @@ const AllPaymentsPage = () => {
         price,
         paymentMethod,
         status,
+        paymentDate,
       };
 
       const response = await axios.put(
@@ -158,7 +161,7 @@ const AllPaymentsPage = () => {
             onClick={() => GeneratePdf(row)}
             className="bg-indigo-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
           >
-            Generate PDF
+             Recipt
           </button>
         </div>
       ),
@@ -267,6 +270,21 @@ const AllPaymentsPage = () => {
                   <option value="partial">Partial</option>
                   <option value="pending">Pending</option>
                 </select>
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="paymentDate"
+                  className="block text-sm font-medium text-white-700"
+                >
+                  Payment Date
+                </label>
+                <input
+                  type="date"
+                  id="paymentDate"
+                  value={paymentDate}
+                  onChange={(e) => setPaymentDate(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
               <div className="flex justify-end">
                 <button
