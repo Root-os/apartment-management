@@ -120,7 +120,11 @@ const ReturnsPage = () => {
   const handleFilterByItemId = async (id) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BASE_URL}returns/item/${id}`);
-      setReturns(response.data);
+      const filteredReturns = response.data.map((data) => ({
+        ...data.item,
+        vendors: data.vendors,
+      }));
+      setReturns(filteredReturns);
     } catch (error) {
       console.error('There was an error fetching the returns by item id:', error);
     }
@@ -129,7 +133,11 @@ const ReturnsPage = () => {
   const handleFilterByVendorId = async (id) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BASE_URL}returns/vendor/${id}`);
-      setReturns(response.data);
+      const filteredReturns = response.data.map((data) => ({
+        ...data.vendor,
+        items: data.items,
+      }));
+      setReturns(filteredReturns);
     } catch (error) {
       console.error('There was an error fetching the returns by vendor id:', error);
     }

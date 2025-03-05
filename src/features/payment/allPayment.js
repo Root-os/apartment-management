@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TableComponent from "../../components/table";
+import GeneratePdf from "../../components/pdfGenerator";
 
 const AllPaymentsPage = () => {
   const [payments, setPayments] = useState([]);
@@ -8,6 +9,7 @@ const AllPaymentsPage = () => {
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [vendorId, setVendorId] = useState("");
   const [price, setPrice] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
@@ -56,6 +58,7 @@ const AllPaymentsPage = () => {
 
   const handleDetailClick = (payment) => {
     setSelectedPayment(payment);
+    setIsDetailModalOpen(true);
   };
 
   // Handle edit request
@@ -150,6 +153,12 @@ const AllPaymentsPage = () => {
             className="bg-green-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
           >
             Detail
+          </button>
+          <button
+            onClick={() => GeneratePdf(row)}
+            className="bg-indigo-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
+          >
+            Generate PDF
           </button>
         </div>
       ),
@@ -306,11 +315,11 @@ const AllPaymentsPage = () => {
       )}
 
       {/* Detail View */}
-      {selectedPayment && (
+      {isDetailModalOpen && selectedPayment && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-base-100 p-6 rounded-md w-1/3">
             <h2 className="text-2xl font-bold mb-4">Payment Details</h2>
-            <div className="mb-4">
+            <div id="receipt-content" className="mb-4">
               <p>
                 <strong>Vendor:</strong> {selectedPayment.Vendor.fname}{" "}
                 {selectedPayment.Vendor.lname}
@@ -341,21 +350,10 @@ const AllPaymentsPage = () => {
                 <strong>Vendor Address:</strong>{" "}
                 {selectedPayment.Vendor.address}
               </p>
-              <p>
-                <strong>Contract Terms:</strong>{" "}
-                <a
-                  href={`${process.env.REACT_APP_BASE_URL}${selectedPayment?.Vendor?.contractTerms}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 underline"
-                >
-                  View Contract
-                </a>
-              </p>
             </div>
             <div className="flex justify-end">
               <button
-                onClick={() => setSelectedPayment(null)}
+                onClick={() => setIsDetailModalOpen(false)}
                 className="bg-gray-400 text-white px-4 py-2 rounded-md"
               >
                 Close
