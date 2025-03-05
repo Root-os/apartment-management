@@ -56,7 +56,7 @@ const AddVendor = () => {
     formData.append('email', email);
     formData.append('address', address);
     formData.append('serviceTypeId', serviceTypeId);
-    // formData.append('contractTerms', contractTerms);
+    formData.append('contractTerms', contractTerms);
 
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}vendors`, formData, {
@@ -165,7 +165,7 @@ const AddVendor = () => {
           </select>
         </div>
 
-        {/* <div className="mb-4">
+        <div className="mb-4">
           <label htmlFor="contractTerms" className="block text-sm font-medium text-white-700">Contract Terms (PDF/DOC)</label>
           <input
             type="file"
@@ -175,7 +175,7 @@ const AddVendor = () => {
             className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
             
           />
-        </div> */}
+        </div>
 
         <div className="flex justify-between items-center mt-6">
           <button
