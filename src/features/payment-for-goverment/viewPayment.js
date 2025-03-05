@@ -17,8 +17,8 @@ const GovBillPaymentPage = () => {
     amount: '',
     startDate: '',
     endDate: '',
-    status: '',
-    paymentMethod: '',
+    status: 'pending',
+    paymentMethod: 'Bank Transfer',
     description: '',
   });
   const [filterStatus, setFilterStatus] = useState('');
@@ -62,16 +62,16 @@ const GovBillPaymentPage = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleEditSubmit = async () => {
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
     setIsLoading(true);
     try {
       await axios.put(`${process.env.REACT_APP_BASE_URL}bill-payments/${selectedPayment.id}`, editData);
       setBillPayments(billPayments.map((payment) => (payment.id === selectedPayment.id ? { ...payment, ...editData } : payment)));
       setIsEditModalOpen(false);
-
     } catch (err) {
       setError('An error occurred while updating the bill payment.');
-    }finally {
+    } finally {
       setIsLoading(false);
     }
   };
@@ -98,9 +98,18 @@ const GovBillPaymentPage = () => {
     if (status) {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-payments/by-status/${status}`);
-        setBillPayments(response.data);
+        if (response.data.length === 0) {
+          setError('No bill payments found with this status.');
+        } else {
+          setBillPayments(response.data);
+          setError(null); // Clear any previous errors
+        }
       } catch (err) {
-        setError('An error occurred while filtering the bill payments.');
+        if (err.response && err.response.status === 404) {
+          setError('No bill payments found with this status.');
+        } else {
+          setError('An error occurred while filtering the bill payments.');
+        }
       }
     } else {
       // Fetch all bill payments if no status is selected
@@ -195,91 +204,97 @@ const GovBillPaymentPage = () => {
         >
           <div className="bg-base-100 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl mb-4">Edit Bill Payment</h2>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Bill Type</label>
-              <select
-                value={editData.billTypeId}
-                onChange={(e) => setEditData({ ...editData, billTypeId: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
-              >
-                {billTypes.map((billType) => (
-                  <option key={billType.id} value={billType.id}>
-                    {billType.typeName}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Amount</label>
-              <input
-                type="number"
-                value={editData.amount}
-                onChange={(e) => setEditData({ ...editData, amount: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Start Date</label>
-              <input
-                type="date"
-                value={editData.startDate}
-                onChange={(e) => setEditData({ ...editData, startDate: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">End Date</label>
-              <input
-                type="date"
-                value={editData.endDate}
-                onChange={(e) => setEditData({ ...editData, endDate: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Status</label>
-              <select
-                value={editData.status}
-                onChange={(e) => setEditData({ ...editData, status: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
-              >
-                <option value="Pending">Pending</option>
-                <option value="Paid">Paid</option>
-                <option value="Overdue">Overdue</option>
-              </select>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Payment Method</label>
-              <input
-                type="text"
-                value={editData.paymentMethod}
-                onChange={(e) => setEditData({ ...editData, paymentMethod: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Description</label>
-              <textarea
-                value={editData.description}
-                onChange={(e) => setEditData({ ...editData, description: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="flex justify-between">
-              <button
-                onClick={() => setIsEditModalOpen(false)}
-                className="bg-gray-400 text-white px-4 py-2 rounded"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleEditSubmit}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
-                disabled={isLoading}
-              >
-                {isLoading ? 'saving...':'Save'}
-              </button>
-            </div>
+            <form onSubmit={handleEditSubmit}>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Bill Type</label>
+                <select
+                  value={editData.billTypeId}
+                  onChange={(e) => setEditData({ ...editData, billTypeId: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded"
+                >
+                  <option value="" disabled>Select Bill Type</option>
+                  {billTypes.map((billType) => (
+                    <option key={billType.id} value={billType.id}>
+                      {billType.typeName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Amount</label>
+                <input
+                  type="number"
+                  value={editData.amount}
+                  onChange={(e) => setEditData({ ...editData, amount: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Start Date</label>
+                <input
+                  type="date"
+                  value={editData.startDate}
+                  onChange={(e) => setEditData({ ...editData, startDate: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">End Date</label>
+                <input
+                  type="date"
+                  value={editData.endDate}
+                  onChange={(e) => setEditData({ ...editData, endDate: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded"
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Status</label>
+                <select
+                  value={editData.status}
+                  onChange={(e) => setEditData({ ...editData, status: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="paid">Paid</option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Payment Method</label>
+                <select
+                  value={editData.paymentMethod}
+                  onChange={(e) => setEditData({ ...editData, paymentMethod: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded"
+                >
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Mobile">Mobile</option>
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Description</label>
+                <textarea
+                  value={editData.description}
+                  onChange={(e) => setEditData({ ...editData, description: e.target.value })}
+                  className="w-full p-2 border border-gray-300 rounded"
+                  rows="4"
+                />
+              </div>
+              <div className="flex justify-between">
+                <button
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="bg-gray-400 text-white px-4 py-2 rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded"
+                  disabled={isLoading}
+                >
+                  {isLoading ? 'Saving...' : 'Save'}
+                </button>
+              </div>
+            </form>
           </div>
         </Modal>
       )}

@@ -285,6 +285,16 @@ const routes = role==='tenant' ?
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Tenants ',
       },
+      {
+        path: '/app/ten-days-tenant',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Ten Days Tenant',
+      },
+      {
+        path: '/app/tenant-filter',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Tenants Filter',
+      }
     ]
   },
   {

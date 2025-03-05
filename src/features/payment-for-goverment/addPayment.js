@@ -19,7 +19,7 @@ const AddGovBillPayment = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [messageType, setMessageType] = useState(''); // success, warning, or error
 
   // Fetch Bill Types on Component Mount
   useEffect(() => {
@@ -29,6 +29,8 @@ const AddGovBillPayment = () => {
         setBillTypes(response.data); 
       } catch (err) {
         setError('Failed to fetch bill types. Please try again.');
+        setMessageType('error');
+        setIsModalOpen(true);
       }
     };
 
@@ -57,12 +59,12 @@ const AddGovBillPayment = () => {
       await axios.post(`${process.env.REACT_APP_BASE_URL}bill-payments`, payload);
       setLoading(false);
       setMessage('Bill payment added successfully!');
-      setIsSuccess(true);
+      setMessageType('success');
       setIsModalOpen(true);
     } catch (err) {
       setLoading(false);
       setError('Error adding bill payment. Please try again.');
-      setIsSuccess(false);
+      setMessageType('error');
       setIsModalOpen(true);
     }
   };
@@ -71,8 +73,10 @@ const AddGovBillPayment = () => {
   const validateDescription = (desc) => {
     if (desc.length < 15) {
       setError('Description must be at least 15 characters.');
+      setMessageType('error');
     } else {
       setError('');
+      setMessageType(''); // Reset messageType if description is valid
     }
     setDescription(desc);
   };
@@ -193,8 +197,8 @@ const AddGovBillPayment = () => {
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          type={isSuccess ? "success" : "error"}
-          message={isSuccess ? message : error}
+          messageType={messageType} // Pass messageType for success/error styling
+          message={message || error} // Pass either success or error message
         />
       )}
     </>
