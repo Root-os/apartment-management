@@ -32,8 +32,6 @@ const TenantInventoryTable = () => {
 
   // Define columns for TableComponent
   const columns = [
-    { label: 'ID', key: 'id' },
-    { label: 'Tenant ID', key: 'tenantId' },
     { label: 'Type', key: 'type' },
     {
       label: 'Items',

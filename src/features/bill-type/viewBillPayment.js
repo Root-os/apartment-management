@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const BillTablePage = () => {
   const [billData, setBillData] = useState([]);
@@ -124,9 +125,7 @@ const BillTablePage = () => {
     <div className="p-6">
       {/* Loading State */}
       {loading ? (
-        <div className="text-center">
-          <p>Loading...</p>
-        </div>
+       <LoadingComponent/>
       ) : (
         <TableComponent
           title="Bill Payment Types"

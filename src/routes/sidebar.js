@@ -50,11 +50,12 @@ import EyeIcon from '@heroicons/react/24/outline/EyeIcon'
 
 
 
-
 const iconClasses = `h-6 w-6`
 const submenuIconClasses = `h-5 w-5`
+
 const role=localStorage.getItem('role')
-const routes = role==='tenant' ?
+
+const tenantRoutes =
 [
   {
     path: '/app',
@@ -117,9 +118,51 @@ const routes = role==='tenant' ?
     },
     ]
   },
-]:
+];
+
+const employeeRoutes = [
+  {
+    path: '', 
+    icon: <ArrowUpIcon className={`${iconClasses} inline` }/>, 
+    name: 'Stock Out',  
+    submenu : [
+      {
+        path: '/app/employee-initial-request',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Send Request',
+      },
+     {
+      path: '/app/employee-request-history',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View My Requests',
+    },
+  
+    ]
+  },
+  {
+    path: '', 
+    icon: <ArrowUpIcon className={`${iconClasses} inline` }/>, 
+    name: 'My Salary',  
+    submenu : [
+     
+    //  {
+    //   path: '/',
+    //   icon: <PlusIcon className={submenuIconClasses}/>,
+    //   name: 'Add Request',
+    // },
+    {
+      path: '/app/employee-salary',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'My Salary rHistory',
+    },
+    ]
+  },
+
+
+];
 
 //admin side
+const adminRoutes =
 [
 
   {
@@ -707,8 +750,7 @@ const routes = role==='tenant' ?
     },
     ]
   },
-  
 ]
-
+const routes = role === 'admin' ? adminRoutes : role === 'employee' ? employeeRoutes : tenantRoutes;
 export default routes
 

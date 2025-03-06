@@ -1,34 +1,50 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Modal from '../../../components/Modal';
+import TitleCard from '../../../components/Cards/TitleCard';
 
 const AddStockOutRequestPage = () => {
-  const [items, setItems] = useState([]); // List of items from API
-  const [selectedItemId, setSelectedItemId] = useState(''); // Selected item ID
-  const [source, setSource] = useState('store'); // Source (store, warehouse, supplier)
-  const [reason, setReason] = useState(''); // Reason for stockout
-  const [requestedQuantity, setRequestedQuantity] = useState(0); // Requested Quantity
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(''); // Error state
+  const [items, setItems] = useState([]);
+  const [selectedItemId, setSelectedItemId] = useState('');
+  const [source, setSource] = useState('store');
+  const [reason, setReason] = useState('');
+  const [requestedQuantity, setRequestedQuantity] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [validationMessage, setValidationMessage] = useState('');
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     const fetchItems = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('https://apartment.houseethiopia.com/api/items', {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}items`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setItems(response.data); // Set items data from API
+        setItems(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
-        setError('Error fetching items.');
-        console.error('Error fetching items', error);
-      } finally {
-        setLoading(false);
+        setModalOpen(true);
+        setMessageType('error');
+        setMessage('Unable to get Items!');
       }
     };
     fetchItems();
   }, []);
+
+  const handleReasonChange = (e) => {
+    const value = e.target.value;
+    setReason(value);
+    if (value.length < 10) {
+      setValidationMessage('Reason must be at least 10 characters long.');
+    } else {
+      setValidationMessage('');
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,6 +52,11 @@ const AddStockOutRequestPage = () => {
       setError('Please fill all fields.');
       return;
     }
+    if (reason.length < 10) {
+      setError('Reason must be at least 10 characters long.');
+      return;
+    }
+    setLoading(true);
 
     try {
       const token = localStorage.getItem('token');
@@ -47,7 +68,7 @@ const AddStockOutRequestPage = () => {
       };
 
       const response = await axios.post(
-        'https://apartment.houseethiopia.com/api/stockout/request',
+        `${process.env.REACT_APP_BASE_URL}stockout/request`,
         payload,
         {
           headers: {
@@ -57,31 +78,33 @@ const AddStockOutRequestPage = () => {
       );
 
       if (response.data) {
-        alert('Stockout request added successfully');
+        setModalOpen(true);
+        setMessageType('success');
+        setMessage('Stockout request added successfully');
       }
+      setItems([]);
+      setSource('store');
+      setReason('');
+      setRequestedQuantity('');
     } catch (error) {
-      setError('Failed to add stockout request');
-      console.error('Error adding stockout request', error);
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Unable to Add stockout request!');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md mt-8">
-      <h2 className="text-2xl font-semibold text-center mb-6">Add Stockout Request</h2>
-
-      {loading ? (
-        <div className="text-center">Loading items...</div>
-      ) : (
+    <>
+      <TitleCard title={'Add Stockout Request'}>
         <form onSubmit={handleSubmit}>
-          {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
-
-          {/* Item Selection */}
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-2">Item</label>
+            <label className="block  text-white-700 font-semibold mb-2">Item</label>
             <select
               value={selectedItemId}
               onChange={(e) => setSelectedItemId(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded"
+              className="w-full bg-base-100 p-2 border border-gray-300 rounded"
             >
               <option value="">Select Item</option>
               {items.map((item) => (
@@ -92,13 +115,12 @@ const AddStockOutRequestPage = () => {
             </select>
           </div>
 
-          {/* Source Selection */}
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-2">Source</label>
+            <label className="block text-white-700 font-semibold mb-2">Source</label>
             <select
               value={source}
               onChange={(e) => setSource(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded"
+              className="w-full bg-base-100 p-2 border border-gray-300 rounded"
             >
               <option value="store">Store</option>
               <option value="warehouse">Warehouse</option>
@@ -106,37 +128,45 @@ const AddStockOutRequestPage = () => {
             </select>
           </div>
 
-          {/* Reason Field */}
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-2">Reason</label>
+            <label className="block text-white-700 font-semibold mb-2">Reason</label>
             <input
               type="text"
               value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded"
+              onChange={handleReasonChange}
+              className="w-full bg-base-100 p-2 border border-gray-300 rounded"
             />
+            {validationMessage && <p className="text-red-500">{validationMessage}</p>}
           </div>
 
-          {/* Requested Quantity */}
           <div className="mb-4">
-            <label className="block text-sm font-semibold mb-2">Requested Quantity</label>
+            <label className="block text-white-700 font-semibold mb-2">Requested Quantity</label>
             <input
               type="number"
               value={requestedQuantity}
               onChange={(e) => setRequestedQuantity(Number(e.target.value))}
-              className="w-full p-2 border border-gray-300 rounded"
+              className="w-full bg-base-100 p-2 border border-gray-300 rounded"
             />
           </div>
+
+          {error && <p className="text-red-500">{error}</p>}
 
           <button
             type="submit"
             className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            disabled={loading}
           >
-            Submit Request
+            {loading ? 'Sending...' : 'Submit Request'}
           </button>
         </form>
-      )}
-    </div>
+      </TitleCard>
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
+      />
+    </>
   );
 };
 

@@ -5,8 +5,11 @@ import TitleCard from '../../components/Cards/TitleCard';
 
 const ItemAssignmentForm = () => {
   const [items, setItems] = useState([]);
+  const [assignedUsers, setAssignedUsers] = useState([]);
   const [formData, setFormData] = useState({
     itemId: '',
+    assignedId: '',
+    assignType: 'User',
     assignDate: '',
     amount: '',
     description: ''
@@ -18,22 +21,50 @@ const ItemAssignmentForm = () => {
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
 
-  // Get the userId (assignedId) from localStorage
-  const assignedId = localStorage.getItem('userId');
-
   useEffect(() => {
     const fetchItems = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}items`);
         setItems(response.data);
       } catch (err) {
-      setModalOpen(true);
-      setMessageType('error');
-      setMessage('Unable to get items');
+        setModalOpen(true);
+        setMessageType('error');
+        setMessage('Unable to get items');
+      }
+    };
+
+    const fetchAssignedUsers = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('Token not found');
+        }
+        console.log('Token: ', token); // Log token
+
+        const response = await axios.get('https://apartment.houseethiopia.com/api/auth/users', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+
+        console.log('Assigned Users:', response.data); // Log response data
+
+        // Access the users array from the response object
+        if (response.data.success && Array.isArray(response.data.users)) {
+          setAssignedUsers(response.data.users);
+        } else {
+          throw new Error('API response is not an array of users');
+        }
+      } catch (err) {
+        console.error('Error fetching users:', err); // Log error
+        setModalOpen(true);
+        setMessageType('error');
+        setMessage('Unable to get assigned users');
       }
     };
 
     fetchItems();
+    fetchAssignedUsers();
   }, []);
 
   const handleChange = (e) => {
@@ -46,15 +77,10 @@ const ItemAssignmentForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!assignedId) {
-      setError('User not found');
-      return;
-    }
-
     const payload = {
       itemId: formData.itemId,
-      assignedId: assignedId, 
-      assignType: 'User',
+      assignedId: formData.assignedId,
+      assignType: formData.assignType,
       assignDate: formData.assignDate,
       amount: formData.amount,
       description: formData.description,
@@ -65,96 +91,135 @@ const ItemAssignmentForm = () => {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}item-assignments`, payload);
       setFormData({
         itemId: '',
+        assignedId: '',
+        assignType: 'User',
         assignDate: '',
         amount: '',
         description: ''
       });
       setModalOpen(true);
       setMessageType('success');
-      setMessage('Item assignment Added successfully!')
+      setMessage('Item assignment Added successfully!');
     } catch (err) {
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Unable to add Item assignment!')
+      setMessage('Unable to add Item assignment!');
     } finally {
       setLoading(false);
     }
   };
 
+  const getEmployeeNameById = (id) => {
+    const employee = assignedUsers.find((emp) => emp.id === id);
+    return employee ? employee.fname : 'Unassigned';
+  };
+
   return (
     <>
       <TitleCard title="Add Item Assignment" topMargin={'mt-2'}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-white-700">Item</label>
-          <select
-            name="itemId"
-            value={formData.itemId}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
-            required
-          >
-            <option value="">Select Item</option>
-            {items.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.itemName}
-              </option>
-            ))}
-          </select>
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-white-700">Item</label>
+            <select
+              name="itemId"
+              value={formData.itemId}
+              onChange={handleChange}
+              className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
+              required
+            >
+              <option value="">Select Item</option>
+              {items.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.itemName}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-white-700">Assign Date</label>
-          <input
-            type="date"
-            name="assignDate"
-            value={formData.assignDate}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
-            required
-          />
-        </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-white-700">Assigned User</label>
+            <select
+              name="assignedId"
+              value={formData.assignedId}
+              onChange={handleChange}
+              className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
+              required
+            >
+              <option value="">Select Assigned User</option>
+              {Array.isArray(assignedUsers) && assignedUsers.map((user) => (
+                <option key={user.id} value={user.id}>
+                  {user.fname}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-white-700">Amount</label>
-          <input
-            type="number"
-            name="amount"
-            value={formData.amount}
-            onChange={handleChange}
-            className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
-            required
-          />
-        </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-white-700">Assign Type</label>
+            <select
+              name="assignType"
+              value={formData.assignType}
+              onChange={handleChange}
+              className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
+              required
+            >
+              <option value="User">User</option>
+              <option value="Unit">Unit</option>
+            </select>
+          </div>
 
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-white-700">Description</label>
-          <textarea
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            className="bg-base-100 mt-1 p-2 w-full border border-gray-300 rounded-md"
-            required
-            rows="4"
-          />
-        </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-white-700">Assign Date</label>
+            <input
+              type="date"
+              name="assignDate"
+              value={formData.assignDate}
+              onChange={handleChange}
+              className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
+              required
+            />
+          </div>
 
-        <div className="mb-4">
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-400 w-full"
-            disabled={loading}
-          >
-            {loading ? 'Submitting...' : 'Submit Assignment'}
-          </button>
-        </div>
-      </form>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-white-700">Amount</label>
+            <input
+              type="number"
+              name="amount"
+              value={formData.amount}
+              onChange={handleChange}
+              className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
+              required
+            />
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-white-700">Description</label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              className="bg-base-100 mt-1 p-2 w-full border border-gray-300 rounded-md"
+              required
+              rows="4"
+            />
+          </div>
+
+          <div className="mb-4">
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-400 w-full"
+              disabled={loading}
+            >
+              {loading ? 'Submitting...' : 'Submit Assignment'}
+            </button>
+          </div>
+        </form>
       </TitleCard>
       <Modal
-       isOpen={modalOpen}
-       onClose={()=> setModalOpen(false)}
-       messageType={messageType}
-       message={message}
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
       />
     </>
   );

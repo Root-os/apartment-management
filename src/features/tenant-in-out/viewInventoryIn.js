@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import DeleteConfirmationModal from '../../components/editDeleteModal'
+import Modal from '../../components/Modal'
 
 const TenantInventoryPage = () => {
   const [inventoryData, setInventoryData] = useState([]);
@@ -11,8 +12,12 @@ const TenantInventoryPage = () => {
   const [currentInventory, setCurrentInventory] = useState({
     items: [] // Default items as an empty array to prevent map errors
   });
-  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false); // State to control delete modal visibility
-  const [inventoryToDelete, setInventoryToDelete] = useState(null); // Store the inventory item to be deleted
+  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false); 
+  const [inventoryToDelete, setInventoryToDelete] = useState(null); 
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setmessageType] = useState('success');
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     const fetchInventoryData = async () => {
@@ -144,10 +149,14 @@ const TenantInventoryPage = () => {
           )
         );
         closeEditModal();
+        setModalOpen(true);
+        setmessageType('success');
+        setMessage('Data updated successfully!');
       }
     } catch (err) {
-      console.error("Error updating data", err);
-      setError("Failed to update inventory data.");
+      setModalOpen(true);
+      setmessageType('error');
+      setMessage('Unable to update the data!');
     }
   };
 
@@ -177,10 +186,13 @@ const TenantInventoryPage = () => {
     { label: 'Items', key: 'items' },
     { label: 'Actions', key: 'actions', render: (row) => (
         <div className="flex space-x-2">
-          <button onClick={() => openEditModal(row)} className="text-blue-500 hover:text-blue-700">
+          <button onClick={() => openEditModal(row)} 
+            className="px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white ml-2"
+          >
             Edit
           </button>
-          <button onClick={() => openDeleteModal(row)} className="text-red-500 hover:text-red-700">
+          <button onClick={() => openDeleteModal(row)} className="px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white ml-2"
+          >
             Delete
           </button>
         </div>
@@ -233,55 +245,55 @@ const TenantInventoryPage = () => {
               {/* Render Items (Dynamic) */}
               <div className="mb-4">
                 <label className="block text-sm font-medium">Items</label>
-
-                {currentInventory.items.map((item, index) => (
-  <div key={index} className="flex mb-2 space-x-4">
-    <input
-      type="text"
-      className="p-2 w-full border border-gray-300 rounded-md"
-      value={item.name} // Ensure you're accessing `name` here
-      onChange={(e) => {
-        const newItems = [...currentInventory.items];
-        newItems[index].name = e.target.value; // Update the `name` property
-        setCurrentInventory((prev) => ({ ...prev, items: newItems }));
-      }}
-    />
-    <input
-      type="text"
-      className="p-2 w-full border border-gray-300 rounded-md"
-      value={item.condition} // Ensure you're accessing `condition` here
-      onChange={(e) => {
-        const newItems = [...currentInventory.items];
-        newItems[index].condition = e.target.value; // Update the `condition` property
-        setCurrentInventory((prev) => ({ ...prev, items: newItems }));
-      }}
-    />
-    <input
-      type="number"
-      className="p-2 w-full border border-gray-300 rounded-md"
-      value={item.quantity} // Ensure you're accessing `quantity` here
-      onChange={(e) => {
-        const newItems = [...currentInventory.items];
-        newItems[index].quantity = e.target.value; // Update the `quantity` property
-        setCurrentInventory((prev) => ({ ...prev, items: newItems }));
-      }}
-    />
-    <button
-      type="button"
-      onClick={() => handleRemoveItem(index)} // This will remove an item
-      className="text-red-500 hover:text-red-700">
-      Remove
-    </button>
-  </div>
-))}
-
-                <button
-                  type="button"
-                  onClick={handleAddItem}
-                  className="bg-blue-500 text-white py-2 px-4 rounded-md mt-2">
-                  Add Item
-                </button>
-              </div>
+                 {currentInventory.items.map((item, index) =>
+                   (
+                      <div key={index} className="flex mb-2 space-x-4">
+                        <input
+                          type="text"
+                          className="p-2 w-full border border-gray-300 rounded-md"
+                          value={item.name} // Ensure you're accessing `name` here
+                          onChange={(e) => {
+                            const newItems = [...currentInventory.items];
+                            newItems[index].name = e.target.value; // Update the `name` property
+                            setCurrentInventory((prev) => ({ ...prev, items: newItems }));
+                          }}
+                        />
+                        <input
+                          type="text"
+                          className="p-2 w-full border border-gray-300 rounded-md"
+                          value={item.condition} // Ensure you're accessing `condition` here
+                          onChange={(e) => {
+                            const newItems = [...currentInventory.items];
+                            newItems[index].condition = e.target.value; 
+                            setCurrentInventory((prev) => ({ ...prev, items: newItems }));
+                          }}
+                        />
+                        <input
+                          type="number"
+                          className="p-2 w-full border border-gray-300 rounded-md"
+                          value={item.quantity} // Ensure you're accessing `quantity` here
+                          onChange={(e) => {
+                            const newItems = [...currentInventory.items];
+                            newItems[index].quantity = e.target.value; // Update the `quantity` property
+                            setCurrentInventory((prev) => ({ ...prev, items: newItems }));
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveItem(index)} // This will remove an item
+                          className="text-red-500 hover:text-red-700">
+                          Remove
+                        </button>
+                      </div>
+                    ))
+                  }
+                    <button
+                      type="button"
+                      onClick={handleAddItem}
+                      className="bg-blue-500 text-white py-2 px-4 rounded-md mt-2">
+                      Add Item
+                    </button>
+               </div>
 
               <button type="submit" className="bg-green-500 text-white py-2 px-4 rounded-md">
                 Save Changes
@@ -300,6 +312,12 @@ const TenantInventoryPage = () => {
         onClose={closeDeleteModal}
         onDelete={handleDelete}
         data={inventoryToDelete}
+      />
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
       />
     </div>
   );

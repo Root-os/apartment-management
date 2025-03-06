@@ -2,10 +2,8 @@ import React from 'react';
 
 const Modal = ({ isOpen, onClose, messageType, message, actions = [] }) => {
   if (!isOpen) return null;
-
-  // Apply darker colors for better visibility
   const modalStyles = messageType === 'success' 
-    ? 'bg-green-500 text-green-100 border-green-600 dark:text-green-200'
+    ? 'bg-green-500 text-green-600 border-green-600 dark:text-green-200'
     : messageType === 'warning'
     ? 'bg-yellow-200 text-black border-yellow-500 dark:text-yellow-200'
     : 'bg-red-500 text-white border-red-600 dark:text-red-200';

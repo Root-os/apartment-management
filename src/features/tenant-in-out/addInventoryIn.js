@@ -203,7 +203,7 @@ const InventoryForm = () => {
 
       <Modal
         isOpen={modalOpen}
-        onClick={() => setModalOpen(false)}
+        onClose={() => setModalOpen(false)}
         messageType={messageType}
         message={message}
       />

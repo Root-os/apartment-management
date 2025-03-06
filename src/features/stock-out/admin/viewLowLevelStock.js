@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import TableComponent from '../../../components/table'
+import TableComponent from '../../../components/table';
 
 const LowStockItems = () => {
   const [itemsData, setItemsData] = useState([]);
@@ -34,15 +34,13 @@ const LowStockItems = () => {
   useEffect(() => {
     const fetchLowStockItems = async () => {
       const token = localStorage.getItem('token');
-        
       try {
         const response = await axios.get('https://apartment.houseethiopia.com/api/stockout/low-stock/check', {
-          
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
-        setItemsData(response.data.items);
+        setItemsData(response.data.items || []);
       } catch (error) {
         setError('An error occurred while fetching the low stock items.');
       } finally {
@@ -70,11 +68,18 @@ const LowStockItems = () => {
           <p>{error}</p>
         </div>
       ) : (
-        <TableComponent
-          title="Low Stock Items"
-          data={itemsData}
-          columns={columns}
-        />
+        <>
+          {itemsData.length === 0 && (
+            <div className="text-center mb-4">
+              <p>All stock levels are sufficient</p>
+            </div>
+          )}
+          <TableComponent
+            title="Low Stock Items"
+            data={itemsData}
+            columns={columns}
+          />
+        </>
       )}
     </div>
   );

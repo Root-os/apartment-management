@@ -4,10 +4,10 @@ import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
 
 const MassSalaryPayment = () => {
-  const [paymentMethod, setPaymentMethod] = useState('cash');
+  const [paymentMethod, setPaymentMethod] = useState('');
   const [paymentFromDate, setPaymentFromDate] = useState('');
   const [paymentToDate, setPaymentToDate] = useState('');
-  const [status, setStatus] = useState('pending');
+  const [status, setStatus] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -36,6 +36,10 @@ const MassSalaryPayment = () => {
       setMessageType('success');
       setMessage('Add mass salary payment successfully!')
 
+      setStatus(''); 
+      setPaymentToDate(''); 
+      setPaymentFromDate(''); 
+      setPaymentMethod('');
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');
@@ -60,6 +64,7 @@ const MassSalaryPayment = () => {
             onChange={(e) => setPaymentMethod(e.target.value)}
             className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           >
+            <option value="">select</option>
             <option value="cash">Cash</option>
             <option value="bank">Bank</option>
           </select>
@@ -71,7 +76,7 @@ const MassSalaryPayment = () => {
             Payment From Date
           </label>
           <input
-            type="datetime-local"
+            type="date"
             id="paymentFromDate"
             value={paymentFromDate}
             onChange={(e) => setPaymentFromDate(e.target.value)}
@@ -86,7 +91,7 @@ const MassSalaryPayment = () => {
             Payment To Date
           </label>
           <input
-            type="datetime-local"
+            type="date"
             id="paymentToDate"
             value={paymentToDate}
             onChange={(e) => setPaymentToDate(e.target.value)}
@@ -106,6 +111,7 @@ const MassSalaryPayment = () => {
             onChange={(e) => setStatus(e.target.value)}
             className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
           >
+            <option value="">select</option>
             <option value="pending">Pending</option>
             <option value="completed">Completed</option>
           </select>
@@ -126,7 +132,7 @@ const MassSalaryPayment = () => {
 
      <Modal
      isOpen={modalOpen}
-     onClick={()=> setModalOpen(false)}
+     onClose={()=> setModalOpen(false)}
      messageType={messageType}
      message={message}
      

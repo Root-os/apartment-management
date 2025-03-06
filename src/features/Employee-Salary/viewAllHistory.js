@@ -25,8 +25,24 @@ const SalaryPayments = () => {
         render: (row) => `${row.User.fname} ${row.User.lname}` || 'N/A',
      },
     { label: 'Amount', key: 'amount' },
-    { label: 'Payment From Date', key: 'paymentFromDate' },
-    { label: 'Payment To Date', key: 'paymentToDate' },
+    { label: 'Payment From Date', key: 'paymentFromDate',
+      render: (row) => {
+        if (row.paymentFromDate) {
+          const date = new Date(row.paymentFromDate);
+          return date.toLocaleDateString('en-US'); 
+        }
+        return 'N/A';
+      }
+     },
+    { label: 'Payment To Date', key: 'paymentToDate',
+      render: (row) => {
+        if (row.paymentToDate) {
+          const date = new Date(row.paymentToDate);
+          return date.toLocaleDateString('en-US'); 
+        }
+        return 'N/A';
+      }
+     },
     { label: 'Payment Method', key: 'paymentMethod' },
     { label: 'Status', key: 'status' },
     { label: 'Pension Contribution', key: 'pensionContribution' },
@@ -162,19 +178,12 @@ const SalaryPayments = () => {
   };
 
   return (
-    <div className="p-6">
-      {/* Loading State */}
-      {loading ? (
-        <div className="text-center">
-          <p>Loading...</p>
-        </div>
-      ) : (
+    <>
         <TableComponent
-          title="Salary Payments"
+          title="Salaries"
           data={salaryData}
           columns={columns}
         />
-      )}
 
       {/* Edit Modal */}
       {isEditModalOpen && (
@@ -242,7 +251,7 @@ const SalaryPayments = () => {
         onDelete={handleDelete}
         data={selectedSalary}
       />
-    </div>
+    </>
   );
 };
 
