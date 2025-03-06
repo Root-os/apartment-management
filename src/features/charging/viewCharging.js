@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 
+
 const ChargingPage = () => {
   const [chargingData, setChargingData] = useState([]);
   const [tenants, setTenants] = useState([]);

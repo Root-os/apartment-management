@@ -57,12 +57,12 @@ import EyeIcon from '@heroicons/react/24/outline/EyeIcon'
 
 
 
-
 const iconClasses = `h-6 w-6`
 const submenuIconClasses = `h-5 w-5`
 
 const role=localStorage.getItem('role')
-const routes = role==='tenant' ?
+
+const tenantRoutes =
 [
   {
     path: '/app',
@@ -107,9 +107,69 @@ const routes = role==='tenant' ?
     },
     ]
   },
-]:
+  {
+    path: '', 
+    icon: <ArrowUpIcon className={`${iconClasses} inline` }/>, 
+    name: 'Inventory In Out',  
+    submenu : [
+     
+    //  {
+    //   path: '/app/withdraw-request-add',
+    //   icon: <PlusIcon className={submenuIconClasses}/>,
+    //   name: 'Add Request',
+    // },
+    {
+      path: '/app/tenant-view-in',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'My In/Out record',
+    },
+    ]
+  },
+];
+
+const employeeRoutes = [
+  {
+    path: '', 
+    icon: <ArrowUpIcon className={`${iconClasses} inline` }/>, 
+    name: 'Stock Out',  
+    submenu : [
+      {
+        path: '/app/employee-initial-request',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Send Request',
+      },
+     {
+      path: '/app/employee-request-history',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View My Requests',
+    },
+  
+    ]
+  },
+  {
+    path: '', 
+    icon: <ArrowUpIcon className={`${iconClasses} inline` }/>, 
+    name: 'My Salary',  
+    submenu : [
+     
+    //  {
+    //   path: '/',
+    //   icon: <PlusIcon className={submenuIconClasses}/>,
+    //   name: 'Add Request',
+    // },
+    {
+      path: '/app/employee-salary',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'My Salary rHistory',
+    },
+    ]
+  },
+
+
+];
 
 //admin side
+const adminRoutes =
 [
 
   {
@@ -802,10 +862,55 @@ const routes = role==='tenant' ?
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'View Stocks',
     },
+    {
+      path: '/app/view-low-level-stock',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Low level stock',
+    },
     ]
   },
-  
+  {
+    path: '', 
+    icon: <ClipboardIcon className={`${iconClasses} inline` }/>, 
+    name: 'Inventory In and Out',  
+    submenu : [
+     
+     {
+      path: '/app/add-in-out',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Inventory In/Out',
+    },
+    {
+      path: '/app/view-in-out',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View Inventory information',
+    },
+    ]
+  },
+  {
+    path: '', 
+    icon: <ClipboardIcon className={`${iconClasses} inline` }/>, 
+    name: 'Employee Salary',  
+    submenu : [
+     
+     {
+      path: '/app/add-mass-salary',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Mass Payment',
+    },
+    {
+      path: '/app/add-single-salary',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Single Payment',
+    },
+    {
+      path: '/app/view-all-salary',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View All Payment',
+    },
+    ]
+  },
 ]
-
+const routes = role === 'admin' ? adminRoutes : role === 'employee' ? employeeRoutes : tenantRoutes;
 export default routes
 

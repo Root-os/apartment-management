@@ -1,70 +1,69 @@
-// All components mapping with path for internal routes
+import { lazy } from 'react';
 
-import { lazy } from 'react'
+const Dashboard = lazy(() => import('../pages/protected/Dashboard'));
+const Page404 = lazy(() => import('../pages/protected/404'));
+const Blank = lazy(() => import('../pages/protected/Blank'));
+const Bills = lazy(() => import('../pages/protected/Bills'));
+const ProfileSettings = lazy(() => import('../pages/protected/ProfileSettings'));
 
-const Dashboard = lazy(() => import('../pages/protected/Dashboard'))
-const Page404 = lazy(() => import('../pages/protected/404'))
-const Blank = lazy(() => import('../pages/protected/Blank'))
-const Bills = lazy(() => import('../pages/protected/Bills'))
-const ProfileSettings = lazy(() => import('../pages/protected/ProfileSettings'))
+const FloorAdd = lazy(() => import('../pages/protected/FloorAdd'));
+const FloorView = lazy(() => import('../pages/protected/FloorView'));
 
-const FloorAdd = lazy(() => import('../pages/protected/FloorAdd'))
-const FloorView = lazy(() => import('../pages/protected/FloorView'))
+const UnitAdd = lazy(() => import('../pages/protected/UnitAdd'));
+const UnitView = lazy(() => import('../pages/protected/UnitView'));
 
-const UnitAdd = lazy(() => import('../pages/protected/UnitAdd'))
-const UnitView = lazy(() => import('../pages/protected/UnitView'))
+const BillPaymentView = lazy(() => import('../pages/protected/BillPaymentView'));
+const BillPaymentAdd = lazy(() => import('../pages/protected/BillPaymentAdd'));
 
-const BillPaymentView = lazy(() => import('../pages/protected/BillPaymentView'))
-const BillPaymentAdd = lazy(() => import('../pages/protected/BillPaymentAdd'))
+const GovBillPaymentPage = lazy(() => import('../pages/protected/GovPaymentView'));
+const GovBillPaymentAdd = lazy(() => import('../pages/protected/GovPaymentAdd'));
 
-const GovBillPaymentPage = lazy(() => import('../pages/protected/GovPaymentView'))
-const GovBillPaymentAdd = lazy(() => import('../pages/protected/GovPaymentAdd'))
+const ExpenseAdd = lazy(() => import('../pages/protected/ExpenseAdd'));
+const ExpenseView = lazy(() => import('../pages/protected/ExpenseView'));
 
-const ExpenseAdd = lazy(() => import('../pages/protected/ExpenseAdd'))
-const ExpenseView = lazy(() => import('../pages/protected/ExpenseView'))
+const ExpenseTypeAdd = lazy(() => import('../pages/protected/ExpenseTypeAdd'));
+const ExpenseTypeView = lazy(() => import('../pages/protected/ExpenseTypeView'));
 
-const ExpenseTypeAdd = lazy(() => import('../pages/protected/ExpenseTypeAdd'))
-const ExpenseTypeView = lazy(() => import('../pages/protected/ExpenseTypeView'))
+const TenantAdd = lazy(() => import('../pages/protected/TenantAdd'));
+const TenantView = lazy(() => import('../pages/protected/TenantView'));
+const TenantBillAdd = lazy(() => import('../pages/protected/TenantBillAdd'));
+const TenantBillView = lazy(() => import('../pages/protected/TenantBillView'));
+const TenDays = lazy(() => import('../pages/protected/tendaysTenants'));
+const TenantFilter = lazy(() => import('../pages/protected/tenantfilterlist'));
 
-const TenantAdd = lazy(() => import('../pages/protected/TenantAdd'))
-const TenantView = lazy(() => import('../pages/protected/TenantView'))
-const TenantBillAdd = lazy(() => import('../pages/protected/TenantBillAdd'))
-const TenantBillView = lazy(() => import('../pages/protected/TenantBillView'))
-const TenDays = lazy(() => import('../pages/protected/tendaysTenants'))
-const TenantFilter = lazy(() => import('../pages/protected/tenantfilterlist'))
+const RentAdd = lazy(() => import('../pages/protected/RentAdd'));
+const RentView = lazy(() => import('../pages/protected/RentView'));
 
-const RentAdd = lazy(() => import('../pages/protected/RentAdd'))
-const RentView = lazy(() => import('../pages/protected/RentView'))
+const ParkingAdd = lazy(() => import('../pages/protected/ParkingAdd'));
+const ParkingView = lazy(() => import('../pages/protected/ParkingView'));
 
-const ParkingAdd = lazy(() => import('../pages/protected/ParkingAdd'))
-const ParkingView = lazy(() => import('../pages/protected/ParkingView'))
- //inventory
-const ItemTypeAdd = lazy(() => import('../pages/protected/ItemTypeAdd'))
-const ItemTypeView = lazy(() => import('../pages/protected/ItemTypeView'))
-const ItemAdd = lazy(() => import('../pages/protected/ItemAdd'))
-const ItemView = lazy(() => import('../pages/protected/ItemView'))
+// Inventory
+const ItemTypeAdd = lazy(() => import('../pages/protected/ItemTypeAdd'));
+const ItemTypeView = lazy(() => import('../pages/protected/ItemTypeView'));
+const ItemAdd = lazy(() => import('../pages/protected/Item/ItemAdd'));
+const ItemView = lazy(() => import('../pages/protected/Item/ItemView'));
 
-const PaymentRequestAdd = lazy(() => import('../pages/protected/PaymentRequestAdd'))
-const PaymentRequestView = lazy(() => import('../pages/protected/PaymentRequestView'))
+const PaymentRequestAdd = lazy(() => import('../pages/protected/PaymentRequestAdd'));
+const PaymentRequestView = lazy(() => import('../pages/protected/PaymentRequestView'));
 
-//Notfication
-const notficationAdd=lazy(() => import('../pages/protected/Notfication/add'))
-const allNotfication=lazy(() => import('../pages/protected/Notfication/viewAll'))
-const bulkNotfication=lazy(() => import('../pages/protected/Notfication/bulkNotfi'))
+// Notification
+const notficationAdd = lazy(() => import('../pages/protected/Notfication/add'));
+const allNotfication = lazy(() => import('../pages/protected/Notfication/viewAll'));
+const bulkNotfication = lazy(() => import('../pages/protected/Notfication/bulkNotfi'));
 
-//Email
-const singleEmail=lazy(() => import('../pages/protected/email/addsingleEmail'))
-const BulkEmail=lazy(() => import ('../pages/protected/email/bulkEmail'))
-const sentEmails=lazy(() => import('../pages/protected/email/sentEmail'))
+// Email
+const singleEmail = lazy(() => import('../pages/protected/email/addsingleEmail'));
+const BulkEmail = lazy(() => import('../pages/protected/email/bulkEmail'));
+const sentEmails = lazy(() => import('../pages/protected/email/sentEmail'));
 
-const NotificationTypeAdd = lazy(() => import('../pages/protected/NotificationTypeAdd'))
-const NotificationTypeView = lazy(() => import('../pages/protected/NotificationTypeView'))
+const NotificationTypeAdd = lazy(() => import('../pages/protected/NotificationTypeAdd'));
+const NotificationTypeView = lazy(() => import('../pages/protected/NotificationTypeView'));
 
-//User
-const ALlUser=lazy(() => import ('../pages/protected/user/alluser'))
+// User
+const ALlUser = lazy(() => import('../pages/protected/user/alluser'));
 
-const ChargingAdd = lazy(() => import('../pages/protected/ChargingAdd'))
-const ChargingView = lazy(() => import('../pages/protected/ChargingView'))
+const ChargingAdd = lazy(() => import('../pages/protected/ChargingAdd'));
+const ChargingView = lazy(() => import('../pages/protected/ChargingView'));
 
 //Report
 const GovtReport=lazy(() => import('../pages/protected/Report/govtBillReport'))
@@ -73,51 +72,65 @@ const TenantReportPageTwo=lazy(() => import('../pages/protected/Report/tenantRep
 const ExpenseReportPage=lazy(() => import('../pages/protected/Report/ExpenseReport'))   
 const ReturnReport=lazy(() => import('../pages/protected/Report/returnReport'))
 const PaymentReport=lazy(() => import('../pages/protected/Report/paymentReport'))
-
-
-
-
-
-
-
-const PurchaseReport=lazy(() => import('../pages/protected/Purchasereport'))
+const PurchaseReport=lazy(() => import('../pages/protected/Report/Purchasereport'))
 const ChargingReport=lazy(() => import('../pages/protected/ChargingReport'))
 const MaintenanceReport=lazy(() => import('../pages/protected/MaintenanceReport'))
 const ItemAssignmentReport=lazy(() => import('../pages/protected/ItemAssignmentReport'))
 
-//complaint tenantside
-const ComplainByTenant=lazy(() => import('../pages/protected/ComplainByTenant'))
-const ComplainByTenantView=lazy(() => import('../pages/protected/ComplainByTenantView'))
 
-//complaints admin side
-const ComplainFromTenant=lazy(() => import('../pages/protected/ComplainFromTenant'))
-const AssignedStaff=lazy(() => import('../pages/protected/AssignedStaff'))
 
-//withdraw request tenant side
-const WithdrawRequestAdd=lazy(() => import('../pages/protected/WithdrawRequestAdd'))
-const MyWithdrawRequest=lazy(() => import('../pages/protected/MyWithdrawRequests'))
-//withdraw request admin side
-const ViewWithdrawRequests=lazy(() => import('../pages/protected/ViewWithdrawRequests'))
+// Complaint tenant side
+const ComplainByTenant = lazy(() => import('../pages/protected/ComplainByTenant'));
+const ComplainByTenantView = lazy(() => import('../pages/protected/ComplainByTenantView'));
 
-//setting
-const SettingAdd =lazy(() => import('../pages/protected/SettingAdd'))  
-const SettingView =lazy(() => import('../pages/protected/SettingView')) 
+// Complaint admin side
+const ComplainFromTenant = lazy(() => import('../pages/protected/ComplainFromTenant'));
+const AssignedStaff = lazy(() => import('../pages/protected/AssignedStaff'));
 
-//purchase
-const PurchaseAdd =lazy(() => import('../pages/protected/PurchaseAdd')) 
-const PurchaseView =lazy(() => import('../pages/protected/PurchaseView')) 
+// Withdraw request tenant side
+const WithdrawRequestAdd = lazy(() => import('../pages/protected/WithdrawRequestAdd'));
+const MyWithdrawRequest = lazy(() => import('../pages/protected/MyWithdrawRequests'));
 
-//purchase request
-const PurchaseRequestAdd =lazy(() => import('../pages/protected/PurchaseRequestAdd')) 
-const PurchaseRequestView =lazy(() => import('../pages/protected/PurchaseRequestView')) 
+// Withdraw request admin side
+const ViewWithdrawRequests = lazy(() => import('../pages/protected/ViewWithdrawRequests'));
 
-//maintenance
-const MaintenanceAdd =lazy(() => import('../pages/protected/MaintenanceAdd')) 
-const MaintenanceView =lazy(() => import('../pages/protected/MaintenanceView'))
+// Setting
+const SettingAdd = lazy(() => import('../pages/protected/SettingAdd'));
+const SettingView = lazy(() => import('../pages/protected/SettingView'));
 
-//item assignments
-const ItemAssignmentAdd =lazy(() => import('../pages/protected/ItemAssignmentAdd'))
-const ItemAssignmentView =lazy(() => import('../pages/protected/ItemAssignmentView'))
+// Purchase
+const PurchaseAdd = lazy(() => import('../pages/protected/PurchaseAdd'));
+const PurchaseView = lazy(() => import('../pages/protected/PurchaseView'));
+
+// Purchase request
+const PurchaseRequestAdd = lazy(() => import('../pages/protected/PurchaseRequestAdd'));
+const PurchaseRequestView = lazy(() => import('../pages/protected/PurchaseRequestView'));
+
+// Maintenance
+const MaintenanceAdd = lazy(() => import('../pages/protected/MaintenanceAdd'));
+const MaintenanceView = lazy(() => import('../pages/protected/MaintenanceView'));
+
+// Item assignments
+const ItemAssignmentAdd = lazy(() => import('../pages/protected/ItemAssignmentAdd'));
+const ItemAssignmentView = lazy(() => import('../pages/protected/ItemAssignmentView'));
+
+// Stock
+const StockView = lazy(() => import('../pages/protected/StockOut/StockView'));
+const LowLevelStock = lazy(() => import('../pages/protected/StockOut/LowLevelStock'));
+//stock-empoyee-side
+const InitialRequest = lazy(() => import('../pages/protected/StockOut/InitialRequest'));
+const EmpRequestHistory = lazy(() => import('../pages/protected/StockOut/EmpRequestHistory'));
+
+// Inventory in and out
+const InOutAdd = lazy(() => import('../pages/protected/Inventory-in-out/InOutAdd'));
+const ViewInOut = lazy(() => import('../pages/protected/Inventory-in-out/ViewInOut'));
+const tenantViewInOut = lazy(() => import('../pages/protected/Inventory-in-out/tenantViewInOut'));
+
+// Employee Salary
+const MassSalary = lazy(() => import('../pages/protected/Employee-Salary/MassSalary'));
+const SinglePayment = lazy(() => import('../pages/protected/Employee-Salary/SinglePayment'));
+const ViewAllPayment = lazy(() => import('../pages/protected/Employee-Salary/ViewAllPayment'));
+const MySallary = lazy(() => import('../pages/protected/Employee-Salary/MySallary'));//employee side
 
 //service type
 const ServiceTypeAdd =lazy(() => import('../pages/protected/serviceType/add'))
@@ -141,40 +154,61 @@ const letterTypeView = lazy(() => import('../pages/protected/letter/allLetterTyp
 const LetterSend = lazy(() => import('../pages/protected/letter/sendLetter'))
 const AllSentLetters=lazy(() => import('../pages/protected/letter/allLetterSent'))
 //stock
-const StockView =lazy(() => import('../pages/protected/StockView'))
+
 
 const role = localStorage.getItem('role');
 
-const routes =role==='tenant' ?
-[
+const tenantRoutes = [
   {
-    path: '/', // the url
-    component: Dashboard, // view rendered
+    path: '/',
+    component: Dashboard,
   },
   {
-    path: '/complain-tenant-add', 
-    component: ComplainByTenant, 
+    path: '/complain-tenant-add',
+    component: ComplainByTenant,
   },
   {
-    path: '/complain-tenant-view', 
-    component: ComplainByTenantView, 
+    path: '/complain-tenant-view',
+    component: ComplainByTenantView,
   },
   {
-    path: '/withdraw-request-add', 
-    component: WithdrawRequestAdd, 
+    path: '/withdraw-request-add',
+    component: WithdrawRequestAdd,
   },
   {
-    path: '/withdraw-request-view', 
-    component: MyWithdrawRequest, 
+    path: '/withdraw-request-view',
+    component: MyWithdrawRequest,
   },
+  {
+    path: '/tenant-view-in',
+    component: tenantViewInOut,
+  },
+];
 
- ]:
-
- //admin dashboard
-[
+const employeeRoutes = [
   {
-    path: '/', // the url
-    component: Dashboard, // view rendered
+    path: '/',
+    component: Dashboard,
+  },
+  {
+    path: '/employee-request-history',
+    component: EmpRequestHistory,
+  },
+  {
+    path: '/employee-initial-request',
+    component: InitialRequest,
+  },
+  {
+    path: '/employee-salary',
+    component: MySallary,
+  },
+  // Add more employee-specific routes here
+];
+
+const adminRoutes = [
+  {
+    path: '/',
+    component: Dashboard,
   },
   {
     path: '/settings-profile',
@@ -192,6 +226,271 @@ const routes =role==='tenant' ?
     path: '/blank',
     component: Blank,
   },
+  {
+    path: '/floor-add',
+    component: FloorAdd,
+  },
+  {
+    path: '/floor-view',
+    component: FloorView,
+  },
+  {
+    path: '/unit-add',
+    component: UnitAdd,
+  },
+  {
+    path: '/unit-view',
+    component: UnitView,
+  },
+  {
+    path: '/bill-type-add',
+    component: BillPaymentAdd,
+  },
+  {
+    path: '/bill-type-view',
+    component: BillPaymentView,
+  },
+  {
+    path: '/payment-goverment-view',
+    component: GovBillPaymentPage,
+  },
+  {
+    path: '/payment-goverment-add',
+    component: GovBillPaymentAdd,
+  },
+  {
+    path: '/expense-add',
+    component: ExpenseAdd,
+  },
+  {
+    path: '/expense-view',
+    component: ExpenseView,
+  },
+  {
+    path: '/expense-type-add',
+    component: ExpenseTypeAdd,
+  },
+  {
+    path: '/expense-type-view',
+    component: ExpenseTypeView,
+  },
+  {
+    path: '/tenant-add',
+    component: TenantAdd,
+  },
+  {
+    path: '/tenant-view',
+    component: TenantView,
+  },
+  {
+    path: '/tenant-bill-view',
+    component: TenantBillAdd,
+  },
+  {
+    path: '/tenant-bill-add',
+    component: TenantBillView,
+  },
+  {
+    path: '/ten-days-tenant',
+    component: TenDays,
+  },
+  {
+    path: '/tenant-filter',
+    component: TenantFilter,
+  },
+  {
+    path: '/rent-collection-add',
+    component: RentAdd,
+  },
+  {
+    path: '/rent-collection-view',
+    component: RentView,
+  },
+  {
+    path: '/parking-add',
+    component: ParkingAdd,
+  },
+  {
+    path: '/parking-view',
+    component: ParkingView,
+  },
+  {
+    path: '/item-type-add',
+    component: ItemTypeAdd,
+  },
+  {
+    path: '/item-type-view',
+    component: ItemTypeView,
+  },
+  {
+    path: '/item-add',
+    component: ItemAdd,
+  },
+  {
+    path: '/item-view',
+    component: ItemView,
+  },
+  {
+    path: '/payment-request-add',
+    component: PaymentRequestAdd,
+  },
+  {
+    path: '/payment-request-view',
+    component: PaymentRequestView,
+  },
+  {
+    path: '/notfication-type-add',
+    component: NotificationTypeAdd,
+  },
+  {
+    path: '/notfication-type-view',
+    component: NotificationTypeView,
+  },
+  {
+    path: '/Charging-add',
+    component: ChargingAdd,
+  },
+  {
+    path: '/Charging-view',
+    component: ChargingView,
+  },
+  {
+    path: '/add-notfication',
+    component: notficationAdd,
+  },
+  {
+    path: '/Send-bulk-notfication',
+    component: bulkNotfication,
+  },
+  {
+    path: '/all-notfication',
+    component: allNotfication,
+  },
+  {
+    path: '/send-single-email',
+    component: singleEmail,
+  },
+  {
+    path: '/send-bulk-email',
+    component: BulkEmail,
+  },
+  {
+    path: '/send-emails',
+    component: sentEmails,
+  },
+  {
+    path: '/All-User',
+    component: ALlUser,
+  },
+  {
+    path: '/govt-bill-report',
+    component: GovtReport,
+  },
+  {
+    path: '/tenant-bill-report',
+    component: TenantReportPage,
+  },
+  {
+    path: '/tenant-report',
+    component: TenantReportPageTwo,
+  },
+  {
+    path: '/purchase-report',
+    component: PurchaseReport,
+  },
+  {
+    path: '/charging-report',
+    component: ChargingReport,
+  },
+  {
+    path: '/maintenance-report',
+    component: MaintenanceReport,
+  },
+  {
+    path: '/item-assignment-report',
+    component: ItemAssignmentReport,
+  },
+  {
+    path: '/complain-fromT-view',
+    component: ComplainFromTenant,
+  },
+  {
+    path: '/admin-view-assigneds',
+    component: AssignedStaff,
+  },
+  {
+    path: '/view-withdraw-requests',
+    component: ViewWithdrawRequests,
+  },
+  {
+    path: '/add-setting',
+    component: SettingAdd,
+  },
+  {
+    path: '/view-settings',
+    component: SettingView,
+  },
+  {
+    path: '/add-purchase',
+    component: PurchaseAdd,
+  },
+  {
+    path: '/view-purchase',
+    component: PurchaseView,
+  },
+  {
+    path: '/add-purchase-request',
+    component: PurchaseRequestAdd,
+  },
+  {
+    path: '/view-purchase-request',
+    component: PurchaseRequestView,
+  },
+  {
+    path: '/add-maintenance',
+    component: MaintenanceAdd,
+  },
+  {
+    path: '/view-maintenance',
+    component: MaintenanceView,
+  },
+  {
+    path: '/add-item-assignments',
+    component: ItemAssignmentAdd,
+  },
+  {
+    path: '/view-item-assignments',
+    component: ItemAssignmentView,
+  },
+  {
+    path: '/view-stocks',
+    component: StockView,
+  },
+  {
+    path: '/view-low-level-stock',
+    component: LowLevelStock,
+  },
+  {
+    path: '/add-in-out',
+    component: InOutAdd,
+  },
+  {
+    path: '/view-in-out',
+    component: ViewInOut,
+  },
+  {
+    path: '/add-mass-salary',
+    component: MassSalary,
+  },
+  {
+    path: '/add-single-salary',
+    component: SinglePayment,
+  },
+  {
+    path: '/view-all-salary',
+    component: ViewAllPayment,
+  },
+
 
 
   {
@@ -269,62 +568,6 @@ const routes =role==='tenant' ?
     component: TenantFilter, 
   },
 
-  {
-    path: '/rent-collection-add', 
-    component: RentAdd, 
-  },
-  {
-    path: '/rent-collection-view', 
-    component: RentView, 
-  },
-  {
-    path: '/parking-add', 
-    component: ParkingAdd, 
-  },
-  {
-    path: '/parking-view', 
-    component: ParkingView, 
-  },
-  {
-    path: '/item-type-add', 
-    component: ItemTypeAdd, 
-  },
-  {
-    path: '/item-type-view', 
-    component: ItemTypeView, 
-  },
-  {
-    path: '/item-add', 
-    component: ItemAdd, 
-  },
-  {
-    path: '/item-view', 
-    component: ItemView, 
-  },
-  {
-    path: '/payment-request-add', 
-    component: PaymentRequestAdd, 
-  },
-  {
-    path: '/payment-request-view', 
-    component: PaymentRequestView, 
-  },
-  {
-    path: '/notfication-type-add', 
-    component: NotificationTypeAdd, 
-  },
-  {
-    path: '/notfication-type-view', 
-    component: NotificationTypeView, 
-  },
-  {
-    path: '/Charging-add', 
-    component: ChargingAdd, 
-  },
-  {
-    path: '/Charging-view', 
-    component: ChargingView, 
-  },
 
    //notfication
    {
@@ -376,10 +619,7 @@ const routes =role==='tenant' ?
     component: ExpenseReportPage, 
   },
   
- {
-    path: '/purchase-report', 
-    component: PurchaseReport, 
-  },
+
   {
     path: '/charging-report', 
     component: ChargingReport, 
@@ -400,6 +640,8 @@ const routes =role==='tenant' ?
     path: '/item-assignment-report', 
     component: ItemAssignmentReport, 
   },
+
+  
 //complaint
 
 {
@@ -524,6 +766,9 @@ const routes =role==='tenant' ?
   path: '/view-stocks', 
   component: StockView, 
 },
-]
 
-export default routes
+];
+const routes = role === 'tenant' ? tenantRoutes : role === 'employee' ? employeeRoutes : adminRoutes;
+
+export default routes;
+

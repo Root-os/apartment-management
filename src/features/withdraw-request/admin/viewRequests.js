@@ -7,7 +7,7 @@ const WithdrawalRequests = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [tenants, setTenants] = useState([]);
-  const [employees, setEmployees] = useState([]);
+  const [users, setUsers] = useState([]);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [isFinalizeModalOpen, setIsFinalizeModalOpen] = useState(false);
@@ -67,20 +67,20 @@ const WithdrawalRequests = () => {
   }, [token]);
 
   useEffect(() => {
-    const fetchEmployees = async () => {
+    const fetchusers = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setEmployees(response.data.users);
+        setUsers(response.data.users);
       } catch (error) {
-        console.error('Error fetching employees: ', error);
+        console.error('Error fetching users: ', error);
       }
     };
 
-    fetchEmployees();
+    fetchusers();
   }, [token]);
 
   const getTenantNameById = (id) => {
@@ -252,9 +252,10 @@ const WithdrawalRequests = () => {
       key: 'employeeId',
       label: 'Employee Name',
       render: (row) => {
-        const employee = employees.find((emp) => emp.id === row.employeeId);
+        const employee = users.find((emp) => emp.id === row.employeeId);
         return employee ? employee.fname : 'Not Assigned';
-      },},
+      },
+    },
     { key: 'reason', label: 'Reason' },
     {
       key: 'terminationDate',
@@ -392,7 +393,7 @@ const WithdrawalRequests = () => {
                 className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
               >
                 <option value="">Select Employee</option>
-                {employees.map((employee) => (
+                {users.map((employee) => (
                   <option key={employee.id} value={employee.id}>
                     {employee.fname}
                   </option>

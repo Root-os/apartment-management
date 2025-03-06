@@ -22,8 +22,7 @@ const PurchaseRequestForm = () => {
     requestDate: '',
     reason: '',
     approvedBy: '',
-    vendorName: '',
-    vendorPhone: '',
+   
   });
 
   const [response, setResponse] = useState(null);
@@ -196,30 +195,6 @@ const PurchaseRequestForm = () => {
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Vendor Name</label>
-            <input
-              type="text"
-              name="vendorName"
-              value={formData.vendorName}
-              onChange={handleChange}
-              required
-              className="w-full p-2 border rounded-md shadow-sm"
-            />
-          </div>
-
-          <div>
-            <label className="block font-medium mb-1">Vendor Phone</label>
-            <input
-              type="tel"
-              name="vendorPhone"
-              value={formData.vendorPhone}
-              onChange={handleChange}
-              required
-              className="w-full p-2 border rounded-md shadow-sm"
-            />
-          </div>
-
-          <div>
             <label className="block font-medium mb-1">Status</label>
             <select
               name="status"
@@ -233,8 +208,10 @@ const PurchaseRequestForm = () => {
           </div>
 
           <div className="flex justify-end">
-            <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700">
-              disabled={loading}
+            <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
+            disabled={loading}
+            >
+              
               {loading ? 'Submitting...' : 'Add Request'}
             </button>
           </div>

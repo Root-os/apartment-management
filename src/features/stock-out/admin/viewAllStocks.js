@@ -1,143 +1,156 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import TableComponent from '../../../components/table'; 
+import TableComponent from '../../../components/table';
+import DeleteConfirmationModal from '../../../components/editDeleteModal';
+import Modal from '../../../components/Modal';
 
 const StockOutRequestPage = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false); // Modal visibility state for status update
-  const [statusData, setStatusData] = useState(null); // Data for the status update (id, current status)
-  const [status, setStatus] = useState('approved'); // Default status
-  const [approvedQuantity, setApprovedQuantity] = useState(0); // Approved quantity
-  const [approvalReason, setApprovalReason] = useState(''); // Approval reason
-  const [showDeleteModal, setShowDeleteModal] = useState(false); // Modal visibility state for delete confirmation
-  const [requestToDelete, setRequestToDelete] = useState(null); // ID of the request to delete
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editItem, setEditItem] = useState(null);
+  const [editLoading, setEditLoading] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteItem, setDeleteItem] = useState(null);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  const [message, setMessage] = useState('');
+
+  const fetchData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}stockout`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setData(response.data);
+    } catch (error) {
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Unable to get data!');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}stockout`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setData(response.data);
-      } catch (error) {
-        console.error('Error fetching data', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, []);
 
-  // Handle the deletion of a stockout request
-  const handleDelete = async () => {
+  const handleEditRequest = (item) => {
+    setEditItem(item);
+    setEditModalOpen(true);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditItem({ ...editItem, [name]: value });
+  };
+
+  const handleUpdateRequest = async (e) => {
+    e.preventDefault();
+    setEditLoading(true);
+
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.delete(`${process.env.REACT_APP_BASE_URL}stockout/${requestToDelete}`, {
+      const payload = {
+        status: editItem.status,
+        approvedQuantity: editItem.approvedQuantity,
+        approvalReason: editItem.approvalReason,
+      };
+
+      const response = await axios.put(`https://apartment.houseethiopia.com/api/stockout/approve/${editItem.id}`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (response.data.message === 'Stockout request deleted successfully') {
-        // Filter out the deleted request from the state
-        setData((prevData) => prevData.filter((request) => request.id !== requestToDelete));
-        alert('Stockout request deleted successfully');
-      } else {
-        alert('Failed to delete the request');
-      }
+      console.log('Update Response:', response.data);
+      
+      setModalOpen(true);
+      setMessageType('success');
+      setMessage(response.data.message);
+
+      // Re-fetch data after update
+      fetchData();
+      setEditModalOpen(false);
     } catch (error) {
-      console.error('Error deleting request', error);
-      alert('Error deleting request');
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage(error.response.data.message);
+
+      if (error.response) {
+        setModalOpen(true);
+        setMessageType('error');
+        setMessage(error.response.data.message);
+      } else {
+        alert('Unknown error occurred while updating the request.');
+      }
     } finally {
-      setShowDeleteModal(false); // Hide the delete modal after deletion attempt
+      setEditLoading(false);
     }
   };
 
-  // Handle the click on "Change Status" to show the modal
-  const handleChangeStatus = (row) => {
-    setStatusData(row);
-    setStatus(row.status); // Set the current status of the row
-    setApprovedQuantity(row.approvedQuantity || 0); // Set the current approved quantity
-    setApprovalReason(row.approvalReason || ''); // Set the current approval reason
-    setShowModal(true); // Show the status update modal
+  const handleDeleteRequest = (item) => {
+    setDeleteItem(item);
+    setDeleteModalOpen(true);
   };
 
-  // Handle the status update
-  const handleStatusUpdate = async () => {
+  const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}stockout/${statusData.id}`,
-        {
-          status: status,
-          approvedQuantity: approvedQuantity,
-          approvalReason: approvalReason,
+      await axios.delete(`https://apartment.houseethiopia.com/api/stockout/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      });
 
-      if (response.data.message === 'Stockout approved successfully' || response.data.message === 'Stockout rejected successfully') {
-        // Update the status of the specific request in the data array
-        setData((prevData) =>
-          prevData.map((request) =>
-            request.id === statusData.id
-              ? { ...request, status: status, approvedQuantity: approvedQuantity, approvalReason: approvalReason }
-              : request
-          )
-        );
-        alert('Stockout request status updated successfully');
-      } else {
-        alert('Failed to update status');
-      }
+      setData(prevData => prevData.filter(item => item.id !== id));
+      setModalOpen(true);
+      setMessageType('success');
+      setMessage('request deleted successfully');
     } catch (error) {
-      console.error('Error updating status', error);
-      alert('Error updating status');
-    } finally {
-      setShowModal(false); // Hide the modal after status update attempt
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage(error.response.data.message);
     }
   };
 
-  // Define the columns based on your data structure
   const columns = [
     {
       label: 'Item Name',
       key: 'Item.itemName',
       render: (row) => row.Item ? row.Item.itemName : 'N/A',
     },
-    { label: 'Requested By', key: 'User.fname', render: (row) => `${row.User.fname} ${row.User.lname}` },
+    { 
+      label: 'Requested By', 
+      key: 'User.fname', 
+      render: (row) => row.User ? `${row.User.fname} ${row.User.lname}` : 'Unknown' 
+    },
     { label: 'Requested Quantity', key: 'requestedQuantity' },
+    { label: 'Request Reason', key: 'reason' },
     { label: 'Status', key: 'status' },
-    { label: 'Reason', key: 'reason' },
+    { key: 'approvalReason', label: 'Reason' },
     {
-      label: 'Actions', // Add Actions column for the delete and change status buttons
+      label: 'Actions',
       key: 'actions',
       render: (row) => (
-        <>
-          <button
-            onClick={() => handleChangeStatus(row)}
-            className="bg-blue-500 text-white py-1 px-4 rounded mr-2"
+        <div className='flex space-x-2'>
+          <button 
+            onClick={() => handleEditRequest(row)}
+            className="px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white ml-2"
           >
-            Change Status
+            Edit
           </button>
-          <button
-            onClick={() => {
-              setRequestToDelete(row.id);
-              setShowDeleteModal(true);
-            }}
-            className="bg-red-500 text-white py-1 px-4 rounded mr-2"
+          <button 
+            onClick={() => handleDeleteRequest(row)}
+            className="px-4 py-2 rounded bg-red-500 hover:bg-red-600 text-white ml-2"
           >
             Delete
           </button>
-        </>
+        </div>
       ),
     },
   ];
@@ -148,7 +161,7 @@ const StockOutRequestPage = () => {
         <div>Loading...</div>
       ) : (
         <TableComponent
-          title="Stock Out Requests"
+          title="Requests"
           data={data}
           columns={columns}
           showSearch={true}
@@ -156,79 +169,79 @@ const StockOutRequestPage = () => {
         />
       )}
 
-      {/* Modal for status update */}
-      {showModal && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-98">
-            <h3 className="text-xl font-semibold mb-4">Change Status of Stockout Request</h3>
-            <div className="mb-4">
-              <label className="block text-sm font-semibold mb-2">Status</label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded"
-              >
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-              </select>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-semibold mb-2">Approved Quantity</label>
-              <input
-                type="number"
-                value={approvedQuantity}
-                onChange={(e) => setApprovedQuantity(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-semibold mb-2">Approval Reason</label>
-              <textarea
-                value={approvalReason}
-                onChange={(e) => setApprovalReason(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <button
-                onClick={handleStatusUpdate}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-              >
-                Update Status
-              </button>
-              <button
-                onClick={() => setShowModal(false)}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-            </div>
+      {editModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 mt-10 ">
+          <div className="bg-base-100 px-8 shadow-md w-1/3 border border-gray-300 rounded">
+            <h2 className="text-2xl mb-4">Edit Stockout Request</h2>
+            <form onSubmit={handleUpdateRequest}>
+              <div className="mb-4">
+                <label className="block text-white-700 font-semibold mb-2">Status</label>
+                <select
+                  name="status"
+                  value={editItem.status}
+                  onChange={handleInputChange}
+                  className="w-full bg-base-100 p-2 border border-gray-300 rounded"
+                >
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-white-700 font-semibold mb-2">Approved Quantity</label>
+                <input
+                  type="number"
+                  name="approvedQuantity"
+                  value={editItem.approvedQuantity}
+                  onChange={handleInputChange}
+                  className="w-full bg-base-100 p-2 border border-gray-300 rounded"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-white-700 font-semibold mb-2">Approval Reason</label>
+                <input
+                  type="text"
+                  name="approvalReason"
+                  value={editItem.approvalReason}
+                  onChange={handleInputChange}
+                  className="w-full bg-base-100 p-2 border border-gray-300 rounded"
+                />
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setEditModalOpen(false)}
+                  className="px-4 py-2 mr-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  disabled={editLoading}
+                >
+                  {editLoading ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
- 
-      {/* Modal for delete confirmation */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-98">
-            <h3 className="text-xl font-semibold mb-4">Are you sure you want to delete this request?</h3>
-            <div className="flex justify-end space-x-2">
-              <button
-                onClick={handleDelete}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-              >
-                Delete
-              </button>
-              <button
-                onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onDelete={handleDelete}
+        data={deleteItem}
+      />
+       <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
+      />
     </>
   );
 };

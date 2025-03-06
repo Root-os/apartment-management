@@ -8,7 +8,8 @@ const ItemAssignmentsPage = () => {
   const [itemAssignments, setItemAssignments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [items, setItems] = useState([]); 
+  const [items, setItems] = useState([]);
+  const [assignedUsers, setAssignedUsers] = useState([]);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
@@ -28,7 +29,6 @@ const ItemAssignmentsPage = () => {
   const [deleteItem, setDeleteItem] = useState(null); 
 
   useEffect(() => { 
-    // Fetching items
     axios
     .get('https://apartment.houseethiopia.com/api/items')
     .then((response) => {
@@ -52,10 +52,34 @@ const ItemAssignmentsPage = () => {
       }
     };
 
+    const fetchAssignedUsers = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('Token not found');
+        }
+        
+        const response = await axios.get('https://apartment.houseethiopia.com/api/auth/users', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        });
+
+        if (response.data.success && Array.isArray(response.data.users)) {
+          setAssignedUsers(response.data.users);
+        } else {
+          throw new Error('API response is not an array of users');
+        }
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        setError('Unable to get assigned users');
+      }
+    };
+
     fetchItemAssignments();
+    fetchAssignedUsers();
   }, []);
 
-  // Open modal and populate the form with data to edit
   const handleSubmit = (assignment) => {
     setFormData({
       id: assignment.id, 
@@ -71,30 +95,48 @@ const ItemAssignmentsPage = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    setLoading(true)
+    setLoading(true);
+
+    // Create a new object without the `id` field
+    const { id, ...payload } = formData;
+
+    // Validate formData before sending the request
+    if (!formData.itemId || !formData.assignedId || !formData.assignType || !formData.assignDate || !formData.amount || !formData.description) {
+      setMessageType('error');
+      setMessage('Please fill all required fields');
+      setModalOpen(true);
+      setLoading(false);
+      return;
+    }
     
     axios
-      .put(`${process.env.REACT_APP_BASE_URL}item-assignments/${formData.id}`, formData)
+      .put(`${process.env.REACT_APP_BASE_URL}item-assignments/${id}`, payload)
       .then(() => {
         setItemAssignments((prevAssignments) => 
           prevAssignments.map((assignment) => 
-            assignment.id === formData.id ? { ...assignment, ...formData } : assignment
+            assignment.id === id ? { ...assignment, ...formData } : assignment
           )
         );
         setOpenModal(false); 
         setModalOpen(true);
         setMessageType('success');
-        setMessage('Item assignment updated successfully!')
+        setMessage('Item assignment updated successfully!');
       })
       .catch((error) => {
         console.error('Error updating assignment:', error);
+
+        // Log the response error details for debugging
+        if (error.response) {
+          console.log('Error response data:', error.response.data);
+        }
+
         setModalOpen(true);
         setMessageType('error');
-        setMessage('Unable to update Item assignment!')
-      }).finally(() => {
+        setMessage('Unable to update Item assignment!');
+      })
+      .finally(() => {
         setLoading(false);
       });
-      
   };
 
   const handleDelete = (id) => {
@@ -105,13 +147,13 @@ const ItemAssignmentsPage = () => {
         setOpenDeleteModal(false); 
         setModalOpen(true);
         setMessageType('success');
-        setMessage('Item assignment deleted successfully!')
+        setMessage('Item assignment deleted successfully!');
       })
       .catch((error) => {
         console.error('Error deleting assignment:', error);
         setModalOpen(true);
         setMessageType('error');
-        setMessage('Unable to delete Item assignment!')
+        setMessage('Unable to delete Item assignment!');
       });
   };
 
@@ -213,6 +255,26 @@ const ItemAssignmentsPage = () => {
               </div>
 
               <div className="mb-4">
+                <label htmlFor="assignedId" className="block text-sm font-medium text-white-700">
+                  Assigned User
+                </label>
+                <select
+                  id="assignedId"
+                  name="assignedId"
+                  value={formData.assignedId}
+                  onChange={handleChange}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Assigned User</option>
+                  {assignedUsers.map((user) => (
+                    <option key={user.id} value={user.id}>
+                      {user.fname} {user.lname}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-4">
                 <label htmlFor="assignType" className="block text-sm font-medium text-white-700">
                   Assign Type
                 </label>
@@ -290,15 +352,13 @@ const ItemAssignmentsPage = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal
         isOpen={openDeleteModal}
         onClose={() => setOpenDeleteModal(false)}
-        onDelete={handleDelete}
-        data={deleteItem} // Pass the item to delete
+        onDelete={() => handleDelete(deleteItem.id)}
+        data={deleteItem}
       />
 
-      {/* success and error message */}
       <Modal
        isOpen={modalOpen}
        onClose={()=> setModalOpen(false)}
