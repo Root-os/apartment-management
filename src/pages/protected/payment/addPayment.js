@@ -7,7 +7,7 @@ function AddPayments(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Add Payment Details "}))
+        dispatch(setPageTitle({ title : " "}))
       }, [])
 
 

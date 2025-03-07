@@ -6,11 +6,13 @@ import Modal from '../../components/Modal';
 const PaymentAdd = () => {
   // State variables for form inputs
   const [vendorId, setVendorId] = useState('');
+  const [itemId, setItemId] = useState('');
   const [price, setPrice] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [status, setStatus] = useState('');
   const [paymentDate, setPaymentDate] = useState('');
   const [vendors, setVendors] = useState([]);
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -27,6 +29,16 @@ const PaymentAdd = () => {
       .catch((error) => {
         console.error('There was an error fetching the vendors:', error);
       });
+    
+    // Fetch items
+    axios
+      .get(`${process.env.REACT_APP_BASE_URL}items`)
+      .then((response) => {
+        setItems(response.data);
+      })
+      .catch((error) => {
+        console.error('There was an error fetching the items:', error);
+      });
   }, []);
 
   const handleSubmit = async (e) => {
@@ -37,7 +49,7 @@ const PaymentAdd = () => {
     setError('');
   
     // Check if all fields are filled
-    if (!vendorId || !price || !paymentMethod || !status || !paymentDate) {
+    if (!vendorId || !itemId || !price || !paymentMethod || !status || !paymentDate) {
       setError('All fields are required');
       return;
     }
@@ -48,6 +60,7 @@ const PaymentAdd = () => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}payments`, {
         vendorId,
+        itemId,
         price,
         paymentMethod,
         status,
@@ -55,6 +68,7 @@ const PaymentAdd = () => {
       });
   
       setVendorId('');
+      setItemId('');
       setPrice('');
       setPaymentMethod('');
       setStatus('');
@@ -113,6 +127,28 @@ const PaymentAdd = () => {
               {vendors.map((vendor) => (
                 <option key={vendor.id} value={vendor.id}>
                   {vendor.fname} {vendor.lname}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="itemId" className="block text-sm font-medium text-white-700">
+              Item
+            </label>
+            <select
+              id="itemId"
+              value={itemId}
+              onChange={(e) => setItemId(e.target.value)}
+              className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
+              required
+            >
+              <option value="" disabled>
+                Select Item
+              </option>
+              {items.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.itemName}
                 </option>
               ))}
             </select>
