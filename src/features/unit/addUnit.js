@@ -73,10 +73,8 @@ const AddFloorUnit = () => {
       unitNumber,
       size: parseFloat(size),
       status,
-      availableEquipments, // Already an array
-      problems, // Already an array
-      rentedDate,
-      vacatedDate,
+      availableEquipments, 
+      problems, 
       floorId: parseInt(floorId),
     };
 
@@ -227,32 +225,7 @@ const AddFloorUnit = () => {
             ))}
           </ul>
         </div>
-
-        {/* Vacated Date */}
-
-<div className="flex space-x-4">
-  <div>
-    <label className="block text-sm font-semibold mb-2">Vacated Date</label>
-    <input
-      type="date"
-      value={vacatedDate}
-      onChange={(e) => setVacatedDate(e.target.value)}
-      className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-    />
-  </div>
-  <div>
-    <label className="block text-sm font-semibold mb-2">Rented Date</label>
-    <input
-      type="date"
-      value={rentedDate}
-      onChange={(e) => setRentedDate(e.target.value)}
-      className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-    />
-  </div>
-</div>
-
-
-        {/* Floor ID */}
+        
         <div>
           <label className="block text-sm font-semibold mb-2">Floor</label>
           <select

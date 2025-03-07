@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../../components/table';
 import Modal from '../../../components/Modal';
+import LoadingComponent from '../../../components/loading';
 
 const WithdrawalRequests = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  // const [pageLoading, setPageLoading] = useState(true);
   const [tenants, setTenants] = useState([]);
   const [users, setUsers] = useState([]);
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false);
@@ -32,6 +34,7 @@ const WithdrawalRequests = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}withdrawal-request/all`, {
           headers: {
@@ -329,7 +332,7 @@ const WithdrawalRequests = () => {
   return (
     <div className="p-6">
       {loading ? (
-        <p>Loading...</p>
+        <LoadingComponent/>
       ) : (
         <TableComponent
           title="Withdrawal Requests"

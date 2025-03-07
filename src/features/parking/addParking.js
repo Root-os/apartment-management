@@ -34,15 +34,20 @@ const AddParking = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setLoading(true); 
+    setLoading(true);
+
+    // Convert the times to UTC format
+    const timeInUTC = timeIn ? new Date(timeIn).toISOString() : "";
+    // const timeOutUTC = timeOut ? new Date(timeOut).toISOString() : ""; // You can handle the timeOut similarly if needed
+
     const parkingData = {
       carPlate,
       carName,
       driverName,
       driverPhone,
       tenantId,
-      timeIn,
-      timeOut,
+      timeIn: timeInUTC, // UTC formatted time
+      // timeOut: timeOutUTC, // UTC formatted time (if you include it)
       isTenant,
       status,
       parkingSpaceId,
@@ -150,18 +155,6 @@ const AddParking = () => {
               type="datetime-local"
               value={timeIn}
               onChange={(e) => setTimeIn(e.target.value)}
-              className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              required
-            />
-          </div>
-
-          {/* Time Out */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Time Out</label>
-            <input
-              type="datetime-local"
-              value={timeOut}
-              onChange={(e) => setTimeOut(e.target.value)}
               className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               required
             />

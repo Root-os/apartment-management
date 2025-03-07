@@ -14,8 +14,10 @@ const AddGovBillPayment = () => {
   const [paymentMethod, setPaymentMethod] = useState('Bank Transfer');
   const [description, setDescription] = useState('');
 
-  // States for loading, success, and error
   const [loading, setLoading] = useState(false);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,7 +30,10 @@ const AddGovBillPayment = () => {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-type`);
         setBillTypes(response.data); 
       } catch (err) {
-        setError('Failed to fetch bill types. Please try again.');
+        
+        setModalOpen(true);
+      setMessageType('error');
+      setMessage(`Could't get the data. Please try again.`);
       }
     };
 
@@ -56,14 +61,16 @@ const AddGovBillPayment = () => {
     try {
       await axios.post(`${process.env.REACT_APP_BASE_URL}bill-payments`, payload);
       setLoading(false);
+
+      setModalOpen(true);
+      setMessageType('success');  
       setMessage('Bill payment added successfully!');
-      setIsSuccess(true);
-      setIsModalOpen(true);
     } catch (err) {
       setLoading(false);
-      setError('Error adding bill payment. Please try again.');
-      setIsSuccess(false);
-      setIsModalOpen(true);
+
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Failed to add bill payment');
     }
   };
 
@@ -82,12 +89,12 @@ const AddGovBillPayment = () => {
       <TitleCard title="Add Bill Payments for Government" topMargin={'mt-4'}>
         <form onSubmit={handleSubmit} className="space-y-4 ">
           <div>
-            <label htmlFor="billTypeId" className="block text-sm font-medium text-white-700 dark:text-gray-300">Bill Type</label>
+            <label htmlFor="billTypeId" className="block text-sm font-medium text-white-700 dark:text-white-700">Bill Type</label>
             <select
               id="billTypeId"
               value={billTypeId}
               onChange={(e) => setBillTypeId(e.target.value)}
-              className="bg-base-100 dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
               <option value="" disabled>Select Bill Type</option>
@@ -100,50 +107,50 @@ const AddGovBillPayment = () => {
           </div>
 
           <div>
-            <label htmlFor="amount" className="block text-sm font-medium text-white-700 dark:text-gray-300">Amount</label>
+            <label htmlFor="amount" className="block text-sm font-medium text-white-700 ">Amount</label>
             <input
               type="number"
               id="amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="bg-base-100 dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
 
           <div className="flex space-x-4">
             <div className="w-full">
-              <label htmlFor="startDate" className=" dark:text-gray-300 block text-sm font-medium text-gray-700">Start Date</label>
+              <label htmlFor="startDate" className="block text-sm font-medium text-white-700">Start Date</label>
               <input
                 type="date"
                 id="startDate"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
 
             <div className="w-full">
-              <label htmlFor="endDate" className="dark:text-gray-300 block text-sm font-medium text-gray-700">End Date</label>
+              <label htmlFor="endDate" className=" block text-sm font-medium text-white-700">End Date</label>
               <input
                 type="date"
                 id="endDate"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label htmlFor="description" className="dark:text-gray-300 block text-sm font-medium text-gray-700">Description</label>
+            <label htmlFor="description" className=" block text-sm font-medium text-white-700">Description</label>
             <textarea
               id="description"
               value={description}
               onChange={(e) => validateDescription(e.target.value)}
-              className="dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows="4"
               required
             />
@@ -151,12 +158,12 @@ const AddGovBillPayment = () => {
 
           <div className="flex space-x-4">
             <div className="w-full">
-              <label htmlFor="status" className="dark:text-gray-300 block text-sm font-medium text-gray-700">Status</label>
+              <label htmlFor="status" className="dark:text-gray-300 block text-sm font-medium text-white-700">Status</label>
               <select
                 id="status"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="pending">Pending</option>
                 <option value="paid">Paid</option>
@@ -164,12 +171,12 @@ const AddGovBillPayment = () => {
             </div>
 
             <div className="w-full">
-              <label htmlFor="paymentMethod" className="dark:text-gray-300 block text-sm font-medium text-gray-700">Payment Method</label>
+              <label htmlFor="paymentMethod" className=" block text-sm font-medium text-white-700">Payment Method</label>
               <select
                 id="paymentMethod"
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
-                className="dark:bg-gray-900 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="Bank Transfer">Bank Transfer</option>
                 <option value="Cash">Cash</option>
@@ -188,15 +195,12 @@ const AddGovBillPayment = () => {
         </form>
       </TitleCard>
 
-      {/* Modal for displaying success or error message */}
-      {isModalOpen && (
-        <Modal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          type={isSuccess ? "success" : "error"}
-          message={isSuccess ? message : error}
-        />
-      )}
+      <Modal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        messageType={messageType} 
+        message={message} 
+      />
     </>
   );
 };

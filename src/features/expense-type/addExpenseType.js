@@ -16,6 +16,7 @@ const AddExpense = () => {
 
   // Handle form submit
   const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault(); 
 
     // Simple validation
@@ -24,7 +25,7 @@ const AddExpense = () => {
       return;
     }
 
-    setLoading(true);
+    
     setError(null); 
     setSuccessMessage(null); 
 

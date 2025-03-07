@@ -91,10 +91,10 @@ const TableComponent = ({
         <div className="flex items-center space-x-2">
           {onAdd && (
             <button 
-              className="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm"
+              className="flex items-center space-x-1 px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm transition-all duration-300"
               onClick={onAdd}
             >
-              <FaPlus /> Add
+              <FaPlus className="text-lg" /> <span>Add</span>
             </button>
           )}
           {exportable && (
@@ -102,26 +102,28 @@ const TableComponent = ({
               <CSVLink
                 data={data}
                 filename={`${title}.csv`}
-                className="px-2 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm"
+                className="flex items-center space-x-1 px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm transition-all duration-300"
               >
-                <FaDownload /> Export CSV
+                <FaDownload className="text-lg" /> <span>Export CSV</span>
               </CSVLink>
               <button
-                className="px-2 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm"
+                className="flex items-center space-x-1 px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm transition-all duration-300"
                 onClick={handleExportPDF}
               >
-                <FaDownload /> Export PDF
+                <FaDownload className="text-lg" /> <span>Export PDF</span>
               </button>
               <button
-                className="px-2 py-1 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 text-sm"
+                className="flex items-center space-x-1 px-3 py-1 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 text-sm transition-all duration-300"
                 onClick={handlePrint}
               >
-                <FaPrint /> Print
+                <FaPrint className="text-lg" /> <span>Print</span>
               </button>
             </>
           )}
         </div>
       </div>
+    
+  
 
       <div className="flex justify-between items-center mb-4">  
       {showSearch && (

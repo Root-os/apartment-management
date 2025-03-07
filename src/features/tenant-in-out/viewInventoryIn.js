@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import DeleteConfirmationModal from '../../components/editDeleteModal'
 import Modal from '../../components/Modal'
+import LoadingComponent from '../../components/loading';
 
 const TenantInventoryPage = () => {
   const [inventoryData, setInventoryData] = useState([]);
@@ -21,6 +22,7 @@ const TenantInventoryPage = () => {
 
   useEffect(() => {
     const fetchInventoryData = async () => {
+      setLoading(true);
       const token = localStorage.getItem('token');
       try {
         const response = await axios.get('https://apartment.houseethiopia.com/api/tenant-inventory', {
@@ -57,7 +59,9 @@ const TenantInventoryPage = () => {
           setInventoryData(formattedData);
         }
       } catch (err) {
-        setError("Failed to fetch inventory data.");
+        setModalOpen(true);
+        setmessageType('error');
+        setMessage('Unable to get the data!');
       } finally {
         setLoading(false);
       }
@@ -199,16 +203,17 @@ const TenantInventoryPage = () => {
       )},
   ];
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // if (loading) {
+  //   return <LoadingComponent/>
+  // }
 
   if (error) {
     return <div>{error}</div>;
   }
 
   return (
-    <div className="p-6">
+    <div>
+      {loading ? (<LoadingComponent/>):(
       <TableComponent
         title="Tenant Inventory List"
         data={inventoryData}
@@ -216,7 +221,7 @@ const TenantInventoryPage = () => {
         exportable={true}
         showSearch={true}
       />
-
+    )}
       {/* Edit Modal */}
       {editModalVisible && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

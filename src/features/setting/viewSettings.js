@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import TableComponent from '../../components/table'
+import TableComponent from '../../components/table';
+import LoadingComponent from '../../components/loading';
 
 const CurrencySettingsPage = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
 
   // Fetch data from the API
   useEffect(() => {
@@ -40,19 +42,18 @@ const CurrencySettingsPage = () => {
     },
   ];
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <LoadingComponent/>;
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="p-6 bg-base-100 rounded-lg shadow-md w-full">
-      <h2 className="text-2xl font-bold mb-4">Currency Settings</h2>
+    <>
       <TableComponent
-        title="Currency Settings"
+        title="Settings"
         data={data}
         columns={columns}
         
       />
-    </div>
+    </>
   );
 };
 

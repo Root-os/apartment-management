@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../../components/table';
 import DeleteConfirmationModal from '../../../components/editDeleteModal';
 import Modal from '../../../components/Modal';
+import LoadingComponent from '../../../components/loading';
 
 const StockOutRequestPage = () => {
   const [data, setData] = useState([]);
@@ -158,7 +159,7 @@ const StockOutRequestPage = () => {
   return (
     <>
       {loading ? (
-        <div>Loading...</div>
+        <LoadingComponent/>
       ) : (
         <TableComponent
           title="Requests"

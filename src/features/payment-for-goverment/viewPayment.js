@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
-import Modal from 'react-modal';
+import LoadingComponent from '../../components/loading';
+import Modal from '../../components/Modal';
+
 
 const GovBillPaymentPage = () => {
   const [billPayments, setBillPayments] = useState([]);
@@ -22,6 +24,9 @@ const GovBillPaymentPage = () => {
     description: '',
   });
   const [filterStatus, setFilterStatus] = useState('');
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  const [message, setMessage] = useState('');
 
   useEffect(() => {
     const fetchBillPayments = async () => {
@@ -29,7 +34,10 @@ const GovBillPaymentPage = () => {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-payments`);
         setBillPayments(response.data);
       } catch (err) {
-        setError('An error occurred while fetching the bill payments.');
+
+        setModalOpen(true);
+        setMessageType('error');
+        setMessage('Unable to get bill payments');
       } finally {
         setLoading(false);
       }
@@ -40,7 +48,10 @@ const GovBillPaymentPage = () => {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-type`);
         setBillTypes(response.data);
       } catch (err) {
-        setError('An error occurred while fetching the bill types.');
+       
+        setModalOpen(true);
+        setMessageType('error');
+        setMessage('Unable to get bill types');
       }
     };
 
@@ -69,9 +80,14 @@ const GovBillPaymentPage = () => {
       setBillPayments(billPayments.map((payment) => (payment.id === selectedPayment.id ? { ...payment, ...editData } : payment)));
       setIsEditModalOpen(false);
 
+      setModalOpen(true);
+      setMessageType('success');  
+      setMessage('Data updated successfully');
     } catch (err) {
-      setError('An error occurred while updating the bill payment.');
-    }finally {
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Failed to update the data');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -86,8 +102,13 @@ const GovBillPaymentPage = () => {
       await axios.delete(`${process.env.REACT_APP_BASE_URL}bill-payments/${selectedPayment.id}`);
       setBillPayments(billPayments.filter((payment) => payment.id !== selectedPayment.id));
       setIsDeleteModalOpen(false);
+      setModalOpen(true);
+      setMessageType('success');  
+      setMessage('Data deleted successfully');
     } catch (err) {
-      setError('An error occurred while deleting the bill payment.');
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Failed to delete the data');
     }
   };
 
@@ -97,19 +118,24 @@ const GovBillPaymentPage = () => {
 
     if (status) {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-payments/by-status/${status}`);
+        const response = await axios.get(`${process.env.REACT_APP.BASE_URL}bill-payments/by-status/${status}`);
         setBillPayments(response.data);
       } catch (err) {
-        setError('An error occurred while filtering the bill payments.');
+       
+        setModalOpen(true);
+        setMessageType('error');
+        setMessage('Failed to get filterds');
       }
     } else {
-      // Fetch all bill payments if no status is selected
       const fetchBillPayments = async () => {
         try {
-          const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-payments`);
+          const response = await axios.get(`${process.env.REACT_APP.BASE_URL}bill-payments`);
           setBillPayments(response.data);
         } catch (err) {
-          setError('An error occurred while fetching the bill payments.');
+          
+          setModalOpen(true);
+          setMessageType('error');
+          setMessage('unable to get bill payment data');
         } finally {
           setLoading(false);
         }
@@ -134,7 +160,7 @@ const GovBillPaymentPage = () => {
         <div className="flex space-x-2">
           <button
             onClick={() => handleEditClick(payment)}
-            className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-700"
+            className="bg-blue-500 text-white py-1 px-4 rounded mr-2"
           >
             Edit
           </button>
@@ -145,25 +171,19 @@ const GovBillPaymentPage = () => {
             Delete
           </button>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-center mb-6">Bill Payments</h1>
-      {error && (
-        <div className="p-4 mb-6 bg-red-100 text-red-700 border border-red-400 rounded-md">
-          {error}
-        </div>
-      )}
+    <div>
       <div className="mb-4">
-        <label htmlFor="filterStatus" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Status</label>
+        <label htmlFor="filterStatus" className="block text-md font-medium text-white-700 ">Filter by Status</label>
         <select
           id="filterStatus"
           value={filterStatus}
           onChange={handleFilterChange}
-          className=" mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className=" mt-1 px-4 py-2 w-full bg-base-100 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">Select Status</option>
           <option value="pending">Pending</option>
@@ -171,9 +191,7 @@ const GovBillPaymentPage = () => {
         </select>
       </div>
       {loading ? (
-        <div className="text-center">
-          <p>Loading...</p>
-        </div>
+        <LoadingComponent />
       ) : (
         <TableComponent
           title="Bill Payments"
@@ -187,12 +205,7 @@ const GovBillPaymentPage = () => {
 
       {/* Edit Modal */}
       {isEditModalOpen && (
-        <Modal
-          isOpen={isEditModalOpen}
-          onRequestClose={() => setIsEditModalOpen(false)}
-          contentLabel="Edit Bill Payment"
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-        >
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-base-100 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl mb-4">Edit Bill Payment</h2>
             <div className="mb-4">
@@ -200,7 +213,7 @@ const GovBillPaymentPage = () => {
               <select
                 value={editData.billTypeId}
                 onChange={(e) => setEditData({ ...editData, billTypeId: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2 border border-gray-300 rounded bg-base-100"
               >
                 {billTypes.map((billType) => (
                   <option key={billType.id} value={billType.id}>
@@ -215,7 +228,7 @@ const GovBillPaymentPage = () => {
                 type="number"
                 value={editData.amount}
                 onChange={(e) => setEditData({ ...editData, amount: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2 border bg-base-100 border-gray-300 rounded"
               />
             </div>
             <div className="mb-4">
@@ -224,7 +237,7 @@ const GovBillPaymentPage = () => {
                 type="date"
                 value={editData.startDate}
                 onChange={(e) => setEditData({ ...editData, startDate: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2 border bg-base-100 border-gray-300 rounded"
               />
             </div>
             <div className="mb-4">
@@ -233,7 +246,7 @@ const GovBillPaymentPage = () => {
                 type="date"
                 value={editData.endDate}
                 onChange={(e) => setEditData({ ...editData, endDate: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2 border bg-base-100 border-gray-300 rounded"
               />
             </div>
             <div className="mb-4">
@@ -241,7 +254,7 @@ const GovBillPaymentPage = () => {
               <select
                 value={editData.status}
                 onChange={(e) => setEditData({ ...editData, status: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2 border bg-base-100 border-gray-300 rounded"
               >
                 <option value="Pending">Pending</option>
                 <option value="Paid">Paid</option>
@@ -254,7 +267,7 @@ const GovBillPaymentPage = () => {
                 type="text"
                 value={editData.paymentMethod}
                 onChange={(e) => setEditData({ ...editData, paymentMethod: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2 border bg-base-100 border-gray-300 rounded"
               />
             </div>
             <div className="mb-4">
@@ -262,10 +275,10 @@ const GovBillPaymentPage = () => {
               <textarea
                 value={editData.description}
                 onChange={(e) => setEditData({ ...editData, description: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full p-2 border bg-base-100 border-gray-300 rounded"
               />
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-end space-x-2">
               <button
                 onClick={() => setIsEditModalOpen(false)}
                 className="bg-gray-400 text-white px-4 py-2 rounded"
@@ -277,24 +290,19 @@ const GovBillPaymentPage = () => {
                 className="bg-blue-500 text-white px-4 py-2 rounded"
                 disabled={isLoading}
               >
-                {isLoading ? 'saving...':'Save'}
+                {isLoading ? 'Saving...' : 'Save'}
               </button>
             </div>
           </div>
-        </Modal>
+        </div>
       )}
 
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
-        <Modal
-          isOpen={isDeleteModalOpen}
-          onRequestClose={() => setIsDeleteModalOpen(false)}
-          contentLabel="Delete Confirmation"
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-        >
-          <div className="bg-white p-6 rounded-lg w-full max-w-lg mx-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-base-100 p-6 rounded-lg w-full max-w-lg mx-4">
             <h2 className="text-xl mb-4">Are you sure you want to delete this bill payment?</h2>
-            <div className="flex justify-between">
+            <div className="flex justify-end space-x-2">
               <button
                 onClick={() => setIsDeleteModalOpen(false)}
                 className="bg-gray-400 text-white px-4 py-2 rounded"
@@ -309,8 +317,14 @@ const GovBillPaymentPage = () => {
               </button>
             </div>
           </div>
-        </Modal>
+        </div>
       )}
+      <Modal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        messageType={messageType} 
+        message={message} 
+      />
     </div>
   );
 };

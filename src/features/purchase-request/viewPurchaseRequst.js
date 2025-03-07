@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../components/table'; 
 import DeleteConfirmationModal from '../../components/editDeleteModal'
 import Modal from '../../components/Modal'
+import LoadingComponent from '../../components/loading';
 
 const PurchasesRequestPage = () => {
   const [data, setData] = useState([]);
@@ -248,16 +249,13 @@ const PurchasesRequestPage = () => {
     }
   ];
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   if (error) {
     return <div>{error}</div>;
   }
 
   return (
-    <div className="p-6">
+    <div>
+      {loading ? (<LoadingComponent/>):(
       <TableComponent
         title="Purchase Requests"
         data={data}
@@ -266,7 +264,7 @@ const PurchasesRequestPage = () => {
         showSearch={true}
         exportable={true}
       />
-
+    )}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-base-100 p-6 rounded-md w-1/3 max-h-[80vh] overflow-y-auto mt-12">

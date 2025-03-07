@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const ExpensePage = () => {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null); 
   const [showModal, setShowModal] = useState(false); 
   const [selectedExpense, setSelectedExpense] = useState(null); 
@@ -51,8 +53,10 @@ const ExpensePage = () => {
 
   // Handle Edit form submit (PUT request)
   const handleSubmitEdit = async (e) => {
+    setIsLoading(true);
     e.preventDefault();
     try {
+
       await axios.put(`${process.env.REACT_APP_BASE_URL}expense-type/${selectedExpense.id}`, {
         name: expenseName,
         description: expenseDescription,
@@ -62,14 +66,17 @@ const ExpensePage = () => {
           expense.id === selectedExpense.id ? { ...expense, name: expenseName, description: expenseDescription } : expense
         )
       );
+      setIsLoading(false);
       closeModal();
       setModalOpen(true);
       setMessageType('success');
       setMessage('Expense updated successfully');
+      
     } catch (err) {
-     setModalOpen(true);
-     setMessageType('error');
-     setMessage('An error occurred while updating the expense.');
+      setIsLoading(false);
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('An error occurred while updating the expense.');
     }
   };
 
@@ -130,12 +137,12 @@ const ExpensePage = () => {
   const handleAddClick = () => {window.location.href = '/app/expense-add'};
 
   return (
-    <div className="p-6">
+    <div>
       {loading ? (
-        <div className="text-center">Loading...</div>
+        <LoadingComponent/>
       ) : (
         <TableComponent
-        title="Expense Types"
+        title="Types"
         data={expenses}
         columns={columns}
         rowsPerPageOptions={[5, 10, 15]}
@@ -187,8 +194,9 @@ const ExpensePage = () => {
                 <button
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-1 rounded-md"
+                  disabled={isLoading}
                 >
-                  Save Changes
+                  {isLoading ? 'saving...':'Save Changes'}
                 </button>
               </div>
             </form>
@@ -199,9 +207,9 @@ const ExpensePage = () => {
       {/* Delete Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-base-300 p-6 rounded-lg w-96">
+          <div className="bg-base-300 p-6 rounded-lg w-98">
             <h2 className="text-xl mb-4">Are you sure you want to delete this expense?</h2>
-            <div className="flex justify-between">
+            <div className="flex justify-end space-x-2">
               <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
               <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
             </div>

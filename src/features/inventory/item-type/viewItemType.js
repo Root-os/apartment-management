@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../../components/table';
 import Modal from '../../../components/Modal'
+import LoadingComponent from '../../../components/loading';
 
 const ItemTypesPage = () => {
   const [itemTypes, setItemTypes] = useState([]);
@@ -11,18 +12,22 @@ const ItemTypesPage = () => {
   const [categoryName, setCategoryName] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
 
   useEffect(() => {
+    setPageLoading(true);
     axios
       .get(`${process.env.REACT_APP_BASE_URL}item-types`)
       .then((response) => {
         setItemTypes(response.data);
+        setPageLoading(false);
       })
       .catch((error) => {
         console.error('There was an error fetching the item types:', error);
+        setPageLoading(false);
       });
   }, []);
 
@@ -117,14 +122,17 @@ const ItemTypesPage = () => {
 
   return (
     <>
+        {pageLoading ? (
+        <LoadingComponent/>
+      ) : (
       <TableComponent
-        title="Item Types List"
+        title="Item Types"
         data={itemTypes}
         columns={columns}
         exportable={true}
         showSearch={true}
       />
-
+      )}
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -133,7 +141,7 @@ const ItemTypesPage = () => {
             <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
               <div className="mb-4">
                 <label htmlFor="categoryName" className="block text-sm font-medium text-white-700">
-                  Type Name
+                  Category Name
                 </label>
                 <input
                   type="text"

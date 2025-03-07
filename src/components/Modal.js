@@ -2,11 +2,12 @@ import React from 'react';
 
 const Modal = ({ isOpen, onClose, messageType, message, actions = [] }) => {
   if (!isOpen) return null;
+
   const modalStyles = messageType === 'success' 
-    ? 'bg-green-500 text-green-600 border-green-600 dark:text-green-200'
+    ? 'bg-green-500 text-green-800 border-green-600 dark:text-green-200'
     : messageType === 'warning'
-    ? 'bg-yellow-200 text-black border-yellow-500 dark:text-yellow-200'
-    : 'bg-red-500 text-white border-red-600 dark:text-red-200';
+    ? 'bg-yellow-200 text-yellow-800 border-yellow-500 dark:text-yellow-200'
+    : 'bg-red-500 text-red-800 border-red-600 dark:text-red-200';
 
   return (
     <div className="fixed inset-0 flex justify-center items-center z-50 bg-gray-900 bg-opacity-50">

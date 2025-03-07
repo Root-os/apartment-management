@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const ComplaintsPage = () => {
   const [complaints, setComplaints] = useState([]);
@@ -15,9 +16,15 @@ const ComplaintsPage = () => {
   const [employeeId, setEmployeeId] = useState('');
   const [status, setStatus] = useState('');
   const [employees, setEmployees] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
 
   useEffect(() => {
     const fetchComplaints = async () => {
+     
       try {
         const token = localStorage.getItem('token'); 
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}complaints/all`, {
@@ -29,6 +36,8 @@ const ComplaintsPage = () => {
       } catch (error) {
         setError('There was an error fetching the complaints data!');
         console.error('There was an error fetching the complaints data!', error);
+      }finally { 
+        setPageLoading(false);
       }
     };
 
@@ -69,9 +78,17 @@ const ComplaintsPage = () => {
       setComplaints((prevComplaints) => prevComplaints.filter((complaint) => complaint.id !== complaintToDelete.id));
       setIsDeleteModalOpen(false);
       setComplaintToDelete(null);
+
+      setModalOpen(true);
+      setMessageType('success');
+      setMessage('Complaint deleted successfully');
     } catch (error) {
       setError('There was an error deleting the complaint!');
       console.error('There was an error deleting the complaint!', error);
+
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Unable to delete, please try again');
     }
   };
 
@@ -83,6 +100,7 @@ const ComplaintsPage = () => {
 
   // Handle assign request
   const handleAssign = async () => {
+    setLoading(true);
     try {
       const token = localStorage.getItem('token'); // Get admin token from localStorage
       const response = await axios.put(`${process.env.REACT_APP_BASE_URL}complaints/assign`, {
@@ -96,12 +114,21 @@ const ComplaintsPage = () => {
       setComplaints((prevComplaints) => prevComplaints.map((complaint) =>
         complaint.id === complaintToAssign.id ? response.data.complaint : complaint
       ));
+      setLoading(false);
       setIsAssignModalOpen(false);
       setComplaintToAssign(null);
       setEmployeeId('');
+
+      setModalOpen(true);
+      setMessageType('success');
+      setMessage(' Assigned successfully');
     } catch (error) {
-      setError('There was an error assigning the complaint!');
+      // setError('There was an error assigning the complaint!');
       console.error('There was an error assigning the complaint!', error);
+      setLoading(false);
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Unable to assign, please try again');
     }
   };
 
@@ -113,6 +140,7 @@ const ComplaintsPage = () => {
 
   // Handle update status request
   const handleUpdateStatus = async () => {
+    setLoading(true);
     try {
       const token = localStorage.getItem('token'); // Get admin token from localStorage
       const response = await axios.put(`${process.env.REACT_APP_BASE_URL}complaints/update-status`, {
@@ -126,12 +154,21 @@ const ComplaintsPage = () => {
       setComplaints((prevComplaints) => prevComplaints.map((complaint) =>
         complaint.id === complaintToUpdateStatus.id ? response.data.complaint : complaint
       ));
+      setLoading(false);
       setIsUpdateStatusModalOpen(false);
       setComplaintToUpdateStatus(null);
       setStatus('');
+
+      setModalOpen(true);
+      setMessageType('success');
+      setMessage('Status updated successfully');
     } catch (error) {
-      setError('There was an error updating the complaint status!');
+      // setError('There was an error updating the complaint status!');
       console.error('There was an error updating the complaint status!', error);
+      setLoading(false);
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Unable to update, please try again');
     }
   };
 
@@ -191,7 +228,8 @@ const ComplaintsPage = () => {
 
   return (
     <div>
-      {error && <div className="text-red-500">{error}</div>}
+      {pageLoading ? (<LoadingComponent/>):(
+      
       <TableComponent
         title="Complaints List"
         data={complaints}
@@ -200,7 +238,7 @@ const ComplaintsPage = () => {
         showSearch={true}
         exportable={true}
       />
-
+    )}
       {/* Delete Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -237,7 +275,11 @@ const ComplaintsPage = () => {
             </div>
             <div className="flex justify-end space-x-2">
               <button onClick={() => setIsAssignModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-              <button onClick={handleAssign} className="bg-blue-500 text-white px-4 py-2 rounded">Assign</button>
+              <button onClick={handleAssign} className="bg-blue-500 text-white px-4 py-2 rounded"
+               disabled={loading}
+              >
+                {loading ? 'assigning...':'Assign'}
+              </button>
             </div>
           </div>
         </div>
@@ -264,11 +306,21 @@ const ComplaintsPage = () => {
             </div>
             <div className="flex justify-end space-x-2">
               <button onClick={() => setIsUpdateStatusModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-              <button onClick={handleUpdateStatus} className="bg-blue-500 text-white px-4 py-2 rounded">update</button>
+              <button onClick={handleUpdateStatus} className="bg-blue-500 text-white px-4 py-2 rounded"
+              disabled={loading}
+              >
+                {loading ? 'updating..':'update'}
+              </button>
             </div>
           </div>
         </div>
       )}
+         <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
+      />
     </div>
   );
 };

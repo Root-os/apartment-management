@@ -6,6 +6,7 @@ import TitleCard from '../../components/Cards/TitleCard';
 const PurchaseRequestForm = () => {
   const [items, setItems] = useState([]);
   const [users, setUsers] = useState([]);
+  const [vendors, setVendors] = useState([]); // New state for vendors
   const [loading, setLoading] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -14,15 +15,16 @@ const PurchaseRequestForm = () => {
 
   const [loadingItems, setLoadingItems] = useState(true);
   const [loadingUsers, setLoadingUsers] = useState(true);
+  const [loadingVendors, setLoadingVendors] = useState(true); // New loading state for vendors
+
   const [formData, setFormData] = useState({
     itemId: '',
     requestedBy: '',
-    status: 'approved',
     amount: '',
     requestDate: '',
     reason: '',
     approvedBy: '',
-   
+    vendorId: '' // Added vendorId to formData
   });
 
   const [response, setResponse] = useState(null);
@@ -62,21 +64,28 @@ const PurchaseRequestForm = () => {
           }
         });
         setUsers(response.data.users); 
-        
       } catch (err) {
-        console.error('Error fetching users:');
-        if (err.response) {
-     
-        } else {
-          setError('An error occurred while fetching users.');
-        }
+        console.error('Error fetching users:', err);
       } finally {
         setLoadingUsers(false);
       }
     };
 
+    // New function to fetch vendors
+    const fetchVendors = async () => {
+      try {
+        const response = await axios.get('https://apartment.houseethiopia.com/api/vendors');
+        setVendors(response.data);
+      } catch (error) {
+        console.error("Error fetching vendors", error);
+      } finally {
+        setLoadingVendors(false);
+      }
+    };
+
     fetchItems();
     fetchUsers();
+    fetchVendors();
   }, []);
 
   const handleSubmit = async (e) => {
@@ -94,14 +103,14 @@ const PurchaseRequestForm = () => {
       setMessageType('error');
       setMessage('Unable to add Request!')
       setResponse(null);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };
 
   return (
     <>
-      <TitleCard title="Add Maintenance" topMargin={'mt-2'}>
+      <TitleCard title="Add Purchase Request" topMargin={'mt-2'}>
       <form onSubmit={handleSubmit}>
         <div className="space-y-4">
           <div className="mb-4">
@@ -158,6 +167,25 @@ const PurchaseRequestForm = () => {
             </select>
           </div>
 
+          {/* New Vendor selection field */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-white-700">Vendor</label>
+            <select
+              name="vendorId"
+              value={formData.vendorId}
+              onChange={handleChange}
+              className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
+              required
+            >
+              <option value="">Select Vendor</option>
+              {vendors.map((vendor) => (
+                <option key={vendor.id} value={vendor.id}>
+                  {vendor.fname}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <label className="block font-medium mb-1">Amount</label>
             <input
@@ -166,7 +194,7 @@ const PurchaseRequestForm = () => {
               value={formData.amount}
               onChange={handleChange}
               required
-              className="w-full p-2 border rounded-md shadow-sm"
+              className="w-full p-2 border rounded-md bg-base-100 shadow-sm"
             />
           </div>
 
@@ -178,7 +206,7 @@ const PurchaseRequestForm = () => {
               value={formData.requestDate}
               onChange={handleChange}
               required
-              className="w-full p-2 border rounded-md shadow-sm"
+              className="w-full p-2 border rounded-md bg-base-100 shadow-sm"
             />
           </div>
 
@@ -189,29 +217,17 @@ const PurchaseRequestForm = () => {
               value={formData.reason}
               onChange={handleChange}
               required
-              className="w-full p-2 border rounded-md shadow-sm"
+              className="w-full p-2 border rounded-md bg-base-100 shadow-sm"
               rows="3"
             />
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Status</label>
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full p-2 border rounded-md shadow-sm"
+            <button 
+              type="submit" 
+              className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
+              disabled={loading}
             >
-              <option value="approved">Approved</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </div>
-
-          <div className="flex justify-end">
-            <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700"
-            disabled={loading}
-            >
-              
               {loading ? 'Submitting...' : 'Add Request'}
             </button>
           </div>
@@ -219,10 +235,10 @@ const PurchaseRequestForm = () => {
       </form>
       </TitleCard>
       <Modal
-       isOpen={modalOpen}
-       onClose={()=> setModalOpen(false)}
-       messageType={messageType}
-       message={message}
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
       />
     </>
   );

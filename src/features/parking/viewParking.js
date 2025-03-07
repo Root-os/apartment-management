@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table'; 
 import Modal from '../../components/Modal'; 
+import LoadingComponent from '../../components/loading';
 
 const ParkingPage = () => {
   const [parkingData, setParkingData] = useState([]);
@@ -17,18 +18,22 @@ const ParkingPage = () => {
   const [price, setPrice] = useState('');
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
 
   // Fetch the parking data from the API
   useEffect(() => {
+    setPageLoading(true);
     const fetchParkingData = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}parking`);
         setParkingData(response.data);
       } catch (error) {
         console.error('Error fetching parking data:', error);
+      } finally {
+        setPageLoading(false);
       }
     };
 
@@ -42,7 +47,7 @@ const ParkingPage = () => {
     setCarName(parking.carName);
     setDriverName(parking.driverName);
     setDriverPhone(parking.driverPhone);
-    setTimeIn(parking.timeIn);
+    setTimeIn(parking.timeIn);  // Save the original Time In to avoid editing
     setTimeOut(parking.timeOut);
     setPrice(parking.price);
     setStatus(parking.status);
@@ -64,7 +69,7 @@ const ParkingPage = () => {
         carName,
         driverName,
         driverPhone,
-        timeIn,
+        timeIn, // Send the original Time In value (disabled)
         timeOut,
         price,
         status,
@@ -92,9 +97,8 @@ const ParkingPage = () => {
 
   // Handle delete request
   const handleDelete = async () => {
-    
     try {
-      await axios.delete(`https://apartment.houseethiopia.com/api/parking/${selectedParking.id}`);
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}parking/${selectedParking.id}`);
       setParkingData(parkingData.filter((parking) => parking.id !== selectedParking.id));
       setIsDeleteModalOpen(false);
       setSelectedParking(null);
@@ -117,7 +121,6 @@ const ParkingPage = () => {
     { label: 'Driver Phone', key: 'driverPhone' },
     { label: 'Time In', key: 'timeIn' },
     { label: 'Time Out', key: 'timeOut' },
-    // { label: 'Price', key: 'price' },
     { label: 'Status', key: 'status' },
     {
       label: 'Actions',
@@ -142,20 +145,24 @@ const ParkingPage = () => {
   ];
 
   const handleAddClick = () => {
-    window.confirm.href = '/parking-add';
+    window.location.href = '/parking-add';
   };
 
   return (
     <div>
-      <TableComponent
-        title="Parking Data"
-        data={parkingData}
-        columns={columns}
-        showSearch={true}
-        exportable={true}
-        onAdd={handleAddClick}
-      />
-
+      {pageLoading ? (
+        <LoadingComponent />
+      ) : (
+        <TableComponent
+          title="Parking Data"
+          data={parkingData}
+          columns={columns}
+          showSearch={true}
+          exportable={true}
+          onAdd={handleAddClick}
+        />
+      )}
+      
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
@@ -163,9 +170,7 @@ const ParkingPage = () => {
             <h2 className="text-2xl font-bold mb-4">Edit Parking Data</h2>
             <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
               <div className="mb-4">
-                <label htmlFor="carPlate" className="block text-sm font-medium text-white-700">
-                  Car Plate
-                </label>
+                <label htmlFor="carPlate" className="block text-sm font-medium text-white-700">Car Plate</label>
                 <input
                   type="text"
                   id="carPlate"
@@ -175,9 +180,7 @@ const ParkingPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="carName" className="block text-sm font-medium text-white-700">
-                  Car Name
-                </label>
+                <label htmlFor="carName" className="block text-sm font-medium text-white-700">Car Name</label>
                 <input
                   type="text"
                   id="carName"
@@ -187,9 +190,7 @@ const ParkingPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="driverName" className="block text-sm font-medium text-white-700">
-                  Driver Name
-                </label>
+                <label htmlFor="driverName" className="block text-sm font-medium text-white-700">Driver Name</label>
                 <input
                   type="text"
                   id="driverName"
@@ -199,9 +200,7 @@ const ParkingPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="driverPhone" className="block text-sm font-medium text-white-700">
-                  Driver Phone
-                </label>
+                <label htmlFor="driverPhone" className="block text-sm font-medium text-white-700">Driver Phone</label>
                 <input
                   type="text"
                   id="driverPhone"
@@ -211,21 +210,17 @@ const ParkingPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="timeIn" className="block text-sm font-medium text-white-700">
-                  Time In
-                </label>
+                <label htmlFor="timeIn" className="block text-sm font-medium text-white-700">Time In</label>
                 <input
                   type="datetime-local"
                   id="timeIn"
-                  value={timeIn}
-                  onChange={(e) => setTimeIn(e.target.value)}
+                  value={timeIn}  // Time In value is set, but the field is not editable
+                  disabled
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="timeOut" className="block text-sm font-medium text-white-700">
-                  Time Out
-                </label>
+                <label htmlFor="timeOut" className="block text-sm font-medium text-white-700">Time Out</label>
                 <input
                   type="datetime-local"
                   id="timeOut"
@@ -234,22 +229,8 @@ const ParkingPage = () => {
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-              {/* <div className="mb-4">
-                <label htmlFor="price" className="block text-sm font-medium text-gray-700">
-                  Price
-                </label>
-                <input
-                  type="number"
-                  id="price"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div> */}
               <div className="mb-4">
-                <label htmlFor="status" className="block text-sm font-medium text-gray-700">
-                  Status
-                </label>
+                <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
                 <input
                   type="text"
                   id="status"
@@ -264,7 +245,7 @@ const ParkingPage = () => {
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
                   disabled={loading}
                 >
-                  {loading ? 'saving...':'Save'}
+                  {loading ? 'Saving...' : 'Save'}
                 </button>
                 <button
                   type="button"
@@ -291,30 +272,13 @@ const ParkingPage = () => {
           </div>
         </div>
       )}
-<Modal
-isOpen={modalOpen}
-onClose={() => setModalOpen(false)}
-messageType={messageType}
-message={message}
-/>
 
-{/* {modalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className={`bg-base-100 p-6 rounded-lg shadow-lg w-96 ${messageType === 'success' ? 'bg-green-100' : 'bg-red-100'}`}>
-            <h2 className="text-2xl font-bold mb-4">{messageType === 'success' ? 'Success' : 'Error'}</h2>
-            <p>{message}</p>
-            <div className="text-center mt-4">
-              <button
-                onClick={() => setModalOpen(false)}
-                className="bg-gray-400 text-white px-4 py-2 rounded"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )} */}
-
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
+      />
     </div>
   );
 };

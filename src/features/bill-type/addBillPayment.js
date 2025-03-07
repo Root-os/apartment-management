@@ -51,7 +51,7 @@ const BillPaymentPage = () => {
   };
 
   return (
-    <div className="p-6">
+    <>
        <TitleCard title="Add Bill Payment" topMargin={'mt-4'}>
       <form className="space-y-4" onSubmit={handleSubmit}>
         {/* Type Name */}
@@ -104,7 +104,7 @@ const BillPaymentPage = () => {
         messageType={messageType}
         message={message}
       />
-    </div>
+    </>
   );
 };
 

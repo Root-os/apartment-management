@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import TableComponent from "../../components/table";
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const FloorManagement = () => {
   const [floors, setFloors] = useState([]);
@@ -20,6 +21,8 @@ const FloorManagement = () => {
     rentedUnits: '',
     freeUnits: ''
   });
+  const [loading, setLoading] = useState(true);  // Loading state for page and actions
+  const [buttonLoading, setButtonLoading] = useState(false);  // Button loading state
 
   const navigate = useNavigate();
 
@@ -31,6 +34,9 @@ const FloorManagement = () => {
       })
       .catch(error => {
         console.error("Error fetching floors:", error);
+      })
+      .finally(() => {
+        setLoading(false); // Set loading to false once fetch is complete
       });
   }, []);
 
@@ -47,6 +53,7 @@ const FloorManagement = () => {
   };
 
   const handleEditSubmit = () => {
+    setButtonLoading(true); // Start button loading
     axios.put(`${process.env.REACT_APP_BASE_URL}floor/${selectedFloor.id}`, newFloorData)
       .then(() => {
         setFloors(floors.map(floor => (floor.id === selectedFloor.id ? { ...floor, ...newFloorData } : floor)));
@@ -55,7 +62,6 @@ const FloorManagement = () => {
         setModalOpen(true);
         setMessageType('success');
         setMessage('Floor updated successfully');
-        
       })
       .catch(error => {
         console.error("Error updating floor:", error);
@@ -63,6 +69,9 @@ const FloorManagement = () => {
         setModalOpen(true);
         setMessageType('error');
         setMessage('Unable to update, please try again');
+      })
+      .finally(() => {
+        setButtonLoading(false); // End button loading
       });
   };
 
@@ -73,6 +82,7 @@ const FloorManagement = () => {
   };
 
   const handleDeleteConfirm = () => {
+    setButtonLoading(true); // Start button loading for delete
     axios.delete(`${process.env.REACT_APP_BASE_URL}floor/${selectedFloor.id}`)
       .then(() => {
         setFloors(floors.filter(floor => floor.id !== selectedFloor.id));
@@ -88,6 +98,9 @@ const FloorManagement = () => {
         setModalOpen(true);
         setMessageType('error');
         setMessage('Unable to delete, please try again');
+      })
+      .finally(() => {
+        setButtonLoading(false); // End button loading for delete
       });
   };
 
@@ -100,6 +113,8 @@ const FloorManagement = () => {
       })
       .catch(error => {
         console.error("Error fetching floor details:", error);
+      })
+      .finally(() => {
       });
   };
 
@@ -141,7 +156,9 @@ const FloorManagement = () => {
   };
 
   return (
-    <div className="p-8">
+    <div>
+      {loading ? (<LoadingComponent/>):(
+
       <TableComponent
         title="Floor List"
         data={floors}
@@ -151,7 +168,7 @@ const FloorManagement = () => {
         exportable={true}
         onAdd={handleAddClick}
       />
-
+    )}
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -176,8 +193,16 @@ const FloorManagement = () => {
               />
             </div>
             <div className="flex justify-between">
-              <button onClick={() => setIsEditModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-              <button onClick={handleEditSubmit} className="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+              <button onClick={() => setIsEditModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">
+                Cancel
+              </button>
+              <button 
+                onClick={handleEditSubmit} 
+                className="bg-blue-500 text-white px-4 py-2 rounded" 
+                disabled={buttonLoading}
+              >
+                {buttonLoading ? 'Saving...' : 'Save'}
+              </button>
             </div>
           </div>
         </div>
@@ -189,8 +214,16 @@ const FloorManagement = () => {
           <div className="bg-white p-6 rounded-lg w-96">
             <h2 className="text-xl mb-4">Are you sure you want to delete this floor?</h2>
             <div className="flex justify-between">
-              <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-              <button onClick={handleDeleteConfirm} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
+              <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                className="bg-red-500 text-white px-4 py-2 rounded"
+                disabled={buttonLoading}
+              >
+                {buttonLoading ? 'Deleting...' : 'Delete'}
+              </button>
             </div>
           </div>
         </div>
@@ -199,7 +232,7 @@ const FloorManagement = () => {
       {/* Detail Modal */}
       {isDetailModalOpen && floorDetails && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-base-100 p-6 rounded-lg w-96">
+          <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-scroll">
             <h2 className="text-xl mb-4">Free Units of the Floor</h2>
             <div className="mb-4">
               <ul>
@@ -227,19 +260,20 @@ const FloorManagement = () => {
               </ul>
             </div>
             <div className="flex justify-between">
-              <button onClick={() => setIsDetailModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Close</button>
+              <button onClick={() => setIsDetailModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">
+                Close
+              </button>
             </div>
           </div>
         </div>
       )}
         
-        <Modal
+      <Modal
         isOpen={modalOpen}
-        onClose={()=> setModalOpen(false)}
+        onClose={() => setModalOpen(false)}
         messageType={messageType}
         message={message}
-        />
-        
+      />
     </div>
   );
 };
