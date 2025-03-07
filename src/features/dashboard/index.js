@@ -19,6 +19,8 @@ import {
 } from 'react-icons/fa';
 import UnitStatusReport from './components/diagram';
 import RemainingTenants from './components/tenDaysTenant'
+import LowStockAlert from './components/lowStockAlert'
+import RecentComplaintList from './components/recentComplent'
 
 const Dashboard = () => {
   const [counts, setCounts] = useState(null);
@@ -205,15 +207,23 @@ const Dashboard = () => {
 
       </div>
       <hr className="my-6 border-t-2 border-dotted border-gray-500 dark:border-gray-300" />
-      <div className="flex flex-wrap gap-4 ">
-        
-        <div className="flex-2  bg-white shadow-md rounded-lg dark:bg-gray-800">
-          <UnitStatusReport />
-        </div>
-        <div className="flex-1  bg-white shadow-md rounded-lg dark:bg-gray-800">
-          <RemainingTenants />
-        </div>
-      </div>
+      <div className="container mx-auto p-4">
+  <div className="grid grid-cols-1 md:grid-cols-2 ">
+    <div className="bg-white shadow-lg rounded-lg dark:bg-gray-800">
+      <UnitStatusReport />
+    </div>
+    <div className="bg-white shadow-lg rounded-lg dark:bg-gray-800">
+      <RemainingTenants />
+    </div>
+    <div className="bg-white shadow-lg rounded-lg dark:bg-gray-800">
+      <LowStockAlert />
+    </div>
+    <div className="bg-white shadow-lg rounded-lg dark:bg-gray-800">
+      <RecentComplaintList />
+    </div>
+  </div>
+</div>
+
     </div>
   );
 };
