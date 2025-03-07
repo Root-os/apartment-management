@@ -18,6 +18,7 @@ import {
   FaHome,FaQuestionCircle
 } from 'react-icons/fa';
 import UnitStatusReport from './components/diagram';
+import RemainingTenants from './components/tenDaysTenant'
 
 const Dashboard = () => {
   const [counts, setCounts] = useState(null);
@@ -204,9 +205,14 @@ const Dashboard = () => {
 
       </div>
       <hr className="my-6 border-t-2 border-dotted border-gray-500 dark:border-gray-300" />
-
-      <div className="w-full max-w-md">
-        <UnitStatusReport />
+      <div className="flex flex-wrap gap-4 ">
+        
+        <div className="flex-2  bg-white shadow-md rounded-lg dark:bg-gray-800">
+          <UnitStatusReport />
+        </div>
+        <div className="flex-1  bg-white shadow-md rounded-lg dark:bg-gray-800">
+          <RemainingTenants />
+        </div>
       </div>
     </div>
   );

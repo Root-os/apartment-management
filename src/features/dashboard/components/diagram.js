@@ -72,8 +72,8 @@ const UnitStatusReport = () => {
 
       // Adding legend
       const legend = d3.select("#legend")
-        .attr("width", width)
-        .attr("height", 50)
+        .attr("width", 100)
+        .attr("height", filteredDataset.length * 20)
         .selectAll("g")
         .data(filteredDataset)
         .enter()
@@ -93,14 +93,14 @@ const UnitStatusReport = () => {
         .attr("dy", "0.35em")
         .style("text-anchor", "start")
         .style("font-size", "12px")
+        .style("fill", "currentColor") // Ensures responsive text color based on theme
         .text(d => d.label.split(":")[0]); // Displaying only the name part
-
     }
   }, [data]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6 dark:bg-slate-900 dark:text-white">
-      <div className="pb-56 w-full max-w-md">
+      <div className="flex pb-56 w-full max-w-md space-x-6">
         <svg id="pie-chart"></svg>
         <svg id="legend"></svg>
       </div>
