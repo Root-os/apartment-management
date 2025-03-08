@@ -7,7 +7,7 @@ function AddBulkEmail(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Send Bulk Email"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

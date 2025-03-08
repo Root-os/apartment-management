@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../../components/table'
+import LoadingComponent from '../../../components/loading';
 
 const ViewMyRequest = () => {
   const [withdrawalRequests, setWithdrawalRequests] = useState([]);
@@ -43,7 +44,7 @@ const ViewMyRequest = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingComponent/>;
   }
 
   if (error) {

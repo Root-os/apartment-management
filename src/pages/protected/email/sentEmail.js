@@ -7,7 +7,7 @@ function SentEmailList(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Send Email List"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

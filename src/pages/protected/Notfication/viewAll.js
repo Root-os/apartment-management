@@ -7,7 +7,7 @@ function AllNotfi(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "All Notfication"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

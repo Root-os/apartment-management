@@ -7,7 +7,7 @@ function InternalPage(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Inventory In Out"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

@@ -23,8 +23,8 @@ const PurchaseRequestForm = () => {
     amount: '',
     requestDate: '',
     reason: '',
-    approvedBy: '',
-    vendorId: '' // Added vendorId to formData
+    // approvedBy: '',
+    vendorId: '' 
   });
 
   const [response, setResponse] = useState(null);
@@ -149,7 +149,7 @@ const PurchaseRequestForm = () => {
             </select>
           </div>
 
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <label className="block text-sm font-medium text-white-700">Approved By</label>
             <select
               name="approvedBy"
@@ -165,7 +165,7 @@ const PurchaseRequestForm = () => {
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
 
           {/* New Vendor selection field */}
           <div className="mb-4">

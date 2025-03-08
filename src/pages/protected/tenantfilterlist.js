@@ -7,7 +7,7 @@ function TenantFilter(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Tenant Filter List by Units And Floor"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

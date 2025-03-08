@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { themeChange } from 'theme-change';
 import checkAuth from './app/auth';  
 import initializeApp from './app/init';
+import LoadingComponent from '../src/components/loading';
 
 const Layout = lazy(() => import('./containers/Layout'));
 const Login = lazy(() => import('./pages/Login'));
@@ -32,7 +33,7 @@ function App() {
   }, []);  
 
   if (loading) {
-    return <div>Loading...</div>; 
+    return <LoadingComponent/>; 
   }
 
   return (

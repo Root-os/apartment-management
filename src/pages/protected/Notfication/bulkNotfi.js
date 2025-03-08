@@ -7,7 +7,7 @@ function AddBulkNotfi(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Send Bulk Notfication"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

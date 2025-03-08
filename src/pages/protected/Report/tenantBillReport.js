@@ -7,7 +7,7 @@ function TenantReportPage(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Tenant Bill Report"}))
+        dispatch(setPageTitle({ title : " "}))
       }, [])
 
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TableComponent from '../../../components/table'
+import LoadingComponent from '../../../components/loading';
 
 const TenantInventoryTable = () => {
   const [data, setData] = useState([]);
@@ -51,7 +52,7 @@ const TenantInventoryTable = () => {
   ];
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingComponent/>;
   }
 
   if (error) {

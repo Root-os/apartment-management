@@ -7,7 +7,7 @@ function GovtReport(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Government Bill Report"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

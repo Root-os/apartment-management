@@ -7,7 +7,7 @@ function AddSingleEmail(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Send Single Email"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 
