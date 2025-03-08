@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const NotificationPage = () => {
   const [notificationData, setNotificationData] = useState([]);
@@ -16,18 +17,20 @@ const NotificationPage = () => {
   const [messageType, setMessageType] = useState('success');
   const [modalMessage, setModalMessage] = useState('');
 
-  useEffect(() => {
-    const fetchNotificationData = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}notification-type`);
-        setNotificationData(response.data);
-      } catch (error) {
-        setError('Error fetching data');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Fetch notification data function
+  const fetchNotificationData = async () => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}notification-type`);
+      setNotificationData(response.data);
+    } catch (error) {
+      setError('Error fetching notification data');
+      console.error('Fetch error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchNotificationData();
   }, []);
 
@@ -46,25 +49,42 @@ const NotificationPage = () => {
 
   // Handle edit request
   const handleEdit = async () => {
+    if (!name.trim()) {
+      setModalOpen(true);
+      setMessageType('error');
+      setModalMessage('Name cannot be empty');
+      return;
+    }
+
     setIsLoading(true);
     try {
       const updatedNotification = { name };
-
-      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}notification-type/${selectedNotification.id}`, updatedNotification);
-      const updatedData = notificationData.map((notification) =>
-        notification.id === selectedNotification.id ? response.data : notification
+      const response = await axios.put(
+        `${process.env.REACT_APP_BASE_URL}notification-type/${selectedNotification.id}`,
+        updatedNotification
       );
-      setNotificationData(updatedData);
+
+      // Optimistically update the state
+      setNotificationData((prevData) =>
+        prevData.map((notification) =>
+          notification.id === selectedNotification.id ? { ...notification, ...response.data } : notification
+        )
+      );
+
       setIsEditModalOpen(false);
       setSelectedNotification(null);
-
+      setName('');
+      
       setModalOpen(true);
       setMessageType('success');
       setModalMessage('Notification type updated successfully');
     } catch (error) {
+      // Revert to fetching fresh data on error
+      await fetchNotificationData();
       setModalOpen(true);
       setMessageType('error');
-      setModalMessage('Unable to update notification type');
+      setModalMessage(error.response?.data?.message || 'Unable to update notification type');
+      console.error('Edit error:', error);
     } finally {
       setIsLoading(false);
     }
@@ -72,10 +92,15 @@ const NotificationPage = () => {
 
   // Handle delete request
   const handleDelete = async () => {
-    
+    setIsLoading(true);
     try {
       await axios.delete(`${process.env.REACT_APP_BASE_URL}notification-type/${selectedNotification.id}`);
-      setNotificationData(notificationData.filter((notification) => notification.id !== selectedNotification.id));
+
+      // Optimistically update the state
+      setNotificationData((prevData) =>
+        prevData.filter((notification) => notification.id !== selectedNotification.id)
+      );
+
       setIsDeleteModalOpen(false);
       setSelectedNotification(null);
 
@@ -83,10 +108,15 @@ const NotificationPage = () => {
       setMessageType('success');
       setModalMessage('Notification type deleted successfully');
     } catch (error) {
+      // Revert to fetching fresh data on error
+      await fetchNotificationData();
       setModalOpen(true);
       setMessageType('error');
-      setModalMessage('Unable to delete notification type');
-    } 
+      setModalMessage(error.response?.data?.message || 'Unable to delete notification type');
+      console.error('Delete error:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const columns = [
@@ -113,18 +143,14 @@ const NotificationPage = () => {
     },
   ];
 
-  // If loading, show a loading message
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
-  // If error, show an error message
   if (error) {
     return <div>{error}</div>;
   }
 
   return (
     <div>
+      {loading ? (<LoadingComponent/>):(
       <TableComponent
         title="Notification Types"
         data={notificationData}
@@ -132,7 +158,7 @@ const NotificationPage = () => {
         showSearch={true}
         exportable={true}
       />
-
+       )}
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
@@ -149,20 +175,26 @@ const NotificationPage = () => {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  disabled={isLoading}
                 />
               </div>
               <div className="flex justify-end">
                 <button
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-                  disable={isLoading}
+                  disabled={isLoading}
                 >
-                  {isLoading ?'saving...':'Save'}
+                  {isLoading ? 'Saving...' : 'Save'}
                 </button>
                 <button
                   type="button"
-                  onClick={() => setIsEditModalOpen(false)}
+                  onClick={() => {
+                    setIsEditModalOpen(false);
+                    setSelectedNotification(null);
+                    setName('');
+                  }}
                   className="bg-gray-400 text-white px-4 py-2 rounded-md"
+                  disabled={isLoading}
                 >
                   Cancel
                 </button>
@@ -178,12 +210,25 @@ const NotificationPage = () => {
           <div className="bg-base-100 p-6 rounded-lg w-98">
             <h2 className="text-xl mb-4">Are you sure you want to delete this notification type?</h2>
             <div className="flex justify-end space-x-2">
-              <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-              <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
+              <button 
+                onClick={() => setIsDeleteModalOpen(false)} 
+                className="bg-gray-400 text-white px-4 py-2 rounded"
+                disabled={isLoading}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleDelete} 
+                className="bg-red-500 text-white px-4 py-2 rounded"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Deleting...' : 'Delete'}
+              </button>
             </div>
           </div>
         </div>
       )}
+
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

@@ -7,7 +7,7 @@ function TenantReportPageTwo(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Tenant  Report"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

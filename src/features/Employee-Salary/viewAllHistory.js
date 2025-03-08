@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import DeleteConfirmationModal from '../../components/editDeleteModal';
+import LoadingComponent from '../../components/loading';
 
 const SalaryPayments = () => {
   const [salaryData, setSalaryData] = useState([]);
@@ -72,6 +73,7 @@ const SalaryPayments = () => {
 
   // Fetch data from API on component mount
   useEffect(() => {
+    setLoading(true);
     const fetchSalaryData = async () => {
       const token = localStorage.getItem('token');
       try {
@@ -179,12 +181,15 @@ const SalaryPayments = () => {
 
   return (
     <>
+        {loading ? (
+        <LoadingComponent/>
+      ) : (
         <TableComponent
           title="Salaries"
           data={salaryData}
           columns={columns}
         />
-
+      )}
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

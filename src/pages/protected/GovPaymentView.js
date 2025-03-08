@@ -7,7 +7,7 @@ function InternalPage(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Payment For Government"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

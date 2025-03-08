@@ -7,7 +7,7 @@ function AddNotfi(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Send Single Notfication"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

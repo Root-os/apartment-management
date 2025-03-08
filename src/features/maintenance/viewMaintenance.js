@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import DeleteConfirmationModal from '../../components/editDeleteModal';
-import Modal from '../../components/Modal'
+import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const MaintenancePage = () => {
   const [maintenanceData, setMaintenanceData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
   const [editingRecord, setEditingRecord] = useState(null);
@@ -37,7 +39,9 @@ const MaintenancePage = () => {
         setMessageType('error');
         setMessage('Failed to fetch maintenance data')
         setLoading(false);
-      }
+      }finally {
+        setPageLoading(false);
+      };
     };
 
     const fetchItems = async () => {
@@ -211,6 +215,7 @@ const MaintenancePage = () => {
 
   return (
     <>
+      {pageLoading ? (<LoadingComponent/>):(
       <TableComponent
         title="Maintenance Records"
         data={maintenanceData}
@@ -219,7 +224,7 @@ const MaintenancePage = () => {
         showSearch={true}
         exportable={true}
       />
-
+    )}
       {/* Edit Modal */}
       {isModalOpen && (
         <div className="modal modal-open">

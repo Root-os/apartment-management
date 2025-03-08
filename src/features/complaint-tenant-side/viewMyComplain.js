@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
-import Modal from '../../components/Modal'
+import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 
 const TenantComplaintsPage = ({ tenantId }) => {
@@ -118,7 +119,7 @@ const TenantComplaintsPage = ({ tenantId }) => {
   };
 
   if (loading) {
-    return <div>Loading complaints...</div>; // Show loading message while fetching
+    return <LoadingComponent/>;
   }
 
   return (

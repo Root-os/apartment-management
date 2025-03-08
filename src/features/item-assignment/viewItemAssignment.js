@@ -3,10 +3,12 @@ import axios from 'axios';
 import TableComponent from '../../components/table'; 
 import DeleteConfirmationModal from '../../components/editDeleteModal';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const ItemAssignmentsPage = () => {
   const [itemAssignments, setItemAssignments] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState('');
   const [items, setItems] = useState([]);
   const [assignedUsers, setAssignedUsers] = useState([]);
@@ -49,7 +51,7 @@ const ItemAssignmentsPage = () => {
         console.error('Error fetching item assignments:', err);
         setError('Failed to fetch item assignments');
         setLoading(false);
-      }
+      }finally{ setPageLoading(false);}
     };
 
     const fetchAssignedUsers = async () => {
@@ -214,7 +216,8 @@ const ItemAssignmentsPage = () => {
   ];
 
   return (
-    <div className="p-6 bg-base-100 rounded-lg shadow-md w-full">
+    <div> 
+       {pageLoading ? (<LoadingComponent/>): (
       <TableComponent
         title="Item Assignments"
         data={itemAssignments}
@@ -223,7 +226,7 @@ const ItemAssignmentsPage = () => {
         showSearch={true}
         exportable={true}
       />
-
+    )}
       {openModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-base-100 rounded-lg shadow-xl p-6 max-w-lg w-full mt-12 max-h-[80vh] overflow-y-auto ">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../../components/table';
 import Modal from '../../../components/Modal';
+import LoadingComponent from '../../../components/loading';
 
 const StockoutPage = () => {
   const [stockoutData, setStockoutData] = useState([]);
@@ -198,7 +199,7 @@ const StockoutPage = () => {
   return (
     <div>
       {loading ? (
-        <p>Loading data...</p>
+        <LoadingComponent/>
       ) : (
         <TableComponent 
           title="Requests"

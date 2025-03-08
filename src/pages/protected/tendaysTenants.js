@@ -7,7 +7,7 @@ function TenDays(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Ten Days Tenant List"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

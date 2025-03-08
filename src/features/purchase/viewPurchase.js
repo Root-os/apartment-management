@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import DeleteConfirmationModal from '../../components/editDeleteModal'
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const PurchasesPage = () => {
   const [data, setData] = useState([]);
@@ -14,11 +15,13 @@ const PurchasesPage = () => {
   const [vendourPhone, setVendourPhone] = useState('');
   const [amount, setAmount] = useState('');
   const [price, setPrice] = useState('');
+  const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
   const [itemId, setItemId] = useState('');
   const [itemTypeId, setItemTypeId] = useState('');
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
   
@@ -54,7 +57,8 @@ const PurchasesPage = () => {
       })
       .catch((error) => {
         console.error('Error fetching item types:', error);
-      });
+      })
+      .finally(()=>{setPageLoading(false);})
   }, []);
 
   const handleEditClick = (purchase) => {
@@ -63,6 +67,7 @@ const PurchasesPage = () => {
     setVendourPhone(purchase.vendourPhone);
     setAmount(purchase.amount);
     setPrice(purchase.price);
+    setDate(purchase.date);
     setDescription(purchase.description);
     setExpirationDate(purchase.expirationDate.split('T')[0]);
     setItemId(purchase.itemId);
@@ -78,6 +83,7 @@ const PurchasesPage = () => {
         vendourPhone,
         amount,
         price,
+        date,
         description,
         expirationDate,
         itemId,
@@ -180,6 +186,7 @@ const PurchasesPage = () => {
 
   return (
     <div>
+       {pageLoading ? (<LoadingComponent/>):(
       <TableComponent
         title="Purchases List"
         data={data}
@@ -187,7 +194,7 @@ const PurchasesPage = () => {
         exportable={true}
         showSearch={true}
       />
-
+    )}
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
@@ -255,6 +262,18 @@ const PurchasesPage = () => {
                 />
               </div>
               <div className="mb-4">
+                <label htmlFor="date" className="block text-sm font-medium text-white-700">
+                  Date
+                </label>
+                <input
+                  type="date"
+                  id="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="mb-4">
                 <label htmlFor="expirationDate" className="block text-sm font-medium text-white-700">
                   Expiration Date
                 </label>
@@ -289,13 +308,13 @@ const PurchasesPage = () => {
           <select
             value={itemTypeId}
             onChange={(e) => setItemTypeId(e.target.value)}
-            className="mt-1 p-2 w-full border border-gray-300 rounded-md"
+            className="mt-1 bg-base-100 p-2 w-full border border-gray-300 rounded-md"
             required
           >
             <option value="">Select Item Type</option>
             {itemTypes.map((type) => (
               <option key={type.id} value={type.id}>
-                {type.typeName}
+                {type.categoryName}
               </option>
             ))}
           </select>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 
 const ChargingPage = () => {
@@ -19,6 +20,7 @@ const ChargingPage = () => {
   const [chargingCost, setChargingCost] = useState('');
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState('');
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -29,6 +31,7 @@ const ChargingPage = () => {
   const tenantApiUrl = `${process.env.REACT_APP_BASE_URL}tenant`;
 
   useEffect(() => {
+   
     const fetchChargingData = async () => {
       try {
         const response = await axios.get(chargingApiUrl);
@@ -36,7 +39,7 @@ const ChargingPage = () => {
       } catch (error) {
         setError('Error fetching charging data');
       } finally {
-        setLoading(false);
+        setPageLoading(false);
       }
     };
 
@@ -178,9 +181,9 @@ const ChargingPage = () => {
   ];
 
   // If loading, show a loading message
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  // if (loading) {
+  //   return <LoadingComponent/>;
+  // }
 
   // If error, show an error message
   if (error) {
@@ -188,7 +191,7 @@ const ChargingPage = () => {
   }
 
   return (
-    <div>
+    <div> {pageLoading ? (<LoadingComponent/>):(
       <TableComponent
         title="Charging Information"
         data={chargingData}
@@ -196,6 +199,7 @@ const ChargingPage = () => {
         showSearch={true}
         exportable={true}
       />
+    )}
 
       {/* Edit Modal */}
       {isEditModalOpen && (

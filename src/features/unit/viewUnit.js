@@ -3,11 +3,13 @@ import axios from "axios";
 import TableComponent from "../../components/table";
 import {FaSearch} from 'react-icons/fa';
 import Modal from '../../components/Modal';
+import LoadingComponent from "../../components/loading";
 
 const UnitList = () => {
   const [units, setUnits] = useState([]);
   const [floors, setFloors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [btnLoading, setBtnLoading] = useState(false)
   const [error, setError] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -68,14 +70,15 @@ const UnitList = () => {
       status: unit.status,
       availableEquipments: Array.isArray(unit.availableEquipments) ? unit.availableEquipments : JSON.parse(unit.availableEquipments),
       problems: Array.isArray(unit.problems) ? unit.problems : JSON.parse(unit.problems),
-      rentedDate: unit.rentedDate,
-      vacatedDate: unit.vacatedDate,
+      // rentedDate: unit.rentedDate,
+      // vacatedDate: unit.vacatedDate,
       floorId: unit.floorId
     });
     setIsEditModalOpen(true);
   };
 
   const handleEditSubmit = () => {
+    setBtnLoading(true);
     axios.put(`${process.env.REACT_APP_BASE_URL}unit/${selectedUnit.id}`, newUnitData)
       .then(() => {
         setUnits(units.map(unit => (unit.id === selectedUnit.id ? { ...unit, ...newUnitData } : unit)));
@@ -84,9 +87,12 @@ const UnitList = () => {
         setModalOpen(true);
         setMessageType('success');
         setMessage('Unit updated successfully');
+
+        setBtnLoading(false);
       })
       .catch(error => {
-        console.error("Error updating unit:", error);
+        setBtnLoading(false);
+        // console.error("Error updating unit:", error);
 
         setModalOpen(true);
         setMessageType('error');
@@ -301,12 +307,10 @@ const UnitList = () => {
 const handleAddClick = () => {  window.location.href = '/unit-add';};
 
   return (
-    <div className="p-6">
+    <div>
       {loading ? (
-        <p>Loading data...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : (
+        <LoadingComponent/>
+      ) :(
        <>
         <TableComponent
            title="Unit List"
@@ -429,7 +433,7 @@ const handleAddClick = () => {  window.location.href = '/unit-add';};
                 </button>
               </div>
             </div>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Rented Date</label>
               <input
                 type="date"
@@ -437,8 +441,8 @@ const handleAddClick = () => {  window.location.href = '/unit-add';};
                 onChange={(e) => setNewUnitData({ ...newUnitData, rentedDate: e.target.value })}
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
-            </div>
-            <div className="mb-4">
+            </div> */}
+            {/* <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Vacated Date</label>
               <input
                 type="date"
@@ -446,7 +450,7 @@ const handleAddClick = () => {  window.location.href = '/unit-add';};
                 onChange={(e) => setNewUnitData({ ...newUnitData, vacatedDate: e.target.value })}
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
-            </div>
+            </div> */}
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Floor</label>
               <select
@@ -461,7 +465,11 @@ const handleAddClick = () => {  window.location.href = '/unit-add';};
             </div>
             <div className="flex justify-between">
               <button onClick={() => setIsEditModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-              <button onClick={handleEditSubmit} className="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+              <button onClick={handleEditSubmit} className="bg-blue-500 text-white px-4 py-2 rounded"
+                disabled={btnLoading}
+               >
+                {btnLoading ? 'saving...':'Save'}
+              </button>
             </div>
           </div>
         </div>
@@ -470,9 +478,9 @@ const handleAddClick = () => {  window.location.href = '/unit-add';};
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-base-100 p-6 rounded-lg w-96">
+          <div className="bg-base-100 p-6 rounded-lg w-98">
             <h2 className="text-xl mb-4 text-white">Are you sure you want to delete this unit?</h2>
-            <div className="flex justify-between">
+            <div className="flex justify-end space-x-1">
               <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
               <button onClick={handleDeleteConfirm} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
             </div>

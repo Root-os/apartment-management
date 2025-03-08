@@ -7,7 +7,7 @@ function AllUserList(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "All User List"}))
+        dispatch(setPageTitle({ title : " "}))
       }, [])
 
 

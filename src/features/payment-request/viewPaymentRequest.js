@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const PaymentRequestsPage = () => {
   const [paymentRequests, setPaymentRequests] = useState([]);
   const [tenants, setTenants] = useState([]);
-  const [billTypes, setBillTypes] = useState([]);
+  const [paymentTypes, setPaymentTypes] = useState([]); 
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -14,43 +15,46 @@ const PaymentRequestsPage = () => {
   const [level, setLevel] = useState('');
   const [amount, setAmount] = useState('');
   const [dueDate, setDueDate] = useState('');
+  const [status, setStatus] = useState('');
   const [repeatedFor, setRepeatedFor] = useState('');
   const [tenantId, setTenantId] = useState('');
-  const [billPaymentTypeId, setBillPaymentTypeId] = useState('');
+  const [paymentTypeId, setPaymentTypeId] = useState('');  
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
-  const [messageType, setMessageType] = useState('success');
+  const [messageType, setMessageType] = useState('status');
   const [modalMessage, setModalMessage] = useState('');
 
-  // Fetch data from the API
+  
+  const fetchData = () => {
+    setPageLoading(true); // Set loading to true when the fetch starts
+  
+    // Use Promise.all to wait for all requests to finish
+    Promise.all([
+      axios.get(`${process.env.REACT_APP_BASE_URL}payment-requests`),
+      axios.get(`${process.env.REACT_APP_BASE_URL}tenant`),
+      axios.get('https://apartment.houseethiopia.com/api/payment-types')
+    ])
+      .then((responses) => {
+        // Destructure the responses and set the state accordingly
+        const [paymentRequestsResponse, tenantsResponse, paymentTypesResponse] = responses;
+  
+        setPaymentRequests(paymentRequestsResponse.data);
+        setTenants(tenantsResponse.data);
+        setPaymentTypes(paymentTypesResponse.data);
+      })
+      .catch((error) => {
+        console.error('There was an error fetching the data:', error);
+      })
+      .finally(() => {
+        setPageLoading(false); // Set loading to false when all requests have finished
+      });
+  };
+  
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}payment-requests`)
-      .then((response) => {
-        setPaymentRequests(response.data);
-      })
-      .catch((error) => {
-        console.error('There was an error fetching the payment requests:', error);
-      });
-
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}tenant`)
-      .then((response) => {
-        setTenants(response.data);
-      })
-      .catch((error) => {
-        console.error('There was an error fetching the tenants:', error);
-      });
-
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}bill-type`)
-      .then((response) => {
-        setBillTypes(response.data);
-      })
-      .catch((error) => {
-        console.error('There was an error fetching the bill types:', error);
-      });
+    fetchData();
   }, []);
+  
 
   // Handle edit button click
   const handleEditClick = (request) => {
@@ -61,7 +65,7 @@ const PaymentRequestsPage = () => {
     setDueDate(new Date(request.dueDate).toISOString().split('T')[0]); // Convert date to YYYY-MM-DD format
     setRepeatedFor(request.repeatedFor);
     setTenantId(request.tenantId);
-    setBillPaymentTypeId(request.billPaymentTypeId);
+    setPaymentTypeId(request.paymentTypeId);  // Updated field
     setIsEditModalOpen(true);
   };
 
@@ -80,22 +84,21 @@ const PaymentRequestsPage = () => {
         level,
         amount,
         dueDate,
-        repeatedFor,
-        tenantId,
-        billPaymentTypeId,
+        status,
+        // repeatedFor,
+        // tenantId,
+        // paymentTypeId,  // Updated field
       };
 
       const response = await axios.put(`${process.env.REACT_APP_BASE_URL}payment-requests/${selectedRequest.id}`, updatedRequest);
-      const updatedData = paymentRequests.map((request) =>
-        request.id === selectedRequest.id ? response.data : request
-      );
-      setPaymentRequests(updatedData);
+      // Re-fetch data after statusful edit
+      fetchData();
       setIsEditModalOpen(false);
       setSelectedRequest(null);
 
       setModalOpen(true);
-      setMessageType('success');
-      setModalMessage('Payment request updated successfully');
+      setMessageType('status');
+      setModalMessage('Payment request updated statusfully');
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');
@@ -110,13 +113,14 @@ const PaymentRequestsPage = () => {
     setLoading(true);
     try {
       await axios.delete(`${process.env.REACT_APP_BASE_URL}payment-requests/${selectedRequest.id}`);
-      setPaymentRequests(paymentRequests.filter((request) => request.id !== selectedRequest.id));
+      // Re-fetch data after statusful delete
+      fetchData();
       setIsDeleteModalOpen(false);
       setSelectedRequest(null);
 
       setModalOpen(true);
-      setMessageType('success');
-      setModalMessage('Payment request deleted successfully');
+      setMessageType('status');
+      setModalMessage('Payment request deleted statusfully');
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');
@@ -137,11 +141,11 @@ const PaymentRequestsPage = () => {
       },
     },
     {
-      key: 'billPaymentTypeId',
-      label: 'Bill Payment Type',
+      key: 'paymentTypeId',  // Updated key
+      label: 'Payment Type',  // Updated label
       render: (row) => {
-        const billType = billTypes.find((type) => type.id === row.billPaymentTypeId);
-        return billType ? billType.typeName : 'Unknown';
+        const paymentType = paymentTypes.find((type) => type.id === row.paymentTypeId);  // Updated field
+        return paymentType ? paymentType.name : 'Unknown';  // Updated field
       },
     },
     { key: 'message', label: 'Message' },
@@ -154,7 +158,7 @@ const PaymentRequestsPage = () => {
     {
       key: 'dueDate',
       label: 'Due Date',
-      render: (row) => new Date(row.dueDate).toLocaleDateString(), 
+      render: (row) => new Date(row.dueDate).toLocaleDateString(),
     },
     { key: 'repeatedFor', label: 'Repeated For' },
     {
@@ -181,6 +185,7 @@ const PaymentRequestsPage = () => {
 
   return (
     <div>
+       {pageLoading ? (<LoadingComponent/>):(
       <TableComponent
         title="Payment Requests List"
         data={paymentRequests}
@@ -188,14 +193,14 @@ const PaymentRequestsPage = () => {
         exportable={true}
         showSearch={true}
       />
-
+    )}
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
           <div className="bg-base-100 p-6 rounded-md w-1/3 max-h-[80vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">Edit Payment Request</h2>
             <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label htmlFor="tenantId" className="block text-sm font-medium text-white-700">
                   Tenant Name
                 </label>
@@ -212,25 +217,25 @@ const PaymentRequestsPage = () => {
                     </option>
                   ))}
                 </select>
-              </div>
-              <div className="mb-4">
-                <label htmlFor="billPaymentTypeId" className="block text-sm font-medium text-white-700">
-                  Bill Payment Type
+              </div> */}
+              {/* <div className="mb-4">
+                <label htmlFor="paymentTypeId" className="block text-sm font-medium text-white-700">
+                  Payment Type
                 </label>
                 <select
-                  id="billPaymentTypeId"
-                  value={billPaymentTypeId}
-                  onChange={(e) => setBillPaymentTypeId(e.target.value)}
+                  id="paymentTypeId"
+                  value={paymentTypeId}
+                  onChange={(e) => setPaymentTypeId(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">Select Bill Payment Type</option>
-                  {billTypes.map((billType) => (
-                    <option key={billType.id} value={billType.id}>
-                      {billType.typeName}
+                  <option value="">Select Payment Type</option>
+                  {paymentTypes.map((paymentType) => (
+                    <option key={paymentType.id} value={paymentType.id}>
+                      {paymentType.name} 
                     </option>
                   ))}
                 </select>
-              </div>
+              </div> */}
               <div className="mb-4">
                 <label htmlFor="message" className="block text-sm font-medium text-white-700">
                   Message
@@ -281,13 +286,13 @@ const PaymentRequestsPage = () => {
               </div>
               <div className="mb-4">
                 <label htmlFor="repeatedFor" className="block text-sm font-medium text-white-700">
-                  Repeated For
+                  Status
                 </label>
                 <input
                   type="text"
-                  id="repeatedFor"
-                  value={repeatedFor}
-                  onChange={(e) => setRepeatedFor(e.target.value)}
+                  id="status"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -297,7 +302,7 @@ const PaymentRequestsPage = () => {
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
                   disabled={loading}
                 >
-                  {loading ? 'saving...':'Save'}
+                  {loading ? 'Saving...':'Save'}
                 </button>
                 <button
                   type="button"

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const ExpensePage = () => {
   const [expenses, setExpenses] = useState([]);
@@ -18,23 +19,23 @@ const ExpensePage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
+  const [pageLoading, setPageLoading] = useState(true); 
 
   useEffect(() => {
-    // Fetch expense data from the API
+    
     axios.get(`${process.env.REACT_APP_BASE_URL}expense`)
       .then((response) => {
-        // Map response to desired data format
         const expenseData = response.data.map(expense => ({
           id: expense.id,
           amount: expense.amount,
-          date: new Date(expense.date).toLocaleDateString(), // Format date
+          date: new Date(expense.date).toLocaleDateString(), 
           description: expense.description,
-          expenseType: expense.expenseType.name, // Extract expenseType name
+          expenseType: expense.expenseType.name,
         }));
 
         setExpenses(expenseData);
 
-        // Set columns based on your needs
+       
         setColumns([
           { label: 'Amount', key: 'amount' },
           { label: 'Date', key: 'date' },
@@ -65,8 +66,6 @@ const ExpensePage = () => {
       .catch((error) => {
         console.error('Error fetching expenses:', error);
       });
-
-    // Fetch expense types from API
     axios.get(`${process.env.REACT_APP_BASE_URL}expense-type`)
       .then((response) => {
         setExpenseTypes(response.data);

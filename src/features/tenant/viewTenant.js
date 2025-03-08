@@ -1,247 +1,226 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Modal from 'react-modal';
 import TableComponent from '../../components/table';
+import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const TenantList = () => {
   const [tenants, setTenants] = useState([]);
   const [units, setUnits] = useState([]);
   const [floors, setFloors] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedTenant, setSelectedTenant] = useState(null);
   const [editData, setEditData] = useState({
     fullName: '',
     phoneNumber: '',
+    email: '',
     nationalId: '',
     leaseStartDate: '',
     leaseEndDate: '',
     paymentStatus: '',
+    additionalNotes: '',
+    unitId: '',
+    floorId: '',
     advance: '',
-    carPlate: '',
-    unitNumber: '',
-    floorNumber: '',
-    status: '',
+    tin: '',
     document: '',
+    status: '',
+    description: '',
   });
 
-  // Fetch tenant data from the API
+  // Loading and Saving States
+  const [isPageLoading, setIsPageLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [modal, setModal] = useState({ isOpen: false, messageType: '', message: '' });
+
+  // Fetch tenant data, units, and floors from the API
   useEffect(() => {
-    const fetchTenants = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
-        setTenants(response.data);
-        console.log('Fetched tenants:', response.data);
-        setLoading(false);
+        const tenantResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
+        setTenants(tenantResponse.data);
+
+        const unitResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}unit`);
+        setUnits(unitResponse.data);
+
+        const floorResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}floor`);
+        setFloors(floorResponse.data);
+
+        setIsPageLoading(false);
       } catch (err) {
-        setError('Failed to fetch tenant data.');
-        setLoading(false);
+        setError('Failed to fetch data.');
+        setIsPageLoading(false);
       }
     };
-
-    const fetchUnits = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit`);
-        setUnits(response.data);
-      } catch (err) {
-        setError('Failed to fetch units.');
-      }
-    };
-
-    const fetchFloors = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}floor`);
-        setFloors(response.data);
-      } catch (err) {
-        setError('Failed to fetch floors.');
-      }
-    };
-
-    fetchTenants();
-    fetchUnits();
-    fetchFloors();
+    fetchData();
   }, []);
 
-  const getDocumentUrl = (document) => {
-    return `https://apartment.houseethiopia.com${document}`;
+  // Handle file change for document upload
+  const handleFileChange = (e) => {
+    setEditData({ ...editData, document: e.target.files[0] });
   };
 
-  const isImage = (fileName) => {
-    return /\.(jpg|jpeg|png|gif)$/i.test(fileName);
-  };
-
+  // Edit modal: Set initial values when edit button is clicked
   const handleEditClick = (tenant) => {
     setSelectedTenant(tenant);
     setEditData({
       fullName: tenant.fullName,
       phoneNumber: tenant.phoneNumber,
+      email: tenant.email,
       nationalId: tenant.nationalId,
       leaseStartDate: tenant.leaseStartDate,
       leaseEndDate: tenant.leaseEndDate,
       paymentStatus: tenant.paymentStatus,
+      additionalNotes: tenant.additionalNotes,
+      unitId: tenant.unitId,
+      floorId: tenant.floorId,
       advance: tenant.advance,
-      carPlate: tenant.carPlate,
-      unitNumber: tenant.Unit ? tenant.Unit.unitNumber : '',
-      floorNumber: tenant.Floor ? tenant.Floor.name : '',
-      status: tenant.status,
+      tin: tenant.tin,
       document: tenant.document,
+      status: tenant.status,
+      description: tenant.description,
     });
     setIsEditModalOpen(true);
   };
 
+  // Delete modal: Set selected tenant for deletion
+  const handleDeleteClick = (tenant) => {
+    setSelectedTenant(tenant);
+    setIsDeleteModalOpen(true);
+  };
+
+  // Submit edited data to the API
   const handleEditSubmit = async () => {
     try {
+      setIsSaving(true);
       const formData = new FormData();
       Object.keys(editData).forEach((key) => {
         formData.append(key, editData[key]);
       });
 
       await axios.put(`https://apartment.houseethiopia.com/api/tenant/${selectedTenant.id}`, formData, {
-        labels: {
+        headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
+      // Update tenant list with new data
       setTenants(tenants.map((tenant) => (tenant.id === selectedTenant.id ? { ...tenant, ...editData } : tenant)));
       setIsEditModalOpen(false);
+      setModal({
+        isOpen: true,
+        messageType: 'success',
+        message: 'Tenant updated successfully.',
+      });
     } catch (err) {
-      setError('An error occurred while updating the tenant data.');
+      setModal({
+        isOpen: true,
+        messageType: 'error',
+        message: 'An error occurred while updating the tenant data.',
+      });
+    } finally {
+      setIsSaving(false);
     }
   };
 
-  const handleDeleteClick = (tenant) => {
-    setSelectedTenant(tenant);
-    setIsDeleteModalOpen(true);
-  };
-
-  const handleDeleteConfirm = async () => {
+  // Submit delete request to the API
+  const handleDeleteSubmit = async () => {
     try {
       await axios.delete(`https://apartment.houseethiopia.com/api/tenant/${selectedTenant.id}`);
       setTenants(tenants.filter((tenant) => tenant.id !== selectedTenant.id));
       setIsDeleteModalOpen(false);
+      setModal({
+        isOpen: true,
+        messageType: 'success',
+        message: 'Tenant deleted successfully.',
+      });
     } catch (err) {
-      setError('An error occurred while deleting the tenant data.');
+      setModal({
+        isOpen: true,
+        messageType: 'error',
+        message: 'Failed to delete tenant.',
+      });
     }
   };
 
-  const handleFileChange = (e) => {
-    setEditData({ ...editData, document: e.target.files[0] });
+  // Close modal
+  const closeModal = () => {
+    setModal({ isOpen: false, messageType: '', message: '' });
   };
 
-  const handleDetailClick = (tenant) => {
-    setSelectedTenant(tenant);
-    setIsDetailModalOpen(true);
+  // Live validation for additional notes (min length 10 characters)
+  const validateAdditionalNotes = () => {
+    return editData.additionalNotes.length >= 10;
   };
-
-  const floorLookup = floors.reduce((acc, floor) => {
-    acc[floor.id] = floor.name;
-    return acc;
-  }, {});
-  const unitLookup = units.reduce((acc, unit) => {
-    acc[unit.id] = unit.unitNumber;
-    return acc;
-  }, {});
-
-  const columns = [
-    {
-      label: "Full Name",
-      key: "fullName",
-    },
-    {
-      label: "Phone Number",
-      key: "phoneNumber",
-    },
-    
-    {
-      label: "Payment Status",
-      key: "paymentStatus",
-    },
-    {
-      label: "Advance",
-      key: "advance",
-    },
-   
-    {
-      label: "Unit Number",
-      key: "unitNumber",
-      render: (row) => row.Unit?.unitNumber || "N/A",
-    },
-    {
-      label: "Floor",
-      key: "floorNumber",
-      render: (row) => row.Floor?.floorNumber || "N/A",
-    },
-    {
-      label: "Status",
-      key: "status",
-    },
-    
-    {
-      label: "Actions",
-      key: "actions",
-      render: (row ) => (
-        <div className="flex space-x-2">
-          <button
-            onClick={() => handleEditClick(row)}
-            className="bg-blue-500 text-white py-1 px-2 rounded"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => handleDeleteClick(row)}
-            className="bg-red-500 text-white py-1 px-2 rounded"
-          >
-            Delete
-          </button>
-          <button
-            onClick={() => handleDetailClick(row)}
-            className="bg-gray-400 text-white py-1 px-2 rounded"
-          >
-            Detail
-          </button>
-        </div>
-      ),
-    },
-  ];
-
-  const handleAddClick = () => {
-    window.location.href = '/tenant-add';
-  }
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      {/* Error message if fetching failed */}
-      {error && <div className="bg-red-300 p-3 mb-4 text-red-800">{error}</div>}
-
-      {/* Loading state */}
-      {loading ? (
-        <div className="text-center p-4">Loading tenants...</div>
+    <div>
+      {/* Page Loading */}
+      {isPageLoading ? (
+        <LoadingComponent/>
       ) : (
         <TableComponent
-  title="Tenant List"
-  data={tenants}
-  columns={columns}
-
-  rowsPerPageOptions={[5, 10, 15]}
-  showSearch={true}
-  exportable={true}
-  onAdd={handleAddClick}
-/>
+          title="Tenant List"
+          data={tenants}
+          columns={[
+            {
+              label: 'Full Name',
+              key: 'fullName',
+            },
+            {
+              label: 'Phone Number',
+              key: 'phoneNumber',
+            },
+            {
+              label: 'Payment Status',
+              key: 'paymentStatus',
+            },
+            {
+              label: 'Unit Number',
+              key: 'unitNumber',
+              render: (row) => row.Unit?.unitNumber || 'N/A',
+            },
+            {
+              label: 'Floor',
+              key: 'floorNumber',
+              render: (row) => row.Floor?.floorNumber || 'N/A',
+            },
+            {
+              label: 'Status',
+              key: 'status',
+            },
+            {
+              label: 'Actions',
+              key: 'actions',
+              render: (row) => (
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleEditClick(row)}
+                    className="bg-blue-500 text-white py-1 px-2 rounded"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(row)}
+                    className="bg-red-500 text-white py-1 px-2 rounded"
+                  >
+                    Delete
+                  </button>
+                </div>
+              ),
+            },
+          ]}
+        />
       )}
 
       {/* Edit Modal */}
       {isEditModalOpen && selectedTenant && (
-        <Modal
-          isOpen={isEditModalOpen}
-          onRequestClose={() => setIsEditModalOpen(false)}
-          contentLabel="Edit Tenant"
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-        >
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl mb-4">Edit Tenant</h2>
+
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Full Name</label>
               <input
@@ -257,6 +236,15 @@ const TenantList = () => {
                 type="text"
                 value={editData.phoneNumber}
                 onChange={(e) => setEditData({ ...editData, phoneNumber: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Email</label>
+              <input
+                type="email"
+                value={editData.email}
+                onChange={(e) => setEditData({ ...editData, email: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
               />
             </div>
@@ -297,46 +285,40 @@ const TenantList = () => {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Advance</label>
+              <label className="block text-sm font-medium mb-2">Additional Notes</label>
               <input
                 type="text"
-                value={editData.advance}
-                onChange={(e) => setEditData({ ...editData, advance: e.target.value })}
+                value={editData.additionalNotes}
+                onChange={(e) => setEditData({ ...editData, additionalNotes: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
               />
+              {editData.additionalNotes && editData.additionalNotes.length < 10 && (
+                <div className="text-red-500 text-xs mt-2">Notes must be at least 10 characters long.</div>
+              )}
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Car Plate</label>
-              <input
-                type="text"
-                value={editData.carPlate}
-                onChange={(e) => setEditData({ ...editData, carPlate: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Unit Number</label>
+              <label className="block text-sm font-medium mb-2">Unit</label>
               <select
-                value={editData.unitNumber}
-                onChange={(e) => setEditData({ ...editData, unitNumber: e.target.value })}
+                value={editData.unitId}
+                onChange={(e) => setEditData({ ...editData, unitId: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
               >
                 {units.map((unit) => (
-                  <option key={unit.id} value={unit.unitNumber}>
+                  <option key={unit.id} value={unit.id}>
                     {unit.unitNumber}
                   </option>
                 ))}
               </select>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Floor Number</label>
+              <label className="block text-sm font-medium mb-2">Floor</label>
               <select
-                value={editData.floorNumber}
-                onChange={(e) => setEditData({ ...editData, floorNumber: e.target.value })}
+                value={editData.floorId}
+                onChange={(e) => setEditData({ ...editData, floorId: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
               >
                 {floors.map((floor) => (
-                  <option key={floor.id} value={floor.name}>
+                  <option key={floor.id} value={floor.id}>
                     {floor.name}
                   </option>
                 ))}
@@ -352,6 +334,15 @@ const TenantList = () => {
               />
             </div>
             <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">TIN</label>
+              <input
+                type="text"
+                value={editData.tin}
+                onChange={(e) => setEditData({ ...editData, tin: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Document</label>
               <input
                 type="file"
@@ -359,7 +350,16 @@ const TenantList = () => {
                 className="w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            <div className="flex justify-between">
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Description</label>
+              <input
+                type="text"
+                value={editData.description}
+                onChange={(e) => setEditData({ ...editData, description: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
               <button
                 onClick={() => setIsEditModalOpen(false)}
                 className="bg-gray-400 text-white px-4 py-2 rounded"
@@ -369,25 +369,22 @@ const TenantList = () => {
               <button
                 onClick={handleEditSubmit}
                 className="bg-blue-500 text-white px-4 py-2 rounded"
+                disabled={!validateAdditionalNotes() || isSaving}
               >
-                Save
+                {isSaving ? 'Saving...' : 'Save'}
               </button>
             </div>
           </div>
-        </Modal>
+        </div>
       )}
 
-      {/* Delete Confirmation Modal */}
-      {isDeleteModalOpen && (
-        <Modal
-          isOpen={isDeleteModalOpen}
-          onRequestClose={() => setIsDeleteModalOpen(false)}
-          contentLabel="Delete Confirmation"
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
-        >
-          <div className="bg-white p-6 rounded-lg w-96">
-            <h2 className="text-xl mb-4">Are you sure you want to delete this tenant?</h2>
-            <div className="flex justify-between">
+      {/* Delete Modal */}
+      {isDeleteModalOpen && selectedTenant && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-base-100 p-6 rounded-lg w-98">
+            <h2 className="text-xl mb-4">Delete Tenant</h2>
+            <p>Are you sure you want to delete this tenant?</p>
+            <div className="flex justify-end space-x-2">
               <button
                 onClick={() => setIsDeleteModalOpen(false)}
                 className="bg-gray-400 text-white px-4 py-2 rounded"
@@ -395,95 +392,23 @@ const TenantList = () => {
                 Cancel
               </button>
               <button
-                onClick={handleDeleteConfirm}
+                onClick={handleDeleteSubmit}
                 className="bg-red-500 text-white px-4 py-2 rounded"
               >
-                Delete
+                Confirm
               </button>
             </div>
           </div>
-        </Modal>
+        </div>
       )}
 
-       {/* Detail Modal */}
-       {isDetailModalOpen && selectedTenant && (
-        <Modal
-          isOpen={isDetailModalOpen}
-          onRequestClose={() => setIsDetailModalOpen(false)}
-          contentLabel="Tenant Details"
-          className="fixed inset-0 bg-black bg-opacity-20 flex justify-center items-center mt-12"
-        >
-          <div className="bg-base-300 p-6 rounded-lg min-w-[72vh] max-h-[90vh] overflow-y-auto mt-10 ml-6">
-            <h2 className="text-xl mb-4">Tenant Details</h2>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Full Name</label>
-              <p className="text-sm">{selectedTenant.fullName}</p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Phone Number</label>
-              <p className="text-sm">{selectedTenant.phoneNumber}</p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">National ID</label>
-              <p className="text-sm">{selectedTenant.nationalId}</p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Lease Start Date</label>
-              <p className="text-sm">{selectedTenant.leaseStartDate ? new Date(selectedTenant.leaseStartDate).toLocaleDateString() : 'N/A'}</p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Lease End Date</label>
-              <p className="text-sm">{selectedTenant.leaseEndDate ? new Date(selectedTenant.leaseEndDate).toLocaleDateString() : 'N/A'}</p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Payment Status</label>
-              <p className="text-sm">{selectedTenant.paymentStatus}</p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Advance</label>
-              <p className="text-sm">{selectedTenant.advance || 'N/A'}</p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Car Plate</label>
-              <p className="text-sm">{selectedTenant.carPlate}</p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Unit Number</label>
-              <p className="text-sm">{selectedTenant.Unit ? selectedTenant.Unit.unitNumber : 'N/A'}</p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Floor Number</label>
-              <p className="text-sm">{selectedTenant.Floor ? selectedTenant.Floor.floorNumber : 'N/A'}</p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Status</label>
-              <p className="text-sm">{selectedTenant.status}</p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Document</label>
-              {selectedTenant.document ? (
-                isImage(selectedTenant.document) ? (
-                  <img src={getDocumentUrl(selectedTenant.document)} alt="Document" className="w-16 h-16 object-cover" />
-                ) : (
-                  <a href={getDocumentUrl(selectedTenant.document)} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
-                    View Document
-                  </a>
-                )
-              ) : (
-                'N/A'
-              )}
-            </div>
-            <div className="flex justify-end">
-              <button
-                onClick={() => setIsDetailModalOpen(false)}
-                className="bg-gray-400 text-white px-4 py-2 rounded"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </Modal>
-      )}
+      {/* Modal for success/error messages */}
+      <Modal 
+        isOpen={modal.isOpen}
+        onClose={closeModal}
+        messageType={modal.messageType}
+        message={modal.message}
+      />
     </div>
   );
 };

@@ -7,7 +7,7 @@ function InternalPage(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Get Tenant Payment"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

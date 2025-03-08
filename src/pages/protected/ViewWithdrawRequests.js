@@ -7,7 +7,7 @@ function InternalPage(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Withdrawal Requests"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../../components/table';
+import LoadingComponent from '../../../components/loading';
 
 const LowStockItems = () => {
   const [itemsData, setItemsData] = useState([]);
   const [loading, setLoading] = useState(true);
+  // const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState(null);
 
   // Columns definition for TableComponent
@@ -60,9 +62,7 @@ const LowStockItems = () => {
     <div className="p-6">
       {/* Loading State */}
       {loading ? (
-        <div className="text-center">
-          <p>Loading low stock items...</p>
-        </div>
+       <LoadingComponent/>
       ) : error ? (
         <div className="text-center text-red-500">
           <p>{error}</p>

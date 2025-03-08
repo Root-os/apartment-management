@@ -2,91 +2,104 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../../components/table';
 import Modal from '../../../components/Modal';
+import LoadingComponent from '../../../components/loading';
 
 const ItemsPage = () => {
   const [items, setItems] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false); // Added for details modal
   const [itemName, setItemName] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
   const [itemAmount, setItemAmount] = useState('');
   const [unit, setUnit] = useState('');
-  const [itemCategory, setItemCategory] = useState('');
   const [itemDetails, setItemDetails] = useState('');
-  const [itemTypeId, setItemTypeId] = useState('');
-  const [itemTypes, setItemTypes] = useState([]);
+  const [minAmount, setMinAmount] = useState('');
+  const [itemCategoryId, setItemCategoryId] = useState('');
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    // Fetch items from the API
+    // Fetching items
     axios
-      .get(`${process.env.REACT_APP_BASE_URL}items`)
+      .get('https://apartment.houseethiopia.com/api/items')
       .then((response) => {
         setItems(response.data);
       })
       .catch((error) => {
-        console.error('There was an error fetching the items:', error);
+        console.error('Error fetching items:', error);
       });
 
-    // Fetch item types from the API
+    // Fetching categories
     axios
-      .get(`${process.env.REACT_APP_BASE_URL}Item-types`)
+      .get('https://apartment.houseethiopia.com/api/item-types/')
       .then((response) => {
-        setItemTypes(response.data);
+        setCategories(response.data);
       })
       .catch((error) => {
-        console.error('There was an error fetching the item types:', error);
+        console.error('Error fetching categories:', error);
+      })
+      .finally(() => {
+        // Set loading to false after both requests are completed
+        setPageLoading(false);
       });
+
   }, []);
 
-  // Handle edit button click
   const handleEditClick = (item) => {
     setSelectedItem(item);
     setItemName(item.itemName);
-    setExpirationDate(new Date(item.expirationDate).toISOString().split('T')[0]); // Convert date to YYYY-MM-DD format
+    setExpirationDate(new Date(item.expirationDate).toISOString().split('T')[0]);
     setItemAmount(item.itemAmount);
     setUnit(item.unit);
-    setItemCategory(item.itemCategory);
     setItemDetails(item.itemDetails);
-    setItemTypeId(item.itemTypeId);
+    setMinAmount(item.min_amount);
+    setItemCategoryId(item.itemCategoryId || '');
     setIsEditModalOpen(true);
   };
 
-  // Handle delete button click
   const handleDeleteClick = (item) => {
     setSelectedItem(item);
     setIsDeleteModalOpen(true);
   };
 
-  // Handle edit request
+  const handleDetailsClick = (item) => {
+    setSelectedItem(item);
+    setIsDetailsModalOpen(true);
+  };
+
   const handleEdit = async () => {
     setLoading(true);
     try {
       const updatedItem = {
         itemName,
         expirationDate,
-        itemAmount,
+        itemAmount: parseInt(itemAmount),
         unit,
-        itemCategory,
         itemDetails,
-        itemTypeId,
+        min_amount: parseInt(minAmount),
+        itemCategoryId: parseInt(itemCategoryId) || null,
       };
 
-      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}items/${selectedItem.id}`, updatedItem);
+      const response = await axios.put(
+        `https://apartment.houseethiopia.com/api/items/${selectedItem.id}`,
+        updatedItem
+      );
+      
       const updatedData = items.map((item) =>
-        item.id === selectedItem.id ? response.data : item
+        item.id === selectedItem.id ? response.data.item : item
       );
       setItems(updatedData);
       setIsEditModalOpen(false);
       setSelectedItem(null);
-
       setModalOpen(true);
       setMessageType('success');
-      setMessage('Item updated successfully');
+      setMessage(response.data.message);
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');
@@ -96,15 +109,13 @@ const ItemsPage = () => {
     }
   };
 
-  // Handle delete request
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}items/${selectedItem.id}`);
+      await axios.delete(`https://apartment.houseethiopia.com/api/items/${selectedItem.id}`);
       setItems(items.filter((item) => item.id !== selectedItem.id));
       setIsDeleteModalOpen(false);
       setSelectedItem(null);
-
       setModalOpen(true);
       setMessageType('success');
       setMessage('Item deleted successfully');
@@ -117,28 +128,18 @@ const ItemsPage = () => {
     }
   };
 
+  // Reduced columns for simpler table view
   const columns = [
     { key: 'itemName', label: 'Item Name' },
+    { 
+      key: 'totalAmount', 
+      label: 'Total Amount',
+      render: (row) => row.totalAmount
+    },
     {
       key: 'expirationDate',
-      label: 'Expiration Date',
-      render: (row) => new Date(row.expirationDate).toLocaleString(), 
-    },
-    {
-      key: 'itemAmount',
-      label: 'Item Amount',
-      render: (row) => row.itemAmount, 
-    },
-    { key: 'unit', label: 'Unit' },
-    { key: 'itemCategory', label: 'Item Category' },
-    { key: 'itemDetails', label: 'Item Details' },
-    {
-      key: 'itemTypeId',
-      label: 'Item Type',
-      render: (row) => {
-        const itemType = itemTypes.find((type) => type.id === row.itemTypeId);
-        return itemType ? itemType.typeName : 'Unknown';
-      },
+      label: 'Expiration',
+      render: (row) => new Date(row.expirationDate).toLocaleDateString(),
     },
     {
       label: 'Actions',
@@ -146,14 +147,20 @@ const ItemsPage = () => {
       render: (row) => (
         <div className="flex justify-end space-x-2">
           <button
+            onClick={() => handleDetailsClick(row)}
+             className="bg-gray-400 text-white py-1 px-2 rounded"
+          >
+            Details
+          </button>
+          <button
             onClick={() => handleEditClick(row)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+            className="bg-blue-500 text-white px-3 py-1 rounded-md mr-2"
           >
             Edit
           </button>
           <button
             onClick={() => handleDeleteClick(row)}
-            className="bg-red-500 text-white px-4 py-2 rounded-md"
+            className="bg-red-500 text-white px-3 py-1 rounded-md"
           >
             Delete
           </button>
@@ -164,7 +171,7 @@ const ItemsPage = () => {
 
   return (
     <div>
-
+      {pageLoading ? (<LoadingComponent/>):(
       <TableComponent
         title="Items List"
         data={items}
@@ -172,7 +179,7 @@ const ItemsPage = () => {
         exportable={true}
         showSearch={true}
       />
-
+    )}
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
@@ -188,7 +195,8 @@ const ItemsPage = () => {
                   id="itemName"
                   value={itemName}
                   onChange={(e) => setItemName(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg"
+                  required
                 />
               </div>
               <div className="mb-4">
@@ -200,7 +208,8 @@ const ItemsPage = () => {
                   id="expirationDate"
                   value={expirationDate}
                   onChange={(e) => setExpirationDate(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg"
+                  required
                 />
               </div>
               <div className="mb-4">
@@ -212,7 +221,8 @@ const ItemsPage = () => {
                   id="itemAmount"
                   value={itemAmount}
                   onChange={(e) => setItemAmount(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg"
+                  required
                 />
               </div>
               <div className="mb-4">
@@ -224,20 +234,27 @@ const ItemsPage = () => {
                   id="unit"
                   value={unit}
                   onChange={(e) => setUnit(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg"
+                  required
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="itemCategory" className="block text-sm font-medium text-white-700">
-                  Item Category
+                <label htmlFor="itemCategoryId" className="block text-sm font-medium text-white-700">
+                  Category
                 </label>
-                <input
-                  type="text"
-                  id="itemCategory"
-                  value={itemCategory}
-                  onChange={(e) => setItemCategory(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                <select
+                  id="itemCategoryId"
+                  value={itemCategoryId}
+                  onChange={(e) => setItemCategoryId(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg"
+                >
+                  <option value="">Select Category</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.categoryName}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="mb-4">
                 <label htmlFor="itemDetails" className="block text-sm font-medium text-white-700">
@@ -247,26 +264,22 @@ const ItemsPage = () => {
                   id="itemDetails"
                   value={itemDetails}
                   onChange={(e) => setItemDetails(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg"
+                  required
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="itemTypeId" className="block text-sm font-medium text-white-700">
-                  Item Type
+                <label htmlFor="minAmount" className="block text-sm font-medium text-white-700">
+                  Minimum Amount
                 </label>
-                <select
-                  id="itemTypeId"
-                  value={itemTypeId}
-                  onChange={(e) => setItemTypeId(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Item Type</option>
-                  {itemTypes.map((itemType) => (
-                    <option key={itemType.id} value={itemType.id}>
-                      {itemType.typeName}
-                    </option>
-                  ))}
-                </select>
+                <input
+                  type="number"
+                  id="minAmount"
+                  value={minAmount}
+                  onChange={(e) => setMinAmount(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg"
+                  required
+                />
               </div>
               <div className="flex justify-end">
                 <button
@@ -274,7 +287,7 @@ const ItemsPage = () => {
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
                   disabled={loading}
                 >
-                  {loading ? 'saving...':'Save'}
+                  {loading ? 'Saving...' : 'Save'}
                 </button>
                 <button
                   type="button"
@@ -289,18 +302,76 @@ const ItemsPage = () => {
         </div>
       )}
 
+      {/* Details Modal */}
+      {isDetailsModalOpen && selectedItem && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
+          <div className="bg-base-100 p-6 rounded-md w-1/3 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">Item Details</h2>
+            <div className="space-y-4">
+              <div>
+                <span className="font-medium">Item Name:</span> {selectedItem.itemName}
+              </div>
+              <div>
+                <span className="font-medium">Item Amount:</span> {selectedItem.itemAmount}
+              </div>
+              <div>
+                <span className="font-medium">Purchase Amount:</span> {selectedItem.purchaseAmount}
+              </div>
+              <div>
+                <span className="font-medium">Total Amount:</span> {selectedItem.totalAmount}
+              </div>
+              <div>
+                <span className="font-medium">Unit:</span> {selectedItem.unit}
+              </div>
+              <div>
+                <span className="font-medium">Minimum Amount:</span> {selectedItem.min_amount}
+              </div>
+              <div>
+                <span className="font-medium">Expiration Date:</span> {new Date(selectedItem.expirationDate).toLocaleDateString()}
+              </div>
+              <div>
+                <span className="font-medium">Details:</span> {selectedItem.itemDetails}
+              </div>
+              <div>
+                <span className="font-medium">Category:</span> 
+                {categories.find(cat => cat.id === selectedItem.itemCategoryId)?.categoryName || 'Uncategorized'}
+              </div>
+              <div>
+                <span className="font-medium">Created At:</span> {new Date(selectedItem.createdAt).toLocaleString()}
+              </div>
+              <div>
+                <span className="font-medium">Updated At:</span> {new Date(selectedItem.updatedAt).toLocaleString()}
+              </div>
+            </div>
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={() => setIsDetailsModalOpen(false)}
+                className="bg-gray-400 text-white px-4 py-2 rounded-md"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Delete Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 p-6 rounded-lg w-98">
             <h2 className="text-xl mb-4">Are you sure you want to delete this item?</h2>
             <div className="flex justify-end space-x-2">
-              <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-              <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
+              <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">
+                Cancel
+              </button>
+              <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded">
+                Delete
+              </button>
             </div>
           </div>
         </div>
       )}
+
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

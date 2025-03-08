@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table'; 
-import DeleteConfirmationModal from '../../components/editDeleteModal'
-import Modal from '../../components/Modal'
+import DeleteConfirmationModal from '../../components/editDeleteModal';
+import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const PurchasesRequestPage = () => {
   const [data, setData] = useState([]);
@@ -19,8 +20,10 @@ const PurchasesRequestPage = () => {
 
   const [items, setItems] = useState([]); 
   const [users, setUsers] = useState([]); 
+  const [vendors, setVendors] = useState([]); // Added vendors state
   const [loadingItems, setLoadingItems] = useState(true); 
   const [loadingUsers, setLoadingUsers] = useState(true); 
+  const [loadingVendors, setLoadingVendors] = useState(true); // Added loadingVendors state
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); 
   const [selectedRequest, setSelectedRequest] = useState(null); 
@@ -33,7 +36,7 @@ const PurchasesRequestPage = () => {
     requestDate: '',
     reason: '',
     approvedBy: '',
-    vendorName: '',
+    vendorId: '', // Changed from vendorName to vendorId
     vendorPhone: ''
   }); 
 
@@ -83,9 +86,21 @@ const PurchasesRequestPage = () => {
         setLoadingUsers(false);
       }
     };
+
+    const fetchVendors = async () => {
+      try {
+        const response = await axios.get('https://apartment.houseethiopia.com/api/vendors');
+        setVendors(response.data);
+      } catch (err) {
+        console.error('Error fetching vendors:', err);
+      } finally {
+        setLoadingVendors(false);
+      }
+    };
   
     fetchItems();
     fetchUsers();
+    fetchVendors();
   }, []);
 
   const handleEditClick = (request) => {
@@ -98,7 +113,7 @@ const PurchasesRequestPage = () => {
       requestDate: request.requestDate.split('T')[0], 
       reason: request.reason,
       approvedBy: request.approvedBy,
-      vendorName: request.vendorName,
+      vendorId: request.vendorId || '', // Changed from vendorName to vendorId
       vendorPhone: request.vendorPhone
     });
     setIsEditModalOpen(true); 
@@ -106,40 +121,54 @@ const PurchasesRequestPage = () => {
 
   const handleSaveEdit = async () => {
     setIsLoading(true);
+  
+    // Optimistically update the state before server response
+    setData((prevData) =>
+      prevData.map((request) =>
+        request.id === selectedRequest.id
+          ? {
+              ...request,
+              ...editFormData, // Apply the edit form data to the request
+            }
+          : request
+      )
+    );
+  
     try {
+      // Send the update to the server
       const response = await axios.put(
         `${process.env.REACT_APP_BASE_URL}purchases-request/${selectedRequest.id}`,
         editFormData
       );
+  
+      // On success, update with the server response
       setData((prevData) =>
-        prevData.map(request =>
+        prevData.map((request) =>
+          request.id === selectedRequest.id ? response.data : request
+        )
+      );
+  
+      setIsEditModalOpen(false);
+      setModalOpen(true);
+      setMessageType('success');
+      setMessage('Request updated successfully!');
+    } catch (error) {
+      // On error, rollback the optimistic update
+      setData((prevData) =>
+        prevData.map((request) =>
           request.id === selectedRequest.id
             ? {
                 ...request,
-                status: response.data.status,
-                amount: response.data.amount,
-                requestDate: response.data.requestDate,
-                reason: response.data.reason,
-                vendorName: response.data.vendorName,
-                vendorPhone: response.data.vendorPhone,
+                ...editFormData, // Rollback to previous state
               }
             : request
         )
       );
-
-      setData(data.map(request =>
-        request.id === selectedRequest.id ? response.data : request
-      ));
-      setIsEditModalOpen(false); 
-
-      setModalOpen(true);
-      setMessageType('success');
-      setMessage(' Request updated successfully!')
-    } catch (error) {
+  
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Unable to edit Request!')
-    }finally {
+      setMessage('Unable to edit Request!');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -154,27 +183,25 @@ const PurchasesRequestPage = () => {
       await axios.delete(`${process.env.REACT_APP_BASE_URL}purchases-request/${id}`);
       setData(data.filter(request => request.id !== id)); 
       setIsDeleteModalOpen(false); 
-
       setModalOpen(true);
       setMessageType('success');
-      setMessage('Request deleted successfully!')
+      setMessage('Request deleted successfully!');
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Unable to delete request!')
+      setMessage('Unable to delete request!');
     }
   };
 
   const handleDetailClick = (request) => {
-    setSelectedDetailRequest(request); // Store the selected request for details
-    setIsDetailModalOpen(true); // Open the details modal
+    setSelectedDetailRequest(request);
+    setIsDetailModalOpen(true);
   };
 
   const handleCloseDetailModal = () => {
-    setIsDetailModalOpen(false); // Close the details modal
-    setSelectedDetailRequest(null); // Reset selected request
+    setIsDetailModalOpen(false);
+    setSelectedDetailRequest(null);
   };
-  
 
   const columns = [
     { 
@@ -187,20 +214,14 @@ const PurchasesRequestPage = () => {
       key: 'requestedby.fname', 
       render: (row) => row.requestedby ? `${row.requestedby.fname} ${row.requestedby.lname}` : 'N/A' 
     },
-    { label: 'Vendor Name', key: 'vendorName' },
-    // { label: 'Vendor Phone', key: 'vendorPhone' },
-    // { label: 'Amount', key: 'amount' },
-    // { 
-    //   label: 'Request Date', 
-    //   key: 'requestDate', 
-    //   render: (row) => {
-    //     if (row.requestDate) {
-    //       const date = new Date(row.requestDate);
-    //       return date.toLocaleDateString('en-US'); 
-    //     }
-    //     return 'N/A';
-    //   }
-    // },
+    { 
+      label: 'Vendor Name', 
+      key: 'vendorId', 
+      render: (row) => {
+        const vendor = vendors.find(v => v.id === row.vendorId);
+        return vendor ? vendor.fname : row.vendorName || 'N/A';
+      }
+    },
     { label: 'Status', key: 'status' },
     { 
       label: 'Approved By', 
@@ -208,65 +229,50 @@ const PurchasesRequestPage = () => {
       render: (row) => row.approvedby ? `${row.approvedby.fname} ${row.approvedby.lname}` : 'N/A' 
     },
     { label: 'Reason', key: 'reason' },
-    // { label: 'Item Category', key: 'item.itemCategory', render: (row) => row.item ? row.item.itemCategory : 'N/A' },
-    // { 
-    //     label: 'Item Expiration', 
-    //     key: 'item.expirationDate', 
-    //     render: (row) => {
-    //       if (row.item && row.item.expirationDate) {
-    //         const date = new Date(row.item.expirationDate);
-    //         return date.toLocaleDateString('en-US'); 
-    //       }
-    //       return 'N/A';
-    //     }
-    // },
     {
       label: 'Actions',
       key: 'actions',
       render: (row) => (
         <div className='flex space-x-1'>
-        <button
-          onClick={() => handleEditClick(row)} 
-          className="bg-blue-500 text-white px-4 py-2 rounded-md"
-        >
-          Edit
-        </button>
-         <button
-         onClick={() => handleDeleteClick(row)} // Trigger delete confirmation modal
-         className="bg-red-500 text-white px-4 py-2 rounded-md"
-       >
-         Delete
-       </button>
-       <button
-          onClick={() => handleDetailClick(row)} // Trigger details modal
-          className="bg-gray-400 text-white px-4 py-2 rounded-md"
-        >
-          Details
-        </button>
-       </div>
+          <button
+            onClick={() => handleEditClick(row)} 
+            className="bg-blue-500 text-white px-4 py-2 rounded-md"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => handleDeleteClick(row)}
+            className="bg-red-500 text-white px-4 py-2 rounded-md"
+          >
+            Delete
+          </button>
+          <button
+            onClick={() => handleDetailClick(row)}
+            className="bg-gray-400 text-white px-4 py-2 rounded-md"
+          >
+            Details
+          </button>
+        </div>
       ),
     }
   ];
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   if (error) {
     return <div>{error}</div>;
   }
 
   return (
-    <div className="p-6">
-      <TableComponent
-        title="Purchase Requests"
-        data={data}
-        columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
-        showSearch={true}
-        exportable={true}
-      />
-
+    <div>
+      {loading ? (<LoadingComponent/>) : (
+        <TableComponent
+          title="Purchase Requests"
+          data={data}
+          columns={columns}
+          rowsPerPageOptions={[5, 10, 15]}
+          showSearch={true}
+          exportable={true}
+        />
+      )}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-base-100 p-6 rounded-md w-1/3 max-h-[80vh] overflow-y-auto mt-12">
@@ -308,7 +314,7 @@ const PurchasesRequestPage = () => {
                   ) : (
                     users.map((user) => (
                       <option key={user.id} value={user.id}>
-                        {user.fname} 
+                        {user.fname}
                       </option>
                     ))
                   )}
@@ -368,7 +374,7 @@ const PurchasesRequestPage = () => {
                   ) : (
                     users.map((user) => (
                       <option key={user.id} value={user.id}>
-                        {user.fname} 
+                        {user.fname}
                       </option>
                     ))
                   )}
@@ -376,16 +382,26 @@ const PurchasesRequestPage = () => {
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm font-medium">Vendor Name</label>
-                <input
-                  type="text"
-                  value={editFormData.vendorName}
-                  onChange={(e) => setEditFormData({ ...editFormData, vendorName: e.target.value })}
+                <label className="block text-sm font-medium">Vendor</label>
+                <select
+                  value={editFormData.vendorId}
+                  onChange={(e) => setEditFormData({ ...editFormData, vendorId: e.target.value })}
                   className="mt-1 bg-base-100 w-full px-4 py-2 border rounded-md"
-                />
+                >
+                  <option value="">Select Vendor</option>
+                  {loadingVendors ? (
+                    <option>Loading...</option>
+                  ) : (
+                    vendors.map((vendor) => (
+                      <option key={vendor.id} value={vendor.id}>
+                        {vendor.fname}
+                      </option>
+                    ))
+                  )}
+                </select>
               </div>
 
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label className="block text-sm font-medium">Vendor Phone</label>
                 <input
                   type="text"
@@ -393,7 +409,7 @@ const PurchasesRequestPage = () => {
                   onChange={(e) => setEditFormData({ ...editFormData, vendorPhone: e.target.value })}
                   className="mt-1 bg-base-100 w-full px-4 py-2 border rounded-md"
                 />
-              </div>
+              </div> */}
 
               <div className="flex justify-end">
                 <button
@@ -401,7 +417,7 @@ const PurchasesRequestPage = () => {
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Saving...': 'Save '}
+                  {isLoading ? 'Saving...' : 'Save'}
                 </button>
                 <button
                   type="button"
@@ -416,42 +432,41 @@ const PurchasesRequestPage = () => {
         </div>
       )}
 
- {isDetailModalOpen && selectedDetailRequest && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div className="bg-base-100 p-6 rounded-md w-1/3 max-h-[80vh] overflow-y-auto mt-12">
-      <h2 className="text-xl font-semibold mb-4">Request Details</h2>
-      <p><strong>Item Name:</strong> {selectedDetailRequest.item ? selectedDetailRequest.item.itemName : 'N/A'}</p>
-      <p><strong>Requested By:</strong> {selectedDetailRequest.requestedby ? `${selectedDetailRequest.requestedby.fname} ${selectedDetailRequest.requestedby.lname}` : 'N/A'}</p>
-      <p><strong>Approved By:</strong> {selectedDetailRequest.approvedby ? `${selectedDetailRequest.approvedby.fname} ${selectedDetailRequest.approvedby.lname}` : 'N/A'}</p>
-      <p><strong>Vendor Name:</strong> {selectedDetailRequest.vendorName}</p>
-      <p><strong>Vendor Phone:</strong> {selectedDetailRequest.vendorPhone}</p>
-      <p><strong>Amount:</strong> {selectedDetailRequest.amount}</p>
-      <p><strong>Request Date:</strong> {new Date(selectedDetailRequest.requestDate).toLocaleDateString('en-US')}</p>
-      <p><strong>Status:</strong> {selectedDetailRequest.status}</p>
-      <p><strong>Reason:</strong> {selectedDetailRequest.reason}</p>
-      <button
-        onClick={handleCloseDetailModal}
-        className="bg-gray-400 text-white px-4 py-2 rounded-md mt-4"
-      >
-        Close
-      </button>
-    </div>
-  </div>
-)} 
+      {isDetailModalOpen && selectedDetailRequest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-base-100 p-6 rounded-md w-1/3 max-h-[80vh] overflow-y-auto mt-12">
+            <h2 className="text-xl font-semibold mb-4">Request Details</h2>
+            <p><strong>Item Name:</strong> {selectedDetailRequest.item ? selectedDetailRequest.item.itemName : 'N/A'}</p>
+            <p><strong>Requested By:</strong> {selectedDetailRequest.requestedby ? `${selectedDetailRequest.requestedby.fname} ${selectedDetailRequest.requestedby.lname}` : 'N/A'}</p>
+            <p><strong>Approved By:</strong> {selectedDetailRequest.approvedby ? `${selectedDetailRequest.approvedby.fname} ${selectedDetailRequest.approvedby.lname}` : 'N/A'}</p>
+            <p><strong>Vendor Name:</strong> {vendors.find(v => v.id === selectedDetailRequest.vendorId)?.fname || selectedDetailRequest.vendorName || 'N/A'}</p>
+            <p><strong>Vendor Phone:</strong> {selectedDetailRequest.vendorPhone}</p>
+            <p><strong>Amount:</strong> {selectedDetailRequest.amount}</p>
+            <p><strong>Request Date:</strong> {new Date(selectedDetailRequest.requestDate).toLocaleDateString('en-US')}</p>
+            <p><strong>Status:</strong> {selectedDetailRequest.status}</p>
+            <p><strong>Reason:</strong> {selectedDetailRequest.reason}</p>
+            <button
+              onClick={handleCloseDetailModal}
+              className="bg-gray-400 text-white px-4 py-2 rounded-md mt-4"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )} 
 
-  <DeleteConfirmationModal 
-  isOpen={isDeleteModalOpen}
-  onClose={() => setIsDeleteModalOpen(false)}
-  onDelete={handleDelete} 
-  data={selectedRequest} 
-/>
-<Modal
-       isOpen={modalOpen}
-       onClose={()=> setModalOpen(false)}
-       messageType={messageType}
-       message={message}
+      <DeleteConfirmationModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onDelete={handleDelete} 
+        data={selectedRequest} 
       />
-
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
+      />
     </div>
   );
 };

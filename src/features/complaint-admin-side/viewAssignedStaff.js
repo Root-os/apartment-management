@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
+import LoadingComponent from '../../components/loading';
 // import NoImageIcon from '../../assets/no-image-icon.png'; // Assuming you have a no-image icon in your assets
 
 const ComplaintsPage = () => {
@@ -9,11 +10,13 @@ const ComplaintsPage = () => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState(null);
   const token = localStorage.getItem('token');
 
   // Fetch employees data from API using Axios
   useEffect(() => {
+    
     const fetchEmployees = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/users`, {
@@ -25,6 +28,8 @@ const ComplaintsPage = () => {
       } catch (err) {
         setError('Error fetching employees');
         console.error(err);
+      }finally {
+        setPageLoading(false);
       }
     };
 
@@ -116,6 +121,7 @@ const ComplaintsPage = () => {
 
   return (
     <div>
+       {pageLoading ? (<LoadingComponent/>):(
       <div className="mb-4">
         <label htmlFor="employee" className="block text-lg font-medium text-white-700">Select Employee</label>
         <select
@@ -132,14 +138,12 @@ const ComplaintsPage = () => {
           ))}
         </select>
       </div>
-
-      {loading && <div>Loading...</div>}
+      )}
       {error && <div className="text-red-500">{error}</div>}
 
       {!loading && !error && complaints.length === 0 && selectedEmployeeId && (
         <div className="text-white-700">This employee is not assigned to a complaint.</div>
       )}
-
       <TableComponent
         title="Assigned Employee"
         data={complaints}
