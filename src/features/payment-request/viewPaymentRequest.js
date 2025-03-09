@@ -97,8 +97,8 @@ const PaymentRequestsPage = () => {
       setSelectedRequest(null);
 
       setModalOpen(true);
-      setMessageType('status');
-      setModalMessage('Payment request updated statusfully');
+      setMessageType('success');
+      setModalMessage('Payment request updated successfully');
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');
@@ -161,6 +161,7 @@ const PaymentRequestsPage = () => {
       render: (row) => new Date(row.dueDate).toLocaleDateString(),
     },
     { key: 'repeatedFor', label: 'Repeated For' },
+    { key: 'status', label: 'Status ' },
     {
       label: 'Actions',
       key: 'actions',
@@ -288,13 +289,17 @@ const PaymentRequestsPage = () => {
                 <label htmlFor="repeatedFor" className="block text-sm font-medium text-white-700">
                   Status
                 </label>
-                <input
-                  type="text"
+                <select
                   id="status"
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value={''}>Select status</option>
+                  <option value={'pending'}>Pending</option>
+                  <option value={'approved'}>Approved</option>
+                  <option value={'rejected'}>Rejected</option>
+                </select>
               </div>
               <div className="flex justify-end">
                 <button

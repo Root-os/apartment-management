@@ -8,25 +8,24 @@ import LoadingComponent from '../../components/loading';
 const PurchasesPage = () => {
   const [data, setData] = useState([]);
   const [items, setItems] = useState([]);
-  const [itemTypes, setItemTypes] = useState([]);
+  const [itemCategories, setItemCategories] = useState([]); // To store item categories
+  const [vendors, setVendors] = useState([]); // Added vendor state
   const [selectedPurchase, setSelectedPurchase] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [vendourName, setVendourName] = useState('');
-  const [vendourPhone, setVendourPhone] = useState('');
+
+  // Form state variables
+  const [vendorId, setVendorId] = useState('');
   const [amount, setAmount] = useState('');
   const [price, setPrice] = useState('');
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
   const [itemId, setItemId] = useState('');
-  const [itemTypeId, setItemTypeId] = useState('');
+  const [itemCategoryId, setItemCategoryId] = useState('');
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
 
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); 
-  
-
-
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [modalMessage, setModalMessage] = useState('');
@@ -53,25 +52,36 @@ const PurchasesPage = () => {
     axios
       .get(`${process.env.REACT_APP_BASE_URL}item-types`)
       .then((response) => {
-        setItemTypes(response.data);
+        setItemCategories(response.data);
       })
       .catch((error) => {
-        console.error('Error fetching item types:', error);
+        console.error('Error fetching item categories:', error);
+      });
+
+    // Fetch vendors
+    axios
+      .get('https://apartment.houseethiopia.com/api/vendors')
+      .then((response) => {
+        setVendors(response.data); // Set vendors from the external API
       })
-      .finally(()=>{setPageLoading(false);})
+      .catch((error) => {
+        console.error('Error fetching vendors:', error);
+      })
+      .finally(() => {
+        setPageLoading(false);
+      });
   }, []);
 
   const handleEditClick = (purchase) => {
     setSelectedPurchase(purchase);
-    setVendourName(purchase.vendourName);
-    setVendourPhone(purchase.vendourPhone);
+    setVendorId(purchase.vendorId); // Set vendorId instead of vendorName
     setAmount(purchase.amount);
     setPrice(purchase.price);
     setDate(purchase.date);
     setDescription(purchase.description);
     setExpirationDate(purchase.expirationDate.split('T')[0]);
     setItemId(purchase.itemId);
-    setItemTypeId(purchase.itemTypeId);
+    setItemCategoryId(purchase.ItemCategoryId);
     setIsEditModalOpen(true);
   };
 
@@ -79,15 +89,14 @@ const PurchasesPage = () => {
     setLoading(true);
     try {
       const updatedPurchase = {
-        vendourName,
-        vendourPhone,
+        vendorId,
         amount,
         price,
-        date,
         description,
+        date,
         expirationDate,
         itemId,
-        itemTypeId,
+        ItemCategoryId: itemCategoryId // Added ItemCategoryId in the payload
       };
 
       const response = await axios.put(
@@ -115,15 +124,15 @@ const PurchasesPage = () => {
   };
 
   const handleDeleteClick = (purchase) => {
-    setSelectedPurchase(purchase); 
-    setIsDeleteModalOpen(true); 
+    setSelectedPurchase(purchase);
+    setIsDeleteModalOpen(true);
   };
-  
+
   const handleDelete = async (purchaseId) => {
     try {
       await axios.delete(`${process.env.REACT_APP_BASE_URL}purchases/${purchaseId}`);
-      setData(data.filter((purchase) => purchase.id !== purchaseId)); // Remove from state after successful delete
-      setIsDeleteModalOpen(false); 
+      setData(data.filter((purchase) => purchase.id !== purchaseId));
+      setIsDeleteModalOpen(false);
       setModalOpen(true);
       setMessageType('success');
       setModalMessage('Purchase deleted successfully');
@@ -133,16 +142,23 @@ const PurchasesPage = () => {
       setModalMessage('Unable to delete purchase');
     }
   };
-  
 
   const columns = [
-    { label: 'Vendor Name', key: 'vendourName' },
-    { label: 'Vendor Phone', key: 'vendourPhone' },
     {
-      label: 'Item Type',
-      key: 'ItemType.typeName',
-      render: (row) => row.ItemType ? row.ItemType.typeName : 'N/A', 
+      label: 'Vendor Name',
+      key: 'vendorName',
+      render: (row) => row.Vendor ? `${row.Vendor.fname} ${row.Vendor.lname}` : 'N/A'
     },
+    {
+      label: 'Vendor Phone',
+      key: 'vendorPhone',
+      render: (row) => row.Vendor ? row.Vendor.phone : 'N/A'
+    },
+    // {
+    //   label: 'Item Type',
+    //   key: 'ItemType.typeName',
+    //   render: (row) => row.ItemType ? row.ItemType.typeName : 'N/A',
+    // },
     {
       label: 'Item Name',
       key: 'Item.itemName',
@@ -150,7 +166,6 @@ const PurchasesPage = () => {
     },
     { label: 'Description', key: 'description' },
     { label: 'Total Price', key: 'totalPrice' },
-    // { label: 'Item Category', key: 'Item.itemCategory' },
     { 
       label: 'Expiration Date', 
       key: 'expirationDate', 
@@ -161,40 +176,41 @@ const PurchasesPage = () => {
         }
         return 'N/A';
       }
-    },    
+    },
     {
       label: 'Actions',
       key: 'actions',
       render: (row) => (
         <div className="flex space-x-1">
-      <button
-        onClick={() => handleEditClick(row)} // Your existing edit button functionality
-        className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-      >
-        Edit
-      </button>
-      <button
-        onClick={() => handleDeleteClick(row)} // Trigger delete modal
-        className="bg-red-500 text-white px-4 py-2 rounded-md"
-      >
-        Delete
-      </button>
-    </div>
+          <button
+            onClick={() => handleEditClick(row)} 
+            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => handleDeleteClick(row)} 
+            className="bg-red-500 text-white px-4 py-2 rounded-md"
+          >
+            Delete
+          </button>
+        </div>
       ),
     },
   ];
 
   return (
     <div>
-       {pageLoading ? (<LoadingComponent/>):(
-      <TableComponent
-        title="Purchases List"
-        data={data}
-        columns={columns}
-        exportable={true}
-        showSearch={true}
-      />
-    )}
+      {pageLoading ? (<LoadingComponent />) : (
+        <TableComponent
+          title="Purchases List"
+          data={data}
+          columns={columns}
+          exportable={true}
+          showSearch={true}
+        />
+      )}
+      
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
@@ -202,28 +218,22 @@ const PurchasesPage = () => {
             <h2 className="text-2xl font-bold mb-4">Edit Purchase</h2>
             <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
               <div className="mb-4">
-                <label htmlFor="vendourName" className="block text-sm font-medium text-white-700">
+                <label htmlFor="vendorId" className="block text-sm font-medium text-white-700">
                   Vendor Name
                 </label>
-                <input
-                  type="text"
-                  id="vendourName"
-                  value={vendourName}
-                  onChange={(e) => setVendourName(e.target.value)}
+                <select
+                  id="vendorId"
+                  value={vendorId}
+                  onChange={(e) => setVendorId(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="vendourPhone" className="block text-sm font-medium text-white-700">
-                  Vendor Phone
-                </label>
-                <input
-                  type="text"
-                  id="vendourPhone"
-                  value={vendourPhone}
-                  onChange={(e) => setVendourPhone(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="">Select Vendor</option>
+                  {vendors.map((vendor) => (
+                    <option key={vendor.id} value={vendor.id}>
+                      {vendor.fname} {vendor.lname}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="mb-4">
                 <label htmlFor="amount" className="block text-sm font-medium text-white-700">
@@ -287,7 +297,7 @@ const PurchasesPage = () => {
               </div>
               <div className="mb-4">
                 <label htmlFor="itemId" className="block text-sm font-medium text-white-700">
-                  Item
+                  Item Name
                 </label>
                 <select
                   id="itemId"
@@ -304,28 +314,30 @@ const PurchasesPage = () => {
                 </select>
               </div>
               <div className="mb-4">
-          <label className="block text-sm font-medium text-white-700">Item Type</label>
-          <select
-            value={itemTypeId}
-            onChange={(e) => setItemTypeId(e.target.value)}
-            className="mt-1 bg-base-100 p-2 w-full border border-gray-300 rounded-md"
-            required
-          >
-            <option value="">Select Item Type</option>
-            {itemTypes.map((type) => (
-              <option key={type.id} value={type.id}>
-                {type.categoryName}
-              </option>
-            ))}
-          </select>
-        </div>
+                <label htmlFor="itemCategoryId" className="block text-sm font-medium text-white-700">
+                  Category Name
+                </label>
+                <select
+                  id="itemCategoryId"
+                  value={itemCategoryId}
+                  onChange={(e) => setItemCategoryId(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Category</option>
+                  {itemCategories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.typeName}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="flex justify-end">
                 <button
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
                   disabled={loading}
                 >
-                  {loading ? 'saving...': 'Save'}
+                  {loading ? 'Saving...': 'Save'}
                 </button>
                 <button
                   type="button"
@@ -342,9 +354,9 @@ const PurchasesPage = () => {
 
       <DeleteConfirmationModal
         isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)} 
-        onDelete={handleDelete} 
-        data={selectedPurchase} 
+        onClose={() => setIsDeleteModalOpen(false)}
+        onDelete={handleDelete}
+        data={selectedPurchase}
       />
 
       <Modal
