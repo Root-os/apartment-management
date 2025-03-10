@@ -104,6 +104,7 @@ const AddFloorUnit = () => {
       setVacatedDate('');
       setFloorId('');
       setLoading(false);
+      window.location.href='/app/unit-view';
     } catch (err) {
       setLoading(false);
       setModalOpen(true);

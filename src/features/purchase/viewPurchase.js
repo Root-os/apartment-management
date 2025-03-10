@@ -198,7 +198,9 @@ const PurchasesPage = () => {
       ),
     },
   ];
-
+  const handleAddClick = () => {
+    window.location.href = '/app/add-purchase';
+   };
   return (
     <div>
       {pageLoading ? (<LoadingComponent />) : (
@@ -208,6 +210,7 @@ const PurchasesPage = () => {
           columns={columns}
           exportable={true}
           showSearch={true}
+          onAdd={handleAddClick}
         />
       )}
       

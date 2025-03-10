@@ -121,6 +121,10 @@ const ViewMyRequest = () => {
     }
   ];
 
+  const handleAddClick = () => {
+    window.location.href = '/app/withdraw-request-add';
+   };
+
   return (
     <div>
       <TableComponent
@@ -130,6 +134,7 @@ const ViewMyRequest = () => {
         rowsPerPageOptions={[5, 10, 15]}
         showSearch={true}
         exportable={true}
+        onAdd={handleAddClick}
       />
 
       {isFeedbackModalOpen && (

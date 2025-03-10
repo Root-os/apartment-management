@@ -183,6 +183,9 @@ const PaymentRequestsPage = () => {
       ),
     },
   ];
+  const handleAddClick = () => {
+    window.location.href = '/app/payment-request-add';
+   };
 
   return (
     <div>
@@ -193,6 +196,7 @@ const PaymentRequestsPage = () => {
         columns={columns}
         exportable={true}
         showSearch={true}
+        onAdd={handleAddClick}
       />
     )}
       {/* Edit Modal */}

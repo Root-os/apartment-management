@@ -299,7 +299,9 @@ const TenantInventoryPage = () => {
       ),
     },
   ];
-
+  const handleAddClick = () => {
+    window.location.href = '/app/add-in-out';
+   };
   return (
     <div className="container mx-auto p-4">
       {loading && <LoadingComponent />}
@@ -313,6 +315,7 @@ const TenantInventoryPage = () => {
           columns={columns}
           exportable={true}
           showSearch={true}
+          onAdd={handleAddClick}
         />
       )}
 

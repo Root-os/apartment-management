@@ -87,6 +87,7 @@ const AddPaymentRequest = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('payment request data added successfully');
+      window.location.href='/app/payment-request-view';
     } catch (error) {
       console.error("Error creating payment request:", error);
       alert("Error creating payment request");
@@ -100,7 +101,7 @@ const AddPaymentRequest = () => {
 
   return (
     <>
-      <TitleCard title={'ADD'}>
+      <TitleCard title={'ADD Payment Request'}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Tenant Dropdown */}
         <div>

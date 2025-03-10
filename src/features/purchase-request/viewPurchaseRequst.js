@@ -260,7 +260,9 @@ const PurchasesRequestPage = () => {
   if (error) {
     return <div>{error}</div>;
   }
-
+  const handleAddClick = () => {
+    window.location.href = '/app/add-purchase-request';
+   };
   return (
     <div>
       {loading ? (<LoadingComponent/>) : (
@@ -271,6 +273,7 @@ const PurchasesRequestPage = () => {
           rowsPerPageOptions={[5, 10, 15]}
           showSearch={true}
           exportable={true}
+          onAdd={handleAddClick}
         />
       )}
       {isEditModalOpen && (

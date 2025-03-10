@@ -121,6 +121,9 @@ const TenantComplaintsPage = ({ tenantId }) => {
   if (loading) {
     return <LoadingComponent/>;
   }
+  const handleAddClick = () => {
+    window.location.href = '/app/complain-tenant-add';
+   };
 
   return (
     <div>
@@ -132,6 +135,7 @@ const TenantComplaintsPage = ({ tenantId }) => {
         rowsPerPageOptions={[5, 10, 15]}
         showSearch={true}
         exportable={true}
+        onAdd={handleAddClick}
       />
 
       {/* Confirm Modal */}

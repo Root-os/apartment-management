@@ -213,6 +213,10 @@ const MaintenancePage = () => {
     }
   ];
 
+  const handleAddClick = () => {
+    window.location.href = '/app/add-maintenance';
+   };
+
   return (
     <>
       {pageLoading ? (<LoadingComponent/>):(
@@ -223,6 +227,7 @@ const MaintenancePage = () => {
         rowsPerPageOptions={[5, 10, 15]}
         showSearch={true}
         exportable={true}
+        onAdd={handleAddClick}
       />
     )}
       {/* Edit Modal */}

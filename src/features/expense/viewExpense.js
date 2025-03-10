@@ -156,7 +156,7 @@ const ExpensePage = () => {
       setLoading(false);
     }
   };
- const handleAddClick = () => {window.location.href = '/expense-add';} 
+ const handleAddClick = () => {window.location.href = '/app/expense-add';} 
   return (
     <div >
       <TableComponent

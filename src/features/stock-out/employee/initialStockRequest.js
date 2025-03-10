@@ -86,6 +86,7 @@ const AddStockOutRequestPage = () => {
       setSource('store');
       setReason('');
       setRequestedQuantity('');
+      window.location.href='/app/employee-request-history';
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');

@@ -168,6 +168,9 @@ const ItemsPage = () => {
       ),
     },
   ];
+  const handleAddClick = () => {
+    window.location.href = '/app/item-add';
+   };
 
   return (
     <div>
@@ -178,6 +181,7 @@ const ItemsPage = () => {
         columns={columns}
         exportable={true}
         showSearch={true}
+        onAdd={handleAddClick}
       />
     )}
       {/* Edit Modal */}

@@ -214,6 +214,9 @@ const ItemAssignmentsPage = () => {
         )
       }
   ];
+  const handleAddClick = () => {
+    window.location.href = '/app/add-item-assignments';
+   };
 
   return (
     <div> 
@@ -225,6 +228,7 @@ const ItemAssignmentsPage = () => {
         rowsPerPageOptions={[5, 10, 15]}
         showSearch={true}
         exportable={true}
+        onAdd={handleAddClick}
       />
     )}
       {openModal && (

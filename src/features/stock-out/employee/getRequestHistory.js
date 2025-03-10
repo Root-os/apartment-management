@@ -196,6 +196,10 @@ const StockoutPage = () => {
     email: item.User ? item.User.email : 'Unknown',
   }));
 
+  const handleAddClick = () => {
+    window.location.href = '/app/employee-initial-request';
+   };
+
   return (
     <div>
       {loading ? (
@@ -208,6 +212,7 @@ const StockoutPage = () => {
           rowsPerPageOptions={[5, 10, 15]}
           exportable={true}
           showSearch={true}
+          onAdd={handleAddClick}
         />
       )}
 

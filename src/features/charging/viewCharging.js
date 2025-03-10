@@ -190,6 +190,10 @@ const ChargingPage = () => {
     return <div>{error}</div>;
   }
 
+  const handleAddClick = () => {
+    window.location.href = '/app/charging-add';
+   };
+
   return (
     <div> {pageLoading ? (<LoadingComponent/>):(
       <TableComponent
@@ -198,6 +202,7 @@ const ChargingPage = () => {
         columns={columns}
         showSearch={true}
         exportable={true}
+        onAdd={handleAddClick}
       />
     )}
 

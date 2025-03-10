@@ -154,6 +154,9 @@ const TenantList = () => {
   const validateAdditionalNotes = () => {
     return editData.additionalNotes.length >= 10;
   };
+  const handleAddClick = () => {
+    window.location.href = '/app/tenant-add';
+   };
 
   return (
     <div>
@@ -164,6 +167,7 @@ const TenantList = () => {
         <TableComponent
           title="Tenant List"
           data={tenants}
+          onAdd={handleAddClick}
           columns={[
             {
               label: 'Full Name',
