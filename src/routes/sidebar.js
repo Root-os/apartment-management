@@ -321,6 +321,21 @@ const adminRoutes =
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'View Payment Request',
       },
+      {
+        path: '/app/add-mass-salary',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Mass Payment',
+      },
+      {
+        path: '/app/add-single-salary',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Single Payment',
+      },
+      {
+        path: '/app/view-all-salary',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View All Payment',
+      },
     ]
   },
   // {
@@ -500,6 +515,16 @@ const adminRoutes =
         path: '/app/view-maintenance',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'View Maintenance info ',
+      },
+      {
+        path: '/app/add-return',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Return Add',
+      },
+      {
+        path: '/app/view-returns',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Returns',
       },
     ]
   },
@@ -853,6 +878,16 @@ const adminRoutes =
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Purchase requests ',
     },
+    {
+      path: '/app/add-vendor',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Vendor Add',
+    },
+    {
+      path: '/app/view-vendors',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Vendors',
+    },
     ]
   },
   // {
@@ -931,44 +966,44 @@ const adminRoutes =
   },
 
   //vendor
-  {
-    path: '', 
-    icon: <BuildingOfficeIcon className={`${iconClasses} inline` }/>, 
-    name: 'Vendor',  
-    submenu : [
+  // {
+  //   path: '', 
+  //   icon: <BuildingOfficeIcon className={`${iconClasses} inline` }/>, 
+  //   name: 'Vendor',  
+  //   submenu : [
      
-     {
-      path: '/app/add-vendor',
-      icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Vendor Add',
-    },
-    {
-      path: '/app/view-vendors',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'Vendors',
-    },
-    ]
-  },
+  //    {
+  //     path: '/app/add-vendor',
+  //     icon: <PlusIcon className={submenuIconClasses}/>,
+  //     name: 'Vendor Add',
+  //   },
+  //   {
+  //     path: '/app/view-vendors',
+  //     icon: <EyeIcon className={submenuIconClasses}/>,
+  //     name: 'Vendors',
+  //   },
+  //   ]
+  // },
 
   //return
-  { 
-    path: '', 
-    icon: <ArrowDownIcon className={`${iconClasses} inline` }/>, 
-    name: 'Return',  
-    submenu : [
+  // { 
+  //   path: '', 
+  //   icon: <ArrowDownIcon className={`${iconClasses} inline` }/>, 
+  //   name: 'Return',  
+  //   submenu : [
      
-     {
-      path: '/app/add-return',
-      icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Return Add',
-    },
-    {
-      path: '/app/view-returns',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'Returns',
-    },
-    ]
-  },
+  //    {
+  //     path: '/app/add-return',
+  //     icon: <PlusIcon className={submenuIconClasses}/>,
+  //     name: 'Return Add',
+  //   },
+  //   {
+  //     path: '/app/view-returns',
+  //     icon: <EyeIcon className={submenuIconClasses}/>,
+  //     name: 'Returns',
+  //   },
+  //   ]
+  // },
 
 
   //payment
@@ -1059,29 +1094,29 @@ const adminRoutes =
   //   },
   //   ]
   // },
-  {
-    path: '', 
-    icon: <ClipboardIcon className={`${iconClasses} inline` }/>, 
-    name: 'Salary',  
-    submenu : [
+  // {
+  //   path: '', 
+  //   icon: <ClipboardIcon className={`${iconClasses} inline` }/>, 
+  //   name: 'Salary',  
+  //   submenu : [
      
-     {
-      path: '/app/add-mass-salary',
-      icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Add Mass Payment',
-    },
-    {
-      path: '/app/add-single-salary',
-      icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Add Single Payment',
-    },
-    {
-      path: '/app/view-all-salary',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'View All Payment',
-    },
-    ]
-  },
+  //    {
+  //     path: '/app/add-mass-salary',
+  //     icon: <PlusIcon className={submenuIconClasses}/>,
+  //     name: 'Add Mass Payment',
+  //   },
+  //   {
+  //     path: '/app/add-single-salary',
+  //     icon: <PlusIcon className={submenuIconClasses}/>,
+  //     name: 'Add Single Payment',
+  //   },
+  //   {
+  //     path: '/app/view-all-salary',
+  //     icon: <EyeIcon className={submenuIconClasses}/>,
+  //     name: 'View All Payment',
+  //   },
+  //   ]
+  // },
 ]
 const routes = role === 'admin' ? adminRoutes : role === 'employee' ? employeeRoutes : tenantRoutes;
 export default routes

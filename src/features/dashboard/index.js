@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import LoadingComponent from '../../components/loading';
 import {
   FaBell,
   FaCreditCard,
@@ -156,7 +157,7 @@ const Dashboard = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingComponent/>;
   }
   if (error) {
     return <div>{error}</div>;
