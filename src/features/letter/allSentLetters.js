@@ -148,41 +148,40 @@ const AllSendLetterPage = () => {
     },
     { key: "description", label: "Description" },
     {
-      key: "letterDate",
-      label: "Send Date",
-      render: (row) => {
-        const date = new Date(row.letterDate);
-        return isNaN(date.getTime()) ? "Invalid Date" : date.toLocaleDateString();
-      },
-    },
-    {
       label: "Actions",
       key: "actions",
       render: (row) => (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 w-full md:grid md:grid-cols-2 md:gap-4">
+          {/* Edit Button */}
           <button
             onClick={() => handleEditClick(row)}
-            className="bg-blue-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
+            className="bg-blue-500 text-white px-2 py-1 rounded-md w-full sm:w-auto min-w-[80px] text-center"
           >
             Edit
           </button>
+
+          {/* Delete Button */}
           <button
             onClick={() => handleDeleteClick(row)}
-            className="bg-red-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
+            className="bg-red-500 text-white px-2 py-1 rounded-md w-full sm:w-auto min-w-[80px] text-center"
           >
             Delete
           </button>
+
+          {/* Detail Button */}
           <button
             onClick={() => handleDetailClick(row)}
-            className="bg-green-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
+            className="bg-green-500 text-white px-2 py-1 rounded-md w-full sm:w-auto min-w-[80px] text-center"
           >
             Detail
           </button>
+
+          {/* Generate PDF Button */}
           <button
             onClick={() => handleGeneratePdf(row)}
-            className="bg-yellow-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
+            className="bg-yellow-500 text-white px-2 py-1 rounded-md w-full sm:w-auto min-w-[80px] text-center"
           >
-            Generate PDF
+            PDF
           </button>
         </div>
       ),
