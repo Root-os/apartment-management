@@ -1,4 +1,3 @@
-import axios from "axios"
 
 const checkAuth = () => {
   const token = localStorage.getItem('token');  // Get token from localStorage
