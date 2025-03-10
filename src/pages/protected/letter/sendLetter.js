@@ -7,7 +7,7 @@ function AllLetter(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Send Letter to Tenant" }))
+        dispatch(setPageTitle({ title : "" }))
       }, [])
 
 

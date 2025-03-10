@@ -7,7 +7,7 @@ function ReturnReports(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Return Report"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

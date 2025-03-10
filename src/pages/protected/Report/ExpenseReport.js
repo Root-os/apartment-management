@@ -7,7 +7,7 @@ function AllExpenseReport(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Expense  Report"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 
