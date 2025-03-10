@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TableComponent from "../../components/table";
 import Modal from "../../components/Modal";
+import GeneratePdf from "../../components/letterPdfGenerator";
 
 const AllSendLetterPage = () => {
   const [letters, setLetters] = useState([]);
@@ -130,6 +131,10 @@ const AllSendLetterPage = () => {
     }
   };
 
+  const handleGeneratePdf = (letter) => {
+    GeneratePdf(letter);
+  };
+
   const columns = [
     {
       key: "LetterType.name",
@@ -172,6 +177,12 @@ const AllSendLetterPage = () => {
             className="bg-green-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
           >
             Detail
+          </button>
+          <button
+            onClick={() => handleGeneratePdf(row)}
+            className="bg-yellow-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
+          >
+            Generate PDF
           </button>
         </div>
       ),
