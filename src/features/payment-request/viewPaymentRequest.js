@@ -188,7 +188,7 @@ const PaymentRequestsPage = () => {
     <div>
        {pageLoading ? (<LoadingComponent/>):(
       <TableComponent
-        title="Payment Requests List"
+        title="Payment Requests"
         data={paymentRequests}
         columns={columns}
         exportable={true}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const MaintenanceReport = () => {
   const [maintenanceData, setMaintenanceData] = useState([]); // Store maintenance data
@@ -15,6 +16,7 @@ const MaintenanceReport = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Fetch unit list on component mount
   useEffect(() => {
@@ -28,6 +30,8 @@ const MaintenanceReport = () => {
         }
       } catch (error) {
         console.error('Error fetching unit list:', error);
+      }finally {
+        setLoading(false);
       }
     };
 
@@ -158,8 +162,8 @@ const MaintenanceReport = () => {
           </div>
         </form>
       </div>
-
       {/* Table for displaying maintenance report */}
+      {loading ? (<LoadingComponent/>):(
       <TableComponent
         title="Filtered Maintenance Report"
         data={maintenanceData || []}  // Ensure the data is always an array
@@ -168,7 +172,7 @@ const MaintenanceReport = () => {
         showSearch={true}
         exportable={true}
       />
-
+     )}
       {/* Modal for displaying error message */}
       {isModalOpen && (
         <Modal

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import TableComponent from '../../../components/table';
-import Modal from '../../../components/Modal'
+import Card from '../../../components/card';
+import Modal from '../../../components/Modal';
 import LoadingComponent from '../../../components/loading';
 
 const ItemTypesPage = () => {
@@ -16,6 +16,7 @@ const ItemTypesPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     setPageLoading(true);
@@ -30,6 +31,12 @@ const ItemTypesPage = () => {
         setPageLoading(false);
       });
   }, []);
+
+  // Filtered itemTypes based on the search term
+  const filteredItemTypes = itemTypes.filter((itemType) =>
+    itemType.categoryName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    itemType.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // Handle edit button click
   const handleEditClick = (itemType) => {
@@ -95,44 +102,56 @@ const ItemTypesPage = () => {
     }
   };
 
-  const columns = [
-    { key: 'categoryName', label: 'Category Name' },
-    { key: 'description', label: 'Description' },
+  // Actions for each card
+  const getCardActions = (itemType) => [
     {
-      label: 'Actions',
-      key: 'actions',
-      render: (row) => (
-        <>
-          <button
-            onClick={() => handleEditClick(row)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => handleDeleteClick(row)}
-            className="bg-red-500 text-white px-4 py-2 rounded-md"
-          >
-            Delete
-          </button>
-        </>
-      ),
+      label: 'Edit',
+      type: 'primary',
+      onClick: () => handleEditClick(itemType),
+    },
+    {
+      label: 'Delete',
+      type: 'secondary',
+      onClick: () => handleDeleteClick(itemType),
     },
   ];
 
   return (
     <>
-        {pageLoading ? (
-        <LoadingComponent/>
+      {/* Search Bar */}
+      <div className="p-4 mb-6">
+      <div className="text-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Item Types</h1>
+      </div>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search item types..."
+          className="w-full p-2 border border-gray-300 rounded-md"
+        />
+      </div>
+
+      {pageLoading ? (
+        <LoadingComponent />
       ) : (
-      <TableComponent
-        title="Item Types"
-        data={itemTypes}
-        columns={columns}
-        exportable={true}
-        showSearch={true}
-      />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        
+          {filteredItemTypes.length > 0 ? (
+            filteredItemTypes.map((itemType) => (
+              <Card
+                key={itemType.id}
+                title={itemType.categoryName}
+                content={itemType.description}
+                actions={getCardActions(itemType)}
+              />
+            ))
+          ) : (
+            <p>No item types found</p>
+          )}
+        </div>
       )}
+
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -168,7 +187,7 @@ const ItemTypesPage = () => {
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
                   disabled={loading}
                 >
-                  {loading ? 'saving...':'Save'}
+                  {loading ? 'Saving...' : 'Save'}
                 </button>
                 <button
                   type="button"
@@ -195,12 +214,13 @@ const ItemTypesPage = () => {
           </div>
         </div>
       )}
- <Modal
-  isOpen={modalOpen}
-  onClose={() => setModalOpen(false)}
-  messageType={messageType}
-  message={message}
- />
+
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
+      />
     </>
   );
 };

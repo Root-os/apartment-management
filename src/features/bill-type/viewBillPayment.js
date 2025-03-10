@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import TableComponent from '../../components/table';
+import Card from '../../components/card';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 
 const BillTablePage = () => {
   const [billData, setBillData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);  
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null); 
   const [selectedBill, setSelectedBill] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); 
@@ -15,36 +16,11 @@ const BillTablePage = () => {
   const [newTypeName, setNewTypeName] = useState('');
   const [newDescription, setNewDescription] = useState('');
   const [billToDelete, setBillToDelete] = useState(null); 
+  const [searchQuery, setSearchQuery] = useState('');
 
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
-
-  // Define columns for the TableComponent
-  const columns = [
-    { label: 'Type Name', key: 'typeName' },
-    { label: 'Description', key: 'description' },
-    {
-      label: 'Actions',
-      key: 'actions',
-      render: (row) => (
-        <>
-          <button
-            onClick={() => handleEdit(row)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => handleDeleteClick(row)}
-            className="bg-red-500 text-white px-4 py-2 rounded-md"
-          >
-            Delete
-          </button>
-        </>
-      ),
-    },
-  ];
 
   // Fetch data from API on component mount
   useEffect(() => {
@@ -52,6 +28,7 @@ const BillTablePage = () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-type`);
         setBillData(response.data); 
+        setFilteredData(response.data); // Set initial filtered data
       } catch (err) {
         setError('An error occurred while fetching the bill data.');
       } finally {
@@ -61,6 +38,17 @@ const BillTablePage = () => {
 
     fetchBillData();
   }, []); 
+
+  // Handle search
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+    const filteredBills = billData.filter(
+      (bill) =>
+        bill.typeName.toLowerCase().includes(e.target.value.toLowerCase()) ||
+        bill.description.toLowerCase().includes(e.target.value.toLowerCase())
+    );
+    setFilteredData(filteredBills);
+  };
 
   const handleEdit = (bill) => {
     setSelectedBill(bill);
@@ -78,6 +66,7 @@ const BillTablePage = () => {
     try {
       await axios.delete(`${process.env.REACT_APP_BASE_URL}bill-type/${billToDelete.id}`);
       setBillData(billData.filter((bill) => bill.id !== billToDelete.id));
+      setFilteredData(filteredData.filter((bill) => bill.id !== billToDelete.id)); // Update filtered data as well
       setIsDeleteModalOpen(false);
       setBillToDelete(null);
 
@@ -106,6 +95,7 @@ const BillTablePage = () => {
         bill.id === selectedBill.id ? response.data : bill
       );
       setBillData(updatedData);
+      setFilteredData(updatedData); // Update filtered data
       setIsEditModalOpen(false);
       setSelectedBill(null);
 
@@ -116,22 +106,51 @@ const BillTablePage = () => {
       setModalOpen(true);
       setMessageType('error');
       setMessage('Unable to update the bill.');
-    }finally {setIsLoading(false);}
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleAddClick = () => {window.location.href = '/bill-type-add';};
 
   return (
-    <div>
-      {loading ? (
-       <LoadingComponent/>
-      ) : (
-        <TableComponent
-          title="Payment Types"
-          data={billData}
-          columns={columns}
-          onAdd={handleAddClick} 
+    <div className="p-6">
+      {/* Title and Search Bar */}
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">Bill Types</h1>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={handleSearch}
+          placeholder="Search by Type Name or Description"
+          className="mt-4 w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
+      </div>
+
+      {loading ? (
+        <LoadingComponent />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredData.map((bill) => (
+            <Card
+              key={bill.id}
+              title={bill.typeName}
+              content={bill.description}
+              actions={[
+                {
+                  label: 'Edit',
+                  onClick: () => handleEdit(bill),
+                  type: 'primary',
+                },
+                {
+                  label: 'Delete',
+                  onClick: () => handleDeleteClick(bill),
+                  type: 'secondary',
+                },
+              ]}
+            />
+          ))}
+        </div>
       )}
 
       {/* Edit Modal */}

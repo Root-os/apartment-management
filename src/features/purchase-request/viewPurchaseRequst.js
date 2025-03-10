@@ -214,10 +214,13 @@ const PurchasesRequestPage = () => {
       key: 'requestedby.fname', 
       render: (row) => row.requestedby ? `${row.requestedby.fname} ${row.requestedby.lname}` : 'N/A' 
     },
-    {
-      label: 'Vendor Name',
-      key: 'vendorName',
-      render: (row) => row.vendor ? `${row.vendor.fname} ${row.vendor.lname}` : 'N/A'
+    { 
+      label: 'Vendor Name', 
+      key: 'vendorId', 
+      render: (row) => {
+        const vendor = vendors.find(v => v.id === row.vendorId);
+        return vendor ? vendor.fname : row.vendorName || 'N/A';
+      }
     },
     { label: 'Status', key: 'status' },
     { 

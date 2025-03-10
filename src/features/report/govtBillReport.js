@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const GovtBillReport = () => {
   const [billPayments, setBillPayments] = useState([]);
@@ -10,6 +11,7 @@ const GovtBillReport = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [filterParams, setFilterParams] = useState({
     startDate: '',
@@ -25,7 +27,7 @@ const GovtBillReport = () => {
         setBillTypes(response.data);
       } catch (error) {
         console.error('Error fetching bill types:', error);
-      }
+      }finally {setLoading(false);}
     };
 
     fetchBillTypes();
@@ -129,7 +131,7 @@ const GovtBillReport = () => {
           </div>
         </form>
       </div>
-
+      {loading ? (<LoadingComponent/>):(
       <TableComponent
         title="Filtered Bill Report"
         data={filteredData}
@@ -138,7 +140,7 @@ const GovtBillReport = () => {
         showSearch={true}
         exportable={true}
       />
-
+      )}
       {/* Modal for displaying error message */}
       {isModalOpen && (
         <Modal

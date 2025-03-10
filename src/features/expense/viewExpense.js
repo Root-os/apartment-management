@@ -95,25 +95,38 @@ const ExpensePage = () => {
   const handleEdit = async () => {
     setLoading(true);
     try {
+      // Prepare the payload
       const updatedExpense = {
         amount,
         date,
         description,
         expenseTypeId,
       };
-
+  
+      // Log the payload to see what is being sent
+      console.log("Payload being sent to API:", updatedExpense);
+  
+      // Send the PUT request
       const response = await axios.put(`${process.env.REACT_APP_BASE_URL}expense/${selectedExpense.id}`, updatedExpense);
+  
+      // Update the expense list with the updated expense
       const updatedData = expenses.map((expense) =>
-        expense.id === selectedExpense.id ? response.data : expense
+        expense.id === selectedExpense.id ? { ...expense, ...response.data } : expense
       );
+  
       setExpenses(updatedData);
       setIsEditModalOpen(false);
       setSelectedExpense(null);
-
+  
+      // Show success modal
       setModalOpen(true);
       setMessageType('success');
       setMessage('Expense updated successfully');
     } catch (error) {
+      // Log the error and response to get more details
+      console.error('Error while updating expense:', error);
+  
+      // Show error modal
       setModalOpen(true);
       setMessageType('error');
       setMessage('Unable to update expense');
@@ -121,6 +134,7 @@ const ExpensePage = () => {
       setLoading(false);
     }
   };
+
 
   // Handle delete request
   const handleDelete = async () => {
