@@ -125,6 +125,24 @@ const tenantRoutes =
     },
     ]
   },
+  {
+    path: '', 
+    icon: <ArrowUpIcon className={`${iconClasses} inline` }/>, 
+    name: 'Order',  
+    submenu : [
+     
+     {
+      path: '/app/view-order-menu',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Menu',
+    },
+    {
+      path: '/app/my-order',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'My Order',
+    },
+    ]
+  },
 ];
 
 const employeeRoutes = [

@@ -159,6 +159,9 @@ const AllSentLetters=lazy(() => import('../pages/protected/letter/allLetterSent'
 //order
 const addOrderType=lazy(() => import('../pages/protected/order/orderTypeAdd'))
 const orderType=lazy(() => import ('../pages/protected/order/viewOrdertype'))
+const tenantOrderPage=lazy(()=> import('../pages/protected/order/tenantOrderpage'))
+const myOrder=lazy(()=> import('../pages/protected/order/myOrder'))
+
 
 
 
@@ -190,6 +193,14 @@ const tenantRoutes = [
     path: '/tenant-view-in',
     component: tenantViewInOut,
   },
+  {
+    path: '/view-order-menu', 
+    component: tenantOrderPage,
+  },
+  {
+    path: '/my-order',
+    component: myOrder,
+  }
 ];
 
 const employeeRoutes = [
@@ -782,7 +793,8 @@ const adminRoutes = [
 {
   path: '/view-order-types', 
   component: orderType,
-}
+},
+
 
 ];
 const routes = role === 'tenant' ? tenantRoutes : role === 'employee' ? employeeRoutes : adminRoutes;
