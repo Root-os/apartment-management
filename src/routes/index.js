@@ -153,7 +153,14 @@ const LetterTypeAdd = lazy(() => import('../pages/protected/letter/addLetterType
 const letterTypeView = lazy(() => import('../pages/protected/letter/allLetterType'))
 const LetterSend = lazy(() => import('../pages/protected/letter/sendLetter'))
 const AllSentLetters=lazy(() => import('../pages/protected/letter/allLetterSent'))
+
 //stock
+
+//order
+const addOrderType=lazy(() => import('../pages/protected/order/orderTypeAdd'))
+const orderType=lazy(() => import ('../pages/protected/order/viewOrdertype'))
+
+
 
 
 const role = localStorage.getItem('role');
@@ -766,6 +773,16 @@ const adminRoutes = [
   path: '/view-stocks', 
   component: StockView, 
 },
+
+//order
+{
+  path: '/add-orderType', 
+  component: addOrderType,
+},
+{
+  path: '/view-order-types', 
+  component: orderType,
+}
 
 ];
 const routes = role === 'tenant' ? tenantRoutes : role === 'employee' ? employeeRoutes : adminRoutes;

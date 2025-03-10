@@ -955,7 +955,7 @@ const adminRoutes =
      {
       path: '/app/add-service-type',
       icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Service Type Add',
+      name: 'Add Service Type ',
     },
     {
       path: '/app/view-service-types',
@@ -964,6 +964,27 @@ const adminRoutes =
     },
     ]
   },
+  //order
+
+  {
+    path: '', 
+    icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
+    name: 'Order',  
+    submenu : [
+     
+     {
+      path: '/app/add-orderType',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Order Type',
+    },
+    {
+      path: '/app/view-order-types',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Order Type',
+    },
+    ]
+  },
+  
 
   //vendor
   // {
