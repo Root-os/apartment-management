@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TableComponent from "../../components/table";
-import Modal from "../../components/Modal"; // Assuming there is a Modal component already
+import Modal from "../../components/Modal"; 
+import LoadingComponent from '../../components/loading';
 
 const PaymentReport = () => {
   const [paymentData, setPaymentData] = useState([]);
@@ -16,7 +17,8 @@ const PaymentReport = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalType, setModalType] = useState("error"); // success, error, warning
+  const [modalType, setModalType] = useState("error"); 
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Fetch vendors
@@ -27,7 +29,7 @@ const PaymentReport = () => {
       })
       .catch((error) => {
         console.error("There was an error fetching the vendors:", error);
-      });
+      })
   }, []);
 
   // Handle filter submit
@@ -202,8 +204,8 @@ const PaymentReport = () => {
           </div>
         </form>
       </div>
-
       {/* Table for displaying payment report */}
+      {loading ? (<LoadingComponent/>):(
       <TableComponent
         title="Filtered Payment Report"
         data={paymentData || []} // Ensure the data is always an array
@@ -212,7 +214,7 @@ const PaymentReport = () => {
         showSearch={true}
         exportable={true}
       />
-
+    )}
       {/* Modal for displaying success or error message */}
       {isModalOpen && (
         <Modal

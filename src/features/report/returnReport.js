@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const ReturnReport = () => {
   const [returnData, setReturnData] = useState([]);
@@ -16,6 +17,7 @@ const ReturnReport = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Fetch vendors
@@ -36,7 +38,8 @@ const ReturnReport = () => {
       })
       .catch((error) => {
         console.error('There was an error fetching the items:', error);
-      });
+      })
+      .finally (()=>{setLoading(false);})
   }, []);
 
   // Handle filter submit
@@ -156,8 +159,8 @@ const ReturnReport = () => {
           </div>
         </form>
       </div>
-
       {/* Table for displaying return report */}
+      {loading ? (<LoadingComponent/>):(
       <TableComponent
         title="Filtered Return Report"
         data={returnData || []}  // Ensure the data is always an array
@@ -166,7 +169,7 @@ const ReturnReport = () => {
         showSearch={true}
         exportable={true}
       />
-
+      )}
       {/* Modal for displaying error message */}
       {isModalOpen && (
         <Modal

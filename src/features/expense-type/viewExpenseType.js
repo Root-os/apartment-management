@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import TableComponent from '../../components/table';
+import Card from '../../components/card';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 
@@ -8,9 +8,9 @@ const ExpensePage = () => {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null); 
-  const [showModal, setShowModal] = useState(false); 
-  const [selectedExpense, setSelectedExpense] = useState(null); 
+  const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedExpense, setSelectedExpense] = useState(null);
   const [expenseName, setExpenseName] = useState('');
   const [expenseDescription, setExpenseDescription] = useState('');
 
@@ -20,6 +20,7 @@ const ExpensePage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     const fetchExpenses = async () => {
@@ -34,6 +35,12 @@ const ExpensePage = () => {
     };
     fetchExpenses();
   }, []);
+
+  // Filtered expenses based on the search term
+  const filteredExpenses = expenses.filter((expense) =>
+    expense.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    expense.description.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // Open modal with data to edit
   const handleEdit = (expense) => {
@@ -56,7 +63,6 @@ const ExpensePage = () => {
     setIsLoading(true);
     e.preventDefault();
     try {
-
       await axios.put(`${process.env.REACT_APP_BASE_URL}expense-type/${selectedExpense.id}`, {
         name: expenseName,
         description: expenseDescription,
@@ -71,7 +77,6 @@ const ExpensePage = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('Expense updated successfully');
-      
     } catch (err) {
       setIsLoading(false);
       setModalOpen(true);
@@ -97,59 +102,60 @@ const ExpensePage = () => {
       setMessageType('success');
       setMessage('Expense deleted successfully');
     } catch (err) {
-       setModalOpen(true);
-       setMessageType('error');
+      setModalOpen(true);
+      setMessageType('error');
       setMessage('An error occurred while deleting the expense.');
     }
   };
 
-  const columns = [
+  // Actions for each card
+  const getCardActions = (expense) => [
     {
-      label: "Name",
-      key: "name",
+      label: 'Edit',
+      type: 'primary',
+      onClick: () => handleEdit(expense),
     },
     {
-      label: "Description",
-      key: "description",
-    },
-    {
-      label: "Actions",
-      key: "actions",
-      render: (row) => (
-        <div className="flex space-x-2">
-          <button
-            onClick={() => handleEdit(row)}
-            className="bg-blue-500 text-white px-4 py-1 rounded-md mr-2"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => handleDeleteClick(row)}
-            className="bg-red-500 text-white px-4 py-1 rounded-md"
-          >
-            Delete
-          </button>
-        </div>
-      ),
+      label: 'Delete',
+      type: 'secondary',
+      onClick: () => handleDeleteClick(expense),
     },
   ];
 
-  const handleAddClick = () => {window.location.href = '/app/expense-add'};
-
   return (
-    <div>
+    <div className="p-4">
+      {/* Search Bar */}
+      <div className="mb-6">
+      <div className="text-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Expense Types</h1>
+      </div>
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search expenses..."
+          className="w-full p-2 border border-gray-300 rounded-md"
+        />
+      </div>
+
       {loading ? (
-        <LoadingComponent/>
+        <LoadingComponent />
       ) : (
-        <TableComponent
-        title="Types"
-        data={expenses}
-        columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
-        showSearch={true}
-        exportable={true}
-        onAdd={handleAddClick}
-      />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <h1 className="text-3xl font-bold">Expence Types</h1>
+          {filteredExpenses.length > 0 ? (
+            filteredExpenses.map((expense) => (
+              <Card
+                key={expense.id}
+                title={expense.name}
+                content={expense.description}
+                actions={getCardActions(expense)}
+              />
+            ))
+          ) : (
+            <p>No expenses found</p>
+          )}
+        </div>
       )}
 
       {/* Edit Modal */}
@@ -159,9 +165,7 @@ const ExpensePage = () => {
             <h2 className="text-2xl font-bold mb-4">Edit Expense</h2>
             <form onSubmit={handleSubmitEdit}>
               <div className="mb-4">
-                <label htmlFor="name" className="block text-white-700">
-                  Name
-                </label>
+                <label htmlFor="name" className="block text-white-700">Name</label>
                 <input
                   type="text"
                   id="name"
@@ -172,9 +176,7 @@ const ExpensePage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="description" className="block text-white-700">
-                  Description
-                </label>
+                <label htmlFor="description" className="block text-white-700">Description</label>
                 <textarea
                   id="description"
                   value={expenseDescription}
@@ -196,7 +198,7 @@ const ExpensePage = () => {
                   className="bg-blue-500 text-white px-4 py-1 rounded-md"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'saving...':'Save Changes'}
+                  {isLoading ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </form>

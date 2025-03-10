@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const ServiceTypesPage = () => {
   const [serviceTypes, setServiceTypes] = useState([]);
@@ -14,6 +15,7 @@ const ServiceTypesPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     axios
@@ -23,7 +25,8 @@ const ServiceTypesPage = () => {
       })
       .catch((error) => {
         console.error('There was an error fetching the service types:', error);
-      });
+      })
+      .finally (()=>{setIsLoading(false);})
   }, []);
 
   // Handle edit button click
@@ -116,8 +119,8 @@ const ServiceTypesPage = () => {
   ];
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-4">Service Types</h1>
+    <div >
+      {loading ? (<LoadingComponent/>):(
       <TableComponent
         title="Service Types List"
         data={serviceTypes}
@@ -125,7 +128,7 @@ const ServiceTypesPage = () => {
         exportable={true}
         showSearch={true}
       />
-
+      )}
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

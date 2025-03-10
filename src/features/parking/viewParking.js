@@ -4,6 +4,20 @@ import TableComponent from '../../components/table';
 import Modal from '../../components/Modal'; 
 import LoadingComponent from '../../components/loading';
 
+// Utility function to format ISO date strings into human-readable format
+const formatDate = (isoDateString) => {
+  if (!isoDateString) return 'N/A'; // Handle null or undefined dates
+  const date = new Date(isoDateString);
+  return date.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  });
+};
+
 const ParkingPage = () => {
   const [parkingData, setParkingData] = useState([]);
   const [selectedParking, setSelectedParking] = useState(null);
@@ -119,8 +133,16 @@ const ParkingPage = () => {
     { label: 'Car Name', key: 'carName' },
     { label: 'Driver Name', key: 'driverName' },
     { label: 'Driver Phone', key: 'driverPhone' },
-    { label: 'Time In', key: 'timeIn' },
-    { label: 'Time Out', key: 'timeOut' },
+    { 
+      label: 'Time In', 
+      key: 'timeIn',
+      render: (row) => formatDate(row.timeIn), // Format Time In
+    },
+    { 
+      label: 'Time Out', 
+      key: 'timeOut',
+      render: (row) => formatDate(row.timeOut), // Format Time Out
+    },
     { label: 'Status', key: 'status' },
     {
       label: 'Actions',
@@ -212,11 +234,14 @@ const ParkingPage = () => {
               <div className="mb-4">
                 <label htmlFor="timeIn" className="block text-sm font-medium text-white-700">Time In</label>
                 <input
-                  type="datetime-local"
+                  type="text"
                   id="timeIn"
-                  value={timeIn}  // Time In value is set, but the field is not editable
-                  disabled
+                  value={formatDate(timeIn)} // Display human-readable format
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <input
+                  type="hidden"
+                  value={timeIn} // Preserve original ISO format for submission
                 />
               </div>
               <div className="mb-4">

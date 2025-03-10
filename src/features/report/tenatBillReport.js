@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const TenantBillReport = () => {
   const [tenantPayments, setTenantPayments] = useState([]);
@@ -11,6 +12,7 @@ const TenantBillReport = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [filterParams, setFilterParams] = useState({
     startDate: "",
@@ -27,7 +29,7 @@ const TenantBillReport = () => {
         setTenants(response.data);
       } catch (error) {
         console.error("Error fetching tenants:", error);
-      }
+      }finally {setLoading(false);}
     };
 
     const fetchBillTypes = async () => {
@@ -146,7 +148,7 @@ const TenantBillReport = () => {
           </div>
         </form>
       </div>
-
+      {loading ? (<LoadingComponent/>):(
       <TableComponent
         title="Filtered Tenant Bill Report"
         data={filteredData}
@@ -155,7 +157,7 @@ const TenantBillReport = () => {
         showSearch={true}
         exportable={true}
       />
-
+    )}
       {/* Modal for displaying error message */}
       {isModalOpen && (
         <Modal

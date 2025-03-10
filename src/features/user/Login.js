@@ -30,12 +30,9 @@ function Login() {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}auth/login`, {
         email: loginObj.email,
         password: loginObj.password,
-      },
-      // {
-      //   timeout: 10000, // 5 seconds timeout
-      // }
-    );
-  console.log('response ',response);
+      });
+
+      console.log('response ',response);
       if (response.data.token) {
         // Save token to localStorage
         const savedToken = localStorage.setItem('token', response.data.token);
@@ -111,12 +108,20 @@ function Login() {
               </div> */}
 
               <ErrorText styleClass="mt-8">{errorMessage}</ErrorText>
+
               <button
                 type="submit"
-                className={`btn mt-2 w-full btn-primary ${loading ? 'loading' : ''}`}
+                className={`btn mt-2 w-full flex items-center justify-center py-3 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 
+                  ${loading ? 'bg-blue-600 text-white cursor-not-allowed' : 'bg-primary text-white'}`}
+                disabled={loading} // Disable the button while loading
               >
-                Login
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-t-2 border-t-transparent border-white rounded-full animate-spin mr-2"></div>
+                ) : (
+                  'Login'
+                )}
               </button>
+
 
               {/* <div className="text-center mt-4">
                 Don't have an account yet?{' '}

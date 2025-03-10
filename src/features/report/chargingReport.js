@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const ChargingReport = () => {
   const [chargingData, setChargingData] = useState([]); 
@@ -18,8 +19,10 @@ const ChargingReport = () => {
   const [messageType, setMessageType] = useState('success')
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    
       const fetchTenants = async () => {
         try {
           const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
@@ -35,7 +38,7 @@ const ChargingReport = () => {
         setCarList(response.data);  
       } catch (error) {
         console.error('Error fetching car list:', error);
-      }
+      }finally {setLoading(false);}
     };
 
     fetchTenants();
@@ -78,8 +81,9 @@ const ChargingReport = () => {
   ];
 
   return (
-    <div className="p-8">
+    <div>
       <div className="container mx-auto p-4">
+        
         <h2 className="text-2xl font-bold mb-6">Charging Report</h2>
 
         {/* Filter form */}
@@ -170,6 +174,7 @@ const ChargingReport = () => {
       </div>
 
       {/* Table for displaying charging report */}
+      {loading ? (<LoadingComponent/>):(
       <TableComponent
         title="Filtered Charging Report"
         data={chargingData || []}  // Ensure the data is always an array
@@ -178,7 +183,7 @@ const ChargingReport = () => {
         showSearch={true}
         exportable={true}
       />
-
+    )}
       {/* Modal for displaying error message */}
       {isModalOpen && (
         <Modal

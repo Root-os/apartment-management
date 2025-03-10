@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const ItemAssignmentReport = () => {
   const [itemAssignments, setItemAssignments] = useState([]); // Store item assignments data
@@ -14,6 +15,7 @@ const ItemAssignmentReport = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Fetch items data
   useEffect(() => {
@@ -23,7 +25,7 @@ const ItemAssignmentReport = () => {
         setItems(response.data); // Store items in state
       } catch (error) {
         console.error('Error fetching items:', error);
-      }
+      } finally {setLoading(false);}
     };
     fetchItems();
   }, []);
@@ -135,6 +137,7 @@ const ItemAssignmentReport = () => {
       </div>
 
       {/* Table for displaying item assignments report */}
+      {loading ? (<LoadingComponent/>):(
       <TableComponent
         title="Filtered Item Assignment Report"
         data={itemAssignments || []}
@@ -143,7 +146,7 @@ const ItemAssignmentReport = () => {
         showSearch={true}
         exportable={true}
       />
-
+      )}
       {/* Modal for displaying error message */}
       {isModalOpen && (
         <Modal

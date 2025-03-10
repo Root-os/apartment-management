@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import TableComponent from '../../components/table';
+import Card from '../../components/card'; // Import the Card component
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 
@@ -16,6 +16,7 @@ const NotificationPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [modalMessage, setModalMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Fetch notification data function
   const fetchNotificationData = async () => {
@@ -33,6 +34,11 @@ const NotificationPage = () => {
   useEffect(() => {
     fetchNotificationData();
   }, []);
+
+  // Filtered notificationData based on the search term
+  const filteredNotificationData = notificationData.filter((notification) =>
+    notification.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   // Handle edit button click
   const handleEditClick = (notification) => {
@@ -64,23 +70,17 @@ const NotificationPage = () => {
         updatedNotification
       );
 
-      // Optimistically update the state
-      setNotificationData((prevData) =>
-        prevData.map((notification) =>
-          notification.id === selectedNotification.id ? { ...notification, ...response.data } : notification
-        )
-      );
+      // After updating, directly fetch the updated data instead of optimistic update
+      await fetchNotificationData();
 
       setIsEditModalOpen(false);
       setSelectedNotification(null);
       setName('');
-      
+
       setModalOpen(true);
       setMessageType('success');
       setModalMessage('Notification type updated successfully');
     } catch (error) {
-      // Revert to fetching fresh data on error
-      await fetchNotificationData();
       setModalOpen(true);
       setMessageType('error');
       setModalMessage(error.response?.data?.message || 'Unable to update notification type');
@@ -96,10 +96,8 @@ const NotificationPage = () => {
     try {
       await axios.delete(`${process.env.REACT_APP_BASE_URL}notification-type/${selectedNotification.id}`);
 
-      // Optimistically update the state
-      setNotificationData((prevData) =>
-        prevData.filter((notification) => notification.id !== selectedNotification.id)
-      );
+      // After deleting, directly fetch the updated data instead of optimistic update
+      await fetchNotificationData();
 
       setIsDeleteModalOpen(false);
       setSelectedNotification(null);
@@ -108,8 +106,6 @@ const NotificationPage = () => {
       setMessageType('success');
       setModalMessage('Notification type deleted successfully');
     } catch (error) {
-      // Revert to fetching fresh data on error
-      await fetchNotificationData();
       setModalOpen(true);
       setMessageType('error');
       setModalMessage(error.response?.data?.message || 'Unable to delete notification type');
@@ -119,46 +115,57 @@ const NotificationPage = () => {
     }
   };
 
-  const columns = [
-    { label: 'Name', key: 'name' },
+  // Actions for each card
+  const getCardActions = (notification) => [
     {
-      label: 'Actions',
-      key: 'actions',
-      render: (row) => (
-        <div className="flex justify-end space-x-2">
-          <button
-            onClick={() => handleEditClick(row)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => handleDeleteClick(row)}
-            className="bg-red-500 text-white px-4 py-2 rounded-md"
-          >
-            Delete
-          </button>
-        </div>
-      ),
+      label: 'Edit',
+      type: 'primary',
+      onClick: () => handleEditClick(notification),
+    },
+    {
+      label: 'Delete',
+      type: 'secondary',
+      onClick: () => handleDeleteClick(notification),
     },
   ];
 
-
-  if (error) {
-    return <div>{error}</div>;
-  }
-
   return (
     <div>
-      {loading ? (<LoadingComponent/>):(
-      <TableComponent
-        title="Notification Types"
-        data={notificationData}
-        columns={columns}
-        showSearch={true}
-        exportable={true}
-      />
-       )}
+      {/* Page Title */}
+      <div className="text-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Notification Types</h1>
+      </div>
+
+      {/* Search Bar */}
+      <div className="p-4 mb-6">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Search notification types..."
+          className="w-full p-2 border border-gray-300 rounded-md"
+        />
+      </div>
+
+      {loading ? (
+        <LoadingComponent />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredNotificationData.length > 0 ? (
+            filteredNotificationData.map((notification) => (
+              <Card
+                key={notification.id}
+                title={notification.name}
+                content={notification.name}
+                actions={getCardActions(notification)}
+              />
+            ))
+          ) : (
+            <p>No notification types found</p>
+          )}
+        </div>
+      )}
+
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
@@ -172,6 +179,19 @@ const NotificationPage = () => {
                 <input
                   type="text"
                   id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  disabled={isLoading}
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="name" className="block text-sm font-medium text-white-700">
+                  Description
+                </label>
+                <input
+                  type="text"
+                  id="description"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -210,15 +230,15 @@ const NotificationPage = () => {
           <div className="bg-base-100 p-6 rounded-lg w-98">
             <h2 className="text-xl mb-4">Are you sure you want to delete this notification type?</h2>
             <div className="flex justify-end space-x-2">
-              <button 
-                onClick={() => setIsDeleteModalOpen(false)} 
+              <button
+                onClick={() => setIsDeleteModalOpen(false)}
                 className="bg-gray-400 text-white px-4 py-2 rounded"
                 disabled={isLoading}
               >
                 Cancel
               </button>
-              <button 
-                onClick={handleDelete} 
+              <button
+                onClick={handleDelete}
                 className="bg-red-500 text-white px-4 py-2 rounded"
                 disabled={isLoading}
               >

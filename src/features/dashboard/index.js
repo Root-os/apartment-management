@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import LoadingComponent from '../../components/loading';
 import {
   FaBell,
   FaCreditCard,
@@ -15,7 +16,7 @@ import {
   FaDolly,
   FaMoneyBillAlt,
   FaFileInvoiceDollar,
-  FaHome,FaQuestionCircle
+  FaHome, FaQuestionCircle
 } from 'react-icons/fa';
 import UnitStatusReport from './components/diagram';
 import RemainingTenants from './components/tenDaysTenant'
@@ -156,7 +157,7 @@ const Dashboard = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingComponent/>;
   }
   if (error) {
     return <div>{error}</div>;
@@ -187,18 +188,19 @@ const Dashboard = () => {
           <div>{iconMapping[key] || <FaQuestionCircle size={30} title="Unknown" />}</div>
           
           {/* Ensure keyMapping[key] is not undefined */}
-          <h3 className="text-xl font-semibold text-black">
+          <h3 className="text-xl font-semibold text-white">
             {keyMapping[key] || key} {/* Fallback to the key if no mapping found */}
           </h3>
         </div>
         <div className="card-body p-6 mt-10">
-          <ul className="text-sm text-black">
-            {Object.keys(counts[key]).map((subKey) => (
-              <li key={subKey}>
-                {subKey}: {counts[key][subKey]}
-              </li>
-            ))}
-          </ul>
+        <ul className="text-sm">
+  {Object.keys(counts[key]).map((subKey) => (
+    <li key={subKey} style={{ color: 'white' }}>
+      {subKey}: {counts[key][subKey]}
+    </li>
+  ))}
+</ul>
+
         </div>
       </div>
     ))}

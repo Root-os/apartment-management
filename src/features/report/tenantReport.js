@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const TenantReport = () => {
   const [units, setUnits] = useState([]);
@@ -12,6 +13,7 @@ const TenantReport = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [currentTenant, setCurrentTenant] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const [filterParams, setFilterParams] = useState({
     paymentStatus: "",
@@ -32,7 +34,7 @@ const TenantReport = () => {
         setUnits(response.data);
       } catch (error) {
         console.error("Error fetching units:", error);
-      }
+      }finally {setLoading(false);}
     };
 
     const fetchFloors = async () => {
@@ -221,7 +223,7 @@ const TenantReport = () => {
           </div>
         </form>
       </div>
-
+      {loading ? (<LoadingComponent/>):(
       <TableComponent
         title="Filtered Tenant Report"
         data={filteredData}
@@ -230,7 +232,7 @@ const TenantReport = () => {
         showSearch={true}
         exportable={true}
       />
-
+    )}
       {/* Details Modal */}
       {detailsModalOpen && currentTenant && (
         <div

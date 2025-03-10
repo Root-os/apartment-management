@@ -9,7 +9,7 @@ import { openRightDrawer } from '../features/common/rightDrawerSlice';
 import { RIGHT_DRAWER_TYPES } from '../utils/globalConstantUtil';
 import TotalBookings from '../containers/countBooking';
 import ContactCount from '../containers/contactCount';
-import { NavLink, Routes, Link, useLocation } from 'react-router-dom';
+import { NavLink, Link, useLocation } from 'react-router-dom';
 
 function Header() {
     const dispatch = useDispatch();
@@ -25,7 +25,6 @@ function Header() {
                 setCurrentTheme('light');
             }
         }
-        // 👆 false parameter is required for react project
     }, []);
 
     // Opening right sidebar for notification
@@ -48,80 +47,82 @@ function Header() {
         window.location.href = '/';
     }
 
+    // Define pages for the dropdown
+    const pages = [
+        { name: 'Add Tenant', path: '/app/tenant-add' },
+        { name: 'View Unit', path: '/app/unit-view' },
+        { name: 'Notiffication', path: '/app/all-notfication' },
+        { name: 'Complains', path: '/app/complain-fromT-view' },
+        { name: 'Stocks', path: '/app/view-stocks' },
+    ];
+
     return (
-        // navbar fixed  flex-none justify-between bg-base-300  z-10 shadow-md
-        <>
-            <div className="navbar sticky top-0 bg-base-100  z-10 shadow-md ">
-                {/* Menu toggle for mobile view or small screen */}
-                <div className="flex-1">
-                    <label htmlFor="left-sidebar-drawer" className="btn btn-primary drawer-button lg:hidden">
-                        <Bars3Icon className="h-5 inline-block w-5" />
+        <div className="navbar sticky top-0 bg-base-100 z-10 shadow-md">
+            {/* Menu toggle for mobile view or small screen */}
+            <div className="flex-1">
+                <label htmlFor="left-sidebar-drawer" className="btn btn-primary drawer-button lg:hidden">
+                    <Bars3Icon className="h-5 inline-block w-5" />
+                </label>
+                <h1 className="text-2xl font-semibold ml-2">{pageTitle}</h1>
+            </div>
+
+            <div className="flex-none">
+                {/* Pages Dropdown */}
+                <div className="dropdown mr-4">
+                    <label tabIndex={0} className="btn btn-ghost">
+                        Pages
                     </label>
-                    <h1 className="text-2xl font-semibold ml-2">{pageTitle}</h1>
+                    <ul tabIndex={0} className="menu dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
+                        {pages.map((page) => (
+                            <li key={page.path}>
+                                <Link to={page.path}>{page.name}</Link>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
 
-                <div className="flex-none ">
-                    {/* Multiple theme selection, uncomment this if you want to enable multiple themes selection, 
-                    also includes corporate and retro themes in tailwind.config file */}
-                    {/* <select className="select select-sm mr-4" data-choose-theme>
-                        <option disabled selected>Theme</option>
-                        <option value="light">Default</option>
-                        <option value="dark">Dark</option>
-                        <option value="corporate">Corporate</option>
-                        <option value="retro">Retro</option>
-                    </select> */}
+                {/* Light and dark theme selection toggle */}
+                <label className="swap">
+                    <input type="checkbox" />
+                    <SunIcon
+                        data-set-theme="light"
+                        data-act-class="ACTIVECLASS"
+                        className={'fill-current w-6 h-6 ' + (currentTheme === 'dark' ? 'swap-on' : 'swap-off')}
+                    />
+                    <MoonIcon
+                        data-set-theme="dark"
+                        data-act-class="ACTIVECLASS"
+                        className={'fill-current w-6 h-6 ' + (currentTheme === 'light' ? 'swap-on' : 'swap-off')}
+                    />
+                </label>
+                <TotalBookings />
+                <ContactCount />
 
-                    {/* Light and dark theme selection toggle */}
-                    <label className="swap ">
-                        <input type="checkbox" />
-                        <SunIcon
-                            data-set-theme="light"
-                            data-act-class="ACTIVECLASS"
-                            className={'fill-current w-6 h-6 ' + (currentTheme === 'dark' ? 'swap-on' : 'swap-off')}
-                        />
-                        <MoonIcon
-                            data-set-theme="dark"
-                            data-act-class="ACTIVECLASS"
-                            className={'fill-current w-6 h-6 ' + (currentTheme === 'light' ? 'swap-on' : 'swap-off')}
-                        />
-                    </label>
-                    <TotalBookings />
-                    <ContactCount />
-
-                    {/* Notification icon */}
-                    {/* <button className="btn btn-ghost ml-4  btn-circle" onClick={() => openNotification()}>
-                        <div className="indicator">
-                            <BellIcon className="h-6 w-6"/>
-                            {noOfNotifications > 0 ? <span className="indicator-item badge badge-secondary badge-sm">{noOfNotifications}</span> : null }
+                {/* Profile icon, opening menu on click */}
+                <div className="dropdown dropdown-end ml-4">
+                    <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
+                        <div className="w-10 rounded-full">
+                            <img src="https://placeimg.com/80/80/people" alt="profile" />
                         </div>
-                    </button> */}
-
-                    {/* Profile icon, opening menu on click */}
-                    <div className="dropdown dropdown-end ml-4">
-                        <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
-                            <div className="w-10 rounded-full">
-                                <img src="https://placeimg.com/80/80/people" alt="profile" />
-                            </div>
-                        </label>
-                        <ul tabIndex={0} className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
-                            <li className="justify-between">
-                                <Link to={'/app/settings-profile'}>
-                                    Profile Settings
-                                    <span className="badge">New</span>
-                                </Link>
-                            </li>
-                            <li className="">
-                                <Link to={'/app/settings-billing'}>Bill History</Link>
-                            </li>
-                            <div className="divider mt-0 mb-0"></div>
-                            <li>
-                                <a onClick={logoutUser}>Logout</a>
-                            </li>
-                        </ul>
-                    </div>
+                    </label>
+                    <ul tabIndex={0} className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
+                        <li className="justify-between">
+                            <Link to={'/app/settings-profile'}>
+                                Profile Settings
+                                <span className="badge">New</span>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to={'/app/settings-billing'}>Bill History</Link>
+                        </li>
+                        <div className="divider mt-0 mb-0"></div>
+                        <li>
+                            <a onClick={logoutUser}>Logout</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 
