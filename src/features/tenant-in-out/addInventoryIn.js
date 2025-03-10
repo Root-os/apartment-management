@@ -74,6 +74,7 @@ const InventoryForm = () => {
         setModalOpen(true);
         setmessageType('success');
         setMessage('Inventory data created successfully!');
+        window.location.href='/app/view-in-out';
       } else {
         setMessage("Failed to create inventory data.");
       }

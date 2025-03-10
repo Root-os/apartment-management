@@ -38,7 +38,7 @@ const AddParking = () => {
 
     // Convert the times to UTC format
     const timeInUTC = timeIn ? new Date(timeIn).toISOString() : "";
-    // const timeOutUTC = timeOut ? new Date(timeOut).toISOString() : ""; // You can handle the timeOut similarly if needed
+    // const timeOutUTC = timeOut ? new Date(timeOut).toISOString() : ""; 
 
     const parkingData = {
       carPlate,
@@ -47,7 +47,7 @@ const AddParking = () => {
       driverPhone,
       tenantId,
       timeIn: timeInUTC, // UTC formatted time
-      // timeOut: timeOutUTC, // UTC formatted time (if you include it)
+      // timeOut: timeOutUTC, // UTC formatted time 
       isTenant,
       status,
       parkingSpaceId,
@@ -67,6 +67,7 @@ const AddParking = () => {
         setModalOpen(true);
         setMessageType('success');
         setMessage('Parking data added successfully');
+        window.location.href='/app/parking-view';
       })
       .catch(() => {
         setModalOpen(true);

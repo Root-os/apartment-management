@@ -73,6 +73,7 @@ const SalaryPaymentForm = () => {
         setModalOpen(true);
         setMessageType('success');
         setMessage('Add single salary payment successfully!')
+        window.location.href='/app/view-all-salary';
       })
       .catch(error => {
 

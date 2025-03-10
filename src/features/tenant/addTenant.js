@@ -118,6 +118,7 @@ const AddTenant = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('Tenant added successfully.');
+      window.location.href='/app/tenant-view';
     } catch (err) {
       console.error('Error adding tenant:', err);
 

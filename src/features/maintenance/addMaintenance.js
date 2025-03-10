@@ -60,6 +60,7 @@ const AddMaintenancePage = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('Maintenance data Added successfully!')
+      window.location.href='/app/view-maintenance';
     } catch (err) {
       setModalOpen(true);
       setMessageType('error');

@@ -52,6 +52,7 @@ const AddChargingData = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage(`Charging data added successfully!`);
+      window.location.href='/app/charging-view';
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');

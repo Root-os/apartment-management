@@ -35,6 +35,7 @@ const MassSalaryPayment = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('Add mass salary payment successfully!')
+      window.location.href='/app/view-all-salary';
 
       setStatus(''); 
       setPaymentToDate(''); 

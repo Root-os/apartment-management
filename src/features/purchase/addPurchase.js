@@ -78,6 +78,7 @@ const AddPurchaseForm = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('Purchase added successfully');
+      window.location.href='/app/view-purchase';
     } catch (err) {
       setIsLoading(false);
       setError('Failed to create purchase');

@@ -63,7 +63,7 @@ const AddItem = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('Item created successfully');
-      // window.location.href = '/item-view';
+       window.location.href = '/item-view';
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');

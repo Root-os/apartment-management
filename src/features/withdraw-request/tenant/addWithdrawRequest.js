@@ -42,6 +42,7 @@ const WithdrawalRequestForm = () => {
         },
       });
       setMessage(response.data.message);
+      window.location.href='/app/employee-request-history';
     } catch (error) {
       console.error('Error submitting request:', error);
       setMessage('An error occurred. Please try again.');

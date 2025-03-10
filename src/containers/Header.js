@@ -95,8 +95,7 @@ function Header() {
                         className={'fill-current w-6 h-6 ' + (currentTheme === 'light' ? 'swap-on' : 'swap-off')}
                     />
                 </label>
-                <TotalBookings />
-                <ContactCount />
+                
 
                 {/* Profile icon, opening menu on click */}
                 <div className="dropdown dropdown-end ml-4">
@@ -107,13 +106,13 @@ function Header() {
                     </label>
                     <ul tabIndex={0} className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52">
                         <li className="justify-between">
-                            <Link to={'/app/settings-profile'}>
-                                Profile Settings
+                            <Link to={'/app/view-settings'}>
+                                 Settings
                                 <span className="badge">New</span>
                             </Link>
                         </li>
                         <li>
-                            <Link to={'/app/settings-billing'}>Bill History</Link>
+                            <Link to={'/app/bill-type-view'}>Bill History</Link>
                         </li>
                         <div className="divider mt-0 mb-0"></div>
                         <li>

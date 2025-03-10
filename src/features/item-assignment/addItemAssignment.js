@@ -100,6 +100,7 @@ const ItemAssignmentForm = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('Item assignment Added successfully!');
+      window.location.href='/app/view-item-assignments';
     } catch (err) {
       setModalOpen(true);
       setMessageType('error');

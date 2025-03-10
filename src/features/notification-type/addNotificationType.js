@@ -33,6 +33,7 @@ const AddNotificationType = () => {
     setMessageType('success');
     setMessage('Notification type added successfully');
       setName('');
+      window.location.href='/app/notfication-type-view';
     } catch (error) {
     //   setMessage(`Error: ${error.response?.data?.message || 'Something went wrong!'}`);
     setModalOpen(true);

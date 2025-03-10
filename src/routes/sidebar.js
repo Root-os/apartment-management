@@ -264,12 +264,12 @@ const adminRoutes =
       {
         path: '/app/bill-type-add',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Bill Payment',
+        name: 'Add Bill Type',
       },
       {
         path: '/app/bill-type-view',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Bill Payments',
+        name: 'Bill Types',
       },
       {
         path: '/app/payment-goverment-add',
@@ -785,7 +785,7 @@ const adminRoutes =
       name: 'Expense Report',
     },
 
-{
+    {
       path: '/app/purchase-report',
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Purchase Report',
@@ -887,6 +887,11 @@ const adminRoutes =
       path: '/app/view-vendors',
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Vendors',
+    },
+    {
+      path: '/app/purchase-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Purchase Report',
     },
     ]
   },

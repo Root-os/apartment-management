@@ -98,6 +98,7 @@ const PurchaseRequestForm = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('Purchase request Added successfully!')
+      window.location.href='/app/view-purchase-request';
     } catch (err) {
       setModalOpen(true);
       setMessageType('error');
