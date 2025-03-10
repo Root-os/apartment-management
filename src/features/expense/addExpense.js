@@ -58,7 +58,7 @@ const AddExpense = () => {
       setMessageType('success');
       setMessage('Expense added successfully.');
 
-      window.location.href = '/expense-view'
+      window.location.href = '/app/expense-view'
     } catch (err) {
       setModalOpen(true);
       setMessageType('error');

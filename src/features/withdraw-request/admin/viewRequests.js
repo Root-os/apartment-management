@@ -97,8 +97,17 @@ const WithdrawalRequests = () => {
   };
 
   const handleUpdateStatus = async () => {
+    // Validate the status and adminResponse
+    if (!status || !adminResponse) {
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Status and Admin Response cannot be empty');
+      return;
+    }
+  
     setIsLoading(true);
     try {
+      // Sending the request to the backend
       const response = await axios.put(`${process.env.REACT_APP_BASE_URL}withdrawal-request/review`, {
         requestId: requestToUpdate.id,
         status: status,
@@ -108,22 +117,28 @@ const WithdrawalRequests = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+  
+      // If the response is successful, update the request data
       setData((prevData) => prevData.map((request) =>
         request.id === requestToUpdate.id ? response.data.request : request
       ));
+  
+      // Reset the modal state
       setIsStatusModalOpen(false);
       setRequestToUpdate(null);
       setStatus('');
       setAdminResponse('');
-
+  
+      // Show success message in modal
       setModalOpen(true);
       setMessageType('success');
-      setMessage('Updated Successfully!')
+      setMessage('Updated Successfully!');
     } catch (error) {
+      console.error('Error updating status:', error);
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Unable to Update status')
-    }finally{
+      setMessage('Unable to update status');
+    } finally {
       setIsLoading(false);
     }
   };

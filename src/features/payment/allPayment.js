@@ -167,16 +167,19 @@ const AllPaymentsPage = () => {
       ),
     },
   ];
+  const handleAddClick = () => {
+    window.location.href = '/app/add-payment';
+   };
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-4">Payments</h1>
       <TableComponent
         title="Payments List"
         data={payments}
         columns={columns}
         exportable={true}
         showSearch={true}
+        onAdd={handleAddClick}
       />
 
       {/* Edit Modal */}

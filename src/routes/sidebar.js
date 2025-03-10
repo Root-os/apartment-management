@@ -274,7 +274,7 @@ const adminRoutes =
       {
         path: '/app/payment-goverment-add',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Bill Payment',
+        name: 'Add Bill Payment for gov.t',
       },
       {
         path: '/app/payment-goverment-view',
@@ -893,6 +893,16 @@ const adminRoutes =
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Purchase Report',
     },
+    {
+      path: '/app/add-service-type',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Service Type Add',
+    },
+    {
+      path: '/app/view-service-types',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Service Type',
+    },
     ]
   },
   // {
@@ -951,24 +961,24 @@ const adminRoutes =
     ]
   },
 
-  {
-    path: '', 
-    icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
-    name: 'Service Type',  
-    submenu : [
+  // {
+  //   path: '', 
+  //   icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
+  //   name: 'Service Type',  
+  //   submenu : [
      
-     {
-      path: '/app/add-service-type',
-      icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Service Type Add',
-    },
-    {
-      path: '/app/view-service-types',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'Service Type',
-    },
-    ]
-  },
+  //    {
+  //     path: '/app/add-service-type',
+  //     icon: <PlusIcon className={submenuIconClasses}/>,
+  //     name: 'Service Type Add',
+  //   },
+  //   {
+  //     path: '/app/view-service-types',
+  //     icon: <EyeIcon className={submenuIconClasses}/>,
+  //     name: 'Service Type',
+  //   },
+  //   ]
+  // },
 
   //vendor
   // {

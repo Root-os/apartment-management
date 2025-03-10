@@ -12,6 +12,9 @@ const TenantList = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedTenant, setSelectedTenant] = useState(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false); 
+
+
   const [editData, setEditData] = useState({
     fullName: '',
     phoneNumber: '',
@@ -157,6 +160,17 @@ const TenantList = () => {
   const handleAddClick = () => {
     window.location.href = '/app/tenant-add';
    };
+   // Handle opening of the details modal
+    const handleDetailsClick = (tenant) => {
+      setSelectedTenant(tenant);
+      setIsDetailsModalOpen(true);
+    };
+
+    // Handle closing of the details modal
+    const closeDetailsModal = () => {
+      setIsDetailsModalOpen(false);
+    };
+
 
   return (
     <div>
@@ -211,6 +225,12 @@ const TenantList = () => {
                     className="bg-red-500 text-white py-1 px-2 rounded"
                   >
                     Delete
+                  </button>
+                  <button
+                    onClick={() => handleDetailsClick(row)}  
+                   className="bg-gray-400 text-white py-1 px-2 rounded"
+                  >
+                    Details
                   </button>
                 </div>
               ),
@@ -400,6 +420,35 @@ const TenantList = () => {
                 className="bg-red-500 text-white px-4 py-2 rounded"
               >
                 Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+       {/* Tenant Details Modal */}
+      {isDetailsModalOpen && selectedTenant && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-base-100 p-6 rounded-lg w-96 max-w-full overflow-auto">
+            <h2 className="text-xl mb-4">Tenant Details</h2>
+            <div className="mb-4">
+              <p><strong>Full Name:</strong> {selectedTenant.fullName}</p>
+              <p><strong>Phone Number:</strong> {selectedTenant.phoneNumber}</p>
+              <p><strong>Email:</strong> {selectedTenant.email}</p>
+              <p><strong>National ID:</strong> {selectedTenant.nationalId}</p>
+              <p><strong>Lease Start Date:</strong> {new Date(selectedTenant.leaseStartDate).toLocaleDateString()}</p>
+              <p><strong>Lease End Date:</strong> {new Date(selectedTenant.leaseEndDate).toLocaleDateString()}</p>
+              <p><strong>Payment Status:</strong> {selectedTenant.paymentStatus}</p>
+              <p><strong>Unit Number:</strong> {selectedTenant.Unit?.unitNumber || 'N/A'}</p>
+              <p><strong>Floor Number:</strong> {selectedTenant.Floor?.floorNumber || 'N/A'}</p>
+              <p><strong>Status:</strong> {selectedTenant.status}</p>
+              <p><strong>Description:</strong> {selectedTenant.description}</p>
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={closeDetailsModal} // Close the modal
+                className="bg-gray-400 text-white px-4 py-2 rounded"
+              >
+                Close
               </button>
             </div>
           </div>

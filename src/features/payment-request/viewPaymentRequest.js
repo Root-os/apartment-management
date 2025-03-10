@@ -119,8 +119,8 @@ const PaymentRequestsPage = () => {
       setSelectedRequest(null);
 
       setModalOpen(true);
-      setMessageType('status');
-      setModalMessage('Payment request deleted statusfully');
+      setMessageType('success');
+      setModalMessage('Payment request deleted successfully');
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');

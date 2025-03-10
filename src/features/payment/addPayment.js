@@ -77,6 +77,7 @@ const PaymentAdd = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('Payment added successfully.');
+      window.location.href='/app/view-payment';
     } catch (error) {
       if (error.response) {
         if (error.response.status === 404) {

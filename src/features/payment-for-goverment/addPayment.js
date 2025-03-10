@@ -31,9 +31,10 @@ const AddGovBillPayment = () => {
         setBillTypes(response.data); 
       } catch (err) {
         
-        setModalOpen(true);
+      setModalOpen(true);
       setMessageType('error');
       setMessage(`Could't get the data. Please try again.`);
+      window.location.href='/app/payment-goverment-view';
       }
     };
 

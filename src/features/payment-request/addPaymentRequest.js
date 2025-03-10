@@ -67,33 +67,45 @@ const AddPaymentRequest = () => {
       return;
     }
 
+    // Prepare data to send in POST request
+    const requestData = {
+      tenantId: formData.tenantId,
+      message: formData.message,
+      paymentTypeId: formData.paymentTypeId,
+      level: formData.level,
+      amount: parseFloat(formData.amount), // Ensure amount is a number
+      dueDate: formData.dueDate, // Ensure this is a valid date string
+      repeatedFor: formData.repeatedFor,
+    };
+
     // Send POST request
     try {
       setIsLoading(true);
       const response = await axios.post(
         "https://apartment.houseethiopia.com/api/payment-requests",
-        {
-          tenantId: formData.tenantId,
-          message: formData.message,
-          paymentTypeId: formData.paymentTypeId,
-          level: formData.level,
-          amount: parseFloat(formData.amount),
-          dueDate: formData.dueDate,
-          repeatedFor: formData.repeatedFor, 
-        },
-       
+        requestData
       );
-      // alert("Payment Request Created: " + response.data.message);
+
+      // Successfully created payment request
       setModalOpen(true);
       setMessageType('success');
-      setMessage('payment request data added successfully');
-      window.location.href='/app/payment-request-view';
+      setMessage('Payment request created successfully');
+      setTimeout(() => {
+        window.location.href = '/app/payment-request-view'; // Redirect after success
+      }, 1500);
     } catch (error) {
       console.error("Error creating payment request:", error);
-      alert("Error creating payment request");
-      setModalOpen(true);
-      setMessageType('error');
-      setMessage('Unable to add payment request data.');
+      // Check if error response contains useful information
+      if (error.response) {
+        console.error("API Error:", error.response.data);
+        setModalOpen(true);
+        setMessageType('error');
+        setMessage(error.response.data.message || 'Unable to add payment request');
+      } else {
+        setModalOpen(true);
+        setMessageType('error');
+        setMessage('An unexpected error occurred.');
+      }
     } finally {
       setIsLoading(false);
     }
@@ -101,129 +113,135 @@ const AddPaymentRequest = () => {
 
   return (
     <>
-      <TitleCard title={'ADD Payment Request'}>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Tenant Dropdown */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Tenant</label>
-          <select
-            name="tenantId"
-            value={formData.tenantId}
-            onChange={handleInputChange}
-            className="w-full bg-base-100 p-2 border rounded-md"
-          >
-            <option value="">Select Tenant</option>
-            {tenants.map((tenant) => (
-              <option key={tenant.id} value={tenant.id}>
-                {tenant.fullName}
-              </option>
-            ))}
-          </select>
-          {errors.tenantId && <p className="text-red-500">{errors.tenantId}</p>}
-        </div>
-           {/* Payment Type Dropdown */}
-           <div>
-          <label className="block text-sm font-medium mb-1">Payment Type</label>
-          <select
-            name="paymentTypeId"
-            value={formData.paymentTypeId}
-            onChange={handleInputChange}
-            className="w-full bg-base-100 p-2 border rounded-md"
-          >
-            <option value="">Select Payment Type</option>
-            {paymentTypes.map((type) => (
-              <option key={type.id} value={type.id}>
-                {type.name}
-              </option>
-            ))}
-          </select>
-          {errors.paymentTypeId && (
-            <p className="text-red-500">{errors.paymentTypeId}</p>
-          )}
-        </div>
-        {/* Message */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Message</label>
-          <input
-            type="text"
-            name="message"
-            value={formData.message}
-            onChange={handleInputChange}
-            className="w-full bg-base-100 p-2 border rounded-md"
-            placeholder="Message"
-          />
-          {errors.message && <p className="text-red-500">{errors.message}</p>}
-        </div>
-        {/* Amount */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Amount</label>
-          <input
-            type="number"
-            name="amount"
-            value={formData.amount}
-            onChange={handleInputChange}
-            className="w-full bg-base-100 p-2 border rounded-md"
-            placeholder="Amount"
-          />
-          {errors.amount && <p className="text-red-500">{errors.amount}</p>}
-        </div>
-         {/* Level Dropdown */}
-         <div>
-          <label className="block text-sm font-medium mb-1">Level</label>
-          <select
-            name="level"
-            value={formData.level}
-            onChange={handleInputChange}
-            className="w-full bg-base-100 p-2 border rounded-md"
-          >
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </select>
-          {errors.level && <p className="text-red-500">{errors.level}</p>}
-        </div>
+      <TitleCard title={'Add Payment Request'}>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Tenant Dropdown */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Tenant</label>
+            <select
+              name="tenantId"
+              value={formData.tenantId}
+              onChange={handleInputChange}
+              className="w-full bg-base-100 p-2 border rounded-md"
+            >
+              <option value="">Select Tenant</option>
+              {tenants.map((tenant) => (
+                <option key={tenant.id} value={tenant.id}>
+                  {tenant.fullName}
+                </option>
+              ))}
+            </select>
+            {errors.tenantId && <p className="text-red-500">{errors.tenantId}</p>}
+          </div>
 
-        {/* Due Date */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Due Date</label>
-          <input
-            type="date"
-            name="dueDate"
-            value={formData.dueDate}
-            onChange={handleInputChange}
-            className="w-full bg-base-100 p-2 border rounded-md"
-          />
-          {errors.dueDate && <p className="text-red-500">{errors.dueDate}</p>}
-        </div>
+          {/* Payment Type Dropdown */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Payment Type</label>
+            <select
+              name="paymentTypeId"
+              value={formData.paymentTypeId}
+              onChange={handleInputChange}
+              className="w-full bg-base-100 p-2 border rounded-md"
+            >
+              <option value="">Select Payment Type</option>
+              {paymentTypes.map((type) => (
+                <option key={type.id} value={type.id}>
+                  {type.name}
+                </option>
+              ))}
+            </select>
+            {errors.paymentTypeId && (
+              <p className="text-red-500">{errors.paymentTypeId}</p>
+            )}
+          </div>
 
-        {/* Repeated For Dropdown */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Repeated For</label>
-          <select
-            name="repeatedFor"
-            value={formData.repeatedFor}
-            onChange={handleInputChange}
-            className="w-full bg-base-100 p-2 border rounded-md"
+          {/* Message */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Message</label>
+            <input
+              type="text"
+              name="message"
+              value={formData.message}
+              onChange={handleInputChange}
+              className="w-full bg-base-100 p-2 border rounded-md"
+              placeholder="Message"
+            />
+            {errors.message && <p className="text-red-500">{errors.message}</p>}
+          </div>
+
+          {/* Amount */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Amount</label>
+            <input
+              type="number"
+              name="amount"
+              value={formData.amount}
+              onChange={handleInputChange}
+              className="w-full bg-base-100 p-2 border rounded-md"
+              placeholder="Amount"
+            />
+            {errors.amount && <p className="text-red-500">{errors.amount}</p>}
+          </div>
+
+          {/* Level Dropdown */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Level</label>
+            <select
+              name="level"
+              value={formData.level}
+              onChange={handleInputChange}
+              className="w-full bg-base-100 p-2 border rounded-md"
+            >
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+            {errors.level && <p className="text-red-500">{errors.level}</p>}
+          </div>
+
+          {/* Due Date */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Due Date</label>
+            <input
+              type="date"
+              name="dueDate"
+              value={formData.dueDate}
+              onChange={handleInputChange}
+              className="w-full bg-base-100 p-2 border rounded-md"
+            />
+            {errors.dueDate && <p className="text-red-500">{errors.dueDate}</p>}
+          </div>
+
+          {/* Repeated For Dropdown */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Repeated For</label>
+            <select
+              name="repeatedFor"
+              value={formData.repeatedFor}
+              onChange={handleInputChange}
+              className="w-full bg-base-100 p-2 border rounded-md"
+            >
+              <option value="monthly">Monthly</option>
+              <option value="weekly">Weekly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+            {errors.repeatedFor && (
+              <p className="text-red-500">{errors.repeatedFor}</p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            className={`w-full p-3 bg-blue-500 text-white rounded-md ${
+              isLoading ? "opacity-50 cursor-not-allowed" : ""
+            }`}
+            disabled={isLoading}
           >
-            <option value="monthly">Monthly</option>
-            <option value="weekly">Weekly</option>
-          </select>
-          {errors.repeatedFor && (
-            <p className="text-red-500">{errors.repeatedFor}</p>
-          )}
-        </div>
-
-        <button
-          type="submit"
-          className={`w-full p-3 bg-blue-500 text-white rounded-md ${
-            isLoading ? "opacity-50 cursor-not-allowed" : ""
-          }`}
-          disabled={isLoading}
-        >
-          {isLoading ? "Creating..." : "Create Payment Request"}
-        </button>
-      </form>
+            {isLoading ? "Creating..." : "Create Payment Request"}
+          </button>
+        </form>
       </TitleCard>
+
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

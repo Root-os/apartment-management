@@ -193,7 +193,7 @@ const Dashboard = () => {
           </h3>
         </div>
         <div className="card-body p-6 mt-10">
-          <ul className="text-sm text-black">
+          <ul className="text-md text-white">
             {Object.keys(counts[key]).map((subKey) => (
               <li key={subKey}>
                 {subKey}: {counts[key][subKey]}

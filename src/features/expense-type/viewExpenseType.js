@@ -124,17 +124,17 @@ const ExpensePage = () => {
 
   return (
     <div className="p-4">
+       <div className="text-center mb-6">
+        <h1 className="text-3xl font-bold text-white-800">Expense Types</h1>
+      </div>
       {/* Search Bar */}
       <div className="mb-6">
-      <div className="text-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Expense Types</h1>
-      </div>
         <input
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search expenses..."
-          className="w-full p-2 border border-gray-300 rounded-md"
+          className="w-full bg-base-100 p-2 border border-gray-300 rounded-md"
         />
       </div>
 
@@ -142,7 +142,6 @@ const ExpensePage = () => {
         <LoadingComponent />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <h1 className="text-3xl font-bold">Expence Types</h1>
           {filteredExpenses.length > 0 ? (
             filteredExpenses.map((expense) => (
               <Card
@@ -160,8 +159,8 @@ const ExpensePage = () => {
 
       {/* Edit Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-base-600 bg-opacity-50 flex items-center justify-center">
-          <div className="bg-base-300 p-6 rounded-md w-1/3">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-base-100 p-6 rounded-md w-1/3">
             <h2 className="text-2xl font-bold mb-4">Edit Expense</h2>
             <form onSubmit={handleSubmitEdit}>
               <div className="mb-4">
@@ -185,11 +184,11 @@ const ExpensePage = () => {
                   required
                 ></textarea>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-end space-x-2">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="bg-base-400 text-white px-4 py-1 rounded-md"
+                  className="bg-gray-400 text-white px-4 py-2 rounded-md"
                 >
                   Cancel
                 </button>

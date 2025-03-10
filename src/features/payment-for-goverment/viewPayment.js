@@ -174,6 +174,9 @@ const GovBillPaymentPage = () => {
       ),
     },
   ];
+  const handleAddClick = () => {
+    window.location.href = '/app/payment-goverment-add';
+   };
 
   return (
     <div>
@@ -200,6 +203,7 @@ const GovBillPaymentPage = () => {
           rowsPerPageOptions={[5, 10, 15]}
           showSearch={true}
           exportable={true}
+          onAdd={handleAddClick}
         />
       )}
 
