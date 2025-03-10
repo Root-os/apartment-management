@@ -44,18 +44,26 @@ function Header() {
 
   async function logoutUser() {
     const token = localStorage.getItem("token");
+    const role = localStorage.getItem("role"); 
+
     if (token) {
-      await fetch(`${process.env.REACT_APP_BASE_URL}/api/auth/logout`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+        await fetch(`${process.env.REACT_APP_BASE_URL}auth/logout`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        });
     }
+
+    // Clear all storage except role
     localStorage.clear();
+    if (role) {
+        localStorage.setItem("role", role);
+    }
+
     window.location.href = "/";
-  }
+}
 
   // Define pages for the dropdown
   const pages = [
