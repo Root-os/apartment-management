@@ -161,6 +161,8 @@ const addOrderType=lazy(() => import('../pages/protected/order/orderTypeAdd'))
 const orderType=lazy(() => import ('../pages/protected/order/viewOrdertype'))
 const tenantOrderPage=lazy(()=> import('../pages/protected/order/tenantOrderpage'))
 const myOrder=lazy(()=> import('../pages/protected/order/myOrder'))
+const allOrders=lazy(()=> import('../pages/protected/order/allOrder'))
+
 
 
 
@@ -794,6 +796,10 @@ const adminRoutes = [
   path: '/view-order-types', 
   component: orderType,
 },
+{
+  path: '/all-order', 
+  component: allOrders,
+}
 
 
 ];

@@ -1000,6 +1000,11 @@ const adminRoutes =
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Order Type',
     },
+    {
+      path: '/app/all-order',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'All Orders',
+    }
     ]
   },
   
