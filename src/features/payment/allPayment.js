@@ -158,7 +158,7 @@ const AllPaymentsPage = () => {
             Detail
           </button>
           <button
-            onClick={() => GeneratePdf(row)}
+            onClick={() => GeneratePdf(payments.filter(payment => payment.vendorId === row.vendorId))}
             className="bg-indigo-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
           >
              Recipt
@@ -170,7 +170,6 @@ const AllPaymentsPage = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-4">Payments</h1>
       <TableComponent
         title="Payments List"
         data={payments}

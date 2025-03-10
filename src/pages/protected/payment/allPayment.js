@@ -7,7 +7,7 @@ function AllPayments(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "All Payment List "}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 
