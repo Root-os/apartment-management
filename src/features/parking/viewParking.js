@@ -18,6 +18,18 @@ const formatDate = (isoDateString) => {
   });
 };
 
+// Utility function to convert ISO string to datetime-local format (YYYY-MM-DDTHH:mm)
+const formatForDateTimeLocal = (isoDateString) => {
+  if (!isoDateString) return ''; // Return empty string for null/undefined
+  const date = new Date(isoDateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
+
 const ParkingPage = () => {
   const [parkingData, setParkingData] = useState([]);
   const [selectedParking, setSelectedParking] = useState(null);
@@ -62,7 +74,7 @@ const ParkingPage = () => {
     setDriverName(parking.driverName);
     setDriverPhone(parking.driverPhone);
     setTimeIn(parking.timeIn);  // Save the original Time In to avoid editing
-    setTimeOut(parking.timeOut);
+    setTimeOut(parking.timeOut); // Set the raw ISO string
     setPrice(parking.price);
     setStatus(parking.status);
     setIsEditModalOpen(true);
@@ -84,7 +96,7 @@ const ParkingPage = () => {
         driverName,
         driverPhone,
         timeIn, // Send the original Time In value (disabled)
-        timeOut,
+        timeOut, // Send the updated timeOut (ISO format or as entered)
         price,
         status,
       };
@@ -237,6 +249,7 @@ const ParkingPage = () => {
                   type="text"
                   id="timeIn"
                   value={formatDate(timeIn)} // Display human-readable format
+                  disabled // Prevent editing
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <input
@@ -249,8 +262,8 @@ const ParkingPage = () => {
                 <input
                   type="datetime-local"
                   id="timeOut"
-                  value={timeOut}
-                  onChange={(e) => setTimeOut(e.target.value)}
+                  value={formatForDateTimeLocal(timeOut)} // Convert to datetime-local format
+                  onChange={(e) => setTimeOut(new Date(e.target.value).toISOString())} // Convert back to ISO format
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>

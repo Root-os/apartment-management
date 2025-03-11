@@ -33,35 +33,38 @@ const AddChargingData = () => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
-
+  
+    // Convert chargingStartTime to ISO format if it's not already in that format
+    const chargingStartDate = new Date(chargingStartTime);
+    const chargingStartTimeInUTC = chargingStartDate.toISOString(); // Convert to ISO 8601 string
+  
     const payload = {
       carPlate,
       carName,
       isTenant,
-      tenantId: Number(tenantId), 
-      chargingStartTime,
+      tenantId: Number(tenantId),
+      chargingStartTime: chargingStartTimeInUTC, // Send the ISO string
     };
-
+  
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}charging`, payload);
       setCarPlate('');
       setCarName('');
       setTenantId('');
       setChargingStartTime('');
-
+  
       setModalOpen(true);
       setMessageType('success');
       setMessage(`Charging data added successfully!`);
-      window.location.href='/app/charging-view';
+      window.location.href = '/app/charging-view'; // Navigate to view page
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Failed to add charging data.'); 
+      setMessage('Failed to add charging data.');
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div>
        <TitleCard   title={'Add Charging Data'} topMargin={'mt-2'} >

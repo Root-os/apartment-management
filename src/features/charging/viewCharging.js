@@ -4,7 +4,6 @@ import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 
-
 const ChargingPage = () => {
   const [chargingData, setChargingData] = useState([]);
   const [tenants, setTenants] = useState([]);
@@ -22,7 +21,6 @@ const ChargingPage = () => {
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState('');
-
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
@@ -31,7 +29,6 @@ const ChargingPage = () => {
   const tenantApiUrl = `${process.env.REACT_APP_BASE_URL}tenant`;
 
   useEffect(() => {
-   
     const fetchChargingData = async () => {
       try {
         const response = await axios.get(chargingApiUrl);
@@ -54,9 +51,8 @@ const ChargingPage = () => {
 
     fetchChargingData();
     fetchTenants();
-  }, []); 
+  }, []);
 
-  // Handle edit button click
   const handleEditClick = (charging) => {
     console.log('Edit Clicked:', charging);
     setSelectedCharging(charging);
@@ -64,20 +60,23 @@ const ChargingPage = () => {
     setCarName(charging.carName);
     setIsTenant(charging.isTenant);
     setTenantId(charging.tenantId);
-    setChargingStartTime(new Date(charging.chargingStartTime).toISOString().slice(0, 16)); // Convert to YYYY-MM-DDTHH:MM format
-    setChargingEndTime(charging.chargingEndTime ? new Date(charging.chargingEndTime).toISOString().slice(0, 16) : '');
+  
+    // Ensure proper datetime-local format (YYYY-MM-DDTHH:MM)
+    setChargingStartTime(charging.chargingStartTime 
+      ? new Date(charging.chargingStartTime).toISOString().slice(0, 16) 
+      : '');
+    setChargingEndTime(charging.chargingEndTime 
+      ? new Date(charging.chargingEndTime).toISOString().slice(0, 16) 
+      : '');
     setChargingCost(charging.chargingCost);
     setStatus(charging.status);
     setIsEditModalOpen(true);
   };
-
-  // Handle delete button click
   const handleDeleteClick = (charging) => {
     setSelectedCharging(charging);
     setIsDeleteModalOpen(true);
   };
 
-  // Handle edit request
   const handleEdit = async () => {
     setLoading(true);
     try {
@@ -86,14 +85,15 @@ const ChargingPage = () => {
         carName,
         isTenant,
         tenantId: Number(tenantId),
-        chargingStartTime,
-        chargingEndTime,
+        // Convert to ISO string for API consistency
+        chargingStartTime: chargingStartTime ? new Date(chargingStartTime).toISOString() : null,
+        chargingEndTime: chargingEndTime ? new Date(chargingEndTime).toISOString() : null,
         chargingCost,
         status,
       };
-
+  
       console.log('Updating Charging Data:', updatedCharging);
-
+  
       const response = await axios.put(`${chargingApiUrl}/${selectedCharging.id}`, updatedCharging);
       const updatedData = chargingData.map((charging) =>
         charging.id === selectedCharging.id ? response.data : charging
@@ -101,7 +101,7 @@ const ChargingPage = () => {
       setChargingData(updatedData);
       setIsEditModalOpen(false);
       setSelectedCharging(null);
-
+  
       setModalOpen(true);
       setMessageType('success');
       setMessage('Charging data updated successfully');
@@ -112,8 +112,6 @@ const ChargingPage = () => {
       setLoading(false);
     }
   };
-
-  // Handle delete request
   const handleDelete = async () => {
     setLoading(true);
     try {
@@ -133,7 +131,6 @@ const ChargingPage = () => {
     }
   };
 
-  // Define columns for the TableComponent
   const columns = [
     { label: 'Car Plate', key: 'carPlate' },
     { label: 'Car Name', key: 'carName' },
@@ -149,12 +146,16 @@ const ChargingPage = () => {
     {
       label: 'Charging Start Time',
       key: 'chargingStartTime',
-      render: (row) => new Date(row.chargingStartTime).toLocaleString(),
+      render: (row) => row.chargingStartTime
+        ? new Date(row.chargingStartTime).toLocaleString() 
+        : 'N/A',
     },
     {
       label: 'Charging End Time',
       key: 'chargingEndTime',
-      render: (row) => (row.chargingEndTime ? new Date(row.chargingEndTime).toLocaleString() : 'N/A'),
+      render: (row) => row.chargingEndTime
+        ? new Date(row.chargingEndTime).toLocaleString() 
+        : 'N/A',
     },
     { label: 'Charging Cost', key: 'chargingCost' },
     { label: 'Status', key: 'status' },
@@ -180,31 +181,28 @@ const ChargingPage = () => {
     },
   ];
 
-  // If loading, show a loading message
-  // if (loading) {
-  //   return <LoadingComponent/>;
-  // }
-
-  // If error, show an error message
   if (error) {
     return <div>{error}</div>;
   }
 
   const handleAddClick = () => {
     window.location.href = '/app/charging-add';
-   };
+  };
 
   return (
-    <div> {pageLoading ? (<LoadingComponent/>):(
-      <TableComponent
-        title="Charging Information"
-        data={chargingData}
-        columns={columns}
-        showSearch={true}
-        exportable={true}
-        onAdd={handleAddClick}
-      />
-    )}
+    <div>
+      {pageLoading ? (
+        <LoadingComponent />
+      ) : (
+        <TableComponent
+          title="Charging Information"
+          data={chargingData}
+          columns={columns}
+          showSearch={true}
+          exportable={true}
+          onAdd={handleAddClick}
+        />
+      )}
 
       {/* Edit Modal */}
       {isEditModalOpen && (
@@ -321,7 +319,7 @@ const ChargingPage = () => {
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
                   disabled={loading}
                 >
-                  {loading ? 'saving...':'Save'}
+                  {loading ? 'saving...' : 'Save'}
                 </button>
                 <button
                   type="button"
