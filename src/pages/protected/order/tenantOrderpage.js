@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { setPageTitle } from '../../../features/common/headerSlice'
-import AllSendLetterPage from '../../../features/letter/allSentLetters'
+import TenantOrderPage from '../../../features/order/tenantOrderPage'
 
-function AllLetterSent(){
+function TenantOrderType(){
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -12,8 +12,8 @@ function AllLetterSent(){
 
 
     return(
-        <AllSendLetterPage />
+        <TenantOrderPage />
     )
 }
 
-export default AllLetterSent
+export default TenantOrderType

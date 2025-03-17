@@ -7,7 +7,7 @@ function AllLetterTypes(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "All Letter Types"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

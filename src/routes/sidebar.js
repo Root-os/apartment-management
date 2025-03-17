@@ -125,6 +125,24 @@ const tenantRoutes =
     },
     ]
   },
+  {
+    path: '', 
+    icon: <ArrowUpIcon className={`${iconClasses} inline` }/>, 
+    name: 'Order',  
+    submenu : [
+     
+     {
+      path: '/app/view-order-menu',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Menu',
+    },
+    {
+      path: '/app/my-order',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'My Order',
+    },
+    ]
+  },
 ];
 
 const employeeRoutes = [
@@ -981,6 +999,52 @@ const adminRoutes =
   // },
 
   //vendor
+  {
+    path: '', 
+    icon: <BuildingOfficeIcon className={`${iconClasses} inline` }/>, 
+    name: 'Vendor',  
+    submenu : [
+     
+     {
+      path: '/app/add-service-type',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Service Type ',
+    },
+    {
+      path: '/app/view-service-types',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Service Type',
+    },
+    ]
+  },
+  //order
+
+  {
+    path: '', 
+    icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
+    name: 'Order',  
+    submenu : [
+     
+     {
+      path: '/app/add-orderType',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Order Type',
+    },
+    {
+      path: '/app/view-order-types',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Order Type',
+    },
+    {
+      path: '/app/all-order',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'All Orders',
+    }
+    ]
+  },
+  
+
+  //vendor
   // {
   //   path: '', 
   //   icon: <BuildingOfficeIcon className={`${iconClasses} inline` }/>, 
@@ -1135,4 +1199,3 @@ const adminRoutes =
 ]
 const routes = role === 'admin' ? adminRoutes : role === 'employee' ? employeeRoutes : tenantRoutes;
 export default routes
-

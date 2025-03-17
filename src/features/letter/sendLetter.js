@@ -7,7 +7,7 @@ const SendLetter = () => {
   // State variables for form inputs
   const [letterTypeId, setLetterTypeId] = useState('');
   const [tenantId, setTenantId] = useState('');
-  const [Date, setDate] = useState('');
+  const [letterDate, setLetterDate] = useState('');
   const [description, setDescription] = useState('');
   const [letterTypes, setLetterTypes] = useState([]);
   const [tenants, setTenants] = useState([]);
@@ -47,7 +47,7 @@ const SendLetter = () => {
     setError('');
   
     // Check if all fields are filled
-    if (!letterTypeId || !tenantId || !Date || !description) {
+    if (!letterTypeId || !tenantId || !letterDate || !description) {
       setError('All fields are required');
       return;
     }
@@ -59,13 +59,13 @@ const SendLetter = () => {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}letter`, {
         letterTypeId,
         tenantId,
-        Date,
+        letterDate,
         description,
       });
   
       setLetterTypeId('');
       setTenantId('');
-      setDate('');
+      setLetterDate('');
       setDescription('');
   
       setModalOpen(true);
@@ -137,14 +137,14 @@ const SendLetter = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="Date" className="block text-sm font-medium text-white-700">
+            <label htmlFor="letterDate" className="block text-sm font-medium text-white-700">
               Date
             </label>
             <input
-              type="Date"
-              id="Date"
-              value={Date}
-              onChange={(e) => setDate(e.target.value)}
+              type="date"
+              id="letterDate"
+              value={letterDate}
+              onChange={(e) => setLetterDate(e.target.value)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
               required
             />

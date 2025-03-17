@@ -20,49 +20,46 @@ function Login() {
   const submitForm = async (e) => {
     e.preventDefault();
     setErrorMessage('');
-  
+
     if (loginObj.email.trim() === '') return setErrorMessage('Email is required!');
     if (loginObj.password.trim() === '') return setErrorMessage('Password is required!');
-  
+
     try {
-      setLoading(true);
-      // Make the POST request to the login API using axios
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}auth/login`, {
-        email: loginObj.email,
-        password: loginObj.password,
-      });
+        setLoading(true);
+        const response = await axios.post(`${process.env.REACT_APP_BASE_URL}auth/login`, {
+            email: loginObj.email,
+            password: loginObj.password,
+        });
 
-      console.log('response ',response);
-      if (response.data.token) {
-        // Save token to localStorage
-        const savedToken = localStorage.setItem('token', response.data.token);
-        console.log('savedToken ',savedToken);
-        // Decode the token to get user details
-        const decodedToken = jwtDecode(response.data.token);
-        
-        localStorage.setItem('userId', decodedToken.id);
-        localStorage.setItem('fname', decodedToken.fname);
-        localStorage.setItem('lname', decodedToken.lname);
-        localStorage.setItem('role', decodedToken.role);
-        localStorage.setItem('email', decodedToken.email);
-        localStorage.setItem('phone', decodedToken.phone);
+        if (response.data.token) {
+            // Remove previous role before setting a new one
+            localStorage.removeItem('role');
 
-        setLoading(false);
-        // Redirect to the welcome page or dashboard
-        navigate('/app');  // Redirects to the app/dashboard route
-      }
+            // Save token to localStorage
+            localStorage.setItem('token', response.data.token);
+
+            // Decode the token to get user details
+            const decodedToken = jwtDecode(response.data.token);
+
+            localStorage.setItem('userId', decodedToken.id);
+            localStorage.setItem('fname', decodedToken.fname);
+            localStorage.setItem('lname', decodedToken.lname);
+            localStorage.setItem('role', decodedToken.role); // Set new role
+            localStorage.setItem('email', decodedToken.email);
+            localStorage.setItem('phone', decodedToken.phone);
+
+            setLoading(false);
+            window.location.href = "/app";  // Redirect to dashboard
+        }
     } catch (error) {
-      setLoading(false);
-      if (error.response && error.response.data) {
-        // Handle errors returned from the API
-        setErrorMessage(error.response.data.message || 'An error occurred, please try again.');
-      } else {
-        console.log(error);
-        // Handle network or other errors
-        setErrorMessage('Network error. Please try again later.');
-      }
+        setLoading(false);
+        if (error.response && error.response.data) {
+            setErrorMessage(error.response.data.message || 'An error occurred, please try again.');
+        } else {
+            setErrorMessage('Network error. Please try again later.');
+        }
     }
-  };
+}
   
 
   const updateFormValue = ({ updateType, value }) => {

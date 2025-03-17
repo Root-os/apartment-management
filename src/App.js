@@ -5,6 +5,7 @@ import { themeChange } from 'theme-change';
 import checkAuth from './app/auth';  
 import initializeApp from './app/init';
 import LoadingComponent from '../src/components/loading';
+import Choice from '../src/components/choice'
 
 const Layout = lazy(() => import('./containers/Layout'));
 const Login = lazy(() => import('./pages/Login'));
@@ -36,13 +37,13 @@ function App() {
   if (loading) {
     return <LoadingComponent/>; 
   }
+  const role=localStorage.getItem('role');
 
   return (
     <Router>
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
-
         <Route path="/tenant-login" element={<TenantLogin />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/register" element={<Register />} />
@@ -55,14 +56,19 @@ function App() {
             isAuthenticated 
              ? (
               <Layout />  // Protected route content
-            ) : (
-              <Navigate to="/login" replace />  // Redirect to login if not authenticated
-            )
+            ) : role?(role==='admin'||role==="employee"?
+              <Navigate to="/login" replace /> : <Navigate to="/tenant-login" replace />// Redirect to login if not authenticated
+            ):
+            <Choice />
+            
           }
         />
 
         {/* Catch-all route to ensure that all paths redirect based on authentication */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+       <Route path="*" element={
+         role?(role==='admin'|| role==="employee"?<Navigate to="/login" replace />:<Navigate to="/tenant-login" replace />):           
+          <Choice />
+        } />
       </Routes>
     </Router>
   );

@@ -16,27 +16,35 @@ import {
   FaDolly,
   FaMoneyBillAlt,
   FaFileInvoiceDollar,
-  FaHome,FaQuestionCircle
+  FaHome, FaQuestionCircle
 } from 'react-icons/fa';
 import UnitStatusReport from './components/diagram';
-import RemainingTenants from './components/tenDaysTenant'
-import LowStockAlert from './components/lowStockAlert'
-import RecentComplaintList from './components/recentComplent'
+import RemainingTenants from './components/tenDaysTenant';
+import LowStockAlert from './components/lowStockAlert';
+import RecentComplaintList from './components/recentComplent';
 
 const Dashboard = () => {
   const [counts, setCounts] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isWrapped, setIsWrapped] = useState(false);
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const token = localStorage.getItem('token');
+        const params = {};
+
+        if (startDate) params.startDate = startDate;
+        if (endDate) params.endDate = endDate;
+
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}dashboard`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          params,
         });
         setCounts(transformData(response.data));
       } catch (error) {
@@ -48,7 +56,7 @@ const Dashboard = () => {
     };
 
     fetchData();
-  }, []);
+  }, [startDate, endDate]);
 
   const generateRandomColor = () => {
     const letters = '0123456789ABCDEF';
@@ -156,8 +164,17 @@ const Dashboard = () => {
     setIsWrapped(!isWrapped);
   };
 
+  const handleDateChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'startDate') {
+      setStartDate(value);
+    } else if (name === 'endDate') {
+      setEndDate(value);
+    }
+  };
+
   if (loading) {
-    return <LoadingComponent/>;
+    return <div>Loading...</div>;
   }
   if (error) {
     return <div>{error}</div>;
@@ -166,10 +183,27 @@ const Dashboard = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-end">
-        <button onClick={handleWrapToggle} className="text-xl">
+        {/* <button onClick={handleWrapToggle} className="text-xl">
           {isWrapped ? <FaCompress /> : <FaExpand />}
-        </button>
+        </button> */}
       </div>
+      <div className="flex flex-col sm:flex-row justify-end mb-4 gap-4 sm:gap-2">
+  <input
+    type="date"
+    name="startDate"
+    value={startDate}
+    onChange={handleDateChange}
+    className="border p-2 w-full sm:w-auto"
+  />
+  <input
+    type="date"
+    name="endDate"
+    value={endDate}
+    onChange={handleDateChange}
+    className="border p-2 w-full sm:w-auto"
+  />
+</div>
+
       <div
         className={`grid gap-4 ${
           isWrapped ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3'
@@ -193,7 +227,7 @@ const Dashboard = () => {
           </h3>
         </div>
         <div className="card-body p-6 mt-10">
-          <ul className="text-md text-white">
+          <ul className="text-sm text-black">
             {Object.keys(counts[key]).map((subKey) => (
               <li key={subKey}>
                 {subKey}: {counts[key][subKey]}
@@ -209,22 +243,21 @@ const Dashboard = () => {
       </div>
       <hr className="my-6 border-t-2 border-dotted border-gray-500 dark:border-gray-300" />
       <div className="container mx-auto p-4">
-  <div className="grid grid-cols-1 md:grid-cols-2 ">
-    <div className="bg-white shadow-lg rounded-lg dark:bg-gray-800">
-      <UnitStatusReport />
-    </div>
-    <div className="bg-white shadow-lg rounded-lg dark:bg-gray-800">
-      <RemainingTenants />
-    </div>
-    <div className="bg-white shadow-lg rounded-lg dark:bg-gray-800">
-      <LowStockAlert />
-    </div>
-    <div className="bg-white shadow-lg rounded-lg dark:bg-gray-800">
-      <RecentComplaintList />
-    </div>
-  </div>
-</div>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 ">
+          <div className="bg-white shadow-lg rounded-lg dark:bg-gray-800">
+            <UnitStatusReport />
+          </div>
+          <div className="bg-white shadow-lg rounded-lg dark:bg-gray-800">
+            <RemainingTenants />
+          </div>
+          <div className="bg-white shadow-lg rounded-lg dark:bg-gray-800">
+            <LowStockAlert />
+          </div>
+          <div className="bg-white shadow-lg rounded-lg dark:bg-gray-800">
+            <RecentComplaintList />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

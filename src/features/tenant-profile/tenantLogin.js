@@ -9,43 +9,45 @@ const TenantLoginPage = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
 
     const payload = {
-      phoneNumber: phoneNumberOrEmail, // Can use email or phoneNumber
-      password: password,
+        phoneNumber: phoneNumberOrEmail, // Can use email or phoneNumber
+        password: password,
     };
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}tenant-auth/login`, payload, {
-        timeout: 10000, // Set timeout to 10 seconds
-      });
+        const response = await axios.post(`${process.env.REACT_APP_BASE_URL}tenant-auth/login`, payload, {
+            timeout: 10000, // Set timeout to 10 seconds
+        });
 
-      if (response.data.success) {
-        // Store the token in localStorage
-        localStorage.removeItem('token');
-        
-        localStorage.setItem('token', response.data.token);
-        const decodedToken = jwtDecode(response.data.token);
-        localStorage.setItem('fullName', decodedToken.fullName);
-        localStorage.setItem('role', decodedToken.role);
-        localStorage.setItem('userId', decodedToken.id);
-        // Redirect or perform any action after successful login (e.g., navigate to dashboard)
-        window.location.href = '/app'; // Example redirect
-      } else {
-        setError('Login failed. Please check your credentials.');
-      }
+        if (response.data.success) {
+            // Remove previous role before setting a new one
+            localStorage.removeItem('role');
+
+            // Store the token in localStorage
+            localStorage.setItem('token', response.data.token);
+            const decodedToken = jwtDecode(response.data.token);
+
+            localStorage.setItem('fullName', decodedToken.fullName);
+            localStorage.setItem('role', decodedToken.role); // Set new role
+            localStorage.setItem('userId', decodedToken.id);
+
+            // Redirect after successful login
+            window.location.href = '/app'; // Example redirect
+        } else {
+            setError('Login failed. Please check your credentials.');
+        }
     } catch (err) {
-      setError('Something went wrong. Please try again later.');
-      console.error('Login Error:', err);
+        setError('Something went wrong. Please try again later.');
+        console.error('Login Error:', err);
     } finally {
-      setIsLoading(false);
+        setIsLoading(false);
     }
-  };
+};
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100">

@@ -153,7 +153,19 @@ const LetterTypeAdd = lazy(() => import('../pages/protected/letter/addLetterType
 const letterTypeView = lazy(() => import('../pages/protected/letter/allLetterType'))
 const LetterSend = lazy(() => import('../pages/protected/letter/sendLetter'))
 const AllSentLetters=lazy(() => import('../pages/protected/letter/allLetterSent'))
+
 //stock
+
+//order
+const addOrderType=lazy(() => import('../pages/protected/order/orderTypeAdd'))
+const orderType=lazy(() => import ('../pages/protected/order/viewOrdertype'))
+const tenantOrderPage=lazy(()=> import('../pages/protected/order/tenantOrderpage'))
+const myOrder=lazy(()=> import('../pages/protected/order/myOrder'))
+const allOrders=lazy(()=> import('../pages/protected/order/allOrder'))
+
+
+
+
 
 
 const role = localStorage.getItem('role');
@@ -183,6 +195,14 @@ const tenantRoutes = [
     path: '/tenant-view-in',
     component: tenantViewInOut,
   },
+  {
+    path: '/view-order-menu', 
+    component: tenantOrderPage,
+  },
+  {
+    path: '/my-order',
+    component: myOrder,
+  }
 ];
 
 const employeeRoutes = [
@@ -766,6 +786,21 @@ const adminRoutes = [
   path: '/view-stocks', 
   component: StockView, 
 },
+
+//order
+{
+  path: '/add-orderType', 
+  component: addOrderType,
+},
+{
+  path: '/view-order-types', 
+  component: orderType,
+},
+{
+  path: '/all-order', 
+  component: allOrders,
+}
+
 
 ];
 const routes = role === 'tenant' ? tenantRoutes : role === 'employee' ? employeeRoutes : adminRoutes;

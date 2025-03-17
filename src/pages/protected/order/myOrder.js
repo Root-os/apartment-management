@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { setPageTitle } from '../../../features/common/headerSlice'
-import AllSendLetterPage from '../../../features/letter/allSentLetters'
+import MyOrdersPage from '../../../features/order/myOrderList'
 
-function AllLetterSent(){
+function MyOrder(){
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -12,8 +12,8 @@ function AllLetterSent(){
 
 
     return(
-        <AllSendLetterPage />
+        <MyOrdersPage />
     )
 }
 
-export default AllLetterSent
+export default MyOrder

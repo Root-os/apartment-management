@@ -158,7 +158,7 @@ const AllPaymentsPage = () => {
             Detail
           </button>
           <button
-            onClick={() => GeneratePdf(row)}
+            onClick={() => GeneratePdf(payments.filter(payment => payment.vendorId === row.vendorId))}
             className="bg-indigo-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
           >
              Recipt

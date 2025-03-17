@@ -83,24 +83,21 @@ const TableComponent = ({
   // Define padding based on the selected density
   const rowPadding = density === 'comfortable' ? 'py-4' : 'py-2';
 
+
   return (
     <div className="p-6 bg-base-100 rounded-lg shadow-md w-full overflow-x-auto">
       {/* Title Card */}
-      <div className="mb-6">
-        {/* Title */}
-        <h2 className="text-2xl font-bold text-center mb-2">{title}</h2>
-
-        {/* Icon buttons placed to the end */}
-        <div className="flex justify-end items-center space-x-2">
+      <div className="flex justify-between items-center mb-4 mt-6">
+        <h2 className="text-2xl font-bold">{title}</h2>
+        <div className="flex items-center space-x-2">
           {onAdd && (
             <button 
-              className="flex items-center space-x-1 px-1 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm transition-all duration-300"
+              className="flex items-center space-x-1 px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm transition-all duration-300"
               onClick={onAdd}
             >
-              <FaPlus className="text-md" /> <span>Add</span>
+              <FaPlus className="text-lg" /> <span>Add</span>
             </button>
           )}
-
           {exportable && (
             <>
               <CSVLink
@@ -126,32 +123,33 @@ const TableComponent = ({
           )}
         </div>
       </div>
+    
+  
 
-      <div className="flex justify-between items-center mb-4">
-        {showSearch && (
-          <div className="mb-2 flex items-center border p-2 rounded-lg">
-            <FaSearch className="mr-2" />
-            <input
-              type="text"
-              placeholder="Search..."
-              value={search}
-              onChange={handleSearch}
-              className="w-1/2 p-1 border-0 outline-none bg-base-100"
-            />
-          </div>
-        )}
-        {customHeader}
-        {statusFilter}
-        {/* Density Toggle */}
-        <div className="mb-4 flex items-center space-x-2">
-          <FaThList onClick={toggleDensity} className="cursor-pointer" />
+      <div className="flex justify-between items-center mb-4">  
+      {showSearch && (
+        <div className="mb-4 flex items-center border p-2 rounded-lg">
+          <FaSearch className="mr-2" />
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={handleSearch}
+            className="w-1/2 p-1 border-0 outline-none bg-base-100"
+          />
         </div>
+      )}
+         {customHeader}
+         {statusFilter}
+      {/* Density Toggle */}
+      <div className="mb-4 flex items-center space-x-2">
+        <FaThList onClick={toggleDensity} className="cursor-pointer" />
       </div>
-
+      </div>
       {/* Table */}
       <table className="min-w-full table-auto border-collapse" id="table">
         <thead>
-          <tr className="border-b bg-base-300">
+          <tr className="border-b bg-base-300 ">
             {columns.map((column) => (
               <th
                 key={column.key}
@@ -179,10 +177,12 @@ const TableComponent = ({
         </tbody>
       </table>
 
+
       {/* Pagination */}
       <div className="flex justify-between items-center mt-4">
         {/* Rows per page */}
         <div className="flex items-center space-x-2 bg-base-200">
+          {/* <span>Rows per page:</span> */}
           <select 
             onChange={(e) => setRowsPerPage(Number(e.target.value))} 
             value={rowsPerPage}
