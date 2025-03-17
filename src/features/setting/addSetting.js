@@ -5,10 +5,13 @@ import Modal from '../../components/Modal';
 
 const SettingForm = () => {
   // Form state
-  const [key, setKey] = useState('');
-  const [value, setValue] = useState('');
-  const [unit, setUnit] = useState('');
-  const [description, setDescription] = useState('');
+  const [buildingName, setBuildingName] = useState('');
+  const [buildingAddress, setBuildingAddress] = useState('');
+  const [email, setEmail] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [postOfficeAddress, setPostOfficeAddress] = useState('');
+  const [logos, setLogos] = useState(null);  // For file input
+  const [seal, setSeal] = useState(null);    // For file input
 
   // UI state
   const [loading, setLoading] = useState(false);
@@ -22,7 +25,15 @@ const SettingForm = () => {
     setLoading(true);
 
     // Validate inputs
-    if (!key.trim() || !value.trim() || !unit.trim() || !description.trim()) {
+    if (
+      !buildingName.trim() ||
+      !buildingAddress.trim() ||
+      !email.trim() ||
+      !phoneNumber.trim() ||
+      !postOfficeAddress.trim() ||
+      !logos ||
+      !seal
+    ) {
       setLoading(false);
       setModalOpen(true);
       setMessageType('error');
@@ -30,20 +41,25 @@ const SettingForm = () => {
       return;
     }
 
-    const payload = {
-      key,
-      value,
-      unit,
-      description,
-    };
+    const formData = new FormData();
+    formData.append('buildingName', buildingName);
+    formData.append('buildingAddress', buildingAddress);
+    formData.append('email', email);
+    formData.append('phoneNumber', phoneNumber);
+    formData.append('postOfficeAddress', postOfficeAddress);
+    formData.append('logos', logos);
+    formData.append('seal', seal);
+
+    const token = localStorage.getItem('token');
 
     try {
       const response = await axios.post(
         'https://apartment.houseethiopia.com/api/setting',
-        payload,
+        formData,
         {
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -55,10 +71,13 @@ const SettingForm = () => {
       console.log('Setting added:', response.data);
 
       // Reset form after successful submission
-      setKey('');
-      setValue('');
-      setUnit('');
-      setDescription('');
+      setBuildingName('');
+      setBuildingAddress('');
+      setEmail('');
+      setPhoneNumber('');
+      setPostOfficeAddress('');
+      setLogos(null);
+      setSeal(null);
     } catch (error) {
       setLoading(false);
       setModalOpen(true);
@@ -71,16 +90,16 @@ const SettingForm = () => {
   return (
     <div>
       <TitleCard title="Add Setting" topMargin={'mt-1'}>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} encType="multipart/form-data">
           <div className="mb-4">
-            <label htmlFor="key" className="block text-sm font-medium text-white-700">
-              Key
+            <label htmlFor="buildingName" className="block text-sm font-medium text-white-700">
+              Building Name
             </label>
             <input
               type="text"
-              id="key"
-              value={key}
-              onChange={(e) => setKey(e.target.value)}
+              id="buildingName"
+              value={buildingName}
+              onChange={(e) => setBuildingName(e.target.value)}
               required
               disabled={loading}
               className="bg-base-100 mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -88,29 +107,14 @@ const SettingForm = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="value" className="block text-sm font-medium text-white-700">
-              Value
-            </label>
-            <input
-              type="number" // Changed to text to match API example, can revert to number if needed
-              id="value"
-              value={value}
-              onChange={(e) => setValue(e.target.value)}
-              required
-              disabled={loading}
-              className="bg-base-100 mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div className="mb-4">
-            <label htmlFor="unit" className="block text-sm font-medium text-white-700">
-              Unit
+            <label htmlFor="buildingAddress" className="block text-sm font-medium text-white-700">
+              Building Address
             </label>
             <input
               type="text"
-              id="unit"
-              value={unit}
-              onChange={(e) => setUnit(e.target.value)}
+              id="buildingAddress"
+              value={buildingAddress}
+              onChange={(e) => setBuildingAddress(e.target.value)}
               required
               disabled={loading}
               className="bg-base-100 mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -118,13 +122,72 @@ const SettingForm = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="description" className="block text-sm font-medium text-white-700">
-              Description
+            <label htmlFor="email" className="block text-sm font-medium text-white-700">
+              Email
             </label>
-            <textarea
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={loading}
+              className="bg-base-100 mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="phoneNumber" className="block text-sm font-medium text-white-700">
+              Phone Number
+            </label>
+            <input
+              type="text"
+              id="phoneNumber"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              required
+              disabled={loading}
+              className="bg-base-100 mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="postOfficeAddress" className="block text-sm font-medium text-white-700">
+              Post Office Address
+            </label>
+            <input
+              type="text"
+              id="postOfficeAddress"
+              value={postOfficeAddress}
+              onChange={(e) => setPostOfficeAddress(e.target.value)}
+              required
+              disabled={loading}
+              className="bg-base-100 mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="logos" className="block text-sm font-medium text-white-700">
+              Logo (Upload)
+            </label>
+            <input
+              type="file"
+              id="logos"
+              onChange={(e) => setLogos(e.target.files[0])}
+              required
+              disabled={loading}
+              className="bg-base-100 mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="seal" className="block text-sm font-medium text-white-700">
+              Seal (Upload)
+            </label>
+            <input
+              type="file"
+              id="seal"
+              onChange={(e) => setSeal(e.target.files[0])}
               required
               disabled={loading}
               className="bg-base-100 mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
