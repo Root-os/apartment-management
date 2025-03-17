@@ -163,6 +163,11 @@ const tenantOrderPage=lazy(()=> import('../pages/protected/order/tenantOrderpage
 const myOrder=lazy(()=> import('../pages/protected/order/myOrder'))
 const allOrders=lazy(()=> import('../pages/protected/order/allOrder'))
 
+//asset
+const AssetAdd = lazy(() => import('../pages/protected/Asset/AssetAdd'))
+const AssetView = lazy(() => import('../pages/protected/Asset/AssetView'))
+const AssetAuditAdd = lazy(() => import('../pages/protected/AssetAudit/AssetAuditAdd'))
+const AssetAuditView = lazy(() => import('../pages/protected/AssetAudit/AssetAuditView'))
 
 
 
@@ -799,6 +804,22 @@ const adminRoutes = [
 {
   path: '/all-order', 
   component: allOrders,
+},
+{
+  path: '/add-asset', 
+  component: AssetAdd,
+},
+{
+  path: '/view-asset', 
+  component: AssetView,
+},
+{
+  path: '/add-asset-audit', 
+  component: AssetAuditAdd,
+},
+{
+  path: '/view-asset-audit', 
+  component: AssetAuditView,
 }
 
 

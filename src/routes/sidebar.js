@@ -999,24 +999,24 @@ const adminRoutes =
   // },
 
   //vendor
-  {
-    path: '', 
-    icon: <BuildingOfficeIcon className={`${iconClasses} inline` }/>, 
-    name: 'Vendor',  
-    submenu : [
+  // {
+  //   path: '', 
+  //   icon: <BuildingOfficeIcon className={`${iconClasses} inline` }/>, 
+  //   name: 'Vendor',  
+  //   submenu : [
      
-     {
-      path: '/app/add-service-type',
-      icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Add Service Type ',
-    },
-    {
-      path: '/app/view-service-types',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'Service Type',
-    },
-    ]
-  },
+  //    {
+  //     path: '/app/add-service-type',
+  //     icon: <PlusIcon className={submenuIconClasses}/>,
+  //     name: 'Add Service Type ',
+  //   },
+  //   {
+  //     path: '/app/view-service-types',
+  //     icon: <EyeIcon className={submenuIconClasses}/>,
+  //     name: 'Service Type',
+  //   },
+  //   ]
+  // },
   //order
 
   {
@@ -1042,160 +1042,46 @@ const adminRoutes =
     }
     ]
   },
-  
-
-  //vendor
-  // {
-  //   path: '', 
-  //   icon: <BuildingOfficeIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Vendor',  
-  //   submenu : [
+  {
+    path: '', 
+    icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
+    name: 'Asset',  
+    submenu : [
      
-  //    {
-  //     path: '/app/add-vendor',
-  //     icon: <PlusIcon className={submenuIconClasses}/>,
-  //     name: 'Vendor Add',
-  //   },
-  //   {
-  //     path: '/app/view-vendors',
-  //     icon: <EyeIcon className={submenuIconClasses}/>,
-  //     name: 'Vendors',
-  //   },
-  //   ]
-  // },
-
-  //return
-  // { 
-  //   path: '', 
-  //   icon: <ArrowDownIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Return',  
-  //   submenu : [
+     {
+      path: '/app/add-asset',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Asset',
+    },
+    {
+      path: '/app/view-asset',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View Assets',
+    },
+   
+    ]
+  },
+  {
+    path: '', 
+    icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
+    name: 'Asset Audit',  
+    submenu : [
      
-  //    {
-  //     path: '/app/add-return',
-  //     icon: <PlusIcon className={submenuIconClasses}/>,
-  //     name: 'Return Add',
-  //   },
-  //   {
-  //     path: '/app/view-returns',
-  //     icon: <EyeIcon className={submenuIconClasses}/>,
-  //     name: 'Returns',
-  //   },
-  //   ]
-  // },
-
-
-  //payment
-  // {
-  //   path: '', 
-  //   icon: <CreditCardIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Payment',  
-  //   submenu : [
-     
-  //    {
-  //     path: '/app/add-payment',
-  //     icon: <PlusIcon className={submenuIconClasses}/>,
-  //     name: 'Payment Add',
-  //   },
-  //   {
-  //     path: '/app/view-payments',
-  //     icon: <EyeIcon className={submenuIconClasses}/>,
-  //     name: 'Payments',
-  //   },
-  //   ]
-  // },
-
-  //letter
-  // {
-  //   path: '', 
-  //   icon: <MailIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Letter',  
-  //   submenu : [
-     
-  //    {
-  //     path: '/app/add-letter-type',
-  //     icon: <PlusIcon className={submenuIconClasses}/>,
-  //     name: 'Letter Type Add',
-  //   },
-  //   {
-  //     path: '/app/send-letter',
-  //     icon: <PlusIcon className={submenuIconClasses}/>,
-  //     name: 'Send Letter',
-  //   },
-  //   {
-  //     path: '/app/view-letter-types',
-  //     icon: <EyeIcon className={submenuIconClasses}/>,
-  //     name: 'Letter Types',
-  //   },
-  //   {
-  //     path: '/app/all-sent-letters',
-  //     icon: <EyeIcon className={submenuIconClasses}/>,
-  //     name: 'Sent Letters',
-  //   }
-  //   ]
-  // },
+     {
+      path: '/app/add-asset-audit',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Asset Audit',
+    },
+    {
+      path: '/app/view-asset-audit',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View Asset Audits',
+    },
+   
+    ]
+  },
 
   
-
-  // {
-  //   path: '', 
-  //   icon: <ClipboardIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Stock Out',  
-  //   submenu : [
-     
-  //   {
-  //     path: '/app/view-stocks',
-  //     icon: <EyeIcon className={submenuIconClasses}/>,
-  //     name: 'View Stocks',
-  //   },
-  //   {
-  //     path: '/app/view-low-level-stock',
-  //     icon: <EyeIcon className={submenuIconClasses}/>,
-  //     name: 'Low level stock',
-  //   },
-  //   ]
-  // },
-  // {
-  //   path: '', 
-  //   icon: <ClipboardIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Inventory In and Out',  
-  //   submenu : [
-     
-  //    {
-  //     path: '/app/add-in-out',
-  //     icon: <PlusIcon className={submenuIconClasses}/>,
-  //     name: 'Add Inventory In/Out',
-  //   },
-  //   {
-  //     path: '/app/view-in-out',
-  //     icon: <EyeIcon className={submenuIconClasses}/>,
-  //     name: 'View Inventory information',
-  //   },
-  //   ]
-  // },
-  // {
-  //   path: '', 
-  //   icon: <ClipboardIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Salary',  
-  //   submenu : [
-     
-  //    {
-  //     path: '/app/add-mass-salary',
-  //     icon: <PlusIcon className={submenuIconClasses}/>,
-  //     name: 'Add Mass Payment',
-  //   },
-  //   {
-  //     path: '/app/add-single-salary',
-  //     icon: <PlusIcon className={submenuIconClasses}/>,
-  //     name: 'Add Single Payment',
-  //   },
-  //   {
-  //     path: '/app/view-all-salary',
-  //     icon: <EyeIcon className={submenuIconClasses}/>,
-  //     name: 'View All Payment',
-  //   },
-  //   ]
-  // },
 ]
 const routes = role === 'admin' ? adminRoutes : role === 'employee' ? employeeRoutes : tenantRoutes;
 export default routes
