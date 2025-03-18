@@ -18,6 +18,8 @@ const ItemsPage = () => {
   const [itemDetails, setItemDetails] = useState('');
   const [minAmount, setMinAmount] = useState('');
   const [itemCategoryId, setItemCategoryId] = useState('');
+  const [isAuditHistoryModalOpen, setIsAuditHistoryModalOpen] = useState(false); // Added for audit history modal
+  const [auditHistory, setAuditHistory] = useState([]);
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -27,7 +29,7 @@ const ItemsPage = () => {
   useEffect(() => {
     // Fetching items
     axios
-      .get('https://apartment.houseethiopia.com/api/items')
+      .get('http://127.0.0.1:3000/api/items')
       .then((response) => {
         setItems(response.data);
       })
@@ -128,6 +130,21 @@ const ItemsPage = () => {
     }
   };
 
+  const handleAuditHistoryClick = (item) => {
+    setSelectedItem(item);
+    fetchAuditHistory(item.id);
+    setIsAuditHistoryModalOpen(true); // Open the audit history modal
+  };
+  
+  const fetchAuditHistory = async (itemId) => {
+    try {
+      const response = await axios.get(`http://127.0.0.1:3000/api/items/${itemId}/audit-history`);
+      setAuditHistory(response.data); // Set the audit history data
+    } catch (error) {
+      console.error('Error fetching audit history:', error);
+    }
+  };
+
   // Reduced columns for simpler table view
   const columns = [
     { key: 'itemName', label: 'Item Name' },
@@ -163,6 +180,12 @@ const ItemsPage = () => {
             className="bg-red-500 text-white px-3 py-1 rounded-md"
           >
             Delete
+          </button>
+          <button
+            onClick={() => handleAuditHistoryClick(row)} // New button for audit history
+            className="bg-green-500 text-white px-3 py-1 rounded-md"
+          >
+            Audit History
           </button>
         </div>
       ),
@@ -370,6 +393,40 @@ const ItemsPage = () => {
               </button>
               <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded">
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+         {/* Audit History Modal */}
+         {isAuditHistoryModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
+          <div className="bg-base-100 p-6 rounded-md w-1/3 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">Audit History</h2>
+            <div>
+              {auditHistory.length > 0 ? (
+                <ul>
+                  {auditHistory.map((history) => (
+                    <li key={history.id} className="mb-4">
+                      <div><strong>Asset Name:</strong> {history.asset_name}</div>
+                      <div><strong>Date:</strong> {new Date(history.date).toLocaleDateString()}</div>
+                      <div><strong>Status:</strong> {history.status}</div>
+                      <div><strong>Existing Amount:</strong> {history.existing_amount}</div>
+                      <div><strong>Damaged Amount:</strong> {history.damaged_amount}</div>
+                      <div><strong>Lost Amount:</strong> {history.lost_amount}</div>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div>No audit history available</div>
+              )}
+            </div>
+            <div className="flex justify-end mt-6">
+              <button
+                onClick={() => setIsAuditHistoryModalOpen(false)}
+                className="bg-gray-400 text-white px-4 py-2 rounded-md"
+              >
+                Close
               </button>
             </div>
           </div>

@@ -192,7 +192,7 @@ const FloorManagement = () => {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-end space-x-2">
               <button onClick={() => setIsEditModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">
                 Cancel
               </button>

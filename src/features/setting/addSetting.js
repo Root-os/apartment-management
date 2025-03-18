@@ -10,8 +10,8 @@ const SettingForm = () => {
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [postOfficeAddress, setPostOfficeAddress] = useState('');
-  const [logos, setLogos] = useState(null);  // For file input
-  const [seal, setSeal] = useState(null);    // For file input
+  const [logos, setLogos] = useState(null);  
+  const [seal, setSeal] = useState(null);    
 
   // UI state
   const [loading, setLoading] = useState(false);
@@ -198,7 +198,7 @@ const SettingForm = () => {
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="px-4 py-2 w-full bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               {loading ? 'Adding...' : 'Add Setting'}
             </button>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard';
+import Modal from '../../components/Modal';
 
 const AddAssetAuditPage = () => {
   const [items, setItems] = useState([]);
@@ -12,16 +13,20 @@ const AddAssetAuditPage = () => {
   const [existingAmount, setExistingAmount] = useState('');
   const [damagedAmount, setDamagedAmount] = useState('');
   const [lostAmount, setLostAmount] = useState('');
-  const [status, setStatus] = useState('to_be_checked');
+  const [status, setStatus] = useState('');
   const [isAssetSelected, setIsAssetSelected] = useState(false);
   const [isItemSelected, setIsItemSelected] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  const [message, setMessage] = useState('');
+
   // Fetch items and asset types
   useEffect(() => {
-    axios.get('http://127.0.0.1:3000/api/items')
+    axios.get(`http://127.0.0.1:3000/api/items`)
       .then(response => {
         setItems(response.data);
       })
@@ -77,7 +82,10 @@ const AddAssetAuditPage = () => {
     try {
       const response = await axios.post('http://127.0.0.1:3000/api/asset-audits', payload);
       if (response.data.success) {
-        setSuccessMessage('Asset audit added successfully!');
+        // setSuccessMessage('Asset audit added successfully!');
+        setModalOpen(true);
+        setMessageType('success');
+        setMessage('Asset audit added successfully!');
         // Reset form after successful submission
         setSelectedItemId('');
         setSelectedAssetTypeId('');
@@ -86,11 +94,14 @@ const AddAssetAuditPage = () => {
         setExistingAmount('');
         setDamagedAmount('');
         setLostAmount('');
-        setStatus('to_be_checked');
+        setStatus('');
       }
     } catch (error) {
       console.error('Error:', error);
       setErrorMessage('Error adding asset audit.');
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Error adding asset audit.');
     }
   };
   
@@ -253,6 +264,7 @@ const AddAssetAuditPage = () => {
             onChange={(e) => setStatus(e.target.value)}
             className="mt-2 p-3 bg-base-100 w-full border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
           >
+            <option value="">select status</option>
             <option value="to_be_checked">To Be Checked</option>
             <option value="confirmed">Confirmed</option>
             <option value="fail">Fail</option>
@@ -269,6 +281,12 @@ const AddAssetAuditPage = () => {
         </div>
       </form>
       </TitleCard>
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
+      />
     </>
   );
 };

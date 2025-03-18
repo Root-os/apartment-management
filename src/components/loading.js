@@ -27,11 +27,7 @@ const LoadingComponent = () => {
           />
         </svg>
       </div>
-
-      {/* Loading Text */}
-      <p className="mt-4 text-xl font-semibold text-gray-800 dark:text-gray-200 animate-pulse">
-        Loading...
-      </p>
+     
     </div>
   );
 };

@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
+import LoadingComponent from '../../components/loading';
+import Modal from '../../components/Modal';
 
 const AssetAuditPage = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [btnLoading, setBtnLoading] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedAudit, setSelectedAudit] = useState(null);
@@ -12,10 +15,14 @@ const AssetAuditPage = () => {
   const [assetTypes, setAssetTypes] = useState([]);
   const [items, setItems] = useState([]);
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  const [message, setMessage] = useState('');
+
   // Fetch all initial data
   const fetchData = async () => {
     try {
-      setLoading(true);
+      
       const auditsResponse = await axios.get('http://127.0.0.1:3000/api/asset-audits');
       if (auditsResponse.data.success) {
         setData(auditsResponse.data.data);
@@ -65,6 +72,7 @@ const AssetAuditPage = () => {
   };
 
   const submitEdit = async () => {
+    setBtnLoading(true);
     try {
       const response = await axios.put(
         `http://127.0.0.1:3000/api/asset-audits/${selectedAudit.id}`,
@@ -81,9 +89,18 @@ const AssetAuditPage = () => {
           item.id === selectedAudit.id ? updatedAudit : item
         ));
         setEditModalOpen(false);
+
+        setModalOpen(true);
+        setMessageType('success');
+        setMessage('Asset audit updated successfully');
       }
     } catch (error) {
       console.error("Error updating audit:", error);
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Unable to update asset audit.');
+    } finally {
+        setBtnLoading(false);
     }
   };
 
@@ -92,8 +109,15 @@ const AssetAuditPage = () => {
       await axios.delete(`http://127.0.0.1:3000/api/asset-audits/${selectedAudit.id}`);
       setData(prevData => prevData.filter(item => item.id !== selectedAudit.id));
       setDeleteModalOpen(false);
+
+      setModalOpen(true);
+      setMessageType('success');
+      setMessage('Asset audit deleted successfully');
     } catch (error) {
       console.error("Error deleting audit:", error);
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Unable to delete the data.');
     }
   };
 
@@ -145,32 +169,34 @@ const AssetAuditPage = () => {
       )
     }
   ];
-
-  if (loading) return <div>Loading...</div>;
+  const handleAddClick = () => {
+    window.location.href='/app/add-asset-audit'
+  }
 
   return (
-    <div className="p-6">
+    <>
+      {loading ? (<LoadingComponent/>):(
       <TableComponent 
         title="Asset Audits" 
         data={data} 
         columns={columns} 
         showSearch={true}
         exportable={true}
-        onAdd={() => console.log('Add Asset Audit')}
+        onAdd={handleAddClick}
       />
-
+    )}
       {/* Edit Modal */}
       {editModalOpen && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg w-96 max-h-[80vh] flex flex-col">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] flex flex-col">
             <h2 className="text-xl font-bold mb-4">Edit Asset Audit</h2>
             <div className="space-y-4 overflow-y-auto flex-1">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Item</label>
+                <label className="block text-sm font-medium text-white-700 mb-1">Item</label>
                 <select
                   value={formData.item_id}
                   onChange={(e) => setFormData({...formData, item_id: e.target.value})}
-                  className="w-full p-2 border rounded"
+                  className="w-full bg-base-100 p-2 border rounded"
                 >
                   <option value="">Select Item</option>
                   {items.map(item => (
@@ -182,11 +208,11 @@ const AssetAuditPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Asset Type</label>
+                <label className="block text-sm font-medium text-white-700 mb-1">Asset Type</label>
                 <select
                   value={formData.asset_type_id}
                   onChange={(e) => setFormData({...formData, asset_type_id: e.target.value})}
-                  className="w-full p-2 border rounded"
+                  className="w-full bg-base-100 p-2 border rounded"
                 >
                   <option value="">Select Asset Type</option>
                   {assetTypes.map(assetType => (
@@ -198,61 +224,61 @@ const AssetAuditPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Asset Name</label>
+                <label className="block text-sm font-medium text-white-700 mb-1">Asset Name</label>
                 <input
                   type="text"
                   value={formData.asset_name}
                   onChange={(e) => setFormData({...formData, asset_name: e.target.value})}
-                  className="w-full p-2 border rounded"
+                  className="w-full bg-base-100 p-2 border rounded"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                <label className="block text-sm font-medium text-white-700 mb-1">Date</label>
                 <input
                   type="date"
                   value={formData.date}
                   onChange={(e) => setFormData({...formData, date: e.target.value})}
-                  className="w-full p-2 border rounded"
+                  className="w-full bg-base-100 p-2 border rounded"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Existing Amount</label>
+                <label className="block text-sm font-medium text-white-700 mb-1">Existing Amount</label>
                 <input
                   type="number"
                   value={formData.existing_amount}
                   onChange={(e) => setFormData({...formData, existing_amount: parseInt(e.target.value)})}
-                  className="w-full p-2 border rounded"
+                  className="w-full bg-base-100 p-2 border rounded"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Damaged Amount</label>
+                <label className="block text-sm font-medium text-white-700 mb-1">Damaged Amount</label>
                 <input
                   type="number"
                   value={formData.damaged_amount}
                   onChange={(e) => setFormData({...formData, damaged_amount: parseInt(e.target.value)})}
-                  className="w-full p-2 border rounded"
+                  className="w-full bg-base-100 p-2 border rounded"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Lost Amount</label>
+                <label className="block text-sm font-medium text-white-700 mb-1">Lost Amount</label>
                 <input
                   type="number"
                   value={formData.lost_amount}
                   onChange={(e) => setFormData({...formData, lost_amount: parseInt(e.target.value)})}
-                  className="w-full p-2 border rounded"
+                  className="w-full bg-base-100 p-2 border rounded"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <label className="block text-sm font-medium text-white-700 mb-1">Status</label>
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({...formData, status: e.target.value})}
-                  className="w-full p-2 border rounded"
+                  className="w-full bg-base-100 p-2 border rounded"
                 >
                   <option value="confirmed">Confirmed</option>
                   <option value="to_be_checked">To be checked</option>
@@ -270,8 +296,10 @@ const AssetAuditPage = () => {
               <button
                 onClick={submitEdit}
                 className="px-4 py-2 bg-blue-500 text-white rounded"
+                disable={btnLoading}
               >
-                Save
+                {btnLoading ? 'Saving...':'Save'}
+                
               </button>
             </div>
           </div>
@@ -280,8 +308,8 @@ const AssetAuditPage = () => {
 
       {/* Delete Confirmation Modal */}
       {deleteModalOpen && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-lg w-96">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-base-100 p-6 rounded-lg w-98">
             <h2 className="text-xl font-bold mb-4">Confirm Delete</h2>
             <p>Are you sure you want to delete this asset audit?</p>
             <div className="mt-4 flex justify-end gap-2">
@@ -301,7 +329,13 @@ const AssetAuditPage = () => {
           </div>
         </div>
       )}
-    </div>
+          <Modal
+            isOpen={modalOpen}
+            onClose={() => setModalOpen(false)}
+            messageType={messageType}
+            message={message}
+          />
+    </>
   );
 };
 

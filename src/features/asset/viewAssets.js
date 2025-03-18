@@ -32,13 +32,11 @@ const AssetPage = () => {
       });
   }, []);
 
-  // Filtered assetTypes based on the search term
   const filteredAssetTypes = assetTypes.filter((assetType) =>
     (assetType.name && assetType.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
     (assetType.description && assetType.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  // Handle edit button click
   const handleEditClick = (assetType) => {
     setSelectedAssetType(assetType);
     setCategoryName(assetType.name);
@@ -46,57 +44,64 @@ const AssetPage = () => {
     setIsEditModalOpen(true);
   };
 
-  // Handle delete button click
   const handleDeleteClick = (assetType) => {
     setSelectedAssetType(assetType);
     setIsDeleteModalOpen(true);
   };
 
-  // Handle edit request
   const handleEdit = async () => {
     setLoading(true);
-  
-    // Optimistically update the UI before the server responds
     const updatedAssetType = {
+      ...selectedAssetType, // Preserve all existing properties
       name: categoryName,
-      description,
+      description: description,
     };
-  
-    const optimisticData = assetTypes.map((assetType) =>
-      assetType.id === selectedAssetType.id ? { ...assetType, ...updatedAssetType } : assetType
+
+    // Optimistically update the state
+    setAssetTypes(prevAssetTypes => 
+      prevAssetTypes.map(assetType => 
+        assetType.id === selectedAssetType.id ? updatedAssetType : assetType
+      )
     );
-    setAssetTypes(optimisticData); // Update UI immediately
-  
+
     try {
-      const response = await axios.put(`http://127.0.0.1:3000/api/asset/${selectedAssetType.id}`, updatedAssetType);
-      
-      // Ensure the data is updated with the server response (in case of any discrepancies)
-      setAssetTypes(
-        assetTypes.map((assetType) =>
+      const response = await axios.put(
+        `http://127.0.0.1:3000/api/asset/${selectedAssetType.id}`,
+        {
+          name: categoryName,
+          description: description,
+        }
+      );
+
+      // Update with server response to ensure sync
+      setAssetTypes(prevAssetTypes =>
+        prevAssetTypes.map(assetType =>
           assetType.id === selectedAssetType.id ? response.data : assetType
         )
       );
-  
-      // Close the modal and reset state
+
       setIsEditModalOpen(false);
       setSelectedAssetType(null);
-  
       setModalOpen(true);
       setMessageType('success');
       setMessage('Asset type updated successfully');
     } catch (error) {
-      // Revert the optimistic update if the request fails
-      setAssetTypes(assetTypes);
-  
+      // Roll back to original data on error
+      setAssetTypes(prevAssetTypes =>
+        prevAssetTypes.map(assetType =>
+          assetType.id === selectedAssetType.id ? selectedAssetType : assetType
+        )
+      );
+      
       setModalOpen(true);
       setMessageType('error');
       setMessage('Unable to update asset type');
+      console.error('Edit error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle delete request
   const handleDelete = async () => {
     setLoading(true);
     try {
@@ -117,7 +122,6 @@ const AssetPage = () => {
     }
   };
 
-  // Actions for each card
   const getCardActions = (assetType) => [
     {
       label: 'Edit',
@@ -133,17 +137,16 @@ const AssetPage = () => {
 
   return (
     <>
-      {/* Search Bar */}
       <div className="p-4 mb-6">
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">Asset Types</h1>
+          <h1 className="text-3xl font-bold text-white-800">Assets</h1>
         </div>
         <input
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search asset types..."
-          className="w-full p-2 border border-gray-300 rounded-md"
+          placeholder="Search"
+          className="w-full bg-base-100 p-2 border border-gray-300 rounded-md"
         />
       </div>
 
@@ -161,16 +164,15 @@ const AssetPage = () => {
               />
             ))
           ) : (
-            <p>No asset types found</p>
+            <p>No asset found</p>
           )}
         </div>
       )}
 
-      {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="bg-base-100 p-6 rounded-md w-1/3">
-            <h2 className="text-2xl font-bold mb-4">Edit Asset Type</h2>
+            <h2 className="text-2xl font-bold mb-4">Edit Asset</h2>
             <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
               <div className="mb-4">
                 <label htmlFor="categoryName" className="block text-sm font-medium text-white-700">
@@ -216,7 +218,6 @@ const AssetPage = () => {
         </div>
       )}
 
-      {/* Delete Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 p-6 rounded-lg w-98">

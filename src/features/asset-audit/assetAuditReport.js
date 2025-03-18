@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
+import LoadingComponent from '../../components/loading';
 
 const AssetAuditReport = () => {
   const [date, setDate] = useState(''); // Default date (empty)
@@ -118,12 +119,13 @@ const AssetAuditReport = () => {
 
   return (
     <div className="p-6 bg-base-100 rounded-lg shadow-md w-full">
+
       <div className="flex justify-end items-center mb-4">
   {/* <h2 className="text-2xl font-bold">Filter Data</h2> */}
         <div className="flex items-center space-x-2">
             {/* Date Picker (Single Date Filter) */}
             <div className="flex flex-col">
-            <label htmlFor="date" className="text-sm font-medium">Date</label>
+            <label htmlFor="date" className="text-sm font-medium">Audit Date</label>
             <input
                 id="date"
                 type="date"
@@ -151,7 +153,7 @@ const AssetAuditReport = () => {
 
             {/* Start Date Picker (Date Range Filter) */}
             <div className="flex flex-col">
-            <label htmlFor="startDate" className="text-sm font-medium">Start Date</label>
+            <label htmlFor="startDate" className="text-sm font-medium">Audit date from</label>
             <input
                 id="startDate"
                 type="date"
@@ -163,7 +165,7 @@ const AssetAuditReport = () => {
 
             {/* End Date Picker (Date Range Filter) */}
             <div className="flex flex-col">
-            <label htmlFor="endDate" className="text-sm font-medium">End Date</label>
+            <label htmlFor="endDate" className="text-sm font-medium">Audit date to</label>
             <input
                 id="endDate"
                 type="date"
@@ -175,9 +177,8 @@ const AssetAuditReport = () => {
         </div>
         </div>
 
-
       {loading ? (
-        <div>Loading...</div>
+       <LoadingComponent/>
       ) : (
         <TableComponent 
           title="Asset Audit Reports" 
