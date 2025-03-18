@@ -168,7 +168,7 @@ const AssetAdd = lazy(() => import('../pages/protected/Asset/AssetAdd'))
 const AssetView = lazy(() => import('../pages/protected/Asset/AssetView'))
 const AssetAuditAdd = lazy(() => import('../pages/protected/AssetAudit/AssetAuditAdd'))
 const AssetAuditView = lazy(() => import('../pages/protected/AssetAudit/AssetAuditView'))
-
+const AssetAuditReport = lazy(() => import('../pages/protected/AssetAudit/AssetAuditReport'))
 
 
 
@@ -820,6 +820,10 @@ const adminRoutes = [
 {
   path: '/view-asset-audit', 
   component: AssetAuditView,
+},
+{
+  path: '/view-audit-report', 
+  component: AssetAuditReport,
 }
 
 

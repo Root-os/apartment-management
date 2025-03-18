@@ -1077,6 +1077,11 @@ const adminRoutes =
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'View Asset Audits',
     },
+    {
+      path: '/app/view-audit-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Asset Audit Reports',
+    },
    
     ]
   },

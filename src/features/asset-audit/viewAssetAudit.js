@@ -123,7 +123,7 @@ const AssetAuditPage = () => {
           // 'en-US' for MM/DD/YYYY
           // 'en-GB' for DD/MM/YYYY
         }
-      },
+    },
     {
       label: 'Actions',
       key: 'actions',
