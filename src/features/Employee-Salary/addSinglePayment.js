@@ -22,7 +22,7 @@ const SalaryPaymentForm = () => {
   // Fetch employees when the component mounts
   useEffect(() => {
     const token = localStorage.getItem('token');
-    axios.get('https://apartment.houseethiopia.com/api/auth/employee', {
+    axios.get(`${process.env.REACT_APP_BASE_URL}auth/employee`, {
         headers: {
             Authorization: `Bearer ${token}`, // Pass the token in Authorization header
           }
@@ -55,7 +55,7 @@ const SalaryPaymentForm = () => {
     const token = localStorage.getItem('token');
 
     // Make the POST request with token in the Authorization header
-    axios.post('https://apartment.houseethiopia.com/api/salary-payments/pay', payload, {
+    axios.post(`${process.env.REACT_APP_BASE_URL}salary-payments/pay`, payload, {
       headers: {
         Authorization: `Bearer ${token}`, // Pass the token in Authorization header
       }

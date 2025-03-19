@@ -112,7 +112,7 @@ const TenantInventoryPage = () => {
 
     try {
       const response = await axios.delete(
-        `https://apartment.houseethiopia.com/api/tenant-inventory/${id}`,
+        `${process.env.REACT_APP_BASE_URL}tenant-inventory/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -170,7 +170,7 @@ const TenantInventoryPage = () => {
     try {
       setLoading(true);
       const response = await axios.put(
-        `https://apartment.houseethiopia.com/api/tenant-inventory/${currentInventory.id}`,
+        `${process.env.REACT_APP_BASE_URL}tenant-inventory/${currentInventory.id}`,
         updatedData,
         {
           headers: {

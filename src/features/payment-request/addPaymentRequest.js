@@ -26,13 +26,13 @@ const AddPaymentRequest = () => {
   useEffect(() => {
     // Fetch payment types
     axios
-      .get("https://apartment.houseethiopia.com/api/payment-types")
+      .get(`${process.env.REACT_APP_BASE_URL}payment-types`)
       .then((response) => setPaymentTypes(response.data))
       .catch((error) => console.error("Error fetching payment types:", error));
 
     // Fetch tenants
     axios
-      .get("https://apartment.houseethiopia.com/api/tenant")
+      .get(`${process.env.REACT_APP_BASE_URL}tenant`)
       .then((response) => setTenants(response.data))
       .catch((error) => console.error("Error fetching tenants:", error));
   }, []);
@@ -82,7 +82,7 @@ const AddPaymentRequest = () => {
     try {
       setIsLoading(true);
       const response = await axios.post(
-        "https://apartment.houseethiopia.com/api/payment-requests",
+        `${process.env.REACT_APP_BASE_URL}payment-requests`,
         requestData
       );
 

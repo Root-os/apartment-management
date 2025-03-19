@@ -32,7 +32,7 @@ const ItemAssignmentsPage = () => {
 
   useEffect(() => { 
     axios
-    .get('https://apartment.houseethiopia.com/api/items')
+    .get(`${process.env.REACT_APP_BASE_URL}items`)
     .then((response) => {
       setItems(response.data);
     })

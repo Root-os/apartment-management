@@ -103,7 +103,7 @@ const TenantList = () => {
         formData.append(key, editData[key]);
       });
 
-      await axios.put(`https://apartment.houseethiopia.com/api/tenant/${selectedTenant.id}`, formData, {
+      await axios.put(`${process.env.REACT_APP_BASE_URL}tenant/${selectedTenant.id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -131,7 +131,7 @@ const TenantList = () => {
   // Submit delete request to the API
   const handleDeleteSubmit = async () => {
     try {
-      await axios.delete(`https://apartment.houseethiopia.com/api/tenant/${selectedTenant.id}`);
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}tenant/${selectedTenant.id}`);
       setTenants(tenants.filter((tenant) => tenant.id !== selectedTenant.id));
       setIsDeleteModalOpen(false);
       setModal({

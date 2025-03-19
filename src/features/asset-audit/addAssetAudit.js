@@ -26,7 +26,7 @@ const AddAssetAuditPage = () => {
 
   // Fetch items and asset types
   useEffect(() => {
-    axios.get(`http://127.0.0.1:3000/api/items`)
+    axios.get(`${process.env.REACT_APP_BASE_URL}items`)
       .then(response => {
         setItems(response.data);
       })
@@ -34,7 +34,7 @@ const AddAssetAuditPage = () => {
         console.error('Error fetching items:', error);
       });
 
-    axios.get('http://127.0.0.1:3000/api/asset')
+    axios.get(`${process.env.REACT_APP_BASE_URL}asset`)
       .then(response => {
         setAssetTypes(response.data.data); // Make sure the response contains an array of asset types
       })
@@ -80,7 +80,7 @@ const AddAssetAuditPage = () => {
     payload.status = status;
   
     try {
-      const response = await axios.post('http://127.0.0.1:3000/api/asset-audits', payload);
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}asset-audits`, payload);
       if (response.data.success) {
         // setSuccessMessage('Asset audit added successfully!');
         setModalOpen(true);

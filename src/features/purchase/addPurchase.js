@@ -25,7 +25,7 @@ const AddPurchaseForm = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    axios.get('https://apartment.houseethiopia.com/api/vendors')
+    axios.get(`${process.env.REACT_APP_BASE_URL}vendors`)
       .then(response => {
         setVendorList(response.data);
         console.log(response.data);
@@ -34,7 +34,7 @@ const AddPurchaseForm = () => {
         setError('Failed to load vendors');
       });
 
-    axios.get('https://apartment.houseethiopia.com/api/item-types')
+    axios.get(`${process.env.REACT_APP_BASE_URL}item-types`)
       .then(response => {
         setCategoryList(response.data);
       })
@@ -42,7 +42,7 @@ const AddPurchaseForm = () => {
         setError('Failed to load item categories');
       });
 
-    axios.get('https://apartment.houseethiopia.com/api/items') // Fetch items
+    axios.get(`${process.env.REACT_APP_BASE_URL}items`) 
       .then(response => {
         setItemList(response.data); // Save the fetched items in the state
       })

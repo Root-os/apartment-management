@@ -102,7 +102,7 @@ const StockOutRequestPage = () => {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`https://apartment.houseethiopia.com/api/stockout/${id}`, {
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}stockout/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

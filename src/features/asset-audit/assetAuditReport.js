@@ -15,7 +15,7 @@ const AssetAuditReport = () => {
   const fetchDataByDate = async (selectedDate) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://127.0.0.1:3000/api/asset-audits/date', {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}asset-audits/date`, {
         date: selectedDate
       });
       return response.data.data; // Return the data for the selected date
@@ -29,7 +29,7 @@ const AssetAuditReport = () => {
   const fetchDataByStatus = async (selectedStatus) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://127.0.0.1:3000/api/asset-audits/status', {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}asset-audits/status`, {
         status: selectedStatus
       });
       return response.data.data; // Return the data for the selected status
@@ -43,7 +43,7 @@ const AssetAuditReport = () => {
   const fetchDataByStatusAndDateRange = async (selectedStatus, selectedStartDate, selectedEndDate) => {
     setLoading(true);
     try {
-      const response = await axios.post('http://127.0.0.1:3000/api/asset-audits/status/date-range', {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}asset-audits/status/date-range`, {
         status: selectedStatus,
         startDate: selectedStartDate,
         endDate: selectedEndDate

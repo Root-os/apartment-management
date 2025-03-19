@@ -54,7 +54,7 @@ const SettingForm = () => {
 
     try {
       const response = await axios.post(
-        'https://apartment.houseethiopia.com/api/setting',
+        `${process.env.REACT_APP_BASE_URL}setting`,
         formData,
         {
           headers: {

@@ -27,7 +27,7 @@ const CurrencySettingsPage = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     axios
-      .get('https://apartment.houseethiopia.com/api/setting', {
+      .get(`${process.env.REACT_APP_BASE_URL}setting`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -78,7 +78,7 @@ const CurrencySettingsPage = () => {
 
     axios
       .put(
-        `https://apartment.houseethiopia.com/api/setting/${selectedSetting.id}`,
+        `${process.env.REACT_APP_BASE_URL}setting/${selectedSetting.id}`,
         formDataToSubmit,
         {
           headers: {
@@ -121,7 +121,7 @@ const CurrencySettingsPage = () => {
     const token = localStorage.getItem('token');
     
     axios
-      .delete(`https://apartment.houseethiopia.com/api/setting/${selectedSetting.id}`, {
+      .delete(`${process.env.REACT_APP_BASE_URL}setting/${selectedSetting.id}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },

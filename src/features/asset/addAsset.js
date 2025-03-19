@@ -31,7 +31,7 @@ const AddAsset = () => {
 
     try {
       // Send POST request to the API
-      const response = await axios.post(`http://127.0.0.1:3000/api/asset`, assetData);
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}asset`, assetData);
 
       if (response.data.success) {
         setSuccessMessage(`Asset added successfully: ${response.data.data.name}`);

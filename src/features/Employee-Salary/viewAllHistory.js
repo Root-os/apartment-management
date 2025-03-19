@@ -109,7 +109,7 @@ const SalaryPayments = () => {
       };
 
       const response = await axios.put(
-        `https://apartment.houseethiopia.com/api/salary-payments/${selectedSalary.id}`,
+        `${process.env.REACT_APP_BASE_URL}salary-payments/${selectedSalary.id}`,
         updatedSalary,
         {
           headers: {
@@ -154,7 +154,7 @@ const SalaryPayments = () => {
     setIsLoading(true);
     try {
       const response = await axios.delete(
-        `https://apartment.houseethiopia.com/api/salary-payments/${id}`,
+        `${process.env.REACT_APP_BASE_URL}salary-payments/${id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,

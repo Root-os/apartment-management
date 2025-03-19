@@ -23,23 +23,20 @@ const AssetAuditPage = () => {
   const fetchData = async () => {
     try {
       
-      const auditsResponse = await axios.get('http://127.0.0.1:3000/api/asset-audits');
+      const auditsResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}asset-audits`);
       if (auditsResponse.data.success) {
         setData(auditsResponse.data.data);
       }
 
-      const assetTypesResponse = await axios.get('http://127.0.0.1:3000/api/asset');
+      const assetTypesResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}asset`);
       if (assetTypesResponse.data.success) {
         setAssetTypes(assetTypesResponse.data.data);
       }
 
-      const itemsResponse = await axios.get('http://127.0.0.1:3000/api/items');
-      if (itemsResponse.data.success) {
-        setItems(itemsResponse.data.data);
-        console.log("Data fetched successfully:", itemsResponse.data);
-      } else {
-        console.log("Failed to fetch data:", itemsResponse.data.message);
-      }
+      const itemsResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}items`);
+      console.log("Items Response:", itemsResponse.data);
+      // Since the response is a plain array, set it directly
+      setItems(itemsResponse.data);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -72,41 +69,52 @@ const AssetAuditPage = () => {
   };
 
   const submitEdit = async () => {
-    setBtnLoading(true);
-    try {
-      const response = await axios.put(
-        `http://127.0.0.1:3000/api/asset-audits/${selectedAudit.id}`,
-        formData
-      );
-      if (response.data.success) {
-        const updatedAudit = {
-          ...response.data.data,
-          Item: items.find(item => item.id === Number(formData.item_id)),
-          AssetType: assetTypes.find(type => type.id === Number(formData.asset_type_id))
-        };
-        
-        setData(prevData => prevData.map(item => 
-          item.id === selectedAudit.id ? updatedAudit : item
-        ));
-        setEditModalOpen(false);
+  setBtnLoading(true);
+  try {
+    const requestData = {
+      ...formData,
+      item_id: formData.item_id || undefined,
+      asset_type_id: formData.asset_type_id || undefined,
+    };
 
-        setModalOpen(true);
-        setMessageType('success');
-        setMessage('Asset audit updated successfully');
-      }
-    } catch (error) {
-      console.error("Error updating audit:", error);
+    console.log("Request Data:", requestData);  
+
+    const response = await axios.put(
+      `${process.env.REACT_APP_BASE_URL}asset-audits/${selectedAudit.id}`,
+      requestData
+    );
+
+    if (response.data.success) {
+      const updatedAudit = {
+        ...response.data.data,
+        Item: items.find(item => item.id === Number(formData.item_id)),
+        AssetType: assetTypes.find(type => type.id === Number(formData.asset_type_id))
+      };
+
+      setData(prevData => prevData.map(item => 
+        item.id === selectedAudit.id ? updatedAudit : item
+      ));
+      setEditModalOpen(false);
+
       setModalOpen(true);
-      setMessageType('error');
-      setMessage('Unable to update asset audit.');
-    } finally {
-        setBtnLoading(false);
+      setMessageType('success');
+      setMessage('Asset audit updated successfully');
     }
-  };
+  } catch (error) {
+    console.error("Error updating audit:", error);
+    setModalOpen(true);
+    setMessageType('error');
+    setMessage('Unable to update asset audit.');
+  } finally {
+    setBtnLoading(false);
+  }
+};
+
+  
 
   const confirmDelete = async () => {
     try {
-      await axios.delete(`http://127.0.0.1:3000/api/asset-audits/${selectedAudit.id}`);
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}asset-audits/${selectedAudit.id}`);
       setData(prevData => prevData.filter(item => item.id !== selectedAudit.id));
       setDeleteModalOpen(false);
 

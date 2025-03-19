@@ -21,9 +21,9 @@ const AssetPage = () => {
   useEffect(() => {
     setPageLoading(true);
     axios
-      .get(`http://127.0.0.1:3000/api/asset`)
+      .get(`${process.env.REACT_APP_BASE_URL}asset`)
       .then((response) => {
-        setAssetTypes(response.data.data);
+        setAssetTypes(response.data.data); // Assuming the asset list is under response.data.data
         setPageLoading(false);
       })
       .catch((error) => {
@@ -57,26 +57,32 @@ const AssetPage = () => {
       description: description,
     };
 
-    // Optimistically update the state
-    setAssetTypes(prevAssetTypes => 
-      prevAssetTypes.map(assetType => 
+    // Optimistically update the state immediately
+    setAssetTypes((prevAssetTypes) =>
+      prevAssetTypes.map((assetType) =>
         assetType.id === selectedAssetType.id ? updatedAssetType : assetType
       )
     );
 
     try {
+      // Make the API call to update the asset on the server
       const response = await axios.put(
-        `http://127.0.0.1:3000/api/asset/${selectedAssetType.id}`,
+        `${process.env.REACT_APP_BASE_URL}asset/${selectedAssetType.id}`,
         {
           name: categoryName,
           description: description,
         }
       );
 
-      // Update with server response to ensure sync
-      setAssetTypes(prevAssetTypes =>
-        prevAssetTypes.map(assetType =>
-          assetType.id === selectedAssetType.id ? response.data : assetType
+      // Assuming the server returns the updated asset directly under response.data
+      const updatedAssetFromServer = response.data; // Adjust if nested, e.g., response.data.data
+
+      // Update the state with the server response, merging with existing data
+      setAssetTypes((prevAssetTypes) =>
+        prevAssetTypes.map((assetType) =>
+          assetType.id === selectedAssetType.id
+            ? { ...assetType, ...updatedAssetFromServer } // Merge to preserve all fields
+            : assetType
         )
       );
 
@@ -86,13 +92,13 @@ const AssetPage = () => {
       setMessageType('success');
       setMessage('Asset type updated successfully');
     } catch (error) {
-      // Roll back to original data on error
-      setAssetTypes(prevAssetTypes =>
-        prevAssetTypes.map(assetType =>
+      // Rollback the optimistic update if the API call fails
+      setAssetTypes((prevAssetTypes) =>
+        prevAssetTypes.map((assetType) =>
           assetType.id === selectedAssetType.id ? selectedAssetType : assetType
         )
       );
-      
+
       setModalOpen(true);
       setMessageType('error');
       setMessage('Unable to update asset type');
@@ -105,7 +111,7 @@ const AssetPage = () => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await axios.delete(`http://127.0.0.1:3000/api/asset/${selectedAssetType.id}`);
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}asset/${selectedAssetType.id}`); // Fixed URL typo
       setAssetTypes(assetTypes.filter((assetType) => assetType.id !== selectedAssetType.id));
       setIsDeleteModalOpen(false);
       setSelectedAssetType(null);
@@ -117,6 +123,7 @@ const AssetPage = () => {
       setModalOpen(true);
       setMessageType('error');
       setMessage('Unable to delete asset type');
+      console.error('Delete error:', error);
     } finally {
       setLoading(false);
     }

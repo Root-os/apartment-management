@@ -33,7 +33,7 @@ const PaymentRequestsPage = () => {
     Promise.all([
       axios.get(`${process.env.REACT_APP_BASE_URL}payment-requests`),
       axios.get(`${process.env.REACT_APP_BASE_URL}tenant`),
-      axios.get('https://apartment.houseethiopia.com/api/payment-types')
+      axios.get(`${process.env.REACT_APP_BASE_URL}payment-types`)
     ])
       .then((responses) => {
         // Destructure the responses and set the state accordingly

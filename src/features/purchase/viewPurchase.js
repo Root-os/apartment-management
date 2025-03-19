@@ -60,7 +60,7 @@ const PurchasesPage = () => {
 
     // Fetch vendors
     axios
-      .get('https://apartment.houseethiopia.com/api/vendors')
+      .get(`${process.env.REACT_APP_BASE_URL}vendors`)
       .then((response) => {
         setVendors(response.data); // Set vendors from the external API
       })

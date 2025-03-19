@@ -29,7 +29,7 @@ const ItemsPage = () => {
   useEffect(() => {
     // Fetching items
     axios
-      .get('http://127.0.0.1:3000/api/items')
+      .get(`${process.env.REACT_APP_BASE_URL}items`)
       .then((response) => {
         setItems(response.data);
       })
@@ -39,7 +39,7 @@ const ItemsPage = () => {
 
     // Fetching categories
     axios
-      .get('https://apartment.houseethiopia.com/api/item-types/')
+      .get(`${process.env.REACT_APP_BASE_URL}item-types/`)
       .then((response) => {
         setCategories(response.data);
       })
@@ -89,7 +89,7 @@ const ItemsPage = () => {
       };
 
       const response = await axios.put(
-        `https://apartment.houseethiopia.com/api/items/${selectedItem.id}`,
+        `${process.env.REACT_APP_BASE_URL}items/${selectedItem.id}`,
         updatedItem
       );
       
@@ -114,7 +114,7 @@ const ItemsPage = () => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await axios.delete(`https://apartment.houseethiopia.com/api/items/${selectedItem.id}`);
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}items/${selectedItem.id}`);
       setItems(items.filter((item) => item.id !== selectedItem.id));
       setIsDeleteModalOpen(false);
       setSelectedItem(null);
@@ -138,7 +138,7 @@ const ItemsPage = () => {
   
   const fetchAuditHistory = async (itemId) => {
     try {
-      const response = await axios.get(`http://127.0.0.1:3000/api/items/${itemId}/audit-history`);
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}items/${itemId}/audit-history`);
       setAuditHistory(response.data); // Set the audit history data
     } catch (error) {
       console.error('Error fetching audit history:', error);
