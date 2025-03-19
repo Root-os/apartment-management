@@ -77,7 +77,8 @@ const SalaryPayments = () => {
     const fetchSalaryData = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/salary-payments/all', {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}salary-payments/all`, {
+
           headers: { Authorization: `Bearer ${token}` },
         });
         setSalaryData(response.data.data);
@@ -259,5 +260,4 @@ const SalaryPayments = () => {
     </>
   );
 };
-
 export default SalaryPayments;

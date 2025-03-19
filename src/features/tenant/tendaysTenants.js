@@ -25,7 +25,7 @@ const TenDaysTenant = () => {
   }, []);
 
   const getDocumentUrl = (document) => {
-    return `https://apartment.houseethiopia.com${document}`;
+    return `https://apartment.bruktiethiotour.com${document}`;
   };
 
   const openDetailsModal = (tenant) => {
@@ -120,7 +120,7 @@ const TenDaysTenant = () => {
               <p><strong>Status:</strong> {selectedTenant.status}</p>
               <p><strong>Unit Number:</strong> {selectedTenant.Unit?.unitNumber}</p>
               <p><strong>Floor Number:</strong> {selectedTenant.Floor?.floorNumber}</p>
-              <p><strong>Document:</strong> <a href={`https://apartment.houseethiopia.com${selectedTenant.document}`} target="_blank" rel="noopener noreferrer">View Document</a></p>
+              <p><strong>Document:</strong> <a href={`https://apartment.bruktiethiotour.com${selectedTenant.document}`} target="_blank" rel="noopener noreferrer">View Document</a></p>
             </div>
             <div className="flex justify-center mt-4">
               <button onClick={() => setSelectedTenant(null)} className="bg-gray-400 text-white px-4 py-2 rounded">Close</button>

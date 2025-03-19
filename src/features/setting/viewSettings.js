@@ -155,7 +155,7 @@ const CurrencySettingsPage = () => {
       label: 'Logo',
       render: (value) => (
         <img
-          src={`https://apartment.houseethiopia.com/${value}`}
+          src={`https://apartment.bruktiethiotour.com/${value}`}
           alt="Logo"
           style={{ width: '50px', height: '50px', objectFit: 'cover' }}
         />
@@ -166,7 +166,7 @@ const CurrencySettingsPage = () => {
       label: 'Seal',
       render: (value) => (
         <img
-          src={`https://apartment.houseethiopia.com/${value}`}
+          src={`https://apartment.bruktiethiotour.com/${value}`}
           alt="Seal"
           style={{ width: '50px', height: '50px', objectFit: 'cover' }}
         />

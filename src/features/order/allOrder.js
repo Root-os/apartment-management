@@ -298,7 +298,7 @@ const AllOrdersPage = () => {
                 <p><strong>Total Price:</strong> {selectedOrder.totalprice}</p>
                 <p><strong>Status:</strong> {selectedOrder.status}</p>
                 <p><strong>Notes:</strong> {selectedOrder.notes}</p>
-                <p><strong>Receipt Image:</strong> <a className='text-blue-800 underline' href={`https://apartment.houseethiopia.com/${selectedOrder.receiptImage}`} target="_blank" rel="noopener noreferrer">View</a></p>
+                <p><strong>Receipt Image:</strong> <a className='text-blue-800 underline' href={`https://apartment.bruktiethiotour.com/${selectedOrder.receiptImage}`} target="_blank" rel="noopener noreferrer">View</a></p>
                 <p><strong>Tenant Name:</strong> {selectedOrder.Tenant?.fullName}</p>
                 <p><strong>Tenant Phone:</strong> {selectedOrder.Tenant.phoneNumber}</p>
                 <p><strong>Tenant Email:</strong> {selectedOrder.Tenant.email}</p>

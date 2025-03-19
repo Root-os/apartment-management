@@ -89,7 +89,7 @@ const PurchasesRequestPage = () => {
 
     const fetchVendors = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/vendors');
+        const response = await axios.get('https://apartment.bruktiethiotour.com/api/vendors');
         setVendors(response.data);
       } catch (err) {
         console.error('Error fetching vendors:', err);

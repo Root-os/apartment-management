@@ -31,7 +31,7 @@ const TenantFilterList = () => {
   }, []);
 
   const getDocumentUrl = (document) => {
-    return `https://apartment.houseethiopia.com${document}`;
+    return `https://apartment.bruktiethiotour.com${document}`;
   };
 
   const isImage = (fileName) => {

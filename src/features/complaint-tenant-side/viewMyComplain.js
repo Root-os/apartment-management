@@ -107,7 +107,7 @@ const TenantComplaintsPage = ({ tenantId }) => {
         ? imageArray.map((image, index) => (
             <img
               key={index}
-              src={`https://apartment.houseethiopia.com/${image}`}
+              src={`${process.env.REACT_APP_BASE_URL}${image}`}
               alt={`Complaint Image ${index + 1}`}
               className="w-16 h-16 object-cover"
             />

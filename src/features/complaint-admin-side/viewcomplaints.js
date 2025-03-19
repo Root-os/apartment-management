@@ -219,7 +219,7 @@ const ComplaintsPage = () => {
     try {
       const imageArray = JSON.parse(images);
       return imageArray.map((image, index) => (
-        <img key={index} src={`https://apartment.houseethiopia.com/${image}`} alt={`Complaint Image ${index + 1}`} className="w-16 h-16 object-cover" />
+        <img key={index} src={`${process.env.REACT_APP_BASE_URL}${image}`} alt={`Complaint Image ${index + 1}`} className="w-16 h-16 object-cover" />
       ));
     } catch (error) {
       return 'No images available';

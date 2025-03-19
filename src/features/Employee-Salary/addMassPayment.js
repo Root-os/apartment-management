@@ -29,7 +29,7 @@ const MassSalaryPayment = () => {
     const token = localStorage.getItem('token')
     
     try {
-      const response = await axios.post('https://apartment.houseethiopia.com/api/salary-payments/mass-pay', payload, {
+      const response = await axios.post('https://apartment.bruktiethiotour.com/api/salary-payments/mass-pay', payload, {
         headers : {Authorization: `Bearer ${token}`,}
       },);
       setModalOpen(true);

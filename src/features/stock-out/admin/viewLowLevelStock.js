@@ -37,7 +37,7 @@ const LowStockItems = () => {
     const fetchLowStockItems = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/stockout/low-stock/check', {
+        const response = await axios.get('https://apartment.bruktiethiotour.com/api/stockout/low-stock/check', {
           headers: {
             Authorization: `Bearer ${token}`,
           },

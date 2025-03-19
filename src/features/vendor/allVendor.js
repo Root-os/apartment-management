@@ -389,7 +389,7 @@ const VendorsPage = () => {
                 <strong>Contract Terms:</strong>{" "}
                 {selectedVendor.contractTerms ? (
                   <a
-                    href={`https://apartment.houseethiopia.com/${
+                    href={`https://apartment.bruktiethiotour.com/${
                       selectedVendor.contractTerms.includes("service/")
                         ? selectedVendor.contractTerms
                         : `service/${selectedVendor.contractTerms}`

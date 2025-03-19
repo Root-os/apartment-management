@@ -19,7 +19,7 @@ const InventoryForm = () => {
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await axios.get('https://apartment.houseethiopia.com/api/tenant');
+        const response = await axios.get('https://apartment.bruktiethiotour.com/api/tenant');
         setTenants(response.data); // Assuming the API returns an array of tenants
       } catch (error) {
         console.error("Error fetching tenants:", error);

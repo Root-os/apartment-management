@@ -73,7 +73,7 @@ const AddPurchaseForm = () => {
     try {
       setIsLoading(true);
       setError('');
-      const response = await axios.post('https://apartment.houseethiopia.com/api/purchases', purchaseData);
+      const response = await axios.post('https://apartment.bruktiethiotour.com/api/purchases', purchaseData);
       setIsLoading(false);
       setModalOpen(true);
       setMessageType('success');

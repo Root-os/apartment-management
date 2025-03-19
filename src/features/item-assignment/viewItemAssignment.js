@@ -61,7 +61,7 @@ const ItemAssignmentsPage = () => {
           throw new Error('Token not found');
         }
         
-        const response = await axios.get('https://apartment.houseethiopia.com/api/auth/users', {
+        const response = await axios.get('https://apartment.bruktiethiotour.com/api/auth/users', {
           headers: {
             Authorization: `Bearer ${token}`,
           }
