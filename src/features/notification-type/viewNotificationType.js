@@ -133,7 +133,7 @@ const NotificationPage = () => {
     <div>
       {/* Page Title */}
       <div className="text-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">Notification Types</h1>
+        <h1 className="text-3xl font-bold text-white-800">Notification Types</h1>
       </div>
 
       {/* Search Bar */}
@@ -143,7 +143,7 @@ const NotificationPage = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search notification types..."
-          className="w-full p-2 border border-gray-300 rounded-md"
+          className="w-full bg-base-100 p-2 border border-gray-300 rounded-md"
         />
       </div>
 
@@ -185,7 +185,7 @@ const NotificationPage = () => {
                   disabled={isLoading}
                 />
               </div>
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label htmlFor="name" className="block text-sm font-medium text-white-700">
                   Description
                 </label>
@@ -197,7 +197,7 @@ const NotificationPage = () => {
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   disabled={isLoading}
                 />
-              </div>
+              </div> */}
               <div className="flex justify-end">
                 <button
                   type="submit"

@@ -320,6 +320,16 @@ const adminRoutes =
         name: 'Expense ',
       },
       {
+        path: '/app/add-payment-type',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Payment Type',
+      },
+      {
+        path: '/app/view-payment-type',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View Payment Type',
+      },
+      {
         path: '/app/add-payment',
         icon: <PlusIcon className={submenuIconClasses}/>,
         name: 'Payment Add',

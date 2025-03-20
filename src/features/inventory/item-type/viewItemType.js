@@ -128,7 +128,7 @@ const ItemTypesPage = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Search item types..."
-          className="w-full p-2 border border-gray-300 rounded-md"
+          className="w-full bg-base-100 p-2 border border-gray-300 rounded-md"
         />
       </div>
 

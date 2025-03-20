@@ -70,11 +70,11 @@ const AddExpense = () => {
 
   return (
     <>
-      <TitleCard title="Add Expense" topMargin={'mt-4'}>
+      <TitleCard title="Add Expense" topMargin={'mt-1'}>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Amount */}
           <div>
-            <label className="block text-sm font-semibold mb-2">Expence Amount</label>
+            <label className="block text-sm font-semibold mb-2">Expense Amount</label>
             <input
               type="number"
               step="0.01"
@@ -88,7 +88,7 @@ const AddExpense = () => {
 
           {/* Date */}
           <div>
-            <label className="block text-sm font-semibold mb-2">Expence Date</label>
+            <label className="block text-sm font-semibold mb-2">Expense Date</label>
             <input
               type="date"
               value={date}

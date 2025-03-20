@@ -145,6 +145,8 @@ const ReturnAdd =lazy(() => import('../pages/protected/return/add'))
 const ReturnView = lazy(() => import('../pages/protected/return/allReturn'))
 
 //payment
+const PaymentTypeAdd = lazy(() => import('../pages/protected/PaymentType/PaymentTypeAdd'))
+const PaymentTypeView = lazy(() => import('../pages/protected/PaymentType/PaymentTypeView'))
 const PaymentAdd = lazy(() => import('../pages/protected/payment/addPayment'))
 const PaymentView = lazy(() => import('../pages/protected/payment/allPayment'))
 
@@ -755,7 +757,14 @@ const adminRoutes = [
 }  ,
 
 //payment
-
+{
+  path: '/add-payment-type', 
+  component: PaymentTypeAdd,
+},
+{
+  path: '/view-payment-type', 
+  component: PaymentTypeView,
+},
 {
   path: '/add-payment', 
   component: PaymentAdd,

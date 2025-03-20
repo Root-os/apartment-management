@@ -73,7 +73,7 @@ const AddPurchaseForm = () => {
     try {
       setIsLoading(true);
       setError('');
-      const response = await axios.post('https://apartment.bruktiethiotour.com/api/purchases', purchaseData);
+     await axios.post(`${process.env.REACT_APP_BASE_URL}purchases`, purchaseData);
       setIsLoading(false);
       setModalOpen(true);
       setMessageType('success');
@@ -150,6 +150,8 @@ const AddPurchaseForm = () => {
                 value={amount} 
                 onChange={(e) => setAmount(e.target.value)} 
                 className="p-2 border rounded bg-base-100"
+                min="0"
+                step="1"
               />
             </div>
 
@@ -161,6 +163,8 @@ const AddPurchaseForm = () => {
                 value={price} 
                 onChange={(e) => setPrice(e.target.value)} 
                 className="p-2 border rounded bg-base-100"
+                min="0"
+                step="1"
               />
             </div>
 
