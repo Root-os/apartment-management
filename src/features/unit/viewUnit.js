@@ -350,6 +350,8 @@ const handleAddClick = () => {  window.location.href = '/app/unit-add';};
                 value={newUnitData.size}
                 onChange={(e) => setNewUnitData({ ...newUnitData, size: e.target.value })}
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+                 min="1"                
+                 step="1"
               />
             </div>
             <div className="mb-4">
@@ -463,7 +465,7 @@ const handleAddClick = () => {  window.location.href = '/app/unit-add';};
                 ))}
               </select>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-end space-x-2">
               <button onClick={() => setIsEditModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
               <button onClick={handleEditSubmit} className="bg-blue-500 text-white px-4 py-2 rounded"
                 disabled={btnLoading}
@@ -493,22 +495,22 @@ const handleAddClick = () => {  window.location.href = '/app/unit-add';};
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 ">
           <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto min-w-[72vh] ">
             <h2 className="text-xl mb-4">Unit Details</h2>
-            <div className="flex space-x-4 mb-4">
-  <div className="flex-1">
-    <label className="block text-sm font-medium mb-2">Available Units</label>
-    <p>{unitDetails.availableUnits}</p>
-  </div>
-  <div className="flex-1">
-    <label className="block text-sm font-medium mb-2">Occupied Units</label>
-    <p>{unitDetails.occupiedUnits}</p>
-  </div>
-  <div className="flex-1">
-    <label className="block text-sm font-medium mb-2">Under Maintenance</label>
-    <p>{unitDetails.under_maintenance}</p>
-  </div>
-</div>
+            {/* <div className="flex space-x-4 mb-4">
+            <div className="flex-1">
+              <label className="block text-sm font-medium mb-2">Available Units</label>
+              <p>{unitDetails.availableUnits}</p>
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium mb-2">Occupied Units</label>
+              <p>{unitDetails.occupiedUnits}</p>
+            </div>
+            <div className="flex-1">
+              <label className="block text-sm font-medium mb-2">Under Maintenance</label>
+              <p>{unitDetails.under_maintenance}</p>
+            </div>
+          </div> */}
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Units</label>
+              {/* <label className="block text-sm font-medium mb-2">Units</label> */}
               <ul>
                 {unitDetails.units.map(unit => (
                   <li key={unit.id}>

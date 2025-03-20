@@ -21,67 +21,66 @@ const ExpensePage = () => {
   const [message, setMessage] = useState('');
   const [pageLoading, setPageLoading] = useState(true);
 
+  // Function to fetch expenses and expense types
+  const fetchData = async () => {
+    try {
+      const expenseResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}expense`);
+      const expenseData = expenseResponse.data.map(expense => ({
+        id: expense.id,
+        amount: expense.amount,
+        date: new Date(expense.date).toLocaleDateString(),
+        description: expense.description,
+        expenseType: expense.expenseType.name,
+        expenseTypeId: expense.expenseType.id,
+      }));
+      setExpenses(expenseData);
+
+      setColumns([
+        { label: 'Amount', key: 'amount' },
+        { label: 'Date', key: 'date' },
+        { label: 'Description', key: 'description' },
+        { label: 'Expense Type', key: 'expenseType' },
+        {
+          label: 'Actions',
+          key: 'actions',
+          render: (row) => (
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => handleEditClick(row)}
+                className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDeleteClick(row)}
+                className="bg-red-500 text-white px-4 py-2 rounded-md"
+              >
+                Delete
+              </button>
+            </div>
+          ),
+        },
+      ]);
+
+      const expenseTypeResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}expense-type`);
+      setExpenseTypes(expenseTypeResponse.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setPageLoading(false);
+    }
+  };
+
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_BASE_URL}expense`)
-      .then((response) => {
-        const expenseData = response.data.map(expense => ({
-          id: expense.id,
-          amount: expense.amount,
-          date: new Date(expense.date).toLocaleDateString(),
-          description: expense.description,
-          expenseType: expense.expenseType.name,
-          expenseTypeId: expense.expenseType.id, // Store expenseTypeId for editing
-        }));
-        setExpenses(expenseData);
-
-        setColumns([
-          { label: 'Amount', key: 'amount' },
-          { label: 'Date', key: 'date' },
-          { label: 'Description', key: 'description' },
-          { label: 'Expense Type', key: 'expenseType' },
-          {
-            label: 'Actions',
-            key: 'actions',
-            render: (row) => (
-              <>
-                <button
-                  onClick={() => handleEditClick(row)}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDeleteClick(row)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md"
-                >
-                  Delete
-                </button>
-              </>
-            ),
-          },
-        ]);
-        setPageLoading(false); // Assuming you want to stop loading here
-      })
-      .catch((error) => {
-        console.error('Error fetching expenses:', error);
-        setPageLoading(false);
-      });
-
-    axios.get(`${process.env.REACT_APP_BASE_URL}expense-type`)
-      .then((response) => {
-        setExpenseTypes(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching expense types:', error);
-      });
+    fetchData();
   }, []);
 
   const handleEditClick = (expense) => {
     setSelectedExpense(expense);
     setAmount(expense.amount);
-    setDate(new Date(expense.date).toISOString().split('T')[0]); // Convert to YYYY-MM-DD
+    setDate(new Date(expense.date).toISOString().split('T')[0]);
     setDescription(expense.description);
-    setExpenseTypeId(expense.expenseTypeId || ''); // Use stored expenseTypeId
+    setExpenseTypeId(expense.expenseTypeId || '');
     setIsEditModalOpen(true);
   };
 
@@ -99,34 +98,29 @@ const ExpensePage = () => {
         description,
         expenseTypeId,
       };
-  
-      console.log("Payload being sent to API:", updatedExpense);
-  
-      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}expense/${selectedExpense.id}`, updatedExpense);
-  
-      // Find the expense type name from the expenseTypes array
-      const updatedExpenseType = expenseTypes.find(type => type.id === expenseTypeId);
-      const updatedExpenseTypeName = updatedExpenseType ? updatedExpenseType.name : '';
-  
-      // Transform the response data to match the table format
-      const updatedExpenseData = {
-        id: response.data.id,
-        amount: response.data.amount,
-        date: new Date(response.data.date).toLocaleDateString(),
-        description: response.data.description,
-        expenseType: updatedExpenseTypeName,
-        expenseTypeId: expenseTypeId,
-      };
-  
-      // Update the expenses state with the transformed data
-      const updatedData = expenses.map((expense) =>
-        expense.id === selectedExpense.id ? updatedExpenseData : expense
-      );
-  
-      setExpenses(updatedData);
+
+      // Update the expense via API
+      await axios.put(`${process.env.REACT_APP_BASE_URL}expense/${selectedExpense.id}`, updatedExpense);
+
+      // Refetch all expenses to ensure the table reflects the latest data
+      const expenseResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}expense`);
+      const updatedExpenseData = expenseResponse.data.map(expense => ({
+        id: expense.id,
+        amount: expense.amount,
+        date: new Date(expense.date).toLocaleDateString(),
+        description: expense.description,
+        expenseType: expense.expenseType.name,
+        expenseTypeId: expense.expenseType.id,
+      }));
+      setExpenses(updatedExpenseData);
+
+      // Refetch expense types for the dropdown
+      const expenseTypeResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}expense-type`);
+      setExpenseTypes(expenseTypeResponse.data);
+
       setIsEditModalOpen(false);
       setSelectedExpense(null);
-  
+
       setModalOpen(true);
       setMessageType('success');
       setMessage('Expense updated successfully');
@@ -139,8 +133,6 @@ const ExpensePage = () => {
       setLoading(false);
     }
   };
-  
-  // Ensure the rest of the component remains unchanged
 
   const handleDelete = async () => {
     setLoading(true);
@@ -189,11 +181,13 @@ const ExpensePage = () => {
             <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
               <div className="mb-4">
                 <label htmlFor="amount" className="block text-sm font-medium text-white-700">
-                  Amount
+                  Expense Amount
                 </label>
                 <input
                   type="number"
                   id="amount"
+                  min="0"
+                  step="0.5"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -201,7 +195,7 @@ const ExpensePage = () => {
               </div>
               <div className="mb-4">
                 <label htmlFor="date" className="block text-sm font-medium text-white-700">
-                  Date
+                  Expense Date
                 </label>
                 <input
                   type="date"
@@ -240,7 +234,7 @@ const ExpensePage = () => {
                   ))}
                 </select>
               </div>
-              <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2.">
+              <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-2">
                 <button
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"

@@ -174,7 +174,7 @@ const Dashboard = () => {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <LoadingComponent/>;
   }
   if (error) {
     return <div>{error}</div>;

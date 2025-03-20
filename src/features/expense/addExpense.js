@@ -74,7 +74,7 @@ const AddExpense = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Amount */}
           <div>
-            <label className="block text-sm font-semibold mb-2">Amount</label>
+            <label className="block text-sm font-semibold mb-2">Expence Amount</label>
             <input
               type="number"
               step="0.01"
@@ -82,12 +82,13 @@ const AddExpense = () => {
               onChange={(e) => setAmount(e.target.value)}
               required
               className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+              min="0"
             />
           </div>
 
           {/* Date */}
           <div>
-            <label className="block text-sm font-semibold mb-2">Date</label>
+            <label className="block text-sm font-semibold mb-2">Expence Date</label>
             <input
               type="date"
               value={date}

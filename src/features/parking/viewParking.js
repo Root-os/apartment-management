@@ -179,7 +179,7 @@ const ParkingPage = () => {
   ];
 
   const handleAddClick = () => {
-    window.location.href = '/parking-add';
+    window.location.href = '/app/parking-add';
   };
 
   return (
@@ -268,15 +268,20 @@ const ParkingPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="status" className="block text-sm font-medium text-gray-700">Status</label>
-                <input
-                  type="text"
+                <label htmlFor="status" className="block text-sm font-medium text-white-700">
+                  Status
+                </label>
+                <select
                   id="status"
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="onParking">Parking</option>
+                  <option value="parkingComplete">Parking Complete</option>
+                </select>
               </div>
+
               <div className="flex justify-end">
                 <button
                   type="submit"

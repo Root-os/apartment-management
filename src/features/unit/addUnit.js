@@ -141,6 +141,8 @@ const AddFloorUnit = () => {
             onChange={(e) => setSize(e.target.value)}
             required
             className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+             min="1"                
+             step="1"
           />
         </div>
 

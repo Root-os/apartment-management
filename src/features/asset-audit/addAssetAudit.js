@@ -3,6 +3,7 @@ import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
 
+
 const AddAssetAuditPage = () => {
   const [items, setItems] = useState([]);
   const [assetTypes, setAssetTypes] = useState([]);
@@ -80,6 +81,7 @@ const AddAssetAuditPage = () => {
     payload.status = status;
   
     try {
+      setLoading(true);
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}asset-audits`, payload);
       if (response.data.success) {
         // setSuccessMessage('Asset audit added successfully!');
@@ -102,6 +104,8 @@ const AddAssetAuditPage = () => {
       setModalOpen(true);
       setMessageType('error');
       setMessage('Error adding asset audit.');
+    }finally{
+      setLoading(false);
     }
   };
   
@@ -118,10 +122,6 @@ const AddAssetAuditPage = () => {
   return (
     <>
     <TitleCard title="Add Asset Audit" topMargin={"mt-1"}>
-
-      {successMessage && <div className="text-green-500 text-center mb-4">{successMessage}</div>}
-      {errorMessage && <div className="text-red-500 text-center mb-4">{errorMessage}</div>}
-
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Checkbox for asset and item */}
         <div className="flex space-x-6 justify-center">
@@ -204,7 +204,7 @@ const AddAssetAuditPage = () => {
         </div>
 
         <div>
-          <label htmlFor="date" className="block text-sm font-medium text-white-700">Date</label>
+          <label htmlFor="date" className="block text-sm font-medium text-white-700">Audited Date</label>
           <input
             type="date"
             id="date"
@@ -226,6 +226,8 @@ const AddAssetAuditPage = () => {
             onChange={(e) => setExistingAmount(e.target.value)}
             className="mt-2 p-3 bg-base-100 w-full border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
             required
+            min="0"
+            step="1"
           />
         </div>
 
@@ -239,6 +241,8 @@ const AddAssetAuditPage = () => {
             onChange={(e) => setDamagedAmount(e.target.value)}
             className="mt-2 p-3 bg-base-100 w-full border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
             required
+            min="0"
+            step="1"
           />
         </div>
 
@@ -252,6 +256,8 @@ const AddAssetAuditPage = () => {
             onChange={(e) => setLostAmount(e.target.value)}
             className="mt-2 p-3 bg-base-100 w-full border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
             required
+            min="0"
+            step="1"
           />
         </div>
 
@@ -275,8 +281,9 @@ const AddAssetAuditPage = () => {
           <button
             type="submit"
             className="px-6 py-3 mt-4 w-full bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            Add Asset Audit
+            disable={loading}
+         >
+            {loading ? 'Submitting...':'Add Asset Audit'}
           </button>
         </div>
       </form>

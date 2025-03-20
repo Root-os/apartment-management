@@ -74,18 +74,21 @@ const FloorForm = () => {
 
         {/* Number of Units */}
         <div className="flex flex-col">
-          <label htmlFor="noUnits" className="text-sm font-medium text-white-700">Number of Units</label>
-          <input
-            type="number"
-            id="noUnits"
-            name="noUnits"
-            value={formData.noUnits}
-            onChange={handleInputChange}
-            required
-            className="bg-base-100 mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
-        </div>
-
+  <label htmlFor="noUnits" className="text-sm font-medium text-white-700">
+    Number of Units
+  </label>
+  <input
+    type="number"
+    id="noUnits"
+    name="noUnits"
+    value={formData.noUnits}
+    onChange={handleInputChange}
+    required
+    min="0"                
+    step="1"              
+    className="bg-base-100 mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+  />
+</div>
         {/* Status */}
         <div className="flex flex-col">
           <label htmlFor="status" className="text-sm font-medium text-white-700">Status</label>

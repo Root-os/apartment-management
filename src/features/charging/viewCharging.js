@@ -305,14 +305,17 @@ const ChargingPage = () => {
                 <label htmlFor="status" className="block text-sm font-medium text-white-700">
                   Status
                 </label>
-                <input
-                  type="text"
+                <select
                   id="status"
                   value={status}
                   onChange={(e) => setStatus(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                >
+                  <option value="charging">Charging</option>
+                  <option value="competeCharging">Compete Charging</option>
+                </select>
               </div>
+
               <div className="flex justify-end">
                 <button
                   type="submit"

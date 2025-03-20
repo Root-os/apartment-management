@@ -49,7 +49,7 @@ const AddMaintenancePage = () => {
     };
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}maintenance`, payload);
+     await axios.post(`${process.env.REACT_APP_BASE_URL}maintenance`, payload);
       // Reset the form
       setDate('');
       setDescription('');
@@ -123,7 +123,7 @@ const AddMaintenancePage = () => {
         </div>
         {/* Date Input */}
         <div>
-          <label htmlFor="date" className="block text-sm font-medium text-white-700">Date</label>
+          <label htmlFor="date" className="block text-sm font-medium text-white-700">Maintenance Date</label>
           <input
             type="date"
             id="date"
@@ -138,6 +138,7 @@ const AddMaintenancePage = () => {
           <label htmlFor="cost" className="block text-sm font-medium text-white-700">Cost</label>
           <input
             type="number"
+            min="0"
             step="0.01"
             id="cost"
             value={cost}

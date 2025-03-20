@@ -94,18 +94,21 @@ const AddPaymentRequest = () => {
         window.location.href = '/app/payment-request-view'; // Redirect after success
       }, 1500);
     } catch (error) {
-      console.error("Error creating payment request:", error);
+      // console.error("Error creating payment request:", error);
       // Check if error response contains useful information
-      if (error.response) {
-        console.error("API Error:", error.response.data);
-        setModalOpen(true);
-        setMessageType('error');
-        setMessage(error.response.data.message || 'Unable to add payment request');
-      } else {
-        setModalOpen(true);
-        setMessageType('error');
-        setMessage('An unexpected error occurred.');
-      }
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Due date must be in the future' || error.response.data.message);
+      // if (error.response) {
+      //   console.error("API Error:", error.response.data);
+      //   setModalOpen(true);
+      //   setMessageType('error');
+      //   setMessage( error.response.data.message || 'Unable to add payment request');
+      // } else {
+      //   setModalOpen(true);
+      //   setMessageType('error');
+      //   setMessage('An unexpected error occurred.');
+      // }
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +116,7 @@ const AddPaymentRequest = () => {
 
   return (
     <>
-      <TitleCard title={'Add Payment Request'}>
+      <TitleCard title={'Add Payment Request'} topMargin={'mt-1'}>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Tenant Dropdown */}
           <div>
@@ -179,6 +182,8 @@ const AddPaymentRequest = () => {
               onChange={handleInputChange}
               className="w-full bg-base-100 p-2 border rounded-md"
               placeholder="Amount"
+              min="0"
+              step="1"
             />
             {errors.amount && <p className="text-red-500">{errors.amount}</p>}
           </div>

@@ -269,6 +269,8 @@ const MaintenancePage = () => {
                   onChange={handleInputChange}
                   className="input input-bordered w-full"
                   required
+                  min="0"
+                  step="0.01"
                 />
               </div>
               <div className="mb-4">

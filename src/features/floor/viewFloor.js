@@ -211,9 +211,9 @@ const FloorManagement = () => {
       {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg w-96">
+          <div  className="bg-base-100 p-6 rounded-lg w-98">
             <h2 className="text-xl mb-4">Are you sure you want to delete this floor?</h2>
-            <div className="flex justify-between">
+            <div className="flex justify-end space-x-2">
               <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">
                 Cancel
               </button>
@@ -231,43 +231,52 @@ const FloorManagement = () => {
 
       {/* Detail Modal */}
       {isDetailModalOpen && floorDetails && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-scroll">
-            <h2 className="text-xl mb-4">Free Units of the Floor</h2>
-            <div className="mb-4">
-              <ul>
-                {floorDetails.freeUnits.map(unit => (
-                  <li key={unit.id}>
-                    <strong>Unit Number:</strong> {unit.unitNumber}<br />
-                    <strong>Size:</strong> {unit.size} sq ft<br />
-                    <strong>Status:</strong> {unit.status}<br />
-                    <strong>Available Equipments:</strong>
-                    <ul>
-                      {JSON.parse(unit.availableEquipments).map((equipment, index) => (
-                        <li key={index}>{equipment}</li>
-                      ))}
-                    </ul>
-                    <strong>Problems:</strong>
-                    <ul>
-                      {JSON.parse(unit.problems).map((problem, index) => (
-                        <li key={index}>{problem}</li>
-                      ))}
-                    </ul>
-                    <strong>Rented Date:</strong> {new Date(unit.rentedDate).toLocaleDateString()}<br />
-                    <strong>Vacated Date:</strong> {new Date(unit.vacatedDate).toLocaleDateString()}<br />
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex justify-between">
-              <button onClick={() => setIsDetailModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">
-                Close
-              </button>
-            </div>
-          </div>
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-scroll">
+      <h2 className="text-xl mb-4">Free Units of the Floor</h2>
+
+      {/* Check if there are no free units */}
+      {floorDetails.freeUnits && floorDetails.freeUnits.length > 0 ? (
+        <div className="mb-4">
+          <ul>
+            {floorDetails.freeUnits.map(unit => (
+              <li key={unit.id}>
+                <strong>Unit Number:</strong> {unit.unitNumber}<br />
+                <strong>Size:</strong> {unit.size} sq ft<br />
+                <strong>Status:</strong> {unit.status}<br />
+                <strong>Available Equipments:</strong>
+                <ul>
+                  {JSON.parse(unit.availableEquipments).map((equipment, index) => (
+                    <li key={index}>{equipment}</li>
+                  ))}
+                </ul>
+                <strong>Problems:</strong>
+                <ul>
+                  {JSON.parse(unit.problems).map((problem, index) => (
+                    <li key={index}>{problem}</li>
+                  ))}
+                </ul>
+                <strong>Rented Date:</strong> {new Date(unit.rentedDate).toLocaleDateString()}<br />
+                <strong>Vacated Date:</strong> {new Date(unit.vacatedDate).toLocaleDateString()}<br />
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        // Message when no free units are available
+        <div className="text-gray-500 text-center">
+          <p>No free units available for this floor.</p>
         </div>
       )}
-        
+
+      <div className="flex justify-between mt-4">
+        <button onClick={() => setIsDetailModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

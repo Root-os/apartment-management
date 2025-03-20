@@ -122,8 +122,8 @@ const BillTablePage = () => {
           type="text"
           value={searchQuery}
           onChange={handleSearch}
-          placeholder="Search by Type Name or Description"
-          className="mt-4 w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Search "
+          className="mt-4 bg-base-100 w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 

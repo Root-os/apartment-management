@@ -9,7 +9,7 @@ import InputText from '../../components/Input/InputText';
 function Login() {
   const INITIAL_LOGIN_OBJ = {
     password: '',
-    email: '', // Changed to match the API
+    email: '', 
   };
 
   const [loading, setLoading] = useState(false);

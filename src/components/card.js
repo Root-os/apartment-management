@@ -4,16 +4,15 @@ const Card = ({ title, content, actions }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [needsReadMore, setNeedsReadMore] = useState(false);
   const contentRef = useRef(null);
-  
-  // Minimum height for collapsed state
-  const minContentHeight = 100; // pixels
+
+  const minContentHeight = 100; // pixels for content area when collapsed
   const descriptionLimit = 150; // characters for initial truncation
 
-  // Check if content needs "Read more" button
   useEffect(() => {
     if (contentRef.current) {
+      // Check if content overflows and requires 'Read more' functionality
       const isOverflowing = contentRef.current.scrollHeight > minContentHeight || 
-                          content.length > descriptionLimit;
+                           content.length > descriptionLimit;
       setNeedsReadMore(isOverflowing);
     }
   }, [content]);
@@ -23,16 +22,20 @@ const Card = ({ title, content, actions }) => {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-6 flex flex-col w-full max-w-md">
+    <div className={`bg-base-100 shadow-md rounded-lg p-6 flex flex-col w-full max-w-full border border-gray-300 ${isExpanded ? 'h-auto' : 'h-[300px]'}`}>
       {/* Title */}
-      <h3 className="text-xl font-semibold mb-4">{title}</h3>
+      <h3 className="text-white-700 font-semibold mb-4">{title}</h3>
       
-      {/* Content container with dynamic height */}
+      {/* Content container */}
       <div 
         ref={contentRef}
-        className={`text-gray-700 mb-4 transition-all duration-300 ease-in-out ${
+        className={`text-white-700 mb-4 transition-all duration-300 ease-in-out ${
           isExpanded ? 'max-h-none' : 'max-h-[100px] overflow-hidden'
         }`}
+        style={{
+          width: '100%',  // Ensures content stretches within card bounds
+          wordWrap: 'break-word', // Ensures long words break and don’t overflow
+        }}
       >
         {isExpanded ? (
           <p>{content}</p>
@@ -69,29 +72,6 @@ const Card = ({ title, content, actions }) => {
           </button>
         ))}
       </div>
-    </div>
-  );
-};
-
-// Example usage:
-const App = () => {
-  const sampleActions = [
-    { label: 'Edit', type: 'primary', onClick: () => console.log('Edit clicked') },
-    { label: 'Delete', type: 'secondary', onClick: () => console.log('Delete clicked') },
-  ];
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-      <Card
-        title="Short Content"
-        content="This is a short description."
-        actions={sampleActions}
-      />
-      <Card
-        title="Long Content"
-        content="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."
-        actions={sampleActions}
-      />
     </div>
   );
 };

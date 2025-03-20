@@ -258,6 +258,8 @@ const AssetAuditPage = () => {
                   value={formData.existing_amount}
                   onChange={(e) => setFormData({...formData, existing_amount: parseInt(e.target.value)})}
                   className="w-full bg-base-100 p-2 border rounded"
+                  min="0"
+                  step="1"
                 />
               </div>
 
@@ -268,6 +270,8 @@ const AssetAuditPage = () => {
                   value={formData.damaged_amount}
                   onChange={(e) => setFormData({...formData, damaged_amount: parseInt(e.target.value)})}
                   className="w-full bg-base-100 p-2 border rounded"
+                  min="0"
+                  step="1"
                 />
               </div>
 
@@ -278,6 +282,8 @@ const AssetAuditPage = () => {
                   value={formData.lost_amount}
                   onChange={(e) => setFormData({...formData, lost_amount: parseInt(e.target.value)})}
                   className="w-full bg-base-100 p-2 border rounded"
+                  min="0"
+                  step="1"
                 />
               </div>
 

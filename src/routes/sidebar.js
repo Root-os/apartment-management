@@ -427,16 +427,6 @@ const adminRoutes =
         name: 'Tenant Bills ',
       },
       {
-        path: '/app/tenant-bill-add',
-        icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Tenant Bills',
-      },
-      {
-        path: '/app/tenant-bill-view',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Tenant Bills ',
-      },
-      {
         path: '/app/tenant-bill-report',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Tenant Bill Report',
