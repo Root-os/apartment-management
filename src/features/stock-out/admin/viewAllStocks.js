@@ -196,6 +196,8 @@ const StockOutRequestPage = () => {
                   value={editItem.approvedQuantity}
                   onChange={handleInputChange}
                   className="w-full bg-base-100 p-2 border border-gray-300 rounded"
+                  min="0"
+                  step="1"
                 />
               </div>
 

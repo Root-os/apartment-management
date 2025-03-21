@@ -163,6 +163,8 @@ const InventoryForm = () => {
                   placeholder="Quantity"
                   value={item.quantity}
                   onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
+                  min="1"
+                  step="1"
                 />
                 <button
                   type="button"

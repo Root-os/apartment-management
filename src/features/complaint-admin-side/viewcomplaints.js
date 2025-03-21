@@ -22,6 +22,10 @@ const ComplaintsPage = () => {
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
 
+  const [isImageViewerOpen, setIsImageViewerOpen] = useState(false); // Manage the modal visibility
+  const [currentImage, setCurrentImage] = useState(null); // Store the clicked image URL
+  const [zoomLevel, setZoomLevel] = useState(1);
+
   useEffect(() => {
     const fetchComplaints = async () => {
      
@@ -177,6 +181,40 @@ const ComplaintsPage = () => {
     return employee ? employee.fname : 'Unassigned';
   };
 
+  // Handle image click to open viewer
+  const openImageViewer = (image) => {
+    setCurrentImage(image);
+    setIsImageViewerOpen(true);
+  };
+
+  // Close image viewer modal
+  const closeImageViewer = () => {
+    setIsImageViewerOpen(false);
+    setZoomLevel(1); // Reset zoom level when closed
+  };
+
+  // Zoom functions for image viewer
+  const zoomIn = () => setZoomLevel(prevZoom => Math.min(prevZoom + 0.1, 3)); // Max zoom level
+  const zoomOut = () => setZoomLevel(prevZoom => Math.max(prevZoom - 0.1, 1)); // Min zoom level
+
+  // Render complaint images
+  const renderImages = (images) => {
+    try {
+      const imageArray = JSON.parse(images);
+      return imageArray.map((image, index) => (
+        <img
+          key={index}
+          src={`https://apartment.bruktiethiotour.com/${image}`}
+          alt={`Complaint Image ${index + 1}`}
+          className="w-16 h-16 object-cover cursor-pointer"
+          onClick={() => openImageViewer(`https://apartment.bruktiethiotour.com/${image}`)} // Open image viewer
+        />
+      ));
+    } catch (error) {
+      return 'No images available';
+    }
+  };
+
   // Columns for the TableComponent
   const columns = [
     // { label: 'ID', key: 'id' },
@@ -215,16 +253,8 @@ const ComplaintsPage = () => {
   ];
 
   // Render images properly (since images are stored as a JSON string)
-  const renderImages = (images) => {
-    try {
-      const imageArray = JSON.parse(images);
-      return imageArray.map((image, index) => (
-        <img key={index} src={`${process.env.REACT_APP_BASE_URL}${image}`} alt={`Complaint Image ${index + 1}`} className="w-16 h-16 object-cover" />
-      ));
-    } catch (error) {
-      return 'No images available';
-    }
-  };
+
+  
 
   return (
     <div>
@@ -310,11 +340,56 @@ const ComplaintsPage = () => {
               disabled={loading}
               >
                 {loading ? 'updating..':'update'}
-              </button>
+                </button>
+              </div>
             </div>
           </div>
+        )}
+
+         {/* Image Viewer Modal */}
+         {isImageViewerOpen && (
+      <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+        <div className="relative bg-white p-4 rounded-lg max-w-[90vw] max-h-[90vh] flex flex-col">
+          {/* Control Buttons */}
+          <div className="flex justify-between items-center mb-4 z-10">
+            <div className="flex space-x-2">
+              <button
+                onClick={zoomOut}
+                className="text-white bg-gray-800 px-4 py-2 rounded-full"
+              >
+                Zoom Out
+              </button>
+              <button
+                onClick={zoomIn}
+                className="text-white bg-gray-800 px-4 py-2 rounded-full"
+              >
+                Zoom In
+              </button>
+            </div>
+            <button
+              onClick={closeImageViewer}
+              className="text-white bg-gray-800 px-2 py-1 rounded-full"
+            >
+              X
+            </button>
+          </div>
+
+          {/* Image Container */}
+          <div className="flex-1 overflow-auto">
+            <img
+              src={currentImage}
+              alt="Zoomed Image"
+              style={{
+                transform: `scale(${zoomLevel})`,
+                transition: 'transform 0.3s ease',
+                transformOrigin: 'center', 
+              }}
+              className="max-w-full max-h-[80vh] object-contain"
+            />
+          </div>
         </div>
-      )}
+              </div>
+        )}
          <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

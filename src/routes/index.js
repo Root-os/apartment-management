@@ -130,6 +130,9 @@ const tenantViewInOut = lazy(() => import('../pages/protected/Inventory-in-out/t
 const MassSalary = lazy(() => import('../pages/protected/Employee-Salary/MassSalary'));
 const SinglePayment = lazy(() => import('../pages/protected/Employee-Salary/SinglePayment'));
 const ViewAllPayment = lazy(() => import('../pages/protected/Employee-Salary/ViewAllPayment'));
+
+const RegisterEmployee = lazy(() => import('../pages/protected/Employee/EmployeeRegister'));
+const AllEmployee = lazy(() => import('../pages/protected/Employee/AllEmployee'));
 const MySallary = lazy(() => import('../pages/protected/Employee-Salary/MySallary'));//employee side
 
 //service type
@@ -229,7 +232,10 @@ const employeeRoutes = [
     path: '/employee-salary',
     component: MySallary,
   },
-  // Add more employee-specific routes here
+  {
+    path: '/add-purchase-request',
+    component: PurchaseRequestAdd,
+  },
 ];
 
 const adminRoutes = [
@@ -310,11 +316,11 @@ const adminRoutes = [
     component: TenantView,
   },
   {
-    path: '/tenant-bill-view',
+    path: '/tenant-bill-add',
     component: TenantBillAdd,
   },
   {
-    path: '/tenant-bill-add',
+    path: '/tenant-bill-view',
     component: TenantBillView,
   },
   {
@@ -833,6 +839,14 @@ const adminRoutes = [
 {
   path: '/view-audit-report', 
   component: AssetAuditReport,
+},
+{
+  path: '/add-employee', 
+  component: RegisterEmployee,
+},
+{
+  path: '/view-employee', 
+  component: AllEmployee,
 }
 
 

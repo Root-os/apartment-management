@@ -38,9 +38,6 @@ import CogIcon from '@heroicons/react/24/outline/CogIcon'
 import EnvelopeIcon from '@heroicons/react/24/outline/EnvelopeIcon'
 import { BuildingOfficeIcon } from '@heroicons/react/24/outline';
 import { EnvelopeIcon as MailIcon } from '@heroicons/react/24/outline';
-
-
-
 import ClipboardIcon from '@heroicons/react/24/outline/ClipboardIcon'
 import ShoppingBagIcon from '@heroicons/react/24/outline/ShoppingBagIcon'
 import WrenchIcon from '@heroicons/react/24/outline/WrenchIcon'
@@ -91,7 +88,7 @@ const tenantRoutes =
   },
   {
     path: '', 
-    icon: <ArrowUpIcon className={`${iconClasses} inline` }/>, 
+    icon: <ArrowRightOnRectangleIcon className={`${iconClasses} inline` }/>, 
     name: 'Withdraw Request',  
     submenu : [
      
@@ -127,7 +124,7 @@ const tenantRoutes =
   },
   {
     path: '', 
-    icon: <ArrowUpIcon className={`${iconClasses} inline` }/>, 
+    icon: <ShoppingBagIcon className={`${iconClasses} inline` }/>, 
     name: 'Order',  
     submenu : [
      
@@ -166,7 +163,7 @@ const employeeRoutes = [
   },
   {
     path: '', 
-    icon: <ArrowUpIcon className={`${iconClasses} inline` }/>, 
+    icon: <WalletIcon className={`${iconClasses} inline` }/>, 
     name: 'My Salary',  
     submenu : [
      
@@ -178,8 +175,26 @@ const employeeRoutes = [
     {
       path: '/app/employee-salary',
       icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'My Salary rHistory',
+      name: 'My Salary History',
     },
+    ]
+  },
+  {
+    path: '', 
+    icon: <DocumentTextIcon className={`${iconClasses} inline` }/>, 
+    name: 'Purchase Request',  
+    submenu : [
+     
+      {
+        path: '/app/add-purchase-request',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Purchase Request',
+      },
+    // {
+    //   path: '/app/employee-salary',
+    //   icon: <EyeIcon className={submenuIconClasses}/>,
+    //   name: 'My Salary rHistory',
+    // },
     ]
   },
 
@@ -254,7 +269,7 @@ const adminRoutes =
       {
         path: '/app/floor-add',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Floor Info',
+        name: 'Add Floor ',
       },
       {
         path: '/app/floor-view',
@@ -264,7 +279,7 @@ const adminRoutes =
       {
         path: '/app/unit-add',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add unit Info',
+        name: 'Add unit ',
       },
       {
         path: '/app/unit-view',
@@ -409,7 +424,7 @@ const adminRoutes =
       {
         path: '/app/tenant-add',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Tenant info',
+        name: 'Add Tenant ',
       },
       {
         path: '/app/tenant-view',
@@ -454,12 +469,12 @@ const adminRoutes =
       {
         path: '/app/admin-view-assigneds',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Assigned Staff',
+        name: 'Assigned Staff for complain',
       },
       {
         path: '/app/view-withdraw-requests',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'View Requests',
+        name: 'Withdraw Requests',
       },
     ]
   },
@@ -507,7 +522,7 @@ const adminRoutes =
       {
         path: '/app/parking-add',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Parking Info',
+        name: 'Add Parking ',
       },
       {
         path: '/app/parking-view',
@@ -522,7 +537,7 @@ const adminRoutes =
       {
         path: '/app/charging-view',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'View Charging Info',  
+        name: 'Charging Informations',  
       },
       {
         path: '/app/add-maintenance',
@@ -532,7 +547,7 @@ const adminRoutes =
       {
         path: '/app/view-maintenance',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'View Maintenance info ',
+        name: 'Maintenance informations ',
       },
       {
         path: '/app/add-return',
@@ -601,7 +616,7 @@ const adminRoutes =
       {
         path: '/app/view-stocks',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'View Stocks',
+        name: 'Stock out requests',
       },
       {
         path: '/app/view-low-level-stock',
@@ -1085,7 +1100,25 @@ const adminRoutes =
    
     ]
   },
-
+  {
+    path: '', 
+    icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
+    name: 'Employee',  
+    submenu : [
+     
+     {
+      path: '/app/add-employee',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Register Employee',
+    },
+    {
+      path: '/app/view-employee',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View all employees',
+    },
+   
+    ]
+  },
   
 ]
 const routes = role === 'admin' ? adminRoutes : role === 'employee' ? employeeRoutes : tenantRoutes;

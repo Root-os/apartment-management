@@ -38,7 +38,7 @@ const AddAsset = () => {
         setName('');  // Reset name input field
         setDescription('');  // Reset description input field
         setModalType('success'); // Set modal type to success
-        setModalMessage(`Asset added successfully: ${response.data.data.name}`); // Success message
+        setModalMessage(`Asset added successfully`); // Success message
       }
     } catch (error) {
       setErrorMessage('Error adding asset. Please try again.');

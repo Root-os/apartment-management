@@ -49,7 +49,7 @@ const AddTenant = () => {
   const fetchfreeUnits = async (id) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BASE_URL}floor/${id}`);
-      console.log('Fetched freeUnits:', response.data); // Debugging line
+      console.log('Fetched freeUnits:', response.data); 
       setfreeUnits(Array.isArray(response.data.freeUnits) ? response.data.freeUnits : []);
     } catch (err) {
       setError('Failed to fetch freeUnits.');
@@ -197,6 +197,16 @@ const AddTenant = () => {
               className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             />
           </div>
+          <div>
+            <label className="block text-sm font-semibold mb-2">Car Color</label>
+            <input
+              type="text"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              required
+              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+            />
+          </div>
 
           {/* National ID */}
           <div>
@@ -331,19 +341,6 @@ const AddTenant = () => {
               className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             />
           </div>
-
-          {/* Car Color */}
-          <div>
-            <label className="block text-sm font-semibold mb-2">Car Color</label>
-            <input
-              type="text"
-              value={color}
-              onChange={(e) => setColor(e.target.value)}
-              required
-              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-            />
-          </div>
-
           {/* Document */}
           <div>
             <label className="block text-sm font-semibold mb-2">Document</label>

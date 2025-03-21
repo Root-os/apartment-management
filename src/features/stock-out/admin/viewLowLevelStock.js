@@ -12,24 +12,28 @@ const LowStockItems = () => {
   // Columns definition for TableComponent
   const columns = [
     { label: 'Item Name', key: 'itemName' },
-    { label: 'Expiration Date', key: 'expirationDate' },
+    {
+      key: 'expirationDate',
+      label: 'Expiration',
+      render: (row) => new Date(row.expirationDate).toLocaleDateString(),
+    },
     { label: 'Amount', key: 'itemAmount' },
     { label: 'Unit', key: 'unit' },
     { label: 'Item Details', key: 'itemDetails' },
     { label: 'Item Type', key: 'itemType' },
     { label: 'Min Amount', key: 'min_amount' },
-    {
-      label: 'Actions',
-      key: 'actions',
-      render: (row) => (
-        <button
-          onClick={() => handleAction(row)}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md"
-        >
-          Action
-        </button>
-      ),
-    },
+    // {
+    //   label: 'Actions',
+    //   key: 'actions',
+    //   render: (row) => (
+    //     <button
+    //       onClick={() => handleAction(row)}
+    //       className="bg-blue-500 text-white px-4 py-2 rounded-md"
+    //     >
+    //       Action
+    //     </button>
+    //   ),
+    // },
   ];
 
   // Fetch data on component mount
@@ -37,7 +41,7 @@ const LowStockItems = () => {
     const fetchLowStockItems = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await axios.get('https://apartment.bruktiethiotour.com/api/stockout/low-stock/check', {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}stockout/low-stock/check`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -54,9 +58,9 @@ const LowStockItems = () => {
   }, []);
 
   // Handle action for each item (e.g., sending alert, etc.)
-  const handleAction = (item) => {
-    alert(`Action for: ${item.itemName}`);
-  };
+  // const handleAction = (item) => {
+  //   alert(`Action for: ${item.itemName}`);
+  // };
 
   return (
     <div className="p-6">

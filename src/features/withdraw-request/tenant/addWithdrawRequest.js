@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../../components/Cards/TitleCard'
+import Modal from '../../../components/Modal';
 
 const WithdrawalRequestForm = () => {
   const [tenants, setTenants] = useState([]);
@@ -9,6 +10,9 @@ const WithdrawalRequestForm = () => {
   const [reason, setReason] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  // const [message, setMessage] = useState('');
 
   // Fetch tenant data
   useEffect(() => {
@@ -41,11 +45,21 @@ const WithdrawalRequestForm = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      // setMessage(response.data.message);
+      setReason('');
+      setTerminationDate('');
+
+      setModalOpen(true);
+      setMessageType('success');  
       setMessage(response.data.message);
       window.location.href='/app/withdraw-request-view';
     } catch (error) {
       console.error('Error submitting request:', error);
-      setMessage('An error occurred. Please try again.');
+      // setMessage('An error occurred. Please try again.');
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Failed to submit withdraw request');
+
     } finally {
       setIsLoading(false);
     }
@@ -95,6 +109,12 @@ const WithdrawalRequestForm = () => {
         </div>
       </form>
       </TitleCard>
+        <Modal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        messageType={messageType} 
+        message={message} 
+      />
     </>
   );
 };

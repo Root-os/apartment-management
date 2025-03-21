@@ -182,10 +182,12 @@ const ItemAssignmentForm = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-sm font-medium text-white-700">Amount</label>
+            <label className="block text-sm font-medium text-white-700">Item Amount</label>
             <input
               type="number"
               name="amount"
+              min="1"
+              step="1"
               value={formData.amount}
               onChange={handleChange}
               className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"

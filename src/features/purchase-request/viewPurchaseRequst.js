@@ -89,7 +89,7 @@ const PurchasesRequestPage = () => {
 
     const fetchVendors = async () => {
       try {
-        const response = await axios.get('https://apartment.bruktiethiotour.com/api/vendors');
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}vendors`);
         setVendors(response.data);
       } catch (err) {
         console.error('Error fetching vendors:', err);
@@ -294,7 +294,7 @@ const PurchasesRequestPage = () => {
                   className="mt-1 bg-base-100 w-full px-4 py-2 border rounded-md"
                 >
                   {loadingItems ? (
-                    <option>Loading...</option>
+                    <option>Loading.</option>
                   ) : (
                     items.map((item) => (
                       <option key={item.id} value={item.id}>
@@ -313,7 +313,7 @@ const PurchasesRequestPage = () => {
                   className="mt-1 bg-base-100 w-full px-4 py-2 border rounded-md"
                 >
                   {loadingUsers ? (
-                    <option>Loading...</option>
+                    <option>Loading.</option>
                   ) : (
                     users.map((user) => (
                       <option key={user.id} value={user.id}>
@@ -373,7 +373,7 @@ const PurchasesRequestPage = () => {
                   className="mt-1 bg-base-100 w-full px-4 py-2 border rounded-md"
                 >
                   {loadingUsers ? (
-                    <option>Loading...</option>
+                    <option>Loading.</option>
                   ) : (
                     users.map((user) => (
                       <option key={user.id} value={user.id}>
@@ -393,7 +393,7 @@ const PurchasesRequestPage = () => {
                 >
                   <option value="">Select Vendor</option>
                   {loadingVendors ? (
-                    <option>Loading...</option>
+                    <option>Loading.</option>
                   ) : (
                     vendors.map((vendor) => (
                       <option key={vendor.id} value={vendor.id}>

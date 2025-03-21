@@ -20,7 +20,7 @@ const StockoutPage = () => {
   const fetchStockoutData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://apartment.bruktiethiotour.com/api/stockout/for-requester', 
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}stockout/for-requester`, 
           {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -43,7 +43,7 @@ const StockoutPage = () => {
   const fetchItems = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('https://apartment.bruktiethiotour.com/api/items', {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}items`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -60,7 +60,7 @@ const StockoutPage = () => {
       const token = localStorage.getItem('token');
       console.log('Cancel request token:', token); 
 
-      const response = await axios.put(`https://apartment.bruktiethiotour.com/api/stockout/cance-request/${id}`, {}, {
+      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}stockout/cance-request/${id}`, {}, {
         headers: {
           Authorization: `Bearer ${token}`,
         }
@@ -115,7 +115,7 @@ const StockoutPage = () => {
         requestedQuantity: editItem.requestedQuantity,
       };
 
-      const response = await axios.put(`https://apartment.bruktiethiotour.com/api/stockout/${editItem.id}`, payload, {
+      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}stockout/${editItem.id}`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         }

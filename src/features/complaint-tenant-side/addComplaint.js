@@ -71,7 +71,7 @@ const AddComplaint = () => {
       setTenantId('');
       setUrgency('low');
       setFiles([]);
-      window.location.href='/app/complaint-tenant-view';
+      window.location.href='/app/complain-tenant-view';
     } catch (error) {
       setLoading(false);
 

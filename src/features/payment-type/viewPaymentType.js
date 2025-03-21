@@ -17,7 +17,7 @@ const PaymentTypesPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
-//   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetchPaymentTypes();
@@ -55,6 +55,7 @@ const PaymentTypesPage = () => {
   };
 
   const submitEdit = async () => {
+    setIsLoading(true);
     try {
       await axios.put(
         `${process.env.REACT_APP_BASE_URL}payment-types/${selectedPaymentType.id}`,
@@ -70,6 +71,8 @@ const PaymentTypesPage = () => {
       setModalOpen(true);
       setMessageType('error');
       setMessage("An error occurred while updating the payment type.");
+    }finally {
+      setIsLoading(false);
     }
   };
 
@@ -163,8 +166,9 @@ const PaymentTypesPage = () => {
               <button
                 onClick={submitEdit}
                 className="px-4 py-2 bg-blue-500 text-white rounded"
+                disabled={isLoading}
               >
-                Save
+                {isLoading ? 'saving...':'Save'}
               </button>
             </div>
           </div>

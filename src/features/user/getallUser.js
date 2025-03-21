@@ -91,7 +91,7 @@ const UserAll = () => {
       )}
       {loading ? (
         <div className="text-center">
-          <p>Loading...</p>
+          <p>Loading.</p>
         </div>
       ) : (
         <TableComponent

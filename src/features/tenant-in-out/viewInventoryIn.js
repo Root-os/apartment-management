@@ -379,7 +379,8 @@ const TenantInventoryPage = () => {
                       placeholder="Qty"
                       value={item.quantity}
                       onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
-                      min="0"
+                      min="1"
+                      step="1"
                       required
                       disabled={loading}
                     />

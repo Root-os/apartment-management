@@ -44,13 +44,10 @@ const TenantList = () => {
       try {
         const tenantResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
         setTenants(tenantResponse.data);
-
-        const unitResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}unit`);
-        setUnits(unitResponse.data);
-
+  
         const floorResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}floor`);
         setFloors(floorResponse.data);
-
+        
         setIsPageLoading(false);
       } catch (err) {
         setError('Failed to fetch data.');
@@ -60,6 +57,17 @@ const TenantList = () => {
     fetchData();
   }, []);
 
+  const fetchFreeUnits = async (floorId) => {
+    try {
+      const response = await axios.get(`https://apartment.bruktiethiotour.com/api/floor/${floorId}`);
+      console.log('Fetched freeUnits:', response.data);
+      setUnits(Array.isArray(response.data.freeUnits) ? response.data.freeUnits : []);
+    } catch (err) {
+      setError('Failed to fetch freeUnits.');
+    }
+  };
+  
+  
   // Handle file change for document upload
   const handleFileChange = (e) => {
     setEditData({ ...editData, document: e.target.files[0] });
@@ -85,6 +93,7 @@ const TenantList = () => {
       status: tenant.status,
       description: tenant.description,
     });
+    fetchFreeUnits(tenant.floorId);
     setIsEditModalOpen(true);
   };
 
@@ -251,7 +260,7 @@ const TenantList = () => {
                 type="text"
                 value={editData.fullName}
                 onChange={(e) => setEditData({ ...editData, fullName: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
             <div className="mb-4">
@@ -260,7 +269,7 @@ const TenantList = () => {
                 type="text"
                 value={editData.phoneNumber}
                 onChange={(e) => setEditData({ ...editData, phoneNumber: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
             <div className="mb-4">
@@ -269,7 +278,7 @@ const TenantList = () => {
                 type="email"
                 value={editData.email}
                 onChange={(e) => setEditData({ ...editData, email: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
             <div className="mb-4">
@@ -278,7 +287,7 @@ const TenantList = () => {
                 type="text"
                 value={editData.nationalId}
                 onChange={(e) => setEditData({ ...editData, nationalId: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
             <div className="mb-4">
@@ -287,7 +296,7 @@ const TenantList = () => {
                 type="date"
                 value={editData.leaseStartDate}
                 onChange={(e) => setEditData({ ...editData, leaseStartDate: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
             <div className="mb-4">
@@ -296,7 +305,7 @@ const TenantList = () => {
                 type="date"
                 value={editData.leaseEndDate}
                 onChange={(e) => setEditData({ ...editData, leaseEndDate: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
             <div className="mb-4">
@@ -305,7 +314,7 @@ const TenantList = () => {
                 type="text"
                 value={editData.paymentStatus}
                 onChange={(e) => setEditData({ ...editData, paymentStatus: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
             <div className="mb-4">
@@ -314,7 +323,7 @@ const TenantList = () => {
                 type="text"
                 value={editData.additionalNotes}
                 onChange={(e) => setEditData({ ...editData, additionalNotes: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
               {editData.additionalNotes && editData.additionalNotes.length < 10 && (
                 <div className="text-red-500 text-xs mt-2">Notes must be at least 10 characters long.</div>
@@ -323,30 +332,35 @@ const TenantList = () => {
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Unit</label>
               <select
-                value={editData.unitId}
-                onChange={(e) => setEditData({ ...editData, unitId: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
-              >
-                {units.map((unit) => (
-                  <option key={unit.id} value={unit.id}>
-                    {unit.unitNumber}
-                  </option>
-                ))}
-              </select>
+  value={editData.unitId}
+  onChange={(e) => setEditData({ ...editData, unitId: e.target.value })}
+  className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+>
+  {units.map((unit) => (
+    <option key={unit.id} value={unit.id}>
+      {unit.unitNumber}
+    </option>
+  ))}
+</select>
+
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Floor</label>
               <select
-                value={editData.floorId}
-                onChange={(e) => setEditData({ ...editData, floorId: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
-              >
-                {floors.map((floor) => (
-                  <option key={floor.id} value={floor.id}>
-                    {floor.name}
-                  </option>
-                ))}
-              </select>
+  value={editData.floorId}
+  onChange={(e) => {
+    setEditData({ ...editData, floorId: e.target.value });
+    fetchFreeUnits(e.target.value); // Fetch units when floor changes
+  }}
+  className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+>
+  {floors.map((floor) => (
+    <option key={floor.id} value={floor.id}>
+      {floor.name}
+    </option>
+  ))}
+</select>
+
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Status</label>
@@ -354,7 +368,7 @@ const TenantList = () => {
                 type="text"
                 value={editData.status}
                 onChange={(e) => setEditData({ ...editData, status: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
             <div className="mb-4">
@@ -363,7 +377,7 @@ const TenantList = () => {
                 type="text"
                 value={editData.tin}
                 onChange={(e) => setEditData({ ...editData, tin: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
             <div className="mb-4">
@@ -371,7 +385,7 @@ const TenantList = () => {
               <input
                 type="file"
                 onChange={handleFileChange}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
             <div className="mb-4">
@@ -380,7 +394,7 @@ const TenantList = () => {
                 type="text"
                 value={editData.description}
                 onChange={(e) => setEditData({ ...editData, description: e.target.value })}
-                className="w-full p-2 border border-gray-300 rounded"
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
             <div className="flex justify-end space-x-2">

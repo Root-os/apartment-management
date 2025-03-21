@@ -7,7 +7,7 @@ const AddItem = () => {
   const [itemName, setItemName] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
   const [itemAmount, setItemAmount] = useState('');
-  const [unit, setUnit] = useState('Cans');
+  const [unit, setUnit] = useState('');
   const [itemCategoryId, setItemCategoryId] = useState('');
   const [itemDetails, setItemDetails] = useState('');
   const [minAmount, setMinAmount] = useState('');
@@ -63,7 +63,7 @@ const AddItem = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('Item created successfully');
-       window.location.href = '/item-view';
+      //  window.location.href = '/app/item-view';
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');
@@ -75,7 +75,7 @@ const AddItem = () => {
 
   return (
     <>
-      <TitleCard title="Add Item">
+      <TitleCard title="Add Item" topMargin={'mt-1'}>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="itemName" className="block text-sm font-medium text-white-700">Item Name</label>
@@ -123,7 +123,7 @@ const AddItem = () => {
               value={unit}
               onChange={(e) => setUnit(e.target.value)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
-              placeholder="Enter unit"
+              placeholder="Enter measurment"
               required
             />
           </div>
@@ -166,7 +166,8 @@ const AddItem = () => {
               value={minAmount}
               onChange={(e) => setMinAmount(e.target.value)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
-              min="1"
+              min="0"
+              step="1"
               required
             />
           </div>

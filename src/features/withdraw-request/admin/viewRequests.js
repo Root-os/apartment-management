@@ -264,6 +264,19 @@ const WithdrawalRequests = () => {
 <div className={`dropdown-menu absolute right-0 mt-2 w-48 rounded-md shadow-lg ${dropdownOpen ? 'block' : 'hidden'}`}>
   {/* Dropdown items */}
 </div>
+// Add this useEffect to handle clicks outside dropdown
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (!event.target.closest('.dropdown-container')) {
+      setDropdownStates({});
+    }
+  };
+
+  document.addEventListener('mousedown', handleClickOutside);
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, []);
   const columns = [
     { key: 'tenantId', label: 'Tenant Name', render: (row) => getTenantNameById(row.tenantId) },
     {
@@ -288,57 +301,56 @@ const WithdrawalRequests = () => {
       key: 'actions',
       label: 'Actions',
       render: (row) => (
-        <div className="relative inline-block text-left">
-          <div>
-            <button
-              type="button"
-              className="bg-blue-500 text-white py-1 px-4 rounded inline-flex justify-center w-full"
-              id="dropdownMenuButton"
-              onClick={() => toggleDropdown(row.id)}
-            >
-              Actions
-            </button>
-          </div>
-    
-          {/* Dropdown Menu */}
-          <div
-            className={`dropdown-menu absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none ${dropdownStates[row.id] ? 'block' : 'hidden'}`}
-            aria-labelledby="dropdownMenuButton"
+        <div className="relative dropdown-container">
+          <button
+            type="button"
+            className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded transition-colors duration-200"
+            onClick={() => toggleDropdown(row.id)}
           >
-            <button
-              onClick={() => handleStatusClick(row)}
-              className="text-gray-700 block px-4 py-2 text-sm"
-            >
-              Update
-            </button>
-            <button
-              onClick={() => handleAssignClick(row)}
-              className="text-gray-700 block px-4 py-2 text-sm"
-            >
-              Assign
-            </button>
-            <button
-              onClick={() => handleFinalizeClick(row)}
-              className="text-gray-700 block px-4 py-2 text-sm"
-            >
-              Finalize
-            </button>
-            <button
-              onClick={() => handleDeleteClick(row)}
-              className="text-gray-700 block px-4 py-2 text-sm"
-            >
-              Delete
-            </button>
-            <button
-              onClick={() => handleDetailClick(row)}
-              className="text-gray-700 block px-4 py-2 text-sm"
-            >
-              Details
-            </button>
+            Actions
+          </button>
+          <div
+            className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 ${
+              dropdownStates[row.id] ? 'block' : 'hidden'
+            }`}
+          >
+            <div className="py-1">
+              <button
+                onClick={() => handleStatusClick(row)}
+                className="block w-full text-left px-4 py-2 text-sm text-white bg-green-500 hover:bg-green-600 transition-colors duration-200"
+              >
+                Update
+              </button>
+              <button
+                onClick={() => handleAssignClick(row)}
+                className="block w-full text-left px-4 py-2 text-sm text-white bg-blue-500 hover:bg-blue-600 transition-colors duration-200"
+              >
+                Assign
+              </button>
+              <button
+                onClick={() => handleFinalizeClick(row)}
+                className="block w-full text-left px-4 py-2 text-sm text-white bg-purple-500 hover:bg-purple-600 transition-colors duration-200"
+              >
+                Finalize
+              </button>
+              <button
+                onClick={() => handleDeleteClick(row)}
+                className="block w-full text-left px-4 py-2 text-sm text-white bg-red-500 hover:bg-red-600 transition-colors duration-200"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => handleDetailClick(row)}
+                className="block w-full text-left px-4 py-2 text-sm text-white bg-gray-500 hover:bg-gray-600 transition-colors duration-200"
+              >
+                Details
+              </button>
+            </div>
           </div>
         </div>
       ),
     },
+  
     
     
     

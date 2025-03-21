@@ -245,7 +245,6 @@ const MaintenancePage = () => {
                   value={formData.date}
                   onChange={handleInputChange}
                   className="input input-bordered w-full"
-                  required
                 />
               </div>
               <div className="mb-4">

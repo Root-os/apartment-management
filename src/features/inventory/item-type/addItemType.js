@@ -54,7 +54,7 @@ const AddItemType = () => {
 
   return (
     <>
-      <TitleCard title="Add Item Type"  >
+      <TitleCard title="Add Item Type"  topMargin={'mt-1'}>
       {/* Form to input item type data */}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">

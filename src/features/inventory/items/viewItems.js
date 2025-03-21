@@ -149,9 +149,9 @@ const ItemsPage = () => {
   const columns = [
     { key: 'itemName', label: 'Item Name' },
     { 
-      key: 'totalAmount', 
-      label: 'Total Amount',
-      render: (row) => row.totalAmount
+      key: 'itemAmount', 
+      label: 'Item Amount',
+      render: (row) => row.itemAmount
     },
     {
       key: 'expirationDate',
@@ -363,12 +363,12 @@ const ItemsPage = () => {
                 <span className="font-medium">Category:</span> 
                 {categories.find(cat => cat.id === selectedItem.itemCategoryId)?.categoryName || 'Uncategorized'}
               </div>
-              <div>
+              {/* <div>
                 <span className="font-medium">Created At:</span> {new Date(selectedItem.createdAt).toLocaleString()}
               </div>
               <div>
                 <span className="font-medium">Updated At:</span> {new Date(selectedItem.updatedAt).toLocaleString()}
-              </div>
+              </div> */}
             </div>
             <div className="flex justify-end mt-6">
               <button

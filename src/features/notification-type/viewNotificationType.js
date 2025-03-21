@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Card from '../../components/card'; // Import the Card component
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 
@@ -115,20 +114,6 @@ const NotificationPage = () => {
     }
   };
 
-  // Actions for each card
-  const getCardActions = (notification) => [
-    {
-      label: 'Edit',
-      type: 'primary',
-      onClick: () => handleEditClick(notification),
-    },
-    {
-      label: 'Delete',
-      type: 'secondary',
-      onClick: () => handleDeleteClick(notification),
-    },
-  ];
-
   return (
     <div>
       {/* Page Title */}
@@ -151,19 +136,34 @@ const NotificationPage = () => {
         <LoadingComponent />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredNotificationData.length > 0 ? (
-            filteredNotificationData.map((notification) => (
-              <Card
-                key={notification.id}
-                title={notification.name}
-                content={notification.name}
-                actions={getCardActions(notification)}
-              />
-            ))
-          ) : (
-            <p>No notification types found</p>
-          )}
+  {filteredNotificationData.length > 0 ? (
+    filteredNotificationData.map((notification) => (
+      <div
+        key={notification.id}
+        className="bg-base-100 p-4 rounded-lg shadow-lg border border-gray-300"
+      >
+        <h3 className="text-lg font-semibold text-white-800">{notification.name}</h3>
+        <div className="mt-4 flex justify-end space-x-1">
+          <button
+            onClick={() => handleEditClick(notification)}
+            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => handleDeleteClick(notification)}
+            className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
+          >
+            Delete
+          </button>
         </div>
+      </div>
+    ))
+  ) : (
+    <p>No notification types found</p>
+  )}
+</div>
+
       )}
 
       {/* Edit Modal */}
@@ -185,19 +185,6 @@ const NotificationPage = () => {
                   disabled={isLoading}
                 />
               </div>
-              {/* <div className="mb-4">
-                <label htmlFor="name" className="block text-sm font-medium text-white-700">
-                  Description
-                </label>
-                <input
-                  type="text"
-                  id="description"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled={isLoading}
-                />
-              </div> */}
               <div className="flex justify-end">
                 <button
                   type="submit"

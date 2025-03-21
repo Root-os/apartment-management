@@ -43,7 +43,7 @@ const FloorForm = () => {
       window.location.href='/app/floor-view';
     } catch (error) {
       console.error('Error adding floor data:', error);
-      alert('There was an error adding the floor data.');
+      // alert('There was an error adding the floor data.');
 
       setModalOpen(true);
       setMessageType('error');

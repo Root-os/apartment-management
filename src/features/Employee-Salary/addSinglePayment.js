@@ -19,16 +19,16 @@ const SalaryPaymentForm = () => {
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
 
-  // Fetch employees when the component mounts
+ 
   useEffect(() => {
     const token = localStorage.getItem('token');
     axios.get(`${process.env.REACT_APP_BASE_URL}auth/employee`, {
         headers: {
-            Authorization: `Bearer ${token}`, // Pass the token in Authorization header
+            Authorization: `Bearer ${token}`, 
           }
     })
       .then(response => {
-        const employeeData = response.data.users; // Use "users" as per the API response
+        const employeeData = response.data.users;
         setEmployees(employeeData);
         console.log(response.data);
       })
@@ -37,11 +37,10 @@ const SalaryPaymentForm = () => {
       });
   }, []);
 
-  // Handle the form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Construct payload for salary payment
+    
     const payload = {
       employeeId,
       paymentMethod,
@@ -51,23 +50,21 @@ const SalaryPaymentForm = () => {
       allowance
     };
 
-    // Get the token from localStorage
     const token = localStorage.getItem('token');
 
-    // Make the POST request with token in the Authorization header
     axios.post(`${process.env.REACT_APP_BASE_URL}salary-payments/pay`, payload, {
       headers: {
-        Authorization: `Bearer ${token}`, // Pass the token in Authorization header
+        Authorization: `Bearer ${token}`, 
       }
     })
       .then(response => {
-        setResponseMessage(response.data.message); // Show success message
-        // Optionally reset form after success
+        setResponseMessage(response.data.message); 
+      
         setEmployeeId('');
-        setPaymentMethod('bank_transfer');
-        setPaymentFromDate('2025-03-01T00:00:00Z');
-        setPaymentToDate('2025-03-31T23:59:59Z');
-        setStatus('Paid');
+        setPaymentMethod('');
+        setPaymentFromDate('');
+        setPaymentToDate('');
+        setStatus('');
         setAllowance('');
 
         setModalOpen(true);
@@ -85,7 +82,7 @@ const SalaryPaymentForm = () => {
 
   return (
     <>
-      <TitleCard title={'Single Salary Payment'}>
+      <TitleCard title={'Single Salary Payment'} topMargin={'mt-1'}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Employee Dropdown */}
         <div>
@@ -168,6 +165,8 @@ const SalaryPaymentForm = () => {
           <input
             type="number"
             id="allowance"
+            min="0"
+            step="1"
             value={allowance}
             onChange={(e) => setAllowance(Number(e.target.value))}
             className="mt-1 bg-base-100 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"

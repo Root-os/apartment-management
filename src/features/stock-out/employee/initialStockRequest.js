@@ -98,7 +98,7 @@ const AddStockOutRequestPage = () => {
 
   return (
     <>
-      <TitleCard title={'Add Stockout Request'}>
+      <TitleCard title={'Add Stockout Request'} topMargin={'mt-1'}>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block  text-white-700 font-semibold mb-2">Item</label>
@@ -144,6 +144,8 @@ const AddStockOutRequestPage = () => {
             <label className="block text-white-700 font-semibold mb-2">Requested Quantity</label>
             <input
               type="number"
+              min="1"
+              step="1"
               value={requestedQuantity}
               onChange={(e) => setRequestedQuantity(Number(e.target.value))}
               className="w-full bg-base-100 p-2 border border-gray-300 rounded"

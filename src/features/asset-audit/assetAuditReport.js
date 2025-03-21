@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
 
 const AssetAuditReport = () => {
-  const [date, setDate] = useState(''); // Default date (empty)
-  const [status, setStatus] = useState(''); // Default status filter to 'confirmed'
-  const [startDate, setStartDate] = useState(''); // For date range start date
-  const [endDate, setEndDate] = useState(''); // For date range end date
+  const [date, setDate] = useState('');
+  const [status, setStatus] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -18,7 +18,7 @@ const AssetAuditReport = () => {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}asset-audits/date`, {
         date: selectedDate
       });
-      return response.data.data; // Return the data for the selected date
+      return response.data.data;
     } catch (error) {
       console.error("Error fetching data by date", error);
       return [];
@@ -32,7 +32,7 @@ const AssetAuditReport = () => {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}asset-audits/status`, {
         status: selectedStatus
       });
-      return response.data.data; // Return the data for the selected status
+      return response.data.data;
     } catch (error) {
       console.error("Error fetching data by status", error);
       return [];
@@ -48,39 +48,40 @@ const AssetAuditReport = () => {
         startDate: selectedStartDate,
         endDate: selectedEndDate
       });
-      return response.data.data; // Return the data for the selected status and date range
+      return response.data.data;
     } catch (error) {
       console.error("Error fetching data by status and date range", error);
       return [];
     }
   };
 
-  // Call the API functions whenever date, startDate, endDate, or status changes
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true); // Start loading
+  // Clear all filter fields
+  const clearFields = () => {
+    setDate('');
+    setStatus('');
+    setStartDate('');
+    setEndDate('');
+  };
 
-      let filteredData = [];
+  // Handle filter button click
+  const handleFilter = async () => {
+    setLoading(true);
+    let filteredData = [];
 
-      // If both date range and status are provided, fetch data based on both
-      if (startDate && endDate && status) {
-        filteredData = await fetchDataByStatusAndDateRange(status, startDate, endDate);
-      }
-      // If only date is provided
-      else if (date) {
-        filteredData = await fetchDataByDate(date);
-      }
-      // If only status is provided
-      else if (status) {
-        filteredData = await fetchDataByStatus(status);
-      }
+    if (startDate && endDate && status) {
+      filteredData = await fetchDataByStatusAndDateRange(status, startDate, endDate);
+    }
+    else if (date) {
+      filteredData = await fetchDataByDate(date);
+    }
+    else if (status) {
+      filteredData = await fetchDataByStatus(status);
+    }
 
-      setData(filteredData); // Set the filtered data
-      setLoading(false); // Stop loading
-    };
-
-    fetchData();
-  }, [date, status, startDate, endDate]);
+    setData(filteredData);
+    setLoading(false);
+    clearFields();
+  };
 
   const columns = [
     { key: 'asset_name', label: 'Asset Name' },
@@ -89,96 +90,93 @@ const AssetAuditReport = () => {
     { key: 'lost_amount', label: 'Lost Amount' },
     { key: 'status', label: 'Status' },
     {
-        label: 'Date',
-        key: 'date',
-        render: (row) => {
-          // Convert the ISO date string to just YYYY-MM-DD format
-          return row.date ? new Date(row.date).toLocaleDateString('en-CA') : 'N/A';
-          // 'en-CA' gives YYYY-MM-DD format. You can use other locales like:
-          // 'en-US' for MM/DD/YYYY
-          // 'en-GB' for DD/MM/YYYY
-        }
+      label: 'Date',
+      key: 'date',
+      render: (row) => {
+        return row.date ? new Date(row.date).toLocaleDateString('en-CA') : 'N/A';
+      }
     },
   ];
 
-  const handleDateChange = (event) => {
-    setDate(event.target.value); // Update the date filter
-  };
-
-  const handleStatusChange = (event) => {
-    setStatus(event.target.value); // Update the status filter
-  };
-
-  const handleStartDateChange = (event) => {
-    setStartDate(event.target.value); // Update the start date filter
-  };
-
-  const handleEndDateChange = (event) => {
-    setEndDate(event.target.value); // Update the end date filter
-  };
+  const handleDateChange = (event) => setDate(event.target.value);
+  const handleStatusChange = (event) => setStatus(event.target.value);
+  const handleStartDateChange = (event) => setStartDate(event.target.value);
+  const handleEndDateChange = (event) => setEndDate(event.target.value);
 
   return (
     <div className="p-6 bg-base-100 rounded-lg shadow-md w-full">
-
       <div className="flex justify-end items-center mb-4">
-  {/* <h2 className="text-2xl font-bold">Filter Data</h2> */}
-        <div className="flex items-center space-x-2">
+        <div className="flex flex-col space-y-4">
+          {/* Filter Fields Row */}
+          <div className="flex items-center space-x-2">
             {/* Date Picker (Single Date Filter) */}
             <div className="flex flex-col">
-            <label htmlFor="date" className="text-sm font-medium">Audit Date</label>
-            <input
+              <label htmlFor="date" className="text-sm font-medium">Audit Date</label>
+              <input
                 id="date"
                 type="date"
                 value={date}
                 onChange={handleDateChange}
-                className="p-2 border rounded-md"
-            />
+                className="bg-base-100 p-2 border rounded-md"
+              />
             </div>
 
             {/* Status Dropdown (Single Status Filter) */}
             <div className="flex flex-col">
-            <label htmlFor="status" className="text-sm font-medium">Status</label>
-            <select
+              <label htmlFor="status" className="text-sm font-medium">Status</label>
+              <select
                 id="status"
-                value={status} // The default value will be set as 'confirmed'
+                value={status}
                 onChange={handleStatusChange}
-                className="p-2 border rounded-md"
-            >
+                className="bg-base-100 p-2 border rounded-md"
+              >
                 <option value="">Select Status</option>
                 <option value="confirmed">Confirmed</option>
                 <option value="fail">Fail</option>
                 <option value="to_be_checked">To be Checked</option>
-            </select>
+              </select>
             </div>
 
             {/* Start Date Picker (Date Range Filter) */}
             <div className="flex flex-col">
-            <label htmlFor="startDate" className="text-sm font-medium">Audit date from</label>
-            <input
+              <label htmlFor="startDate" className="text-sm font-medium">Audit date from</label>
+              <input
                 id="startDate"
                 type="date"
                 value={startDate}
                 onChange={handleStartDateChange}
-                className="p-2 border rounded-md"
-            />
+                className="bg-base-100 p-2 border rounded-md"
+              />
             </div>
 
             {/* End Date Picker (Date Range Filter) */}
             <div className="flex flex-col">
-            <label htmlFor="endDate" className="text-sm font-medium">Audit date to</label>
-            <input
+              <label htmlFor="endDate" className="text-sm font-medium">Audit date to</label>
+              <input
                 id="endDate"
                 type="date"
                 value={endDate}
                 onChange={handleEndDateChange}
-                className="p-2 border rounded-md"
-            />
+                className="bg-base-100 p-2 border rounded-md"
+              />
             </div>
+          </div>
+
+          {/* Filter Button Row */}
+          <div className="flex justify-end">
+            <button
+              onClick={handleFilter}
+              className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+              disabled={loading}
+            >
+              {loading ? 'Filtering...' : 'Filter'}
+            </button>
+          </div>
         </div>
-        </div>
+      </div>
 
       {loading ? (
-       <LoadingComponent/>
+        <LoadingComponent/>
       ) : (
         <TableComponent 
           title="Asset Audit Reports" 

@@ -112,7 +112,7 @@ const ComplaintsPage = () => {
         return <p className="w-16 h-16 object-cover">No Image</p>;
       }
       return imageArray.map((image, index) => (
-        <img key={index} src={`https://${process.env.REACT_APP_BASE_URL}/${image}`} alt={`Complaint Image ${index + 1}`} className="w-16 h-16 object-cover" />
+        <img key={index} src={`https://apartment.bruktiethiotour.com/${image}`} alt={`Complaint Image ${index + 1}`} className="w-16 h-16 object-cover" />
       ));
     } catch (error) {
       return <p className="w-16 h-16 object-cover">No Image </p>;

@@ -157,7 +157,7 @@ const ChargingPage = () => {
         ? new Date(row.chargingEndTime).toLocaleString() 
         : 'N/A',
     },
-    { label: 'Charging Cost', key: 'chargingCost' },
+    // { label: 'Charging Cost', key: 'chargingCost' },
     { label: 'Status', key: 'status' },
     {
       label: 'Actions',
@@ -275,6 +275,7 @@ const ChargingPage = () => {
                   value={chargingStartTime}
                   onChange={(e) => setChargingStartTime(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  disabled
                 />
               </div>
               <div className="mb-4">
@@ -284,12 +285,12 @@ const ChargingPage = () => {
                 <input
                   type="datetime-local"
                   id="chargingEndTime"
-                  value={chargingEndTime}
+                  // value={chargingEndTime}
                   onChange={(e) => setChargingEndTime(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label htmlFor="chargingCost" className="block text-sm font-medium text-white-700">
                   Charging Cost
                 </label>
@@ -300,7 +301,7 @@ const ChargingPage = () => {
                   onChange={(e) => setChargingCost(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </div>
+              </div> */}
               <div className="mb-4">
                 <label htmlFor="status" className="block text-sm font-medium text-white-700">
                   Status

@@ -8,7 +8,7 @@ const MySalaryPayments = () => {
   const [error, setError] = useState(null);
   
 
-  // Fetch salary data on component mount
+  
   useEffect(() => {
     const fetchSalaryData = async () => {
       try {

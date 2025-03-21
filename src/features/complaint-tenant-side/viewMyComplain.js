@@ -4,19 +4,22 @@ import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 
-
 const TenantComplaintsPage = ({ tenantId }) => {
   const [complaints, setComplaints] = useState([]);
-  const [loading, setLoading] = useState(true);  
-  const [isLoading, setIsLoading] = useState(false); 
-  const [error, setError] = useState(''); 
+  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [complaintToConfirm, setComplaintToConfirm] = useState(null);
   const [feedback, setFeedback] = useState('');
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [messageType, setMessageType] = useState('success')
+  const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
+
+  const [isImageViewerOpen, setIsImageViewerOpen] = useState(false); // Manage the modal visibility
+  const [currentImage, setCurrentImage] = useState(null); // Store the clicked image URL
+  const [zoomLevel, setZoomLevel] = useState(1);
 
   const token = localStorage.getItem('token');
   const userId = localStorage.getItem('userId');
@@ -30,17 +33,17 @@ const TenantComplaintsPage = ({ tenantId }) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setComplaints(response.data);  
-        setLoading(false);  
+        setComplaints(response.data);
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching complaints:', error);
         setError('There was an error fetching the complaints data!');
-        setLoading(false);  // Stop loading on error
+        setLoading(false); // Stop loading on error
       }
     };
 
     fetchComplaints();
-  }, [tenantId]);  // Run when tenantId changes
+  }, [tenantId]); // Run when tenantId changes
 
   // Handle confirm button click
   const handleConfirmClick = (complaint) => {
@@ -57,7 +60,7 @@ const TenantComplaintsPage = ({ tenantId }) => {
         feedback: feedback,
       }, {
         headers: {
-          Authorization: `Bearer ${token}`, 
+          Authorization: `Bearer ${token}`,
         },
       });
       setComplaints((prevComplaints) => prevComplaints.map((complaint) =>
@@ -70,15 +73,51 @@ const TenantComplaintsPage = ({ tenantId }) => {
 
       setModalOpen(true);
       setMessageType('success');
-      setMessage('Confirmation send successfully');
+      setMessage('Confirmation sent successfully');
     } catch (error) {
-      setModalOpen(true)
-      setMessageType('error')
+      setModalOpen(true);
+      setMessageType('error');
       setMessage('Unable to send confirmation.');
-    }finally{setIsLoading(false);}
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Columns for the TableComponent
+  // Handle image click to open viewer
+  const openImageViewer = (image) => {
+    setCurrentImage(image);
+    setIsImageViewerOpen(true);
+  };
+
+  // Close image viewer modal
+  const closeImageViewer = () => {
+    setIsImageViewerOpen(false);
+    setZoomLevel(1); // Reset zoom level when closed
+  };
+
+  // Zoom functions for image viewer
+  const zoomIn = () => setZoomLevel(prevZoom => Math.min(prevZoom + 0.1, 3)); // Max zoom level
+  const zoomOut = () => setZoomLevel(prevZoom => Math.max(prevZoom - 0.1, 1)); // Min zoom level
+
+  // Render complaint images
+  const renderImages = (images) => {
+    try {
+      const imageArray = JSON.parse(images);
+      return imageArray.map((image, index) => (
+        <img
+          key={index}
+          src={`https://apartment.bruktiethiotour.com/${image}`}
+          alt={`Complaint Image ${index + 1}`}
+          className="w-16 h-16 object-cover cursor-pointer"
+          onClick={() => openImageViewer(`https://apartment.bruktiethiotour.com/${image}`)} // Open image viewer
+        />
+      ));
+    } catch (error) {
+      return 'No images available';
+    }
+  };
+
+  // Columns for TableComponent
   const columns = [
     { label: 'Description', key: 'description' },
     { label: 'Urgency', key: 'urgency' },
@@ -99,31 +138,14 @@ const TenantComplaintsPage = ({ tenantId }) => {
     },
   ];
 
-  // Render images properly (since images are stored as a JSON string)
-  const renderImages = (images) => {
-    try {
-      const imageArray = JSON.parse(images);
-      return imageArray.length > 0
-        ? imageArray.map((image, index) => (
-            <img
-              key={index}
-              src={`${process.env.REACT_APP_BASE_URL}${image}`}
-              alt={`Complaint Image ${index + 1}`}
-              className="w-16 h-16 object-cover"
-            />
-          ))
-        : 'No images available';
-    } catch (error) {
-      return 'Error loading images';
-    }
-  };
-
+  // Loading component while data is fetched
   if (loading) {
-    return <LoadingComponent/>;
+    return <LoadingComponent />;
   }
+
   const handleAddClick = () => {
     window.location.href = '/app/complain-tenant-add';
-   };
+  };
 
   return (
     <div>
@@ -144,7 +166,6 @@ const TenantComplaintsPage = ({ tenantId }) => {
           <div className="bg-base-100 p-6 rounded-lg w-96">
             <h2 className="text-xl mb-4">Confirm Complaint Resolution</h2>
             <div className="mb-4">
-              {/* <label htmlFor="feedback" className="block text-sm font-medium text-white-700">Select Feedback</label> */}
               <select
                 id="feedback"
                 value={feedback}
@@ -168,11 +189,56 @@ const TenantComplaintsPage = ({ tenantId }) => {
         </div>
       )}
 
-   < Modal
-      isOpen={modalOpen}
-      onClose={()=> setModalOpen(false)}
-      messageType={messageType}
-      message={message}
+      {/* Image Viewer Modal */}
+      {isImageViewerOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+    <div className="relative bg-white p-4 rounded-lg max-w-[90vw] max-h-[90vh] flex flex-col">
+      {/* Control Buttons */}
+      <div className="flex justify-between items-center mb-4 z-10">
+        <div className="flex space-x-2">
+          <button
+            onClick={zoomOut}
+            className="text-white bg-gray-800 px-4 py-2 rounded-full"
+          >
+            Zoom Out
+          </button>
+          <button
+            onClick={zoomIn}
+            className="text-white bg-gray-800 px-4 py-2 rounded-full"
+          >
+            Zoom In
+          </button>
+        </div>
+        <button
+          onClick={closeImageViewer}
+          className="text-white bg-gray-800 px-2 py-1 rounded-full"
+        >
+          X
+        </button>
+      </div>
+
+      {/* Image Container */}
+      <div className="flex-1 overflow-auto">
+        <img
+          src={currentImage}
+          alt="Zoomed Image"
+          style={{
+            transform: `scale(${zoomLevel})`,
+            transition: 'transform 0.3s ease',
+            transformOrigin: 'center', // Ensures zoom is centered
+          }}
+          className="max-w-full max-h-[80vh] object-contain"
+        />
+      </div>
+    </div>
+  </div>
+)}
+
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
       />
     </div>
   );

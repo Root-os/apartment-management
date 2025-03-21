@@ -87,8 +87,10 @@ const TableComponent = ({
   return (
     <div className="p-6 bg-base-100 rounded-lg shadow-md w-full overflow-x-auto">
       {/* Title Card */}
-      <div className="flex justify-between items-center mb-4 mt-6">
+      <div className="text-center mb-6">
         <h2 className="text-2xl font-bold">{title}</h2>
+      </div>
+      <div className="flex justify-end items-center mb-4 mt-6">
         <div className="flex items-center space-x-2">
           {onAdd && (
             <button 
