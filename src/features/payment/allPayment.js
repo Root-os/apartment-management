@@ -341,10 +341,10 @@ const AllPaymentsPage = () => {
           <div className="bg-base-100 p-6 rounded-md w-1/3">
             <h2 className="text-2xl font-bold mb-4">Payment Details</h2>
             <div id="receipt-content" className="mb-4">
-              <p>
+              {/* <p>
                 <strong>Vendor:</strong> {selectedPayment.Vendor.fname}{" "}
                 {selectedPayment.Vendor.lname}
-              </p>
+              </p> */}
               <p>
                 <strong>Price:</strong> {selectedPayment.price}
               </p>

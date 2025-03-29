@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
 import TableComponent from '../../components/table';
+import LoadingComponent from '../../components/loading';
 
 const TenantFilterList = () => {
   const [tenants, setTenants] = useState([]);
@@ -46,7 +47,7 @@ const TenantFilterList = () => {
   const handleFloorClick = async (floorId) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant/floor/${floorId}`);
-      setFloorDetails(response.data[0]); // Access the first element of the array
+      setFloorDetails(response.data[0]); 
       setIsFloorModalOpen(true);
     } catch (err) {
       setError('Failed to fetch floor details.');
@@ -56,7 +57,7 @@ const TenantFilterList = () => {
   const handleUnitClick = async (unitId) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant/unit/${unitId}`);
-      setUnitDetails(response.data[0]); // Access the first element of the array
+      setUnitDetails(response.data[0]); 
       setIsUnitModalOpen(true);
     } catch (err) {
       setError('Failed to fetch unit details.');
@@ -123,15 +124,13 @@ const TenantFilterList = () => {
   ];
 
   return (
-    <div className="max-w-6xl mx-auto p-6">
-      <h2 className="text-2xl font-bold mb-4">Tenant List</h2>
-
+    <div>
       {/* Error message if fetching failed */}
       {error && <div className="bg-red-300 p-3 mb-4 text-red-800">{error}</div>}
 
       {/* Loading state */}
       {loading ? (
-        <div className="text-center p-4">Loading tenants...</div>
+        <div className="text-center p-4"><LoadingComponent/></div>
       ) : (
         <TableComponent
           title="Tenant List"
@@ -231,42 +230,42 @@ const TenantFilterList = () => {
           contentLabel="Floor Details"
           className="fixed inset-0  flex justify-center items-center mt-12"
         >
-          <div className="bg-base-300 p-6 rounded-lg min-w-[72vh] max-h-[90vh] overflow-y-auto mt-10 ml-6">
-            <h2 className="text-xl mb-4">Floor Details</h2>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Floor Number</label>
-              <p className="text-sm">{floorDetails.Floor ? floorDetails.Floor.floorNumber : 'N/A'}</p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Number of Units</label>
-              <p className="text-sm">{floorDetails.Floor ? floorDetails.Floor.noUnits : 'N/A'}</p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Status</label>
-              <p className="text-sm">{floorDetails.Floor ? floorDetails.Floor.status : 'N/A'}</p>
-            </div>
+        <div className="bg-base-100 p-6 rounded-lg min-w-[72vh] max-h-[90vh] overflow-y-auto mt-10 ml-6">
+          <h2 className="text-xl mb-4">Floor Details</h2>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Floor Number</label>
+            <p className="text-sm">{floorDetails.Floor ? floorDetails.Floor.floorNumber : 'N/A'}</p>
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Number of Units</label>
+            <p className="text-sm">{floorDetails.Floor ? floorDetails.Floor.noUnits : 'N/A'}</p>
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Status</label>
+            <p className="text-sm">{floorDetails.Floor ? floorDetails.Floor.status : 'N/A'}</p>
+          </div>
             
-            <div className="flex justify-end">
-              <button
-                onClick={() => setIsFloorModalOpen(false)}
-                className="bg-gray-400 text-white px-4 py-2 rounded"
-              >
-                Close
-              </button>
-            </div>
+          <div className="flex justify-end">
+            <button
+              onClick={() => setIsFloorModalOpen(false)}
+              className="bg-gray-400 text-white px-4 py-2 rounded"
+            >
+              Close
+            </button>
+          </div>
           </div>
         </div>
       )}
 
       {/* Unit Modal */}
       {isUnitModalOpen && unitDetails && (
-  <div
-    isOpen={isUnitModalOpen}
-    onRequestClose={() => setIsUnitModalOpen(false)}
-    contentLabel="Unit Details"
-    className="fixed inset-0 flex justify-center items-center mt-12"
-  >
-    <div className="bg-base-300 p-6 rounded-lg min-w-[72vh] max-h-[90vh] overflow-y-auto mt-10 ml-6">
+    <div
+      isOpen={isUnitModalOpen}
+      onRequestClose={() => setIsUnitModalOpen(false)}
+      contentLabel="Unit Details"
+      className="fixed inset-0 flex justify-center items-center mt-12"
+    >
+    <div className="bg-base-100 p-6 rounded-lg min-w-[72vh] max-h-[90vh] overflow-y-auto mt-10 ml-6">
       <h2 className="text-xl mb-4">Unit Details</h2>
 
       <div className="mb-4">

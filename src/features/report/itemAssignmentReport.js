@@ -8,7 +8,7 @@ const ItemAssignmentReport = () => {
   const [itemAssignments, setItemAssignments] = useState([]); // Store item assignments data
   const [items, setItems] = useState([]); // Store items fetched from API
   const [filterParams, setFilterParams] = useState({
-    assignType: 'user', // Default filter
+    assignType: '', // Default filter
     assignDate: '', // Optional filter for assignment date
     itemId: '', // Optional filter for item ID
   });
@@ -22,10 +22,12 @@ const ItemAssignmentReport = () => {
     const fetchItems = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}items`);
-        setItems(response.data); // Store items in state
+        setItems(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
         console.error('Error fetching items:', error);
-      } finally {setLoading(false);}
+      } finally {
+        setLoading(false);
+      }
     };
     fetchItems();
   }, []);
@@ -33,17 +35,30 @@ const ItemAssignmentReport = () => {
   // Fetch item assignments data based on filters
   const handleFilterSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Start loading
+    setIsLoading(true);
+
+    // Clean up filterParams to remove empty values and match API expectations
+    const cleanedParams = {};
+    if (filterParams.assignType) cleanedParams.assignType = filterParams.assignType;
+    if (filterParams.assignDate) cleanedParams.assignDate = filterParams.assignDate;
+    if (filterParams.itemId) cleanedParams.itemId = Number(filterParams.itemId); // Convert to number if required by API
 
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}item-assignments/report`,
-        filterParams
+        cleanedParams
       );
       console.log('API response:', response.data);
 
-      // Update the state with the received data
-      setItemAssignments(response.data);
+      // Extract the data array from the response (response.data.data)
+      const data = Array.isArray(response.data.data) ? response.data.data : [];
+      // Map the data to match table column keys
+      const mappedData = data.map((assignment) => ({
+        ...assignment,
+        itemName: assignment.item?.itemName || 'N/A',
+        assignedTo: `${assignment.assignto?.fname || ''} ${assignment.assignto?.lname || ''}`.trim() || 'N/A',
+      }));
+      setItemAssignments(mappedData);
     } catch (error) {
       const message =
         error.response?.status === 404
@@ -52,8 +67,9 @@ const ItemAssignmentReport = () => {
       setModalMessage(message);
       setIsModalOpen(true);
       console.error('Error filtering data:', error);
+      setItemAssignments([]);
     } finally {
-      setIsLoading(false); // Stop loading
+      setIsLoading(false);
     }
   };
 
@@ -61,7 +77,11 @@ const ItemAssignmentReport = () => {
   const columns = [
     { key: 'itemName', label: 'Item Name' },
     { key: 'assignedTo', label: 'Assigned To' },
-    { key: 'assignDate', label: 'Assignment Date', render: (data) => new Date(data.assignDate).toLocaleDateString() },
+    {
+      key: 'assignDate',
+      label: 'Assignment Date',
+      render: (data) => new Date(data.assignDate).toLocaleDateString(),
+    },
     { key: 'assignType', label: 'Assignment Type' },
   ];
 
@@ -83,10 +103,9 @@ const ItemAssignmentReport = () => {
               value={filterParams.assignType}
               onChange={(e) => setFilterParams({ ...filterParams, assignType: e.target.value })}
             >
+              <option value="">Select Type</option>
               <option value="user">User</option>
-              <option value="tenant">Tenant</option>
-              <option value="staff">Staff</option>
-              {/* You can add more options based on the possible assignment types */}
+              <option value="unit">Unit</option>
             </select>
           </div>
 
@@ -129,6 +148,7 @@ const ItemAssignmentReport = () => {
             <button
               type="submit"
               className="w-40 bg-blue-500 text-white p-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:text-gray-300"
+              disabled={isLoading}
             >
               {isLoading ? 'Processing...' : 'Filter Data'}
             </button>
@@ -137,16 +157,19 @@ const ItemAssignmentReport = () => {
       </div>
 
       {/* Table for displaying item assignments report */}
-      {loading ? (<LoadingComponent/>):(
-      <TableComponent
-        title="Filtered Item Assignment Report"
-        data={itemAssignments || []}
-        columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
-        showSearch={true}
-        exportable={true}
-      />
+      {loading ? (
+        <LoadingComponent />
+      ) : (
+        <TableComponent
+          title="Filtered Item Assignment Report"
+          data={itemAssignments}
+          columns={columns}
+          rowsPerPageOptions={[5, 10, 15]}
+          showSearch={true}
+          exportable={true}
+        />
       )}
+
       {/* Modal for displaying error message */}
       {isModalOpen && (
         <Modal

@@ -444,7 +444,7 @@ const adminRoutes = [
     component: ItemAssignmentReport,
   },
   {
-    path: '/complain-fromT-view',
+    path: '/complain-from-tenant',
     component: ComplainFromTenant,
   },
   {

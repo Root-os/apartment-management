@@ -80,8 +80,16 @@ const MaintenanceReport = () => {
   };
 
   const columns = [
-    { key: 'unitId', label: 'Unit ID' },
-    { key: 'itemId', label: 'Item ID' },
+    { 
+      key: 'maintenanceUnit.unitNumber', 
+      label: 'Unit Number', 
+      render: (item) => item?.maintenanceUnit?.unitNumber || 'N/A' 
+  },
+  { 
+      key: 'maintenanceItem.itemName', 
+      label: 'Item Name', 
+      render: (item) => item?.maintenanceItem?.itemName || 'N/A' 
+  },
     { key: 'maintenanceDate', label: 'Maintenance Date', render: (data) => new Date(data.maintenanceDate).toLocaleString() },
     { key: 'status', label: 'Status' },
     { key: 'cost', label: 'Maintenance Cost' },
@@ -91,8 +99,6 @@ const MaintenanceReport = () => {
   return (
     <div className="p-8">
       <div className="container mx-auto p-4">
-        <h2 className="text-2xl font-bold mb-6">Maintenance Report</h2>
-
         {/* Filter form */}
         <form onSubmit={handleFilterSubmit} className="grid grid-cols-4 gap-4">
           {/* Start Date */}
@@ -163,15 +169,27 @@ const MaintenanceReport = () => {
         </form>
       </div>
       {/* Table for displaying maintenance report */}
-      {loading ? (<LoadingComponent/>):(
+      {loading ? (<LoadingComponent/>): maintenanceData.length > 0 ? (
       <TableComponent
-        title="Filtered Maintenance Report"
+        title="Maintenance Report"
         data={maintenanceData || []}  // Ensure the data is always an array
         columns={columns}
         rowsPerPageOptions={[5, 10, 15]}
         showSearch={true}
         exportable={true}
       />
+     ): (
+      <div>
+         <p>No data available for the selected filters.</p>
+         <TableComponent
+        title="Maintenance Report"
+        data={maintenanceData || []}  // Ensure the data is always an array
+        columns={columns}
+        rowsPerPageOptions={[5, 10, 15]}
+        showSearch={true}
+        exportable={true}
+      />
+      </div>
      )}
       {/* Modal for displaying error message */}
       {isModalOpen && (

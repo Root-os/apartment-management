@@ -5,50 +5,55 @@ import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 
 const TenantBillReport = () => {
-  const [tenantPayments, setTenantPayments] = useState([]);
   const [tenants, setTenants] = useState([]);
   const [billTypes, setBillTypes] = useState([]);
+  const [paymentTypes, setPaymentTypes] = useState([]); // State for payment types
   const [filteredData, setFilteredData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   const [filterParams, setFilterParams] = useState({
     startDate: "",
     endDate: "",
     billPaymentTypeId: "",
-    tenantId: ""
+    tenantId: "",
   });
 
-  // Fetch Tenants and Bill Types
   useEffect(() => {
     const fetchTenants = async () => {
+      setIsLoading(true);
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
         setTenants(response.data);
       } catch (error) {
         console.error("Error fetching tenants:", error);
-      }finally {setLoading(false);}
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     const fetchBillTypes = async () => {
+      setIsLoading(true);
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-type`);
         setBillTypes(response.data);
+       
       } catch (error) {
         console.error("Error fetching bill types:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchTenants();
     fetchBillTypes();
+ // Fetch payment types
   }, []);
 
   const handleFilterSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Start loading
-
+    setIsLoading(true);
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}tenant-payments/reports`, filterParams);
       setFilteredData(response.data);
@@ -59,29 +64,26 @@ const TenantBillReport = () => {
       setModalMessage(message);
       setIsModalOpen(true);
       console.error("Error filtering data:", error);
+      setFilteredData([]); // Reset filteredData to empty array on error
     } finally {
-      setIsLoading(false); // Stop loading
+      setIsLoading(false);
     }
   };
 
+  // Columns definition including payment type name
   const columns = [
-    { key: 'tenantName', label: 'Tenant Name', render: (payment) => payment.Tenant.fullName },
-    { key: 'paymentType', label: 'Payment Type Name', render: (payment) => payment.BillPaymentType.typeName },
-
-    { key: 'billTypeName', label: 'Bill Type', render: (payment) => payment.BillPaymentType.typeName },
-    { key: 'amount', label: 'Amount' },
-    { key: 'startDate', label: 'Start Date', render: (payment) => new Date(payment.startDate).toLocaleDateString() },
-    { key: 'endDate', label: 'End Date', render: (payment) => new Date(payment.endDate).toLocaleDateString() },
-    { key: 'status', label: 'Status' }
+    { key: 'tenantName', label: 'Tenant Name', render: (payment) => payment?.Tenant?.fullName || 'N/A' },
+    { key: 'billTypeName', label: 'Bill Type', render: (payment) => payment?.BillType?.typeName || 'N/A' },
+    { key: 'amountPaid', label: 'Amount Paid', render: (payment) => payment?.amountPaid ?? 'N/A' },
+    { key: 'startDate', label: 'Start Date', render: (payment) => (payment?.startDate ? new Date(payment.startDate).toLocaleDateString() : 'N/A') },
+    { key: 'endDate', label: 'End Date', render: (payment) => (payment?.endDate ? new Date(payment.endDate).toLocaleDateString() : 'N/A') },
+    { key: 'status', label: 'Status', render: (payment) => payment?.status || 'N/A' },
   ];
 
   return (
     <div className="p-8">
-      <div className="container mx-auto p-4">
-        <h2 className="text-2xl font-bold mb-6">Tenant Bill Report</h2>
-
+      <div>
         <form onSubmit={handleFilterSubmit} className="grid grid-cols-4 gap-4">
-          {/* Start Date */}
           <div>
             <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label>
             <input
@@ -92,8 +94,6 @@ const TenantBillReport = () => {
               onChange={(e) => setFilterParams({ ...filterParams, startDate: e.target.value })}
             />
           </div>
-
-          {/* End Date */}
           <div>
             <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">End Date</label>
             <input
@@ -104,8 +104,6 @@ const TenantBillReport = () => {
               onChange={(e) => setFilterParams({ ...filterParams, endDate: e.target.value })}
             />
           </div>
-
-          {/* Tenant */}
           <div>
             <label htmlFor="tenantId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tenant</label>
             <select
@@ -120,8 +118,6 @@ const TenantBillReport = () => {
               ))}
             </select>
           </div>
-
-          {/* Bill Type */}
           <div>
             <label htmlFor="billPaymentTypeId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Bill Type</label>
             <select
@@ -136,8 +132,6 @@ const TenantBillReport = () => {
               ))}
             </select>
           </div>
-
-          {/* Submit Button */}
           <div className="col-span-4 flex justify-end">
             <button
               type="submit"
@@ -148,17 +142,30 @@ const TenantBillReport = () => {
           </div>
         </form>
       </div>
-      {loading ? (<LoadingComponent/>):(
-      <TableComponent
-        title="Filtered Tenant Bill Report"
-        data={filteredData}
-        columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
-        showSearch={true}
-        exportable={true}
-      />
-    )}
-      {/* Modal for displaying error message */}
+      {isLoading ? (
+        <LoadingComponent />
+      ) : filteredData.length > 0 ? (
+        <TableComponent
+          title="Tenant Bill Report"
+          data={filteredData}
+          columns={columns}
+          rowsPerPageOptions={[5, 10, 15]}
+          showSearch={true}
+          exportable={true}
+        />
+      ) : (
+        <div className="mt-4 text-center text-gray-500 dark:text-gray-400">
+          <TableComponent
+            title="Tenant Bill Report"
+            data={[]}
+            columns={columns}
+            rowsPerPageOptions={[5, 10, 15]}
+            showSearch={false}
+            exportable={false}
+          />
+          <p>No data available for the selected filters.</p>
+        </div>
+      )}
       {isModalOpen && (
         <Modal
           isOpen={isModalOpen}

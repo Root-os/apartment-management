@@ -462,7 +462,7 @@ const adminRoutes =
         name: 'Tenant Report',
       },
       {
-        path: '/app/complain-fromT-view',
+        path: '/app/complain-from-tenant',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'View Complaints',
       },

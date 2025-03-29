@@ -58,8 +58,8 @@ const ReturnReport = () => {
         ? 'No return data found with the given filters.'
         : 'Error filtering data. Please try again.';
       setModalMessage(message);
-      setIsModalOpen(true);
-      console.error('Error filtering data:', error);
+      // setIsModalOpen(true);
+      // console.error('Error filtering data:', error);
     } finally {
       setIsLoading(false); // Stop loading
     }
@@ -160,7 +160,7 @@ const ReturnReport = () => {
         </form>
       </div>
       {/* Table for displaying return report */}
-      {loading ? (<LoadingComponent/>):(
+      {loading ? (<LoadingComponent/>): returnData.length > 0 ? (
       <TableComponent
         title="Filtered Return Report"
         data={returnData || []}  // Ensure the data is always an array
@@ -169,7 +169,17 @@ const ReturnReport = () => {
         showSearch={true}
         exportable={true}
       />
-      )}
+      ): (<div>
+         <p>No data available for the selected filters.</p>
+        <TableComponent
+        title="Filtered Return Report"
+        data={returnData || []}  // Ensure the data is always an array
+        columns={columns}
+        rowsPerPageOptions={[5, 10, 15]}
+        showSearch={true}
+        exportable={true}
+      /> 
+      </div>)}
       {/* Modal for displaying error message */}
       {isModalOpen && (
         <Modal

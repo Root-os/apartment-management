@@ -7,11 +7,12 @@ const AddPurchaseForm = () => {
   // States for form fields
   const [vendorList, setVendorList] = useState([]);
   const [categoryList, setCategoryList] = useState([]);
-  const [itemList, setItemList] = useState([]); // To store items
+  const [itemList, setItemList] = useState([]); 
   const [vendorId, setVendorId] = useState('');
-  const [itemId, setItemId] = useState(''); // Item ID will still be used in the backend
+  const [itemId, setItemId] = useState(''); 
   const [amount, setAmount] = useState('');
   const [price, setPrice] = useState('');
+  const [totalPrice, setTotalPrice] = useState('');
   const [description, setDescription] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
   const [date, setDate] = useState('');
@@ -54,7 +55,7 @@ const AddPurchaseForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!vendorId || !itemId || !amount || !price || !description || !expirationDate || !date || !itemCategoryId) {
+    if (!vendorId || !itemId || !amount || !price || !description || !expirationDate || !date || !itemCategoryId || !totalPrice)  {
       setError('Please fill in all fields');
       return;
     }
@@ -63,9 +64,10 @@ const AddPurchaseForm = () => {
       vendorId: vendorId,
       amount: amount,
       price: price,
+      totalPrice: totalPrice,
       description: description,
       expirationDate: expirationDate,
-      itemId: itemId, // Send itemId to the backend
+      itemId: itemId,
       ItemCategoryId: itemCategoryId,
       date: date,
     };
@@ -90,7 +92,7 @@ const AddPurchaseForm = () => {
 
   return (
     <>
-      <TitleCard title={'Add'} topMargin={'mt-1'}>
+      <TitleCard title={'Add Purchase'} topMargin={'mt-1'}>
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 gap-4">
             {/* Vendor Dropdown */}
@@ -167,6 +169,17 @@ const AddPurchaseForm = () => {
                 step="1"
               />
             </div>
+            <div className="flex flex-col">
+              <label className="font-semibold">Total Price</label>
+              <input 
+                type="number" 
+                value={totalPrice} 
+                onChange={(e) => setTotalPrice(e.target.value)} 
+                className="p-2 border rounded bg-base-100"
+                min="0"
+                step="1"
+              />
+            </div>
 
             {/* Description */}
             <div className="flex flex-col">
@@ -192,7 +205,7 @@ const AddPurchaseForm = () => {
 
             {/* Date */}
             <div className="flex flex-col">
-              <label className="font-semibold">Date</label>
+              <label className="font-semibold">Purchased Date</label>
               <input 
                 type="date" 
                 value={date} 

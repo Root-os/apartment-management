@@ -8,20 +8,23 @@ const ViewBillPayment = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
-  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
   const [modalMessage, setModalMessage] = useState('');
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [isLoading, setIsLoading] = useState(false)
   const [newPaymentData, setNewPaymentData] = useState({
     tenantId: '',
     billPaymentTypeId: '',
     amount: '',
     startDate: '',
     endDate: '',
-    status: ''
+    status: '',
+    amountPaid: '',
+    paymentMethod: '',
+    paymentDate: ''
   });
 
-  // Fetch payments
   useEffect(() => {
     axios.get(`${process.env.REACT_APP_BASE_URL}tenant-payments`)
       .then(response => {
@@ -32,62 +35,66 @@ const ViewBillPayment = () => {
       });
   }, []);
 
-  // Edit payment
   const handleEditClick = (payment) => {
     setSelectedPayment(payment);
     setNewPaymentData({
       tenantId: payment.tenantId,
-      billPaymentTypeId: payment.billPaymentTypeId,
+      billPaymentTypeId: payment.paymentTypeId || payment.billPaymentTypeId,
       amount: payment.amount,
-      startDate: payment.startDate,
-      endDate: payment.endDate,
+      startDate: payment.startDate.split('T')[0], 
+      endDate: payment.endDate.split('T')[0],     
       status: payment.status,
+      amountPaid: payment.amountPaid || '',
+      paymentMethod: payment.paymentMethod || '',
+      paymentDate: payment.paymentDate ? payment.paymentDate.split('T')[0] : ''
     });
     setIsEditModalOpen(true);
   };
 
   const handleEditSubmit = () => {
+    setIsLoading(true);
     axios.put(`${process.env.REACT_APP_BASE_URL}tenant-payments/${selectedPayment.id}`, newPaymentData)
       .then(() => {
         setPayments(payments.map(payment => (payment.id === selectedPayment.id ? { ...payment, ...newPaymentData } : payment)));
         setIsEditModalOpen(false);
-        setModalMessage('Payment updated successfully!');
-        setIsSuccessModalOpen(true);
+        setModalOpen(true);
+        setMessageType('success');
+        setModalMessage('Payment updated successfully');
       })
       .catch(error => {
         console.error("Error updating payment:", error);
-        setModalMessage('Error updating payment. Please try again.');
-        setIsErrorModalOpen(true);
-      });
-  };
+        setModalOpen(true);
+        setMessageType('error');
+        setModalMessage('Unable to update payment');
+      })
+      .finally(()=> {setIsLoading(false)});
+      };
 
-  // Delete payment
-  const handleDeleteClick = (payment) => {
-    setSelectedPayment(payment);
-    setIsDeleteModalOpen(true);
-  };
+      const handleDeleteClick = (payment) => {
+        setSelectedPayment(payment);
+        setIsDeleteModalOpen(true);
+      };
 
   const handleDeleteConfirm = () => {
     axios.delete(`${process.env.REACT_APP_BASE_URL}tenant-payments/${selectedPayment.id}`)
       .then(() => {
         setPayments(payments.filter(payment => payment.id !== selectedPayment.id));
         setIsDeleteModalOpen(false);
-        setModalMessage('Payment deleted successfully!');
-        setIsSuccessModalOpen(true);
+        setModalOpen(true);
+        setMessageType('success');
+        setModalMessage('Payment deleted successfully');
       })
       .catch(error => {
         console.error("Error deleting payment:", error);
-        setIsDeleteModalOpen(false);
-        setModalMessage('Error deleting payment. Please try again.');
-        setIsErrorModalOpen(true);
+        setModalOpen(true);
+        setMessageType('error');
+        setModalMessage('Unable to delete payment');
       });
-  };
-
-  // Detail payment
-  const handleDetailClick = (payment) => {
-    setSelectedPayment(payment);
-    setIsDetailModalOpen(true);
-  };
+   };
+    const handleDetailClick = (payment) => {
+      setSelectedPayment(payment);
+      setIsDetailModalOpen(true);
+    };
 
   const columns = [
     { key: 'tenantName', label: 'Tenant Name', render: (payment) => payment.Tenant.fullName },
@@ -123,13 +130,13 @@ const ViewBillPayment = () => {
   ];
 
   const handleAddClick = () => {
-    console.log("Add button clicked");
+    window.location.href = '/app/tenant-bill-add';
   };
 
   return (
-    <div className="p-8">
+    <div>
       <TableComponent
-        title="Bill Payments"
+        title="Tenant Bill Payments"
         data={payments}
         columns={columns}
         rowsPerPageOptions={[5, 10, 15]}
@@ -140,8 +147,10 @@ const ViewBillPayment = () => {
 
       {/* Edit Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-base-100 p-6 rounded-lg w-96">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 px-4 py-4">
+          <div className="bg-base-100 p-4 sm:p-6 rounded-lg w-full max-w-md 
+                    max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 
+                    scrollbar-track-gray-100">
             <h2 className="text-xl mb-4">Edit Payment</h2>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Amount</label>
@@ -152,6 +161,17 @@ const ViewBillPayment = () => {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Amount Paid</label>
+              <input
+                type="number"
+                value={newPaymentData.amountPaid}
+                onChange={(e) => setNewPaymentData({ ...newPaymentData, amountPaid: e.target.value })}
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Start Date</label>
               <input
@@ -161,6 +181,7 @@ const ViewBillPayment = () => {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
+             
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">End Date</label>
               <input
@@ -170,6 +191,17 @@ const ViewBillPayment = () => {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Payment Date</label>
+              <input
+                type="date"
+                value={newPaymentData.paymentDate}
+                onChange={(e) => setNewPaymentData({ ...newPaymentData, paymentDate: e.target.value })}
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Status</label>
               <select
@@ -177,25 +209,49 @@ const ViewBillPayment = () => {
                 onChange={(e) => setNewPaymentData({ ...newPaymentData, status: e.target.value })}
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               >
-                <option value="Pending">Pending</option>
-                <option value="Paid">Paid</option>
-                <option value="Overdue">Overdue</option>
+                <option value="due">Due</option>
+                <option value="paid">Paid</option>
+                <option value="pending">Pending</option>
               </select>
             </div>
-            <div className="flex justify-between">
-              <button onClick={() => setIsEditModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-              <button onClick={handleEditSubmit} className="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Payment Method</label>
+              <select
+                value={newPaymentData.paymentMethod}
+                onChange={(e) => setNewPaymentData({ ...newPaymentData, paymentMethod: e.target.value })}
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+              >
+                <option value="">Select Payment Method</option>
+                <option value="Credit Card">Credit Card</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+                <option value="Cash">Cash</option>
+              </select>
+            </div>
+
+            <div className="flex justify-end space-x-2">
+              <button 
+                onClick={() => setIsEditModalOpen(false)} 
+                className="bg-gray-400 text-white px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleEditSubmit} 
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+                disabled={isLoading}
+              >
+                {isLoading ? 'updating':'Upate'}
+              </button>
             </div>
           </div>
         </div>
       )}
-
-      {/* Delete Confirmation Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg w-96">
+          <div className="bg-base-100 p-6 rounded-lg w-98">
             <h2 className="text-xl mb-4">Are you sure you want to delete this payment?</h2>
-            <div className="flex justify-between">
+            <div className="flex justify-end space-x-2">
               <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
               <button onClick={handleDeleteConfirm} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
             </div>
@@ -209,19 +265,21 @@ const ViewBillPayment = () => {
           <div className="bg-white p-6 rounded-lg w-full max-w-2xl">
             <h2 className="text-xl mb-4">Payment Details</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <p><strong>Tenant Name:</strong> {selectedPayment.Tenant.fullName}</p>
-              <p><strong>Unit Number:</strong> {selectedPayment.Tenant.Unit.unitNumber}</p>
-              <p><strong>Floor Number:</strong> {selectedPayment.Tenant.Floor.floorNumber}</p>
-              <p><strong>Bill Payment Type:</strong> {selectedPayment.BillPaymentType.typeName}</p>
-              <p><strong>Amount:</strong> {selectedPayment.amount}</p>
-              <p><strong>Start Date:</strong> {new Date(selectedPayment.startDate).toLocaleDateString()}</p>
-              <p><strong>End Date:</strong> {new Date(selectedPayment.endDate).toLocaleDateString()}</p>
-              <p><strong>Status:</strong> {selectedPayment.status}</p>
-             
-             
-              <p><strong>Document:</strong> <a href={selectedPayment.Tenant.document} target="_blank" rel="noopener noreferrer" className="text-blue-500">View Document</a></p>
-              <p><strong>Lease End Date:</strong> {new Date(selectedPayment.Tenant.leaseEndDate).toLocaleDateString()}</p>
-              <p><strong>Remaining Days:</strong> {selectedPayment.Tenant.remainingDays}</p>
+              <p><strong>Tenant Name:</strong> {selectedPayment.Tenant?.fullName || 'N/A'}</p>
+              <p><strong>Unit Number:</strong> {selectedPayment.Tenant?.Unit?.unitNumber || 'N/A'}</p>
+              <p><strong>Floor Number:</strong> {selectedPayment.Tenant?.Floor?.floorNumber || 'N/A'}</p>
+              <p><strong>Bill Type:</strong> {selectedPayment.BillType?.typeName || 'N/A'}</p>
+              <p><strong>Amount:</strong> {selectedPayment.amountPaid || 'N/A'}</p>
+              <p><strong>Start Date:</strong> {selectedPayment.startDate ? new Date(selectedPayment.startDate).toLocaleDateString() : 'N/A'}</p>
+              <p><strong>End Date:</strong> {selectedPayment.endDate ? new Date(selectedPayment.endDate).toLocaleDateString() : 'N/A'}</p>
+              <p><strong>Status:</strong> {selectedPayment.status || 'N/A'}</p>
+              <p><strong>Payment Method:</strong> {selectedPayment.paymentMethod || 'N/A'}</p>
+              <p><strong>Payment Date:</strong> {selectedPayment.paymentDate ? new Date(selectedPayment.paymentDate).toLocaleDateString() : 'N/A'}</p>
+              {/* <p><strong>Document:</strong> {selectedPayment.Tenant?.document ? (
+                <a href={selectedPayment.Tenant.document} target="_blank" rel="noopener noreferrer" className="text-blue-500">View Document</a>
+              ) : 'N/A'}</p> */}
+              <p><strong>Lease End Date:</strong> {selectedPayment.Tenant?.leaseEndDate ? new Date(selectedPayment.Tenant.leaseEndDate).toLocaleDateString() : 'N/A'}</p>
+              <p><strong>Remaining Days:</strong> {selectedPayment.Tenant?.remainingDays ?? 'N/A'}</p>
             </div>
             <div className="flex justify-center mt-4">
               <button onClick={() => setIsDetailModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Close</button>
@@ -229,16 +287,12 @@ const ViewBillPayment = () => {
           </div>
         </div>
       )}
-
-      {/* Success Modal */}
-      {isSuccessModalOpen && (
-        <Modal isOpen={isSuccessModalOpen} onClose={() => setIsSuccessModalOpen(false)} type="success" message={modalMessage} />
-      )}
-
-      {/* Error Modal */}
-      {isErrorModalOpen && (
-        <Modal isOpen={isErrorModalOpen} onClose={() => setIsErrorModalOpen(false)} type="error" message={modalMessage} />
-      )}
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={modalMessage}
+      />
     </div>
   );
 };

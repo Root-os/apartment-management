@@ -88,7 +88,6 @@ const ChargingPage = () => {
         // Convert to ISO string for API consistency
         chargingStartTime: chargingStartTime ? new Date(chargingStartTime).toISOString() : null,
         chargingEndTime: chargingEndTime ? new Date(chargingEndTime).toISOString() : null,
-        chargingCost,
         status,
       };
   
@@ -157,7 +156,7 @@ const ChargingPage = () => {
         ? new Date(row.chargingEndTime).toLocaleString() 
         : 'N/A',
     },
-    // { label: 'Charging Cost', key: 'chargingCost' },
+    { label: 'Charging Cost', key: 'chargingCost' },
     { label: 'Status', key: 'status' },
     {
       label: 'Actions',

@@ -31,6 +31,9 @@ const TenantList = () => {
     document: '',
     status: '',
     description: '',
+    carName: '',  // Added for carName
+    carPlate: '', // Added for carPlate
+    color: '',    // Added for color
   });
 
   // Loading and Saving States
@@ -67,7 +70,6 @@ const TenantList = () => {
     }
   };
   
-  
   // Handle file change for document upload
   const handleFileChange = (e) => {
     setEditData({ ...editData, document: e.target.files[0] });
@@ -92,6 +94,9 @@ const TenantList = () => {
       document: tenant.document,
       status: tenant.status,
       description: tenant.description,
+      carName: tenant.carName || null,  // Populate carName if available
+      carPlate: tenant.carPlate || null, // Populate carPlate if available
+      color: tenant.color || null,    // Populate color if available
     });
     fetchFreeUnits(tenant.floorId);
     setIsEditModalOpen(true);
@@ -163,9 +168,10 @@ const TenantList = () => {
   };
 
   // Live validation for additional notes (min length 10 characters)
-  const validateAdditionalNotes = () => {
-    return editData.additionalNotes.length >= 10;
-  };
+ const validateAdditionalNotes = () => {
+  return editData.additionalNotes && editData.additionalNotes.length >= 10;
+};
+
   const handleAddClick = () => {
     window.location.href = '/app/tenant-add';
    };
@@ -332,34 +338,34 @@ const TenantList = () => {
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Unit</label>
               <select
-  value={editData.unitId}
-  onChange={(e) => setEditData({ ...editData, unitId: e.target.value })}
-  className="bg-base-100 w-full p-2 border border-gray-300 rounded"
->
-  {units.map((unit) => (
-    <option key={unit.id} value={unit.id}>
-      {unit.unitNumber}
-    </option>
-  ))}
-</select>
+                value={editData.unitId}
+                onChange={(e) => setEditData({ ...editData, unitId: e.target.value })}
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+              >
+                {units.map((unit) => (
+                  <option key={unit.id} value={unit.id}>
+                    {unit.unitNumber}
+                  </option>
+                ))}
+              </select>
 
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Floor</label>
               <select
-  value={editData.floorId}
-  onChange={(e) => {
-    setEditData({ ...editData, floorId: e.target.value });
-    fetchFreeUnits(e.target.value); // Fetch units when floor changes
-  }}
-  className="bg-base-100 w-full p-2 border border-gray-300 rounded"
->
-  {floors.map((floor) => (
-    <option key={floor.id} value={floor.id}>
-      {floor.name}
-    </option>
-  ))}
-</select>
+                value={editData.floorId}
+                onChange={(e) => {
+                  setEditData({ ...editData, floorId: e.target.value });
+                  fetchFreeUnits(e.target.value); // Fetch units when floor changes
+                }}
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+              >
+                {floors.map((floor) => (
+                  <option key={floor.id} value={floor.id}>
+                    {floor.floorNumber}
+                  </option>
+                ))}
+              </select>
 
             </div>
             <div className="mb-4">
@@ -388,7 +394,7 @@ const TenantList = () => {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Description</label>
               <input
                 type="text"
@@ -396,7 +402,17 @@ const TenantList = () => {
                 onChange={(e) => setEditData({ ...editData, description: e.target.value })}
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
-            </div>
+            </div> */}
+            {/* <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Car Name</label>
+              <input
+                type="text"
+                value={editData.carName}
+                onChange={(e) => setEditData({ ...editData, carName: e.target.value })}
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+              />
+            </div> */}
+          
             <div className="flex justify-end space-x-2">
               <button
                 onClick={() => setIsEditModalOpen(false)}
@@ -440,34 +456,86 @@ const TenantList = () => {
         </div>
       )}
        {/* Tenant Details Modal */}
-      {isDetailsModalOpen && selectedTenant && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-base-100 p-6 rounded-lg w-96 max-w-full overflow-auto">
-            <h2 className="text-xl mb-4">Tenant Details</h2>
-            <div className="mb-4">
-              <p><strong>Full Name:</strong> {selectedTenant.fullName}</p>
-              <p><strong>Phone Number:</strong> {selectedTenant.phoneNumber}</p>
-              <p><strong>Email:</strong> {selectedTenant.email}</p>
-              <p><strong>National ID:</strong> {selectedTenant.nationalId}</p>
-              <p><strong>Lease Start Date:</strong> {new Date(selectedTenant.leaseStartDate).toLocaleDateString()}</p>
-              <p><strong>Lease End Date:</strong> {new Date(selectedTenant.leaseEndDate).toLocaleDateString()}</p>
-              <p><strong>Payment Status:</strong> {selectedTenant.paymentStatus}</p>
-              <p><strong>Unit Number:</strong> {selectedTenant.Unit?.unitNumber || 'N/A'}</p>
-              <p><strong>Floor Number:</strong> {selectedTenant.Floor?.floorNumber || 'N/A'}</p>
-              <p><strong>Status:</strong> {selectedTenant.status}</p>
-              <p><strong>Description:</strong> {selectedTenant.description}</p>
-            </div>
-            <div className="flex justify-end">
-              <button
-                onClick={closeDetailsModal} // Close the modal
-                className="bg-gray-400 text-white px-4 py-2 rounded"
-              >
-                Close
-              </button>
-            </div>
+       {isDetailsModalOpen && selectedTenant && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
+      <h2 className="text-xl mb-4">Tenant Details</h2>
+      <div className="mb-4">
+        <p><strong>Full Name:</strong> {selectedTenant.fullName}</p>
+        <p><strong>Phone Number:</strong> {selectedTenant.phoneNumber}</p>
+        <p><strong>Email:</strong> {selectedTenant.email}</p>
+        <p><strong>National ID:</strong> {selectedTenant.nationalId}</p>
+        <p><strong>Lease Start Date:</strong> {new Date(selectedTenant.leaseStartDate).toLocaleDateString()}</p>
+        <p><strong>Lease End Date:</strong> {new Date(selectedTenant.leaseEndDate).toLocaleDateString()}</p>
+        <p><strong>Payment Status:</strong> {selectedTenant.paymentStatus}</p>
+        <p><strong>Unit Number:</strong> {selectedTenant.Unit?.unitNumber || 'N/A'}</p>
+        <p><strong>Floor Number:</strong> {selectedTenant.Floor?.floorNumber || 'N/A'}</p>
+        <p><strong>Status:</strong> {selectedTenant.status}</p>
+
+        {/* Show document if it exists */}
+        {selectedTenant.document && (
+          <div className="mb-4">
+            <p><strong>Document:</strong></p>
+            {/* Construct the full URL */}
+            {(() => {
+              const baseUrl = 'https://apartment.bruktiethiotour.com';
+              const fullDocumentUrl = `${baseUrl}${selectedTenant.document.startsWith('/') ? '' : '/'}${selectedTenant.document}`;
+
+              // Check file type and render accordingly
+              if (fullDocumentUrl.endsWith('.pdf')) {
+                return (
+                  <a
+                    href={fullDocumentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline"
+                  >
+                    View PDF Document
+                  </a>
+                );
+              } else if (
+                fullDocumentUrl.endsWith('.jpg') ||
+                fullDocumentUrl.endsWith('.jpeg') ||
+                fullDocumentUrl.endsWith('.png')
+              ) {
+                return (
+                  <div>
+                    <img
+                      src={fullDocumentUrl}
+                      alt="Tenant Document"
+                      className="w-full h-auto max-h-64 object-contain"
+                      onError={(e) => (e.target.src = '/path/to/fallback-image.jpg')} // Optional: Fallback image
+                    />
+                  </div>
+                );
+              } else {
+                return (
+                  <a
+                    href={fullDocumentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline"
+                  >
+                    View Document
+                  </a>
+                );
+              }
+            })()}
           </div>
-        </div>
-      )}
+        )}
+      </div>
+      <div className="flex justify-end">
+        <button
+          onClick={closeDetailsModal}
+          className="bg-gray-400 text-white px-4 py-2 rounded"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
       {/* Modal for success/error messages */}
       <Modal 

@@ -106,28 +106,40 @@ const ComplaintsPage = () => {
   const handleAssign = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token'); // Get admin token from localStorage
-      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}complaints/assign`, {
-        complaintId: complaintToAssign.id,
-        employeeId: employeeId,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Include token in headers
+      const token = localStorage.getItem('token');
+      const response = await axios.put(
+        `${process.env.REACT_APP_BASE_URL}complaints/assign`,
+        {
+          complaintId: complaintToAssign.id,
+          employeeId: employeeId,
         },
-      });
-      setComplaints((prevComplaints) => prevComplaints.map((complaint) =>
-        complaint.id === complaintToAssign.id ? response.data.complaint : complaint
-      ));
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+  
+      // Update the complaints state
+      setComplaints((prevComplaints) =>
+        prevComplaints.map((complaint) =>
+          complaint.id === complaintToAssign.id
+            ? {
+                ...complaint,
+                assignedEmployeeId: response.data.complaint.assignedEmployeeId, // 8
+                assignedEmployee: response.data.complaint.assignedEmployee,     // { id: 8, fname: "sura", lname: "asm", email: "sura@gmail.com" }
+              }
+            : complaint
+        )
+      );
+  
       setLoading(false);
       setIsAssignModalOpen(false);
       setComplaintToAssign(null);
       setEmployeeId('');
-
+  
       setModalOpen(true);
       setMessageType('success');
-      setMessage(' Assigned successfully');
+      setMessage('Assigned successfully');
     } catch (error) {
-      // setError('There was an error assigning the complaint!');
       console.error('There was an error assigning the complaint!', error);
       setLoading(false);
       setModalOpen(true);
@@ -135,6 +147,7 @@ const ComplaintsPage = () => {
       setMessage('Unable to assign, please try again');
     }
   };
+
 
   // Handle update status button click
   const handleUpdateStatusClick = (complaint) => {
@@ -176,9 +189,11 @@ const ComplaintsPage = () => {
     }
   };
 
-  const getEmployeeNameById = (id) => {
-    const employee = employees.find((emp) => emp.id === id);
-    return employee ? employee.fname : 'Unassigned';
+  const renderEmployeeName = (row) => {
+    if (row.assignedEmployee) {
+      return `${row.assignedEmployee.fname} ${row.assignedEmployee.lname}`; // e.g., "sura asm"
+    }
+    return 'Unassigned'; // Default if no employee is assigned
   };
 
   // Handle image click to open viewer
@@ -218,7 +233,11 @@ const ComplaintsPage = () => {
   // Columns for the TableComponent
   const columns = [
     // { label: 'ID', key: 'id' },
-    { label: 'Assigned Employee', key: 'assignedEmployeeId', render: (row) => getEmployeeNameById(row.assignedEmployeeId) },
+    {
+      label: 'Assigned Employee',
+      key: 'assignedEmployeeId',
+      render: (row) => renderEmployeeName(row),
+    },
     { label: 'Complain Description', key: 'description' },
     { label: 'Urgency', key: 'urgency' },
     { label: 'Status', key: 'status' },

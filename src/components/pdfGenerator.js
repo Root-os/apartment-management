@@ -30,19 +30,19 @@ const GeneratePdf = async (payments) => {
   pdf.text(`Status: ${payments[0].status}`, pdf.internal.pageSize.getWidth() - 10, 70, { align: "right" });
 
   // Add item list in table format
-  pdf.text("Item List:", 10, 100);
+  // pdf.text("Item List:", 10, 100);
   pdf.setFontSize(10);
 
   // Table Header
-  pdf.text("Item", 10, 110);
+  // pdf.text("Item", 10, 110);
   pdf.text("Price", 80, 110);
   pdf.text("Details", 140, 110);
 
   let yPosition = 120;
   payments.forEach(payment => {
-    pdf.text(`${payment.Item.itemName}`, 10, yPosition);
+    // pdf.text(`${payment.Item.itemName}`, 10, yPosition);
     pdf.text(`ETB-${payment.price}`, 80, yPosition);
-    pdf.text(`${payment.Item.itemDetails}`, 140, yPosition);
+    // pdf.text(`${payment.Item.itemDetails}`, 140, yPosition);
     yPosition += 10;
   });
 

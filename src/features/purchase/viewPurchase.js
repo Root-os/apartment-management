@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
-import DeleteConfirmationModal from '../../components/editDeleteModal'
+import DeleteConfirmationModal from '../../components/editDeleteModal';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 
@@ -12,11 +12,13 @@ const PurchasesPage = () => {
   const [vendors, setVendors] = useState([]); // Added vendor state
   const [selectedPurchase, setSelectedPurchase] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // State for detail modal
 
   // Form state variables
   const [vendorId, setVendorId] = useState('');
   const [amount, setAmount] = useState('');
   const [price, setPrice] = useState('');
+  const [totalPrice, setTotalPrice] = useState('');
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
@@ -85,32 +87,59 @@ const PurchasesPage = () => {
     setIsEditModalOpen(true);
   };
 
+  const handleDetailClick = (purchase) => {
+    setSelectedPurchase(purchase);
+    setIsDetailModalOpen(true);
+  };
+
   const handleEdit = async () => {
     setLoading(true);
     try {
+      // Calculate total price before sending the request
+      const calculatedTotalPrice = amount * price;
+  
       const updatedPurchase = {
         vendorId,
         amount,
         price,
+        totalPrice: calculatedTotalPrice, // Update this field
         description,
         date,
         expirationDate,
         itemId,
-        ItemCategoryId: itemCategoryId // Added ItemCategoryId in the payload
+        ItemCategoryId: itemCategoryId
       };
-
+  
       const response = await axios.put(
         `${process.env.REACT_APP_BASE_URL}purchases/${selectedPurchase.id}`,
         updatedPurchase
       );
-
+  
+      // Ensure that the Vendor and Item are included in the response
+      const updatedPurchaseData = response.data;
+  
+      // Fetch the Vendor and Item from their respective lists to update them immediately
+      const vendor = vendors.find(vendor => vendor.id === updatedPurchaseData.vendorId);
+      const item = items.find(item => item.id === updatedPurchaseData.itemId);
+  
+      // Update the response with the found Vendor and Item
+      updatedPurchaseData.Vendor = vendor || {};
+      updatedPurchaseData.Item = item || {};
+  
+      // Check if the Item is correctly found
+      if (!updatedPurchaseData.Item) {
+        console.error("Item not found for itemId:", updatedPurchaseData.itemId);
+      }
+  
+      // Update the purchase list with the updated data
       const updatedData = data.map((purchase) =>
-        purchase.id === selectedPurchase.id ? response.data : purchase
+        purchase.id === selectedPurchase.id ? updatedPurchaseData : purchase
       );
+  
       setData(updatedData);
       setIsEditModalOpen(false);
       setSelectedPurchase(null);
-
+  
       setModalOpen(true);
       setMessageType('success');
       setModalMessage('Purchase updated successfully');
@@ -122,7 +151,8 @@ const PurchasesPage = () => {
       setLoading(false);
     }
   };
-
+  
+  
   const handleDeleteClick = (purchase) => {
     setSelectedPurchase(purchase);
     setIsDeleteModalOpen(true);
@@ -154,11 +184,6 @@ const PurchasesPage = () => {
       key: 'vendorPhone',
       render: (row) => row.Vendor ? row.Vendor.phone : 'N/A'
     },
-    // {
-    //   label: 'Item Type',
-    //   key: 'ItemType.typeName',
-    //   render: (row) => row.ItemType ? row.ItemType.typeName : 'N/A',
-    // },
     {
       label: 'Item Name',
       key: 'Item.itemName',
@@ -166,13 +191,13 @@ const PurchasesPage = () => {
     },
     { label: 'Description', key: 'description' },
     { label: 'Total Price', key: 'totalPrice' },
-    { 
-      label: 'Expiration Date', 
-      key: 'expirationDate', 
+    {
+      label: 'Expiration Date',
+      key: 'expirationDate',
       render: (row) => {
         if (row.expirationDate) {
           const date = new Date(row.expirationDate);
-          return date.toLocaleDateString('en-US'); 
+          return date.toLocaleDateString('en-US');
         }
         return 'N/A';
       }
@@ -183,13 +208,19 @@ const PurchasesPage = () => {
       render: (row) => (
         <div className="flex space-x-1">
           <button
-            onClick={() => handleEditClick(row)} 
+            onClick={() => handleEditClick(row)}
             className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
           >
             Edit
           </button>
           <button
-            onClick={() => handleDeleteClick(row)} 
+            onClick={() => handleDetailClick(row)}
+            className="bg-green-500 text-white px-4 py-2 rounded-md mr-2"
+          >
+            Details
+          </button>
+          <button
+            onClick={() => handleDeleteClick(row)}
             className="bg-red-500 text-white px-4 py-2 rounded-md"
           >
             Delete
@@ -198,12 +229,16 @@ const PurchasesPage = () => {
       ),
     },
   ];
+
   const handleAddClick = () => {
     window.location.href = '/app/add-purchase';
-   };
+  };
+
   return (
     <div>
-      {pageLoading ? (<LoadingComponent />) : (
+      {pageLoading ? (
+        <LoadingComponent />
+      ) : (
         <TableComponent
           title="Purchases List"
           data={data}
@@ -213,11 +248,11 @@ const PurchasesPage = () => {
           onAdd={handleAddClick}
         />
       )}
-      
+
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
-          <div className="bg-base-100 p-6 rounded-md w-1/3 max-h-[80vh] overflow-y-auto">
+          <div className="bg-base-100 p-6 rounded-md w-11/12 sm:w-1/3 max-h-[80vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">Edit Purchase</h2>
             <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
               <div className="mb-4">
@@ -263,6 +298,18 @@ const PurchasesPage = () => {
                 />
               </div>
               <div className="mb-4">
+                <label htmlFor="price" className="block text-sm font-medium text-white-700">
+                 Total Price
+                </label>
+                <input
+                  type="number"
+                  id="totalPrice"
+                  value={totalPrice}
+                  onChange={(e) => setTotalPrice(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="mb-4">
                 <label htmlFor="description" className="block text-sm font-medium text-white-700">
                   Description
                 </label>
@@ -276,7 +323,7 @@ const PurchasesPage = () => {
               </div>
               <div className="mb-4">
                 <label htmlFor="date" className="block text-sm font-medium text-white-700">
-                  Date
+                 Purchase Date
                 </label>
                 <input
                   type="date"
@@ -329,7 +376,7 @@ const PurchasesPage = () => {
                   <option value="">Select Category</option>
                   {itemCategories.map((category) => (
                     <option key={category.id} value={category.id}>
-                      {category.typeName}
+                      {category.categoryName}
                     </option>
                   ))}
                 </select>
@@ -351,6 +398,32 @@ const PurchasesPage = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Detail Modal */}
+      {isDetailModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
+          <div className="bg-base-100 p-6 rounded-md w-11/12 sm:w-1/3 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">Purchase Details</h2>
+            {/* Display the details of the selected purchase */}
+            <p><strong>Vendor Name:</strong> {selectedPurchase?.Vendor?.fname} {selectedPurchase?.Vendor?.lname}</p>
+            <p><strong>Amount:</strong> {selectedPurchase?.amount}</p>
+            <p><strong>Price:</strong> {selectedPurchase?.price}</p>
+            <p><strong>Total Price:</strong> {selectedPurchase?.totalPrice}</p>
+            <p><strong>Description:</strong> {selectedPurchase?.description}</p>
+            <p><strong>Expiration Date:</strong> {new Date(selectedPurchase?.expirationDate).toLocaleDateString()}</p>
+            <p><strong>Purchase Date:</strong> {new Date(selectedPurchase?.date).toLocaleDateString()}</p>
+            {/* Add any other details you wish to show */}
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setIsDetailModalOpen(false)}
+                className="bg-gray-400 text-white px-4 py-2 rounded-md"
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}

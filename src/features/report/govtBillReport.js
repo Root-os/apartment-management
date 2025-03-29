@@ -27,11 +27,23 @@ const GovtBillReport = () => {
         setBillTypes(response.data);
       } catch (error) {
         console.error('Error fetching bill types:', error);
-      }finally {setLoading(false);}
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchBillTypes();
   }, []);
+
+  // Reset filter fields to initial state
+  const resetFilterFields = () => {
+    setFilterParams({
+      startDate: '',
+      endDate: '',
+      billTypeId: '',
+      createdAt: ''
+    });
+  };
 
   const handleFilterSubmit = async (e) => {
     e.preventDefault();
@@ -40,6 +52,7 @@ const GovtBillReport = () => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}bill-payments/bill-report`, filterParams);
       setFilteredData(response.data);
+      resetFilterFields(); // Reset fields after successful filter
     } catch (error) {
       const message = error.response?.status === 404
         ? 'No bill payments found with the given filters'
@@ -53,7 +66,7 @@ const GovtBillReport = () => {
   };
 
   const columns = [
-    { key: 'billType', label: 'Bill Type', render: (data) => data.BillPaymentType?.typeName },
+    { key: 'billType', label: 'Bill Type', render: (data) => data.BillType?.typeName || 'N/A' },
     { key: 'amount', label: 'Amount' },
     { key: 'startDate', label: 'Start Date', render: (data) => new Date(data.startDate).toLocaleDateString() },
     { key: 'endDate', label: 'End Date', render: (data) => new Date(data.endDate).toLocaleDateString() },
@@ -65,7 +78,6 @@ const GovtBillReport = () => {
   return (
     <div className="p-8">
       <div className="container mx-auto p-4">
-        <h2 className="text-2xl font-bold mb-6">Government Bill Report</h2>
 
         <form onSubmit={handleFilterSubmit} className="grid grid-cols-4 gap-4">
           {/* Start Date */}
@@ -131,16 +143,26 @@ const GovtBillReport = () => {
           </div>
         </form>
       </div>
-      {loading ? (<LoadingComponent/>):(
-      <TableComponent
-        title="Filtered Bill Report"
-        data={filteredData}
-        columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
-        showSearch={true}
-        exportable={true}
-      />
-      )}
+
+      {loading ? (
+       <LoadingComponent />
+        ) : (
+          <div>
+            <TableComponent
+              title="Bill Report"
+              data={filteredData}
+              columns={columns}
+              rowsPerPageOptions={[5, 10, 15]}
+              showSearch={true}
+              exportable={true}
+            />
+            {filteredData.length === 0 && (
+              <p className="text-center text-gray-500 mt-4">No data available for the selected filters.</p>
+            )}
+          </div>
+        )}
+
+
       {/* Modal for displaying error message */}
       {isModalOpen && (
         <Modal

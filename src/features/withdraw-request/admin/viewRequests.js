@@ -149,7 +149,7 @@ const WithdrawalRequests = () => {
   };
 
   const handleAssign = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       const response = await axios.put(`${process.env.REACT_APP_BASE_URL}withdrawal-request/assign-employee`, {
         requestId: requestToAssign.id,
@@ -159,21 +159,30 @@ const WithdrawalRequests = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+  
+      // Update the specific request in the data array with the new assigned employee
       setData((prevData) => prevData.map((request) =>
-        request.id === requestToAssign.id ? response.data.request : request
+        request.id === requestToAssign.id 
+          ? {
+              ...request,
+              assignedEmployeeId: employeeId,
+              assignedEmployee: users.find(user => user.id === parseInt(employeeId)) // Get employee details from users array
+            } 
+          : request
       ));
+  
       setIsAssignModalOpen(false);
       setRequestToAssign(null);
       setEmployeeId('');
-
+  
       setModalOpen(true);
       setMessageType('success');
-      setMessage('Assigned Successfully!')
+      setMessage('Assigned Successfully!');
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Unable to Assign')
-    }finally{
+      setMessage('Unable to Assign');
+    } finally {
       setIsLoading(false);
     }
   };
@@ -283,8 +292,8 @@ useEffect(() => {
       key: 'employeeId',
       label: 'Employee Name',
       render: (row) => {
-        const employee = users.find((emp) => emp.id === row.employeeId);
-        return employee ? employee.fname : 'Not Assigned';
+        const assignedEmployee = row.assignedEmployee; // Assuming you get the assignedEmployee directly from the API
+        return assignedEmployee ? `${assignedEmployee.fname} ${assignedEmployee.lname}` : 'Not Assigned';
       },
     },
     { key: 'reason', label: 'Reason' },
@@ -367,7 +376,6 @@ useEffect(() => {
           columns={columns}
           showSearch={true}
           exportable={true}
-          onAdd={() => console.log('Add new request')}
         />
       )}
 

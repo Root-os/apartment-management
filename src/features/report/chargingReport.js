@@ -83,9 +83,6 @@ const ChargingReport = () => {
   return (
     <div>
       <div className="container mx-auto p-4">
-        
-        <h2 className="text-2xl font-bold mb-6">Charging Report</h2>
-
         {/* Filter form */}
         <form onSubmit={handleFilterSubmit} className="grid grid-cols-4 gap-4">
           
@@ -176,7 +173,7 @@ const ChargingReport = () => {
       {/* Table for displaying charging report */}
       {loading ? (<LoadingComponent/>):(
       <TableComponent
-        title="Filtered Charging Report"
+        title="Charging Report"
         data={chargingData || []}  // Ensure the data is always an array
         columns={columns}
         rowsPerPageOptions={[5, 10, 15]}

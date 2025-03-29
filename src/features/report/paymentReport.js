@@ -14,14 +14,14 @@ const PaymentReport = () => {
     endDate: "",
   });
   const [selectedPayment, setSelectedPayment] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // For button loading
   const [message, setMessage] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("error"); 
-  const [loading, setLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(true); // For page loading indicator
 
   useEffect(() => {
-    // Fetch vendors
+    // Fetch vendors initially
     axios
       .get(`${process.env.REACT_APP_BASE_URL}vendors`)
       .then((response) => {
@@ -30,12 +30,15 @@ const PaymentReport = () => {
       .catch((error) => {
         console.error("There was an error fetching the vendors:", error);
       })
+      .finally(() => {
+        setPageLoading(false); // Stop page loading once vendors are fetched
+      });
   }, []);
 
   // Handle filter submit
   const handleFilterSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true); // Start loading
+    setIsLoading(true); // Start button loading
 
     try {
       const response = await axios.post(
@@ -63,7 +66,7 @@ const PaymentReport = () => {
       setIsModalOpen(true);
       console.error("Error filtering data:", error);
     } finally {
-      setIsLoading(false); // Stop loading
+      setIsLoading(false); // Stop button loading after filter process
     }
   };
 
@@ -204,17 +207,21 @@ const PaymentReport = () => {
           </div>
         </form>
       </div>
-      {/* Table for displaying payment report */}
-      {loading ? (<LoadingComponent/>):(
-      <TableComponent
-        title="Filtered Payment Report"
-        data={paymentData || []} // Ensure the data is always an array
-        columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
-        showSearch={true}
-        exportable={true}
-      />
-    )}
+
+      {/* Display the table or loading indicator based on the page loading state */}
+      {pageLoading ? (
+        <LoadingComponent />
+      ) : (
+        <TableComponent
+          title="Filtered Payment Report"
+          data={paymentData || []} // Ensure the data is always an array
+          columns={columns}
+          rowsPerPageOptions={[5, 10, 15]}
+          showSearch={true}
+          exportable={true}
+        />
+      )}
+
       {/* Modal for displaying success or error message */}
       {isModalOpen && (
         <Modal

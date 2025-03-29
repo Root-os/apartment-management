@@ -356,13 +356,17 @@ const handleAddClick = () => {  window.location.href = '/app/unit-add';};
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Status</label>
-              <input
-                type="text"
+              <select
                 value={newUnitData.status}
                 onChange={(e) => setNewUnitData({ ...newUnitData, status: e.target.value })}
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              />
+              >
+                <option value="" disabled>Select Status</option>
+                <option value="occupied">Occupied</option>
+                <option value="available">Free</option>
+              </select>
             </div>
+
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Available Equipments</label>
               {newUnitData.availableEquipments.map((equipment, index) => (

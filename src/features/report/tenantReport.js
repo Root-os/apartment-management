@@ -34,7 +34,9 @@ const TenantReport = () => {
         setUnits(response.data);
       } catch (error) {
         console.error("Error fetching units:", error);
-      }finally {setLoading(false);}
+      } finally {
+        setLoading(false);
+      }
     };
 
     const fetchFloors = async () => {
@@ -53,7 +55,6 @@ const TenantReport = () => {
   const handleFilterSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true); // Start loading
-
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}tenant/filter`, filterParams);
       setFilteredData(response.data);
@@ -64,6 +65,7 @@ const TenantReport = () => {
       setModalMessage(message);
       setIsModalOpen(true);
       console.error("Error filtering data:", error);
+      setFilteredData([]); // Reset filteredData to empty array on error
     } finally {
       setIsLoading(false); // Stop loading
     }
@@ -99,8 +101,6 @@ const TenantReport = () => {
   return (
     <div className="p-8">
       <div className="container mx-auto p-4">
-        <h2 className="text-2xl font-bold mb-6">Tenant Report</h2>
-
         <form onSubmit={handleFilterSubmit} className="grid grid-cols-4 gap-4">
           {/* Payment Status */}
           <div>
@@ -223,16 +223,34 @@ const TenantReport = () => {
           </div>
         </form>
       </div>
-      {loading ? (<LoadingComponent/>):(
-      <TableComponent
-        title="Filtered Tenant Report"
-        data={filteredData}
-        columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
-        showSearch={true}
-        exportable={true}
-      />
-    )}
+
+      {loading ? (
+        <LoadingComponent />
+      ) : isLoading ? (
+        <LoadingComponent />
+      ) : filteredData.length > 0 ? (
+        <TableComponent
+          title="Tenant Report"
+          data={filteredData}
+          columns={columns}
+          rowsPerPageOptions={[5, 10, 15]}
+          showSearch={true}
+          exportable={true}
+        />
+      ) : (
+        <div className="mt-4 text-center text-gray-500 dark:text-gray-400">
+          <TableComponent
+            title="Tenant Report"
+            data={[]}
+            columns={columns}
+            rowsPerPageOptions={[5, 10, 15]}
+            showSearch={false}
+            exportable={false}
+          />
+          <p>No data available for the selected filters.</p>
+        </div>
+      )}
+
       {/* Details Modal */}
       {detailsModalOpen && currentTenant && (
         <div
@@ -241,7 +259,7 @@ const TenantReport = () => {
           contentLabel="Tenant Details"
           className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
         >
-          <div className="bg-white dark:bg-gray-700 dark:text-gray-300 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
+          <div className="bg-white dark:bg-gray-700 dark:text-gray-300 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto mt-12">
             <h2 className="text-xl mb-4">Details for {currentTenant.fullName}</h2>
             <div className="space-y-2">
               <p><strong>Phone Number:</strong> {currentTenant.phoneNumber}</p>

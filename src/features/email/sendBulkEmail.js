@@ -33,7 +33,7 @@ const SendBulkEmail = () => {
     };
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}email/send-bulk`, payload, {
+       await axios.post(`${process.env.REACT_APP_BASE_URL}email/send-bulk`, payload, {
         headers: {
           Authorization: `Bearer ${token}`
         }

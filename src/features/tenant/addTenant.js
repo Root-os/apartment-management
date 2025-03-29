@@ -9,6 +9,7 @@ const AddTenant = () => {
   const [email, setEmail] = useState('');
   const [document, setDocument] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [hasCar, setHasCar] = useState(false); // New state for checkbox
   const [carName, setCarName] = useState('');
   const [carPlate, setCarPlate] = useState('');
   const [nationalId, setNationalId] = useState('');
@@ -17,7 +18,7 @@ const AddTenant = () => {
   const [unitId, setUnitId] = useState('');
   const [leaseStartDate, setLeaseStartDate] = useState('');
   const [leaseEndDate, setLeaseEndDate] = useState('');
-  const [paymentStatus, setPaymentStatus] = useState('paid'); // Default value set to 'paid'
+  const [paymentStatus, setPaymentStatus] = useState('paid');
   const [additionalNotes, setAdditionalNotes] = useState('');
   const [validationError, setValidationError] = useState('');
   const [advance, setAdvance] = useState('');
@@ -26,7 +27,6 @@ const AddTenant = () => {
   const [freeUnits, setfreeUnits] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
@@ -41,7 +41,6 @@ const AddTenant = () => {
         setError('Failed to fetch floor data.');
       }
     };
-
     fetchFloors();
   }, []);
 
@@ -49,7 +48,6 @@ const AddTenant = () => {
   const fetchfreeUnits = async (id) => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_BASE_URL}floor/${id}`);
-      console.log('Fetched freeUnits:', response.data); 
       setfreeUnits(Array.isArray(response.data.freeUnits) ? response.data.freeUnits : []);
     } catch (err) {
       setError('Failed to fetch freeUnits.');
@@ -59,86 +57,101 @@ const AddTenant = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); 
-
+    setLoading(true);
+  
     if (additionalNotes.length < 10) {
       setError('Additional notes must be at least 10 characters.');
       setLoading(false);
-      return; 
+      return;
     }
   
+    if (hasCar) {
+      if (!carName || !carPlate || !color) {
+        setError('Car Name, Car Plate, and Color are required when tenant has a car.');
+        setLoading(false);
+        return;
+      }
+    }
+
     const formData = new FormData();
     formData.append('fullName', fullName);
     formData.append('email', email);
-    formData.append('document', document);
     formData.append('phoneNumber', phoneNumber);
-    formData.append('carName', carName);
-    formData.append('carPlate', carPlate);
     formData.append('nationalId', nationalId);
     formData.append('tin', tin);
     formData.append('floorId', floorId);
     formData.append('unitId', unitId);
     formData.append('leaseStartDate', leaseStartDate);
     formData.append('leaseEndDate', leaseEndDate);
-    formData.append('paymentStatus', paymentStatus); // Ensure paymentStatus is not empty
+    formData.append('paymentStatus', paymentStatus);
     formData.append('additionalNotes', additionalNotes);
     formData.append('advance', advance);
-    formData.append('color', color);
-  
-    setError(''); // Reset previous errors
-  
-    try {
-      console.log('Form Data:', [...formData.entries()]); // Log form data
 
+    // Only append car-related details if hasCar is true
+    if (hasCar) {
+      formData.append('carName', carName);
+      formData.append('carPlate', carPlate);
+      formData.append('color', color);
+    }
+
+    // Append the document if available
+    if (document) {
+      formData.append('document', document);
+    }
+
+    // Log FormData to debug
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+
+    setError('');
+
+    try {
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}tenant`,
         formData
       );
-      console.log('Tenant added successfully:', response.data);
+      console.log('API Response:', response.data);
 
-      // Reset form after successful submission
+      // Reset form fields after successful submission
       setFullName('');
       setEmail('');
       setDocument(null);
       setPhoneNumber('');
+      setHasCar(false); // Reset the checkbox as well
       setCarName('');
       setCarPlate('');
+      setColor('');
       setNationalId('');
       setTin('');
       setFloorId('');
       setUnitId('');
       setLeaseStartDate('');
       setLeaseEndDate('');
-      setPaymentStatus('paid'); // Reset to default value
+      setPaymentStatus('paid');
       setAdditionalNotes('');
       setAdvance('');
-      setColor('');
-      setDocument('');
 
       setModalOpen(true);
       setMessageType('success');
       setMessage('Tenant added successfully.');
-      window.location.href='/app/tenant-view';
+      window.location.href = '/app/tenant-view';
     } catch (err) {
-      console.error('Error adding tenant:', err);
-
-      if (err.response) {
-        console.log('Error response data:', err.response.data);
-      }
-
-      setError('Failed to add tenant.');
+      console.error('Error Response:', err.response?.data);
+      setError('Failed to add tenant: ' + (err.response?.data?.message || 'Unknown error'));
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Failed to add tenant.');
+      setMessage('Failed to add tenant: ' + (err.response?.data?.message || 'Unknown error'));
     } finally {
-      setLoading(false); // Always reset the loading state
+      setLoading(false);
     }
-  };
+};
+
+
 
   return (
     <>
       <TitleCard title={'Add Tenant'} topMargin={'mt-2'} >
-
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Full Name */}
           <div>
@@ -176,37 +189,51 @@ const AddTenant = () => {
             />
           </div>
 
-          {/* Car Name */}
-          <div>
-            <label className="block text-sm font-semibold mb-2">Car Name</label>
+          {/* Has Car Checkbox */}
+          <div className="flex items-center">
             <input
-              type="text"
-              value={carName}
-              onChange={(e) => setCarName(e.target.value)}
-              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+              type="checkbox"
+              checked={hasCar}
+              onChange={(e) => setHasCar(e.target.checked)}
+              className="mr-2"
             />
+            <label className="text-sm font-semibold">Tenant has a car</label>
           </div>
 
-          {/* Car Plate */}
-          <div>
-            <label className="block text-sm font-semibold mb-2">Car Plate</label>
-            <input
-              type="text"
-              value={carPlate}
-              onChange={(e) => setCarPlate(e.target.value)}
-              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold mb-2">Car Color</label>
-            <input
-              type="text"
-              value={color}
-              onChange={(e) => setColor(e.target.value)}
-              required
-              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-            />
-          </div>
+          {/* Car-related fields - shown only if hasCar is true */}
+          {hasCar && (
+            <>
+              <div>
+                <label className="block text-sm font-semibold mb-2">Car Name</label>
+                <input
+                  type="text"
+                  value={carName}
+                  onChange={(e) => setCarName(e.target.value)}
+                  className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2">Car Plate</label>
+              <input
+                  type="text"
+                  value={carPlate}
+                  onChange={(e) => setCarPlate(e.target.value)}
+                  className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2">Car Color</label>
+                <input
+                  type="text"
+                  value={color}
+                  onChange={(e) => setColor(e.target.value)}
+                  className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+                />
+              </div>
+            </>
+          )}
 
           {/* National ID */}
           <div>
@@ -239,7 +266,7 @@ const AddTenant = () => {
               onChange={(e) => {
                 const selectedFloorId = e.target.value;
                 setFloorId(selectedFloorId);
-                fetchfreeUnits(selectedFloorId); // Pass the selected floor ID to the function
+                fetchfreeUnits(selectedFloorId);
               }}
               className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
               required
@@ -247,7 +274,7 @@ const AddTenant = () => {
               <option value="">Select a Floor</option>
               {floors.map((floor) => (
                 <option key={floor.id} value={floor.id}>
-                  {floor.name}
+                  {floor.floorNumber}
                 </option>
               ))}
             </select>
@@ -316,21 +343,19 @@ const AddTenant = () => {
               onChange={(e) => {
                 const value = e.target.value;
                 setAdditionalNotes(value);
-
-                // Live validation: check if the length is less than 10
                 if (value.length < 10) {
                   setValidationError('Additional notes must be at least 10 characters.');
                 } else {
-                  setValidationError(''); // Clear the error once it reaches 10 characters
+                  setValidationError('');
                 }
               }}
               className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             />
-            {/* Display validation error if applicable */}
             {validationError && (
               <p className="text-red-500 text-sm mt-2">{validationError}</p>
             )}
           </div>
+
           {/* Advanced */}
           <div>
             <label className="block text-sm font-semibold mb-2">Advanced Payment</label>
@@ -338,9 +363,10 @@ const AddTenant = () => {
               type="number"
               value={advance}
               onChange={(e) => setAdvance(e.target.value)}
-              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+              className="bg-base-100 w-full p-3 border오기 border-gray-300 rounded-md"
             />
           </div>
+
           {/* Document */}
           <div>
             <label className="block text-sm font-semibold mb-2">Document</label>
@@ -365,9 +391,9 @@ const AddTenant = () => {
       </TitleCard>
       <Modal
         isOpen={modalOpen}
-        onClose={()=>setModalOpen(false)}
+        onClose={() => setModalOpen(false)}
         message={message}
-        messageType={messageType}     
+        messageType={messageType}
       />
     </>
   );

@@ -16,7 +16,7 @@ const FloorManagement = () => {
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
   const [newFloorData, setNewFloorData] = useState({
-    name: '',
+    floorNumber: '',
     totalUnits: '',
     rentedUnits: '',
     freeUnits: ''
@@ -44,10 +44,7 @@ const FloorManagement = () => {
   const handleEditClick = (floor) => {
     setSelectedFloor(floor);
     setNewFloorData({
-      name: floor.name,
-      totalUnits: floor.totalUnits,
-      rentedUnits: floor.rentedUnits,
-      freeUnits: floor.freeUnits,
+      floorNumber: floor.floorNumber,
     });
     setIsEditModalOpen(true);
   };
@@ -119,7 +116,7 @@ const FloorManagement = () => {
   };
 
   const columns = [
-    { key: 'name', label: 'Name' },
+    { key: 'floorNumber', label: 'Floor Name' },
     { key: 'totalUnits', label: 'Total Units' },
     { key: 'rentedUnits', label: 'Rented Units' },
     { key: 'freeUnits', label: 'Free Units' },
@@ -178,17 +175,8 @@ const FloorManagement = () => {
               <label className="block text-sm font-medium mb-2">Floor Name</label>
               <input
                 type="text"
-                value={newFloorData.name}
-                onChange={(e) => setNewFloorData({ ...newFloorData, name: e.target.value })}
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Total Units</label>
-              <input
-                type="number"
-                value={newFloorData.totalUnits}
-                onChange={(e) => setNewFloorData({ ...newFloorData, totalUnits: e.target.value })}
+                value={newFloorData.floorNumber}
+                onChange={(e) => setNewFloorData({ ...newFloorData, floorNumber: e.target.value })}
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>

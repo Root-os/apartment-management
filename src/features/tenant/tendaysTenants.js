@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
+import LoadingComponent from '../../components/loading';
 
 const TenDaysTenant = () => {
   const [tenants, setTenants] = useState([]);
@@ -88,10 +89,10 @@ const TenDaysTenant = () => {
 
       {/* Loading state */}
       {loading ? (
-        <div className="text-center p-4">Loading tenants...</div>
+        <div className="text-center p-4"><LoadingComponent/></div>
       ) : (
         <TableComponent
-          title="Tenant List"
+          title=""
           data={tenants}
           columns={columns}
           rowsPerPageOptions={[5, 10, 15]}
@@ -102,7 +103,7 @@ const TenDaysTenant = () => {
 
       {/* Details Modal */}
       {selectedTenant && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center mt-12">
           <div className="bg-white dark:bg-gray-700 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl mb-4">Details for {selectedTenant.fullName}</h2>
             <div className="space-y-2">

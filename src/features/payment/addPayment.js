@@ -49,7 +49,7 @@ const PaymentAdd = () => {
     setError('');
   
     // Check if all fields are filled
-    if (!vendorId || !itemId || !price || !paymentMethod || !status || !paymentDate) {
+    if (!vendorId || !price || !paymentMethod || !status || !paymentDate) {
       setError('All fields are required');
       return;
     }
@@ -60,7 +60,6 @@ const PaymentAdd = () => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}payments`, {
         vendorId,
-        itemId,
         price,
         paymentMethod,
         status,
@@ -77,7 +76,7 @@ const PaymentAdd = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('Payment added successfully.');
-      window.location.href='/app/view-payment';
+      window.location.href='/app/view-payments';
     } catch (error) {
       if (error.response) {
         if (error.response.status === 404) {
@@ -108,7 +107,7 @@ const PaymentAdd = () => {
 
   return (
     <>
-      <TitleCard title="Add Payment">
+      <TitleCard title="Add Payment" topMargin={'mt-1'}>
         {/* Form to input payment data */}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -133,7 +132,7 @@ const PaymentAdd = () => {
             </select>
           </div>
 
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <label htmlFor="itemId" className="block text-sm font-medium text-white-700">
               Item
             </label>
@@ -153,7 +152,7 @@ const PaymentAdd = () => {
                 </option>
               ))}
             </select>
-          </div>
+          </div> */}
 
           <div className="mb-4">
             <label htmlFor="price" className="block text-sm font-medium text-white-700">

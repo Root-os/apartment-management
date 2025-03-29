@@ -5,13 +5,13 @@ import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 
 const ExpenseReport = () => {
-  const [expenseData, setExpenseData] = useState([]);
+  const [expenseData, setExpenseData] = useState([]); // Unused here, but kept for consistency
   const [expenseTypes, setExpenseTypes] = useState([]);
-  const [filteredData, setFilteredData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]); // Initially empty
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // For initial fetch of expense types
 
   const [filterParams, setFilterParams] = useState({
     expenseTypeId: "",
@@ -19,7 +19,7 @@ const ExpenseReport = () => {
     endDate: ""
   });
 
-  // Fetch Expense Types and Initial Expense Data
+  // Fetch Expense Types only
   useEffect(() => {
     const fetchExpenseTypes = async () => {
       try {
@@ -27,22 +27,12 @@ const ExpenseReport = () => {
         setExpenseTypes(response.data);
       } catch (error) {
         console.error("Error fetching expense types:", error);
-      }finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchInitialExpenses = async () => {
-      try {
-        const response = await axios.post(`${process.env.REACT_APP_BASE_URL}expense/filter`, {});
-        setFilteredData(response.data);
-      } catch (error) {
-        console.error("Error fetching initial expenses:", error);
+      } finally {
+        setLoading(false); // Stop loading after expense types are fetched
       }
     };
 
     fetchExpenseTypes();
-    fetchInitialExpenses();
   }, []);
 
   const handleFilterSubmit = async (e) => {
@@ -51,7 +41,7 @@ const ExpenseReport = () => {
 
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}expense/filter`, filterParams);
-      setFilteredData(response.data);
+      setFilteredData(response.data); // Update table data with filtered results
     } catch (error) {
       const message = error.response?.status === 404
         ? "No expenses found with the given filters"
@@ -59,22 +49,22 @@ const ExpenseReport = () => {
       setModalMessage(message);
       setIsModalOpen(true);
       console.error("Error filtering data:", error);
+      setFilteredData([]); // Reset to empty on error
     } finally {
       setIsLoading(false); // Stop loading
     }
   };
 
   const columns = [
+    { key: 'expenseType.name', label: 'Expense Type', render: (expense) => expense.expenseType.name },
     { key: 'amount', label: 'Amount' },
     { key: 'date', label: 'Date', render: (expense) => new Date(expense.date).toLocaleDateString() },
     { key: 'description', label: 'Description' },
-    
   ];
 
   return (
     <div className="p-8">
       <div className="container mx-auto p-4">
-        <h2 className="text-2xl font-bold mb-6">Expense Report</h2>
 
         <form onSubmit={handleFilterSubmit} className="grid grid-cols-4 gap-4">
           {/* Start Date */}
@@ -122,22 +112,28 @@ const ExpenseReport = () => {
             <button
               type="submit"
               className="w-40 bg-blue-500 text-white p-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:text-gray-300"
+              disabled={isLoading}
             >
               {isLoading ? "Processing..." : "Filter Data"}
             </button>
           </div>
         </form>
       </div>
-      {loading ? (<LoadingComponent/>):(
-      <TableComponent
-        title="Filtered Expense Report"
-        data={filteredData}
-        columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
-        showSearch={true}
-        exportable={true}
-      />
-     )}
+
+      {/* Show loading component while fetching expense types */}
+      {loading ? (
+        <LoadingComponent />
+      ) : (
+        <TableComponent
+          title="Expense Report"
+          data={filteredData} 
+          columns={columns}
+          rowsPerPageOptions={[5, 10, 15]}
+          showSearch={true}
+          exportable={true}
+        />
+      )}
+
       {/* Modal for displaying error message */}
       {isModalOpen && (
         <Modal
