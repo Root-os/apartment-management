@@ -72,7 +72,7 @@ const AddEmail = () => {
   };
 
   return (
-    <><TitleCard title={'Send Email'}>
+    <><TitleCard title={'Send Email'} topMargin={'mt-1'}>
 
       {/* Email Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

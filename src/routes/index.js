@@ -152,6 +152,7 @@ const PaymentTypeAdd = lazy(() => import('../pages/protected/PaymentType/Payment
 const PaymentTypeView = lazy(() => import('../pages/protected/PaymentType/PaymentTypeView'))
 const PaymentAdd = lazy(() => import('../pages/protected/payment/addPayment'))
 const PaymentView = lazy(() => import('../pages/protected/payment/allPayment'))
+const PaymentReciept = lazy(() => import('../pages/protected/PaymentReciept'))
 
 //letter
 const LetterTypeAdd = lazy(() => import('../pages/protected/letter/addLetterType'))
@@ -260,35 +261,35 @@ const adminRoutes = [
     component: Blank,
   },
   {
-    path: '/floor-add',
+    path: '/add-floor',
     component: FloorAdd,
   },
   {
-    path: '/floor-view',
+    path: '/view-floor',
     component: FloorView,
   },
   {
-    path: '/unit-add',
+    path: '/add-unit',
     component: UnitAdd,
   },
   {
-    path: '/unit-view',
+    path: '/view-unit',
     component: UnitView,
   },
   {
-    path: '/bill-type-add',
+    path: '/add-bill-type',
     component: BillPaymentAdd,
   },
   {
-    path: '/bill-type-view',
+    path: '/view-bill-type',
     component: BillPaymentView,
   },
   {
-    path: '/payment-goverment-view',
+    path: '/view-payment-for-goverment',
     component: GovBillPaymentPage,
   },
   {
-    path: '/payment-goverment-add',
+    path: '/add-payment-for-goverment',
     component: GovBillPaymentAdd,
   },
   {
@@ -362,6 +363,10 @@ const adminRoutes = [
   {
     path: '/item-view',
     component: ItemView,
+  },
+  {
+    path: '/payment-reciept',
+    component: PaymentReciept,
   },
   {
     path: '/payment-request-add',

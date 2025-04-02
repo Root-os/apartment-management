@@ -7,7 +7,7 @@ function AddVendors(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Add Vendor Details "}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

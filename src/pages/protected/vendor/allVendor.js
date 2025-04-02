@@ -7,7 +7,7 @@ function AllVendors(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "All Vendor List "}))
+        dispatch(setPageTitle({ title : " "}))
       }, [])
 
 

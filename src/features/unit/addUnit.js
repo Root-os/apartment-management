@@ -239,7 +239,7 @@ const AddFloorUnit = () => {
             <option value="">Select a Floor</option>
             {floors.map((floor) => (
               <option key={floor.id} value={floor.id}>
-                {floor.name}
+                {floor.floorNumber}
               </option>
             ))}
           </select>

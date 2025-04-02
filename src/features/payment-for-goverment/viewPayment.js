@@ -26,6 +26,8 @@ const GovBillPaymentPage = () => {
     description: '',
   });
   const [filterStatus, setFilterStatus] = useState('');
+  const [selectedDetail, setSelectedDetail] = useState(null); 
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchBillPayments = async () => {
@@ -144,15 +146,27 @@ const GovBillPaymentPage = () => {
   }
 };
 
+const handleDetailClick = (payment) => {
+  setSelectedDetail(payment); // Set the selected payment's details
+  setIsDetailModalOpen(true); // Open the modal
+};
 
   const columns = [
     { key: 'billType', label: 'Bill Type', render: (payment) => payment.BillType?.typeName },
     { key: 'amount', label: 'Amount' },
-    { key: 'startDate', label: 'Start Date', render: (payment) => new Date(payment.startDate).toLocaleDateString() },
-    { key: 'endDate', label: 'End Date', render: (payment) => new Date(payment.endDate).toLocaleDateString() },
+    // { key: 'startDate', label: 'Start Date', render: (payment) => new Date(payment.startDate).toLocaleDateString() },
+    // { key: 'endDate', label: 'End Date', render: (payment) => new Date(payment.endDate).toLocaleDateString() },
     { key: 'status', label: 'Status' },
     { key: 'paymentMethod', label: 'Payment Method' },
-    { key: 'description', label: 'Description' },
+    // { 
+    //   key: 'description', 
+    //   label: 'Description', 
+    //   render: (payment) => (
+    //     <div className="description-cell">
+    //       {payment.description}
+    //     </div>
+    //   ) 
+    // },
     {
       key: 'actions',
       label: 'Actions',
@@ -170,6 +184,12 @@ const GovBillPaymentPage = () => {
           >
             Delete
           </button>
+          <button
+          onClick={() => handleDetailClick(payment)}
+          className="bg-gray-400 text-white py-1 px-2 rounded"
+        >
+          Detail
+        </button>
         </div>
       )
     }
@@ -262,6 +282,18 @@ const GovBillPaymentPage = () => {
                 />
               </div>
               <div className="mb-4">
+                <label className="block text-white-700 font-medium mb-2"></label>
+                <select 
+                  type="text"
+                  value={editData.paymentMethod}
+                  onChange={(e)=>setEditData({...editData, paymentMethod: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded bg-base-100">
+                    <option value="bankTransfer">Bank</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Mobile">Mobile</option>
+                  </select>
+              </div>
+              <div className="mb-4">
                 <label className="block text-white-700 font-medium mb-2">Description</label>
                 <textarea
                   value={editData.description}
@@ -323,6 +355,32 @@ const GovBillPaymentPage = () => {
           </div>
         </div>
       )}
+
+        {isDetailModalOpen && selectedDetail && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+            <div className="bg-base-100 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
+              <h2 className="text-xl mb-4">Bill Payment Details</h2>
+              <div>
+                <p><strong>Bill Type:</strong> {selectedDetail.BillType?.typeName}</p>
+                <p><strong>Amount:</strong> {selectedDetail.amount}</p>
+                <p><strong>Start Date:</strong> {new Date(selectedDetail.startDate).toLocaleDateString()}</p>
+                <p><strong>End Date:</strong> {new Date(selectedDetail.endDate).toLocaleDateString()}</p>
+                <p><strong>Status:</strong> {selectedDetail.status}</p>
+                <p><strong>Payment Method:</strong> {selectedDetail.paymentMethod}</p>
+                <p><strong>Description:</strong> {selectedDetail.description}</p>
+              </div>
+              <div className="flex justify-end space-x-2">
+                <button
+                  onClick={() => setIsDetailModalOpen(false)} // Close the modal
+                  className="bg-gray-400 text-white px-4 py-2 rounded"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
          <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

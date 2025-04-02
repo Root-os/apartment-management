@@ -161,6 +161,8 @@ const PaymentAdd = () => {
             <input
               type="number"
               id="price"
+              min="1"
+              step="1"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"

@@ -61,6 +61,14 @@ const AddGovBillPayment = () => {
       setMessage('Bill payment added successfully!');
       setMessageType('success');
       setIsModalOpen(true);
+
+      setBillTypeId(''); 
+      setAmount(''); 
+      setStartDate(''); 
+      setEndDate('');
+      setStatus(''); 
+      setPaymentMethod(''); 
+      setDescription('');
     } catch (err) {
       setLoading(false);
       setError('The end date must be beyond.');

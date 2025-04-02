@@ -108,11 +108,11 @@ const PurchasesRequestPage = () => {
     setEditFormData({
       itemId: request.itemId,
       requestedBy: request.requestedBy,
-      status: request.status,
+      // status: request.status,
       amount: request.amount,
       requestDate: request.requestDate.split('T')[0], 
       reason: request.reason,
-      approvedBy: request.approvedBy,
+      // approvedBy: request.approvedBy,
       vendorId: request.vendorId || '', // Changed from vendorName to vendorId
       vendorPhone: request.vendorPhone
     });
@@ -123,16 +123,19 @@ const PurchasesRequestPage = () => {
     setIsLoading(true);
   
     // Optimistically update the state before server response
-    setData((prevData) =>
-      prevData.map((request) =>
+    setData((prevData) => {
+      const updatedData = prevData.map((request) =>
         request.id === selectedRequest.id
           ? {
               ...request,
               ...editFormData, // Apply the edit form data to the request
+              item: items.find(item => item.id === editFormData.itemId), // Update item info optimistically
+              requestedby: users.find(user => user.id === editFormData.requestedBy), // Update requestedBy info optimistically
             }
           : request
-      )
-    );
+      );
+      return [...updatedData]; // Ensure a new reference is returned
+    });
   
     try {
       // Send the update to the server
@@ -153,14 +156,13 @@ const PurchasesRequestPage = () => {
       setMessageType('success');
       setMessage('Request updated successfully!');
     } catch (error) {
-      // On error, rollback the optimistic update
+      console.error('Error during request:', error.response?.data || error);
+  
+      // Rollback to the previous state if the request fails
       setData((prevData) =>
         prevData.map((request) =>
           request.id === selectedRequest.id
-            ? {
-                ...request,
-                ...editFormData, // Rollback to previous state
-              }
+            ? { ...request, ...editFormData }
             : request
         )
       );
@@ -172,6 +174,7 @@ const PurchasesRequestPage = () => {
       setIsLoading(false);
     }
   };
+  
 
   const handleDeleteClick = (request) => {
     setSelectedRequest(request); 
@@ -214,6 +217,7 @@ const PurchasesRequestPage = () => {
       key: 'requestedby.fname', 
       render: (row) => row.requestedby ? `${row.requestedby.fname} ${row.requestedby.lname}` : 'N/A' 
     },
+    
     { 
       label: 'Vendor Name', 
       key: 'vendorId', 
@@ -222,12 +226,12 @@ const PurchasesRequestPage = () => {
         return vendor ? vendor.fname : row.vendorName || 'N/A';
       }
     },
-    { label: 'Status', key: 'status' },
-    { 
-      label: 'Approved By', 
-      key: 'approvedby.fname', 
-      render: (row) => row.approvedby ? `${row.approvedby.fname} ${row.approvedby.lname}` : 'N/A' 
-    },
+    // { label: 'Status', key: 'status' },
+    // { 
+    //   label: 'Approved By', 
+    //   key: 'approvedby.fname', 
+    //   render: (row) => row.approvedby ? `${row.approvedby.fname} ${row.approvedby.lname}` : 'N/A' 
+    // },
     { label: 'Reason', key: 'reason' },
     {
       label: 'Actions',
@@ -278,7 +282,7 @@ const PurchasesRequestPage = () => {
       )}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-base-100 p-6 rounded-md w-1/3 max-h-[80vh] overflow-y-auto mt-12">
+          <div className="bg-base-100 p-6 rounded-md w-full sm:w-1/2 md:w-1/3 lg:w-1/4 max-h-[80vh] overflow-y-auto mt-12">
             <h2 className="text-xl font-semibold mb-4">Edit Purchase Request</h2>
             <form
               onSubmit={(e) => {
@@ -324,7 +328,7 @@ const PurchasesRequestPage = () => {
                 </select>
               </div>
 
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label className="block text-sm font-medium">Status</label>
                 <select
                   value={editFormData.status}
@@ -334,7 +338,7 @@ const PurchasesRequestPage = () => {
                   <option value="approved">Approved</option>
                   <option value="rejected">Rejected</option>
                 </select>
-              </div>
+              </div> */}
 
               <div className="mb-4">
                 <label className="block text-sm font-medium">Amount</label>
@@ -365,7 +369,7 @@ const PurchasesRequestPage = () => {
                 />
               </div>
 
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label className="block text-sm font-medium">Approved By</label>
                 <select
                   value={editFormData.approvedBy}
@@ -382,7 +386,7 @@ const PurchasesRequestPage = () => {
                     ))
                   )}
                 </select>
-              </div>
+              </div> */}
 
               <div className="mb-4">
                 <label className="block text-sm font-medium">Vendor</label>
@@ -393,11 +397,11 @@ const PurchasesRequestPage = () => {
                 >
                   <option value="">Select Vendor</option>
                   {loadingVendors ? (
-                    <option>Loading.</option>
+                    <option>Loading...</option>
                   ) : (
                     vendors.map((vendor) => (
                       <option key={vendor.id} value={vendor.id}>
-                        {vendor.fname}
+                        {vendor.fname} {/* This is what will be displayed in the dropdown */}
                       </option>
                     ))
                   )}

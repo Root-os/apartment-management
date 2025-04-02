@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TableComponent from "../../components/table";
-import GeneratePdf from "../../components/pdfGenerator";
+import GenerateReceipt from "./pdfGenerator";
+import { useNavigate } from "react-router-dom";
 
 const AllPaymentsPage = () => {
   const [payments, setPayments] = useState([]);
@@ -18,6 +19,9 @@ const AllPaymentsPage = () => {
   const [loading, setLoading] = useState(false);
   const [messageType, setMessageType] = useState("success");
   const [message, setMessage] = useState("");
+  const [selectedVendorPayments, setSelectedVendorPayments] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch payments
@@ -63,6 +67,15 @@ const AllPaymentsPage = () => {
     setIsDetailModalOpen(true);
   };
 
+  const handleGenerateReceipt = (vendorId) => {
+    // Filter payments for the selected vendorId
+    const filteredPayments = payments.filter((payment) => payment.vendorId === vendorId);
+
+    // Navigate to GenerateReceiptPage and pass the filtered payments via state
+    navigate("/app/payment-reciept", { state: { payments: filteredPayments } });
+  };
+
+
   // Handle edit request
   const handleEdit = async () => {
     setLoading(true);
@@ -74,18 +87,34 @@ const AllPaymentsPage = () => {
         status,
         paymentDate,
       };
-
+  
       const response = await axios.put(
         `${process.env.REACT_APP_BASE_URL}payments/${selectedPayment.id}`,
         updatedPayment
       );
+  
+      // Get the updated vendor information
+      const updatedVendor = vendors.find(vendor => vendor.id === vendorId);
+  
+      // Update the payments list in the state
       const updatedData = payments.map((payment) =>
-        payment.id === selectedPayment.id ? response.data : payment
+        payment.id === selectedPayment.id
+          ? {
+              ...payment,
+              price: response.data.price,
+              paymentMethod: response.data.paymentMethod,
+              status: response.data.status,
+              paymentDate: response.data.paymentDate,
+              Vendor: updatedVendor, // Ensure vendor data is updated
+            }
+          : payment
       );
+  
       setPayments(updatedData);
+  
       setIsEditModalOpen(false);
       setSelectedPayment(null);
-
+  
       setMessageType("success");
       setMessage("Payment updated successfully");
     } catch (error) {
@@ -153,15 +182,15 @@ const AllPaymentsPage = () => {
           </button>
           <button
             onClick={() => handleDetailClick(row)}
-            className="bg-green-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
+            className="bg-gray-400 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
           >
             Detail
           </button>
           <button
-            onClick={() => GeneratePdf(payments.filter(payment => payment.vendorId === row.vendorId))}
+            onClick={() => handleGenerateReceipt(row.vendorId)} // Trigger navigation
             className="bg-indigo-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
           >
-             Recipt
+            Receipt
           </button>
         </div>
       ),
@@ -182,10 +211,14 @@ const AllPaymentsPage = () => {
         onAdd={handleAddClick}
       />
 
+   {selectedVendorPayments.length > 0 && (
+        <GenerateReceipt payments={selectedVendorPayments} />
+      )}
+
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-base-100 p-6 rounded-md w-1/3">
+          <div className="bg-base-100 p-6 rounded-md w-1/3 mt-12">
             <h2 className="text-2xl font-bold mb-4">Edit Payment</h2>
             <form
               onSubmit={(e) => {
@@ -225,6 +258,8 @@ const AllPaymentsPage = () => {
                 </label>
                 <input
                   type="number"
+                  min="1"
+                  step="1"
                   id="price"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}

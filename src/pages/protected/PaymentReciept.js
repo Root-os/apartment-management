@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { setPageTitle } from '../../../features/common/headerSlice'
-import AddReturn from '../../../features/return/addReturn'
+import { setPageTitle } from '../../features/common/headerSlice'
+import GenerateReceipt from '../../features/payment/pdfGenerator'
 
-function Addreturns(){
+function InternalPage(){
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -12,8 +12,8 @@ function Addreturns(){
 
 
     return(
-        <AddReturn />
+        <GenerateReceipt />
     )
 }
 
-export default Addreturns
+export default InternalPage

@@ -316,12 +316,14 @@ const TenantList = () => {
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Payment Status</label>
-              <input
-                type="text"
+              <select
                 value={editData.paymentStatus}
                 onChange={(e) => setEditData({ ...editData, paymentStatus: e.target.value })}
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              />
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded">
+                <option value="paid">Paid</option>
+                <option value="due">Due</option>
+                <option value="overDue">Over Due</option>
+              </select>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Additional Notes</label>
@@ -456,85 +458,106 @@ const TenantList = () => {
         </div>
       )}
        {/* Tenant Details Modal */}
-       {isDetailsModalOpen && selectedTenant && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
-      <h2 className="text-xl mb-4">Tenant Details</h2>
-      <div className="mb-4">
-        <p><strong>Full Name:</strong> {selectedTenant.fullName}</p>
-        <p><strong>Phone Number:</strong> {selectedTenant.phoneNumber}</p>
-        <p><strong>Email:</strong> {selectedTenant.email}</p>
-        <p><strong>National ID:</strong> {selectedTenant.nationalId}</p>
-        <p><strong>Lease Start Date:</strong> {new Date(selectedTenant.leaseStartDate).toLocaleDateString()}</p>
-        <p><strong>Lease End Date:</strong> {new Date(selectedTenant.leaseEndDate).toLocaleDateString()}</p>
-        <p><strong>Payment Status:</strong> {selectedTenant.paymentStatus}</p>
-        <p><strong>Unit Number:</strong> {selectedTenant.Unit?.unitNumber || 'N/A'}</p>
-        <p><strong>Floor Number:</strong> {selectedTenant.Floor?.floorNumber || 'N/A'}</p>
-        <p><strong>Status:</strong> {selectedTenant.status}</p>
+      {isDetailsModalOpen && selectedTenant && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-xl mb-4">Tenant Details</h2>
+            <div className="mb-4">
+              <p><strong>Full Name:</strong> {selectedTenant.fullName}</p>
+              <p><strong>Phone Number:</strong> {selectedTenant.phoneNumber}</p>
+              <p><strong>Email:</strong> {selectedTenant.email}</p>
+              <p><strong>National ID:</strong> {selectedTenant.nationalId}</p>
+              <p><strong>Lease Start Date:</strong> {new Date(selectedTenant.leaseStartDate).toLocaleDateString()}</p>
+              <p><strong>Lease End Date:</strong> {new Date(selectedTenant.leaseEndDate).toLocaleDateString()}</p>
+              <p><strong>Payment Status:</strong> {selectedTenant.paymentStatus}</p>
+              <p><strong>Unit Number:</strong> {selectedTenant.Unit?.unitNumber || 'N/A'}</p>
+              <p><strong>Floor Number:</strong> {selectedTenant.Floor?.floorNumber || 'N/A'}</p>
+              <p><strong>Status:</strong> {selectedTenant.status}</p>
 
-        {/* Show document if it exists */}
-        {selectedTenant.document && (
-          <div className="mb-4">
-            <p><strong>Document:</strong></p>
-            {/* Construct the full URL */}
-            {(() => {
-              const baseUrl = 'https://apartment.bruktiethiotour.com';
-              const fullDocumentUrl = `${baseUrl}${selectedTenant.document.startsWith('/') ? '' : '/'}${selectedTenant.document}`;
+              {/* Show document if it exists */}
+              {selectedTenant.document && (
+  <div className="mb-4">
+    <p><strong>Document:</strong></p>
+    {(() => {
+      const baseUrl = 'https://apartment.bruktiethiotour.com';
 
-              // Check file type and render accordingly
-              if (fullDocumentUrl.endsWith('.pdf')) {
-                return (
-                  <a
-                    href={fullDocumentUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline"
-                  >
-                    View PDF Document
-                  </a>
-                );
-              } else if (
-                fullDocumentUrl.endsWith('.jpg') ||
-                fullDocumentUrl.endsWith('.jpeg') ||
-                fullDocumentUrl.endsWith('.png')
-              ) {
-                return (
-                  <div>
-                    <img
-                      src={fullDocumentUrl}
-                      alt="Tenant Document"
-                      className="w-full h-auto max-h-64 object-contain"
-                      onError={(e) => (e.target.src = '/path/to/fallback-image.jpg')} // Optional: Fallback image
-                    />
-                  </div>
-                );
-              } else {
-                return (
-                  <a
-                    href={fullDocumentUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-500 hover:underline"
-                  >
-                    View Document
-                  </a>
-                );
-              }
-            })()}
+      // Case 1: If document is a File object (after upload, before refresh)
+      if (selectedTenant.document instanceof File) {
+        const fileName = selectedTenant.document.name.toLowerCase();
+        if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.png')) {
+          // Temporarily display the File object as an image using URL.createObjectURL
+          return (
+            <div>
+              <img
+                src={URL.createObjectURL(selectedTenant.document)}
+                alt="Tenant Document Preview"
+                className="w-full h-auto max-h-64 object-contain"
+                onError={(e) => (e.target.src = '/path/to/fallback-image.jpg')}
+              />
+              <p className="text-sm text-gray-500">Preview (refresh to view uploaded file)</p>
+            </div>
+          );
+        } else {
+          // For PDF or other files, show the file name with a note
+          return <p>{fileName} (Uploaded, refresh to view)</p>;
+        }
+      }
+
+      // Case 2: If document is a string (URL from server)
+      const fullDocumentUrl = `${baseUrl}${selectedTenant.document.startsWith('/') ? '' : '/'}${selectedTenant.document}`;
+      if (fullDocumentUrl.endsWith('.pdf') || fullDocumentUrl.endsWith('.doc') || fullDocumentUrl.endsWith('.docx')) {
+        return (
+          <a
+            href={fullDocumentUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            View Document
+          </a>
+        );
+      } else if (
+        fullDocumentUrl.endsWith('.jpg') ||
+        fullDocumentUrl.endsWith('.jpeg') ||
+        fullDocumentUrl.endsWith('.png')
+      ) {
+        return (
+          <div>
+            <img
+              src={fullDocumentUrl}
+              alt="Tenant Document"
+              className="w-full h-auto max-h-64 object-contain"
+              onError={(e) => (e.target.src = '/path/to/fallback-image.jpg')}
+            />
           </div>
-        )}
-      </div>
-      <div className="flex justify-end">
-        <button
-          onClick={closeDetailsModal}
-          className="bg-gray-400 text-white px-4 py-2 rounded"
-        >
-          Close
-        </button>
-      </div>
-    </div>
+        );
+      } else {
+        return (
+          <a
+            href={fullDocumentUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            View Document
+          </a>
+        );
+      }
+    })()}
   </div>
 )}
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={closeDetailsModal}
+                className="bg-gray-400 text-white px-4 py-2 rounded"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+     )}
 
 
       {/* Modal for success/error messages */}

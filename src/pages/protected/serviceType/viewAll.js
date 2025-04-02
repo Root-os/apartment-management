@@ -7,7 +7,7 @@ function AllServices(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "All Service Types"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

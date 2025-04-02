@@ -187,7 +187,7 @@ const UnitList = () => {
   };
 
   const floorLookup = floors.reduce((acc, floor) => {
-    acc[floor.id] = floor.name;
+    acc[floor.id] = floor.floorNumber;
     return acc;
   }, {});
   
@@ -261,16 +261,16 @@ const UnitList = () => {
         return <ul>{problems.map((item, index) => <li key={index}>{item}</li>)}</ul>;
       },
     },
-    {
-      Header: "Rented Date",
-      accessor: "rentedDate",
-      Cell: ({ value }) => (value ? new Date(value).toLocaleDateString() : "N/A"),
-    },
-    {
-      Header: "Vacated Date",
-      accessor: "vacatedDate",
-      Cell: ({ value }) => (value ? new Date(value).toLocaleDateString() : "N/A"),
-    },
+    // {
+    //   Header: "Rented Date",
+    //   accessor: "rentedDate",
+    //   Cell: ({ value }) => (value ? new Date(value).toLocaleDateString() : "N/A"),
+    // },
+    // {
+    //   Header: "Vacated Date",
+    //   accessor: "vacatedDate",
+    //   Cell: ({ value }) => (value ? new Date(value).toLocaleDateString() : "N/A"),
+    // },
     {
       Header: "Floor",
       accessor: "floorId",
@@ -465,7 +465,7 @@ const handleAddClick = () => {  window.location.href = '/app/unit-add';};
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               >
                 {floors.map(floor => (
-                  <option key={floor.id} value={floor.id}>{floor.name}</option>
+                  <option key={floor.id} value={floor.id}>{floor.floorNumber}</option>
                 ))}
               </select>
             </div>

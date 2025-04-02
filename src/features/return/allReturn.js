@@ -20,6 +20,9 @@ const ReturnsPage = () => {
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
 
+  const [filterVendorId, setFilterVendorId] = useState('');
+  const [filterItemId, setFilterItemId] = useState('');
+
   useEffect(() => {
     axios
       .get(`${process.env.REACT_APP_BASE_URL}returns`)
@@ -69,7 +72,6 @@ const ReturnsPage = () => {
   // Handle edit request
   const handleEdit = async () => {
     setLoading(true);
-
     try {
       const updatedReturn = {
         vendorId,
@@ -78,15 +80,28 @@ const ReturnsPage = () => {
         reason,
         returnDate,
       };
-
+  
       const response = await axios.put(`${process.env.REACT_APP_BASE_URL}returns/${selectedReturn.id}`, updatedReturn);
+  
+      // Find the updated Vendor and Item objects from state
+      const updatedVendor = vendors.find(v => v.id === parseInt(vendorId));
+      const updatedItem = items.find(i => i.id === parseInt(itemId));
+  
+      // Merge API response with Vendor and Item data
+      const updatedReturnWithRelations = {
+        ...response.data,
+        Vendor: updatedVendor || selectedReturn.Vendor,
+        Item: updatedItem || selectedReturn.Item
+      };
+  
+      // Update the returns state with the complete object
       const updatedData = returns.map((returnItem) =>
-        returnItem.id === selectedReturn.id ? response.data : returnItem
+        returnItem.id === selectedReturn.id ? updatedReturnWithRelations : returnItem
       );
       setReturns(updatedData);
+  
       setIsEditModalOpen(false);
       setSelectedReturn(null);
-
       setModalOpen(true);
       setMessageType('success');
       setMessage('Return updated successfully');
@@ -120,35 +135,25 @@ const ReturnsPage = () => {
     }
   };
 
-  const handleFilterByItemId = async (id) => {
+  const handleFilter = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}returns/item/${id}`);
-      const filteredReturns = response.data.map((data) => ({
-        ...data.item,
-        vendors: data.vendors,
-      }));
-      setReturns(filteredReturns);
+      const payload = {};
+      if (filterVendorId) payload.vendorId = parseInt(filterVendorId);
+      if (filterItemId) payload.itemId = parseInt(filterItemId);
+  
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}returns/report`, payload);
+      setReturns(response.data); // Response already includes Vendor and Item
     } catch (error) {
-      console.error('There was an error fetching the returns by item id:', error);
-    }
-  };
-
-  const handleFilterByVendorId = async (id) => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}returns/vendor/${id}`);
-      const filteredReturns = response.data.map((data) => ({
-        ...data.vendor,
-        items: data.items,
-      }));
-      setReturns(filteredReturns);
-    } catch (error) {
-      console.error('There was an error fetching the returns by vendor id:', error);
+      console.error('There was an error filtering the returns:', error);
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Failed to filter returns');
     }
   };
 
   const columns = [
-    { key: 'Vendor.fname', label: 'Vendor', render: (row) => `${row.Vendor?.fname} ${row.Vendor?.lname}` },
-    { key: 'Item.itemName', label: 'Item', render: (row) => row.Item?.itemName },
+    { key: 'Vendor.fname', label: 'Vendor', render: (row) => `${row.Vendor?.fname || 'N/A'} ${row.Vendor?.lname || ''}` },
+    { key: 'Item.itemName', label: 'Item', render: (row) => row.Item?.itemName || 'N/A' },
     { key: 'quantity', label: 'Quantity' },
     { key: 'reason', label: 'Reason' },
     { key: 'returnDate', label: 'Return Date', render: (row) => new Date(row.returnDate).toLocaleString() },
@@ -160,13 +165,13 @@ const ReturnsPage = () => {
           <div className="flex justify-center space-x-2">
             <button
               onClick={() => handleEditClick(row)}
-              className="bg-blue-500 text-white px-6 py-3 rounded-md w-full sm:w-auto"
+              className="bg-blue-500 text-white px-4 py-2 rounded-md w-full sm:w-auto"
             >
               Edit
             </button>
             <button
               onClick={() => handleDeleteClick(row)}
-              className="bg-red-500 text-white px-6 py-3 rounded-md w-full sm:w-auto"
+              className="bg-red-500 text-white px-4 py-2 rounded-md w-full sm:w-auto"
             >
               Delete
             </button>
@@ -177,28 +182,35 @@ const ReturnsPage = () => {
   ];
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-4">Returns</h1>
-      <div className="flex mb-4">
-        <select
-          className="border p-2 mr-2"
-          onChange={(e) => handleFilterByItemId(e.target.value)}
-        >
-          <option value="">Filter by Item</option>
-          {items.map((item) => (
-            <option key={item.id} value={item.id}>{item.itemName}</option>
-          ))}
-        </select>
-        <select
-          className="border p-2"
-          onChange={(e) => handleFilterByVendorId(e.target.value)}
-        >
-          <option value="">Filter by Vendor</option>
-          {vendors.map((vendor) => (
-            <option key={vendor.id} value={vendor.id}>{vendor.fname} {vendor.lname}</option>
-          ))}
-        </select>
-      </div>
+    <div>
+   <div className="flex mb-4 items-center space-x-2">
+  <select
+    className="border p-2"
+    value={filterItemId}
+    onChange={(e) => setFilterItemId(e.target.value)}
+  >
+    <option value="">Filter by Item</option>
+    {items.map((item) => (
+      <option key={item.id} value={item.id}>{item.itemName}</option>
+    ))}
+  </select>
+  <select
+    className="border p-2"
+    value={filterVendorId}
+    onChange={(e) => setFilterVendorId(e.target.value)}
+  >
+    <option value="">Filter by Vendor</option>
+    {vendors.map((vendor) => (
+      <option key={vendor.id} value={vendor.id}>{vendor.fname} {vendor.lname}</option>
+    ))}
+  </select>
+  <button
+    onClick={handleFilter}
+    className="bg-blue-500 text-white px-4 py-1 rounded-md"
+  >
+    Filter
+  </button>
+</div>
       <TableComponent
         title="Returns List"
         data={returns}
@@ -251,6 +263,8 @@ const ReturnsPage = () => {
                 </label>
                 <input
                   type="number"
+                  min="1"
+                  step="1"
                   id="quantity"
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}

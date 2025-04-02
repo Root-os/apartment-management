@@ -207,7 +207,7 @@ const TenantReport = () => {
             >
               <option value="">Select Floor</option>
               {floors.map((floor) => (
-                <option key={floor.id} value={floor.id}>{floor.name}</option>
+                <option key={floor.id} value={floor.id}>{floor.floorNumber}</option>
               ))}
             </select>
           </div>

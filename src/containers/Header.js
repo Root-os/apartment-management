@@ -125,8 +125,8 @@ function Header() {
             }
           />
         </label>
-        <TotalBookings />
-        <ContactCount />
+        {/* <TotalBookings />
+        <ContactCount /> */}
 
         {/* Profile icon, opening menu on click */}
         <div className="dropdown dropdown-end ml-4">
@@ -136,7 +136,7 @@ function Header() {
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
                 fill="currentColor"
-                className="w-8 h-8 text-gray-600"
+                className="w-8 h-8 text-white-600"
               >
                 <path
                   fillRule="evenodd"

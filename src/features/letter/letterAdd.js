@@ -69,7 +69,7 @@ const handleSubmit = async (e) => {
 
   return (
     <>
-      <TitleCard title="Add Letter Type"  >
+      <TitleCard title="Add Letter Type" topMargin={'mt-1'}  >
       {/* Form to input Letter type data */}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">

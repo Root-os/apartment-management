@@ -7,7 +7,7 @@ function AddService(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "Add Service Type"}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

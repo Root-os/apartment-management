@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import TableComponent from '../../components/table';
+import Card from '../../components/card';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 
@@ -16,6 +16,7 @@ const ServiceTypesPage = () => {
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState(''); // State to store the search query
 
   useEffect(() => {
     axios
@@ -26,7 +27,9 @@ const ServiceTypesPage = () => {
       .catch((error) => {
         console.error('There was an error fetching the service types:', error);
       })
-      .finally (()=>{setIsLoading(false);})
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
 
   // Handle edit button click
@@ -52,7 +55,10 @@ const ServiceTypesPage = () => {
         description,
       };
 
-      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}service-type/${selectedServiceType.id}`, updatedServiceType);
+      const response = await axios.put(
+        `${process.env.REACT_APP_BASE_URL}service-type/${selectedServiceType.id}`,
+        updatedServiceType
+      );
       const updatedData = serviceTypes.map((serviceType) =>
         serviceType.id === selectedServiceType.id ? response.data : serviceType
       );
@@ -76,8 +82,12 @@ const ServiceTypesPage = () => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}service-type/${selectedServiceType.id}`);
-      setServiceTypes(serviceTypes.filter((serviceType) => serviceType.id !== selectedServiceType.id));
+      await axios.delete(
+        `${process.env.REACT_APP_BASE_URL}service-type/${selectedServiceType.id}`
+      );
+      setServiceTypes(
+        serviceTypes.filter((serviceType) => serviceType.id !== selectedServiceType.id)
+      );
       setIsDeleteModalOpen(false);
       setSelectedServiceType(null);
 
@@ -93,42 +103,55 @@ const ServiceTypesPage = () => {
     }
   };
 
-  const columns = [
-    { key: 'name', label: 'Service Name' },
-    { key: 'description', label: 'Description' },
-    {
-      label: 'Actions',
-      key: 'actions',
-      render: (row) => (
-        <>
-          <button
-            onClick={() => handleEditClick(row)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => handleDeleteClick(row)}
-            className="bg-red-500 text-white px-4 py-2 rounded-md"
-          >
-            Delete
-          </button>
-        </>
-      ),
-    },
-  ];
+  // Filter service types based on search query
+  const filteredServiceTypes = serviceTypes.filter((serviceType) =>
+    serviceType.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <div >
-      {loading ? (<LoadingComponent/>):(
-      <TableComponent
-        title="Service Types List"
-        data={serviceTypes}
-        columns={columns}
-        exportable={true}
-        showSearch={true}
-      />
+    <div>
+      <div className="mb-6">
+      <h1 className="text-3xl font-bold">Service Types</h1>
+        {/* Search bar */}
+        <input
+          type="text"
+          placeholder="Search Service Types"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+           className="mt-4 bg-base-100 w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      {loading ? (
+        <LoadingComponent />
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {filteredServiceTypes.length > 0 ? (
+            filteredServiceTypes.map((serviceType) => (
+              <Card
+                key={serviceType.id}
+                title={serviceType.name}
+                content={serviceType.description}
+                actions={[
+                  {
+                    label: 'Edit',
+                    type: 'primary',
+                    onClick: () => handleEditClick(serviceType),
+                  },
+                  {
+                    label: 'Delete',
+                    type: 'secondary',
+                    onClick: () => handleDeleteClick(serviceType),
+                  },
+                ]}
+              />
+            ))
+          ) : (
+            <p className="text-white">No service types found</p>
+          )}
+        </div>
       )}
+
       {/* Edit Modal */}
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
@@ -190,6 +213,7 @@ const ServiceTypesPage = () => {
           </div>
         </div>
       )}
+
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

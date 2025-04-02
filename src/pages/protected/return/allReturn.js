@@ -7,7 +7,7 @@ function Allreturns(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : "All Return List "}))
+        dispatch(setPageTitle({ title : ""}))
       }, [])
 
 

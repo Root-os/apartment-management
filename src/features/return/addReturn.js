@@ -100,7 +100,7 @@ const AddReturn = () => {
 
   return (
     <>
-      <TitleCard title="Add Return">
+      <TitleCard title="Add Return" topMargin={'mt-1'}>
         {/* Form to input return data */}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -154,6 +154,8 @@ const AddReturn = () => {
             <input
               type="number"
               id="quantity"
+              min="0"
+              step="1"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"

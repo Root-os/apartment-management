@@ -18,7 +18,7 @@ const PurchasesPage = () => {
   const [vendorId, setVendorId] = useState('');
   const [amount, setAmount] = useState('');
   const [price, setPrice] = useState('');
-  const [totalPrice, setTotalPrice] = useState('');
+  // const [totalPrice, setTotalPrice] = useState('');
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
@@ -76,14 +76,14 @@ const PurchasesPage = () => {
 
   const handleEditClick = (purchase) => {
     setSelectedPurchase(purchase);
-    setVendorId(purchase.vendorId); // Set vendorId instead of vendorName
-    setAmount(purchase.amount);
-    setPrice(purchase.price);
-    setDate(purchase.date);
-    setDescription(purchase.description);
-    setExpirationDate(purchase.expirationDate.split('T')[0]);
-    setItemId(purchase.itemId);
-    setItemCategoryId(purchase.ItemCategoryId);
+    setVendorId(purchase.vendorId ? purchase.vendorId.toString() : '');
+    setAmount(purchase.amount ? purchase.amount.toString() : '');
+    setPrice(purchase.price ? purchase.price.toString() : '');
+    setDescription(purchase.description || '');
+    setExpirationDate(purchase.expirationDate ? purchase.expirationDate.split('T')[0] : '');
+    setItemId(purchase.itemId ? purchase.itemId.toString() : '');
+    setItemCategoryId(purchase.ItemCategoryId ? purchase.ItemCategoryId.toString() : '');
+    setDate(purchase.date ? purchase.date.split('T')[0] : '');
     setIsEditModalOpen(true);
   };
 
@@ -95,19 +95,15 @@ const PurchasesPage = () => {
   const handleEdit = async () => {
     setLoading(true);
     try {
-      // Calculate total price before sending the request
-      const calculatedTotalPrice = amount * price;
-  
       const updatedPurchase = {
-        vendorId,
-        amount,
-        price,
-        totalPrice: calculatedTotalPrice, // Update this field
+        vendorId: parseInt(vendorId, 10), // Convert to integer
+        amount: parseInt(amount, 10), // Convert to integer
+        price: parseFloat(price), // Convert to number (allows decimals)
         description,
-        date,
         expirationDate,
-        itemId,
-        ItemCategoryId: itemCategoryId
+        itemId: parseInt(itemId, 10), // Convert to integer
+        ItemCategoryId: parseInt(itemCategoryId, 10), // Convert to integer
+        date,
       };
   
       const response = await axios.put(
@@ -115,42 +111,28 @@ const PurchasesPage = () => {
         updatedPurchase
       );
   
-      // Ensure that the Vendor and Item are included in the response
       const updatedPurchaseData = response.data;
   
-      // Fetch the Vendor and Item from their respective lists to update them immediately
-      const vendor = vendors.find(vendor => vendor.id === updatedPurchaseData.vendorId);
-      const item = items.find(item => item.id === updatedPurchaseData.itemId);
-  
-      // Update the response with the found Vendor and Item
-      updatedPurchaseData.Vendor = vendor || {};
-      updatedPurchaseData.Item = item || {};
-  
-      // Check if the Item is correctly found
-      if (!updatedPurchaseData.Item) {
-        console.error("Item not found for itemId:", updatedPurchaseData.itemId);
-      }
-  
-      // Update the purchase list with the updated data
       const updatedData = data.map((purchase) =>
-        purchase.id === selectedPurchase.id ? updatedPurchaseData : purchase
+        purchase.id === selectedPurchase.id ? { ...purchase, ...updatedPurchaseData } : purchase
       );
-  
       setData(updatedData);
+  
       setIsEditModalOpen(false);
       setSelectedPurchase(null);
-  
       setModalOpen(true);
       setMessageType('success');
       setModalMessage('Purchase updated successfully');
     } catch (error) {
+      console.error('Error updating purchase:', error);
       setModalOpen(true);
       setMessageType('error');
-      setModalMessage('Unable to update purchase');
+      setModalMessage(error.response?.data?.message || 'Unable to update purchase');
     } finally {
       setLoading(false);
     }
   };
+  
   
   
   const handleDeleteClick = (purchase) => {
@@ -190,7 +172,7 @@ const PurchasesPage = () => {
       render: (row) => row.Item ? row.Item.itemName : 'N/A',
     },
     { label: 'Description', key: 'description' },
-    { label: 'Total Price', key: 'totalPrice' },
+    // { label: 'Total Price', key: 'totalPrice' },
     {
       label: 'Expiration Date',
       key: 'expirationDate',
@@ -251,157 +233,133 @@ const PurchasesPage = () => {
 
       {/* Edit Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
-          <div className="bg-base-100 p-6 rounded-md w-11/12 sm:w-1/3 max-h-[80vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold mb-4">Edit Purchase</h2>
-            <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
-              <div className="mb-4">
-                <label htmlFor="vendorId" className="block text-sm font-medium text-white-700">
-                  Vendor Name
-                </label>
-                <select
-                  id="vendorId"
-                  value={vendorId}
-                  onChange={(e) => setVendorId(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Vendor</option>
-                  {vendors.map((vendor) => (
-                    <option key={vendor.id} value={vendor.id}>
-                      {vendor.fname} {vendor.lname}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-4">
-                <label htmlFor="amount" className="block text-sm font-medium text-white-700">
-                  Amount
-                </label>
-                <input
-                  type="number"
-                  id="amount"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="price" className="block text-sm font-medium text-white-700">
-                  Price
-                </label>
-                <input
-                  type="number"
-                  id="price"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="price" className="block text-sm font-medium text-white-700">
-                 Total Price
-                </label>
-                <input
-                  type="number"
-                  id="totalPrice"
-                  value={totalPrice}
-                  onChange={(e) => setTotalPrice(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="description" className="block text-sm font-medium text-white-700">
-                  Description
-                </label>
-                <input
-                  type="text"
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="date" className="block text-sm font-medium text-white-700">
-                 Purchase Date
-                </label>
-                <input
-                  type="date"
-                  id="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="expirationDate" className="block text-sm font-medium text-white-700">
-                  Expiration Date
-                </label>
-                <input
-                  type="date"
-                  id="expirationDate"
-                  value={expirationDate}
-                  onChange={(e) => setExpirationDate(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="itemId" className="block text-sm font-medium text-white-700">
-                  Item Name
-                </label>
-                <select
-                  id="itemId"
-                  value={itemId}
-                  onChange={(e) => setItemId(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Item</option>
-                  {items.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.itemName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-4">
-                <label htmlFor="itemCategoryId" className="block text-sm font-medium text-white-700">
-                  Category Name
-                </label>
-                <select
-                  id="itemCategoryId"
-                  value={itemCategoryId}
-                  onChange={(e) => setItemCategoryId(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Select Category</option>
-                  {itemCategories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.categoryName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-                  disabled={loading}
-                >
-                  {loading ? 'Saving...': 'Save'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsEditModalOpen(false)}
-                  className="bg-gray-400 text-white px-4 py-2 rounded-md"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
+    <div className="bg-base-100 p-6 rounded-md w-11/12 sm:w-1/3 max-h-[80vh] overflow-y-auto">
+      <h2 className="text-2xl font-bold mb-4">Edit Purchase</h2>
+      <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
+        <div className="mb-4">
+          <label htmlFor="vendorId" className="block text-sm font-medium text-white-700">Vendor</label>
+          <select
+            id="vendorId"
+            value={vendorId}
+            onChange={(e) => setVendorId(e.target.value)}
+            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="">Select Vendor</option>
+            {vendors.map((vendor) => (
+              <option key={vendor.id} value={vendor.id}>
+                {vendor.fname} {vendor.lname}
+              </option>
+            ))}
+          </select>
         </div>
-      )}
-
+        <div className="mb-4">
+          <label htmlFor="amount" className="block text-sm font-medium text-white-700">Amount</label>
+          <input
+            type="number"
+            id="amount"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            min="1"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="price" className="block text-sm font-medium text-white-700">Price</label>
+          <input
+            type="number"
+            id="price"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            min="0"
+            step="0.01"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="description" className="block text-sm font-medium text-white-700">Description</label>
+          <input
+            type="text"
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="date" className="block text-sm font-medium text-white-700">Purchase Date</label>
+          <input
+            type="date"
+            id="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="expirationDate" className="block text-sm font-medium text-white-700">Expiration Date</label>
+          <input
+            type="date"
+            id="expirationDate"
+            value={expirationDate}
+            onChange={(e) => setExpirationDate(e.target.value)}
+            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="itemId" className="block text-sm font-medium text-white-700">Item</label>
+          <select
+            id="itemId"
+            value={itemId}
+            onChange={(e) => setItemId(e.target.value)}
+            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="">Select Item</option>
+            {items.map((item) => (
+              <option key={item.id} value={item.id}>{item.itemName}</option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-4">
+          <label htmlFor="itemCategoryId" className="block text-sm font-medium text-white-700">Category</label>
+          <select
+            id="itemCategoryId"
+            value={itemCategoryId}
+            onChange={(e) => setItemCategoryId(e.target.value)}
+            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="">Select Category</option>
+            {itemCategories.map((category) => (
+              <option key={category.id} value={category.id}>{category.typeName || category.categoryName}</option>
+            ))}
+          </select>
+        </div>
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save'}
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsEditModalOpen(false)}
+            className="bg-gray-400 text-white px-4 py-2 rounded-md"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
       {/* Detail Modal */}
       {isDetailModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">

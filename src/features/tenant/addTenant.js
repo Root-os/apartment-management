@@ -189,52 +189,6 @@ const AddTenant = () => {
             />
           </div>
 
-          {/* Has Car Checkbox */}
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              checked={hasCar}
-              onChange={(e) => setHasCar(e.target.checked)}
-              className="mr-2"
-            />
-            <label className="text-sm font-semibold">Tenant has a car</label>
-          </div>
-
-          {/* Car-related fields - shown only if hasCar is true */}
-          {hasCar && (
-            <>
-              <div>
-                <label className="block text-sm font-semibold mb-2">Car Name</label>
-                <input
-                  type="text"
-                  value={carName}
-                  onChange={(e) => setCarName(e.target.value)}
-                  className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">Car Plate</label>
-              <input
-                  type="text"
-                  value={carPlate}
-                  onChange={(e) => setCarPlate(e.target.value)}
-                  className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold mb-2">Car Color</label>
-                <input
-                  type="text"
-                  value={color}
-                  onChange={(e) => setColor(e.target.value)}
-                  className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-                />
-              </div>
-            </>
-          )}
-
           {/* National ID */}
           <div>
             <label className="block text-sm font-semibold mb-2">National ID</label>
@@ -363,9 +317,54 @@ const AddTenant = () => {
               type="number"
               value={advance}
               onChange={(e) => setAdvance(e.target.value)}
-              className="bg-base-100 w-full p-3 border오기 border-gray-300 rounded-md"
+              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             />
           </div>
+           {/* Has Car Checkbox */}
+           <div className="flex items-center">
+            <input
+              type="checkbox"
+              checked={hasCar}
+              onChange={(e) => setHasCar(e.target.checked)}
+              className="mr-2"
+            />
+            <label className="text-sm font-semibold">Tenant has a car</label>
+          </div>
+
+          {/* Car-related fields - shown only if hasCar is true */}
+          {hasCar && (
+            <>
+              <div>
+                <label className="block text-sm font-semibold mb-2">Car Name</label>
+                <input
+                  type="text"
+                  value={carName}
+                  onChange={(e) => setCarName(e.target.value)}
+                  className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2">Car Plate</label>
+              <input
+                  type="text"
+                  value={carPlate}
+                  onChange={(e) => setCarPlate(e.target.value)}
+                  className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2">Car Color</label>
+                <input
+                  type="text"
+                  value={color}
+                  onChange={(e) => setColor(e.target.value)}
+                  className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+                />
+              </div>
+            </>
+          )}
 
           {/* Document */}
           <div>

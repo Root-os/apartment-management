@@ -166,6 +166,8 @@ const AddParking = () => {
             <label className="block text-sm font-medium mb-2">Parking Space ID</label>
             <input
               type="number"
+              min="1"
+              step="1"
               value={parkingSpaceId}
               onChange={(e) => setParkingSpaceId(e.target.value)}
               className="bg-base-100 w-full p-2 border border-gray-300 rounded"

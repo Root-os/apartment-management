@@ -71,11 +71,21 @@ const CurrencySettingsPage = () => {
     const token = localStorage.getItem('token');
     const formDataToSubmit = new FormData();
     
-    // Append all fields
-    Object.keys(formData).forEach((key) => {
-      formDataToSubmit.append(key, formData[key]);
-    });
-
+    // Append the text fields
+    formDataToSubmit.append('buildingName', formData.buildingName);
+    formDataToSubmit.append('buildingAddress', formData.buildingAddress);
+    formDataToSubmit.append('email', formData.email);
+    formDataToSubmit.append('phoneNumber', formData.phoneNumber);
+    formDataToSubmit.append('postOfficeAddress', formData.postOfficeAddress);
+  
+    // Append the files (logo and seal) if selected
+    if (formData.logo) {
+      formDataToSubmit.append('logos', formData.logo);
+    }
+    if (formData.seal) {
+      formDataToSubmit.append('seal', formData.seal);
+    }
+  
     axios
       .put(
         `${process.env.REACT_APP_BASE_URL}setting/${selectedSetting.id}`,
@@ -83,18 +93,29 @@ const CurrencySettingsPage = () => {
         {
           headers: {
             'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data', // Important to handle file uploads
+            'Content-Type': 'multipart/form-data',
           },
         }
       )
       .then(() => {
-        setData(
-          data.map((item) =>
-            item.id === selectedSetting.id ? { ...item, ...formData } : item
-          )
+        // Create object URLs for the new logo and seal
+        const updatedLogoUrl = formData.logo ? URL.createObjectURL(formData.logo) : selectedSetting.logos;
+        const updatedSealUrl = formData.seal ? URL.createObjectURL(formData.seal) : selectedSetting.seal;
+  
+        // Update the state immediately to reflect the new values
+        const updatedData = data.map((item) =>
+          item.id === selectedSetting.id
+            ? {
+                ...item,
+                logos: updatedLogoUrl,
+                seal: updatedSealUrl,
+              }
+            : item
         );
-        setIsEditModalOpen(false);
-        setModalOpen(true);
+  
+        setData(updatedData); // Update the table with the new logo and seal URLs
+        setIsEditModalOpen(false); // Close the edit modal
+        setModalOpen(true); // Open the success modal
         setMessageType('success');
         setMessage('Setting updated successfully!');
       })
@@ -105,9 +126,11 @@ const CurrencySettingsPage = () => {
         setMessage('Unable to update setting.');
       })
       .finally(() => {
-        setButtonLoading(false);
+        setButtonLoading(false); // Stop the loading indicator
       });
   };
+  
+  
 
   // Handle Delete Click
   const handleDeleteClick = (setting) => {
@@ -153,24 +176,44 @@ const CurrencySettingsPage = () => {
     {
       key: 'logos',
       label: 'Logo',
-      render: (value) => (
-        <img
-          src={`https://apartment.bruktiethiotour.com/${value}`}
-          alt="Logo"
-          style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-        />
-      ),
+      render: (setting) => {
+        // Access the logos property inside the setting object
+        const logoUrl = setting?.logos || 'https://placehold.co/50x50';
+        console.log("Logo Image URL: ", logoUrl);  // Debugging line
+    
+        return (
+          <img
+            src={logoUrl}
+            alt="Logo"
+            style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+            onError={(e) => {
+              console.error('Failed to load logo:', logoUrl);
+              e.target.src = 'https://placehold.co/50x50'; // Fallback image
+            }}
+          />
+        );
+      },
     },
     {
       key: 'seal',
       label: 'Seal',
-      render: (value) => (
-        <img
-          src={`https://apartment.bruktiethiotour.com/${value}`}
-          alt="Seal"
-          style={{ width: '50px', height: '50px', objectFit: 'cover' }}
-        />
-      ),
+      render: (setting) => {
+        // Access the seal property inside the setting object
+        const sealUrl = setting?.seal || 'https://placehold.co/50x50';
+        console.log("Seal Image URL: ", sealUrl);  // Debugging line
+    
+        return (
+          <img
+            src={sealUrl}
+            alt="Seal"
+            style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+            onError={(e) => {
+              console.error('Failed to load seal:', sealUrl);
+              e.target.src = 'https://placehold.co/50x50'; // Fallback image
+            }}
+          />
+        );
+      },
     },
     {
       key: 'actions',

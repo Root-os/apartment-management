@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import LoadingComponent from '../../components/loading';
 
 const token = localStorage.getItem('token');
 
@@ -80,8 +81,7 @@ const SentEmail = () => {
   ];
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-center mb-6">Sent Emails</h1>
+    <div>
       {error && (
         <div className="p-4 mb-6 bg-red-100 text-red-700 border border-red-400 rounded-md">
           {error}
@@ -89,7 +89,7 @@ const SentEmail = () => {
       )}
       {loading ? (
         <div className="text-center">
-          <p>Loading.</p>
+          <LoadingComponent/>
         </div>
       ) : (
         <TableComponent
@@ -128,13 +128,7 @@ const SentEmail = () => {
         onClose={() => setModalMessage('')}
         messageType={modalMessageType === 'success' ? 'success' : 'error'}
         message={modalMessage}
-        actions={[
-          {
-            label: "Close",
-            onClick: () => setModalMessage(''),
-            className: "bg-blue-500 text-white px-4 py-2 rounded"
-          }
-        ]}
+       
       />
     </div>
   );

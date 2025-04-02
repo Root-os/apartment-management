@@ -12,7 +12,6 @@ const AddPurchaseForm = () => {
   const [itemId, setItemId] = useState(''); 
   const [amount, setAmount] = useState('');
   const [price, setPrice] = useState('');
-  const [totalPrice, setTotalPrice] = useState('');
   const [description, setDescription] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
   const [date, setDate] = useState('');
@@ -29,7 +28,6 @@ const AddPurchaseForm = () => {
     axios.get(`${process.env.REACT_APP_BASE_URL}vendors`)
       .then(response => {
         setVendorList(response.data);
-        console.log(response.data);
       })
       .catch(err => {
         setError('Failed to load vendors');
@@ -55,7 +53,7 @@ const AddPurchaseForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!vendorId || !itemId || !amount || !price || !description || !expirationDate || !date || !itemCategoryId || !totalPrice)  {
+    if (!vendorId || !itemId || !amount || !price || !description || !expirationDate || !date || !itemCategoryId )  {
       setError('Please fill in all fields');
       return;
     }
@@ -64,7 +62,6 @@ const AddPurchaseForm = () => {
       vendorId: vendorId,
       amount: amount,
       price: price,
-      totalPrice: totalPrice,
       description: description,
       expirationDate: expirationDate,
       itemId: itemId,
@@ -75,18 +72,19 @@ const AddPurchaseForm = () => {
     try {
       setIsLoading(true);
       setError('');
-     await axios.post(`${process.env.REACT_APP_BASE_URL}purchases`, purchaseData);
+      await axios.post(`${process.env.REACT_APP_BASE_URL}purchases`, purchaseData);
       setIsLoading(false);
       setModalOpen(true);
       setMessageType('success');
       setMessage('Purchase added successfully');
-      window.location.href='/app/view-purchase';
+      window.location.href = '/app/view-purchase';  // Redirect after success
     } catch (err) {
       setIsLoading(false);
-      setError('Failed to create purchase');
+      const errorMessage = err.response ? err.response.data.message : 'Failed to create purchase';
+      setError(errorMessage);
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Unable to add purchase data.');
+      setMessage(errorMessage);
     }
   };
 
@@ -164,17 +162,6 @@ const AddPurchaseForm = () => {
                 type="number" 
                 value={price} 
                 onChange={(e) => setPrice(e.target.value)} 
-                className="p-2 border rounded bg-base-100"
-                min="0"
-                step="1"
-              />
-            </div>
-            <div className="flex flex-col">
-              <label className="font-semibold">Total Price</label>
-              <input 
-                type="number" 
-                value={totalPrice} 
-                onChange={(e) => setTotalPrice(e.target.value)} 
                 className="p-2 border rounded bg-base-100"
                 min="0"
                 step="1"

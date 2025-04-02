@@ -16,8 +16,9 @@ const AllSendLetterPage = () => {
   const [tenantId, setTenantId] = useState("");
   const [letterDate, setLetterDate] = useState("");
   const [description, setDescription] = useState("");
-  const [status, setStatus] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState("success");
   const [message, setMessage] = useState("");
 
@@ -60,11 +61,10 @@ const AllSendLetterPage = () => {
   // Handle edit button click
   const handleEditClick = (letter) => {
     setSelectedLetter(letter);
-    setLetterTypeId(letter.letterTypeId);
-    setTenantId(letter.tenantId);
-    setLetterDate(letter.letterDate.split("T")[0]);
+    setLetterTypeId(letter.letterTypeId.toString()); // Convert to string for select input
+    setTenantId(letter.tenantId.toString());        // Convert to string for select input
+    setLetterDate(letter.Date ? letter.Date.split("T")[0] : ""); // Match API response 'Date'
     setDescription(letter.description);
-    setStatus(letter.status);
     setIsEditModalOpen(true);
     setIsDetailModalOpen(false);
   };
@@ -85,26 +85,42 @@ const AllSendLetterPage = () => {
     setLoading(true);
     try {
       const updatedLetter = {
-        letterTypeId,
-        tenantId,
-        letterDate: new Date(letterDate).toISOString(), // Ensure proper date format
-        description,
+        letterTypeId: parseInt(letterTypeId),
+        tenantId: parseInt(tenantId),
+        letterDate: letterDate,
+        description: description
       };
-
-      await axios.put(
+  
+      const response = await axios.put(
         `${process.env.REACT_APP_BASE_URL}letter/${selectedLetter.id}`,
         updatedLetter
       );
-
-      fetchLetters(); // Refetch letters after edit
+  
+      // Get the full LetterType and Tenant objects from existing state
+      const updatedLetterType = letterTypes.find(lt => lt.id === parseInt(letterTypeId));
+      const updatedTenant = tenants.find(t => t.id === parseInt(tenantId));
+  
+      // Merge the API response with the related data
+      const updatedLetterWithRelations = {
+        ...response.data.letter,
+        LetterType: updatedLetterType || selectedLetter.LetterType,
+        Tenant: updatedTenant || selectedLetter.Tenant
+      };
+  
+      // Update the letters state with the complete object
+      setLetters(letters.map(letter =>
+        letter.id === selectedLetter.id ? updatedLetterWithRelations : letter
+      ));
+  
       setIsEditModalOpen(false);
       setSelectedLetter(null);
-
+      setModalOpen(true);
       setMessageType("success");
-      setMessage("Letter updated successfully");
+      setMessage(response.data.message || "Letter updated successfully");
     } catch (error) {
+      setModalOpen(true);
       setMessageType("error");
-      setMessage("Unable to update letter");
+      setMessage(error.response?.data?.message || "Unable to update letter");
     } finally {
       setLoading(false);
     }
@@ -171,7 +187,7 @@ const AllSendLetterPage = () => {
           {/* Detail Button */}
           <button
             onClick={() => handleDetailClick(row)}
-            className="bg-green-500 text-white px-2 py-1 rounded-md w-full sm:w-auto min-w-[80px] text-center"
+            className="bg-gray-400 text-white px-2 py-1 rounded-md w-full sm:w-auto min-w-[80px] text-center"
           >
             Detail
           </button>
@@ -188,6 +204,10 @@ const AllSendLetterPage = () => {
     },
   ];
 
+  const handleAddClick = () => {
+    window.location.href = "/app/send-Letter"
+  }
+
   return (
     <div className="container mx-auto p-6">
       <TableComponent
@@ -196,114 +216,94 @@ const AllSendLetterPage = () => {
         columns={columns}
         exportable={true}
         showSearch={true}
+        onAdd={handleAddClick}
       />
 
       {/* Edit Modal */}
       {isEditModalOpen && (
-        <div className="mt-20 fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-base-100 p-6 rounded-md w-full max-w-lg md:max-w-2xl lg:w-1/3 max-h-[80vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold mb-4">Edit Letter</h2>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleEdit();
-              }}
-            >
-              <div className="mb-4">
-                <label
-                  htmlFor="letterTypeId"
-                  className="block text-sm font-medium text-white-700"
-                >
-                  Letter Type
-                </label>
-                <select
-                  id="letterTypeId"
-                  value={letterTypeId}
-                  onChange={(e) => setLetterTypeId(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="" disabled>
-                    Select Letter Type
-                  </option>
-                  {letterTypes.map((type) => (
-                    <option key={type.id} value={type.id}>
-                      {type.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="tenantId"
-                  className="block text-sm font-medium text-white-700"
-                >
-                  Tenant
-                </label>
-                <select
-                  id="tenantId"
-                  value={tenantId}
-                  onChange={(e) => setTenantId(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="" disabled>
-                    Select Tenant
-                  </option>
-                  {tenants.map((tenant) => (
-                    <option key={tenant.id} value={tenant.id}>
-                      {tenant.fullName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="letterDate"
-                  className="block text-sm font-medium text-white-700"
-                >
-                  Date
-                </label>
-                <input
-                  type="date"
-                  id="letterDate"
-                  value={letterDate}
-                  onChange={(e) => setLetterDate(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="description"
-                  className="block text-sm font-medium text-white-700"
-                >
-                  Description
-                </label>
-                <textarea
-                  id="description"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-                  disabled={loading}
-                >
-                  {loading ? "Saving..." : "Save"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsEditModalOpen(false)}
-                  className="bg-gray-400 text-white px-4 py-2 rounded-md"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
-          </div>
+  <div className="mt-20 fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div className="bg-base-100 p-6 rounded-md w-full max-w-lg md:max-w-2xl lg:w-1/3 max-h-[80vh] overflow-y-auto">
+      <h2 className="text-2xl font-bold mb-4">Edit Letter</h2>
+      <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
+        <div className="mb-4">
+          <label htmlFor="letterTypeId" className="block text-sm font-medium text-white-700">
+            Letter Type
+          </label>
+          <select
+            id="letterTypeId"
+            value={letterTypeId}
+            onChange={(e) => setLetterTypeId(e.target.value)}
+            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            
+          >
+            <option value="" disabled>Select Letter Type</option>
+            {letterTypes.map((type) => (
+              <option key={type.id} value={type.id}>{type.name}</option>
+            ))}
+          </select>
         </div>
-      )}
+        <div className="mb-4">
+          <label htmlFor="tenantId" className="block text-sm font-medium text-white-700">
+            Tenant
+          </label>
+          <select
+            id="tenantId"
+            value={tenantId}
+            onChange={(e) => setTenantId(e.target.value)}
+            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            
+          >
+            <option value="" disabled>Select Tenant</option>
+            {tenants.map((tenant) => (
+              <option key={tenant.id} value={tenant.id}>{tenant.fullName}</option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-4">
+          <label htmlFor="letterDate" className="block text-sm font-medium text-white-700">
+            Date
+          </label>
+          <input
+            type="date"
+            id="letterDate"
+            value={letterDate}
+            onChange={(e) => setLetterDate(e.target.value)}
+            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="description" className="block text-sm font-medium text-white-700">
+            Description
+          </label>
+          <textarea
+            id="description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+           
+          />
+        </div>
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+            disabled={loading}
+          >
+            {loading ? "Saving..." : "Save"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setIsEditModalOpen(false)}
+            className="bg-gray-400 text-white px-4 py-2 rounded-md"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
 
       {/* Delete Modal */}
       {isDeleteModalOpen && (
@@ -393,6 +393,13 @@ const AllSendLetterPage = () => {
           </div>
         </div>
       )}
+
+         <Modal
+              isOpen={modalOpen}
+              onClose={() => setModalOpen(false)}
+              messageType={messageType}
+              message={message}
+            />
     </div>
   );
 };

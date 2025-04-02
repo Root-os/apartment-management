@@ -70,7 +70,7 @@ const AddVendor = () => {
       setEmail('');
       setAddress('');
       setServiceTypeId('');
-      setContractTerms(null);
+      setContractTerms('');
 
       setModalOpen(true);
       setMessageType('success');
@@ -86,7 +86,7 @@ const AddVendor = () => {
 
   return (
     <>
-      <TitleCard title="Add Vendor"  >
+      <TitleCard title="Add Vendor" topMargin={'mt-1'} >
       {/* Form to input vendor data */}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">

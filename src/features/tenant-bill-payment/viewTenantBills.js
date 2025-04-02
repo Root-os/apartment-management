@@ -152,20 +152,24 @@ const ViewBillPayment = () => {
                     max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 
                     scrollbar-track-gray-100">
             <h2 className="text-xl mb-4">Edit Payment</h2>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Amount</label>
               <input
                 type="number"
+                min="1"
+                step="1"
                 value={newPaymentData.amount}
                 onChange={(e) => setNewPaymentData({ ...newPaymentData, amount: e.target.value })}
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
-            </div>
+            </div> */}
 
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Amount Paid</label>
               <input
                 type="number"
+                min="1"
+                step="1"
                 value={newPaymentData.amountPaid}
                 onChange={(e) => setNewPaymentData({ ...newPaymentData, amountPaid: e.target.value })}
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"

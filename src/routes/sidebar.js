@@ -267,22 +267,22 @@ const adminRoutes =
     name: 'Building', 
     submenu : [
       {
-        path: '/app/floor-add',
+        path: '/app/add-floor',
         icon: <PlusIcon className={submenuIconClasses}/>,
         name: 'Add Floor ',
       },
       {
-        path: '/app/floor-view',
+        path: '/app/view-floor',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Floor Lists',
       },
       {
-        path: '/app/unit-add',
+        path: '/app/add-unit',
         icon: <PlusIcon className={submenuIconClasses}/>,
         name: 'Add unit ',
       },
       {
-        path: '/app/unit-view',
+        path: '/app/view-unit',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Unit Lists',
       },
@@ -295,22 +295,22 @@ const adminRoutes =
     name: 'Finance ', 
     submenu : [
       {
-        path: '/app/bill-type-add',
+        path: '/app/add-bill-type',
         icon: <PlusIcon className={submenuIconClasses}/>,
         name: 'Add Bill Type',
       },
       {
-        path: '/app/bill-type-view',
+        path: '/app/view-bill-type',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Bill Types',
       },
       {
-        path: '/app/payment-goverment-add',
+        path: '/app/add-payment-for-goverment',
         icon: <PlusIcon className={submenuIconClasses}/>,
         name: 'Add Bill Payment for gov.t',
       },
       {
-        path: '/app/payment-goverment-view',
+        path: '/app/view-payment-for-goverment',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Payments for gov.t ',
       },
@@ -744,18 +744,19 @@ const adminRoutes =
       {
         path: '/app/add-letter-type',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Letter Type Add',
-      },
-      {
-        path: '/app/send-letter',
-        icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Send Letter',
+        name: 'Add Letter Type ',
       },
       {
         path: '/app/view-letter-types',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Letter Types',
       },
+      {
+        path: '/app/send-letter',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Send Letter',
+      },
+   
       {
         path: '/app/all-sent-letters',
         icon: <EyeIcon className={submenuIconClasses}/>,

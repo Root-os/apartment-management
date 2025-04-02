@@ -52,7 +52,7 @@ const SendBulkEmail = () => {
   };
 
   return (
-    <><TitleCard title={'Send Bulk Email'}>
+    <><TitleCard title={'Send Bulk Email'} topMargin={'mt-1'}>
 
       {/* Bulk Email Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

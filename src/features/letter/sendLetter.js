@@ -13,6 +13,7 @@ const SendLetter = () => {
   const [tenants, setTenants] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
@@ -89,7 +90,7 @@ const SendLetter = () => {
 
   return (
     <>
-      <TitleCard title="Send Letter">
+      <TitleCard title="Send Letter" topMargin={'mt-1'}>
         {/* Form to input letter data */}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
