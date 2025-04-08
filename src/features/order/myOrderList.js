@@ -156,7 +156,7 @@ const MyOrdersPage = () => {
           </button>
           <button
             onClick={() => handleDetailClick(row)}
-            className="bg-green-500 text-white px-4 py-2 rounded-md"
+            className="bg-gray-500 text-white px-4 py-2 rounded-md"
           >
             Detail
           </button>
@@ -203,6 +203,8 @@ const MyOrdersPage = () => {
             type="number"
             id="amount"
             value={amount}
+            min="1"
+            step="1"
             onChange={(e) => setAmount(e.target.value)}
             className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             required

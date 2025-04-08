@@ -191,17 +191,18 @@ const AddAssetAuditPage = () => {
 
         {/* Other Form Fields */}
         <div>
-          <label htmlFor="asset_name" className="block text-sm font-medium text-white-700">Asset Name</label>
-          <input
-            type="text"
-            id="asset_name"
-            name="asset_name"
-            value={assetName}
-            onChange={(e) => setAssetName(e.target.value)}
-            className="mt-2 p-3 bg-base-100 w-full border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
+  <label htmlFor="asset_name" className="block text-sm font-medium text-white-700">Asset Name</label>
+  <input
+    type="text"
+    id="asset_name"
+    name="asset_name"
+    value={assetName}
+    onChange={(e) => setAssetName(e.target.value)}
+    className="mt-2 p-3 bg-base-100 w-full border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+    required
+    disabled={selectedItemId} // Disable asset name field if item is selected
+  />
+</div>
 
         <div>
           <label htmlFor="date" className="block text-sm font-medium text-white-700">Audited Date</label>

@@ -12,7 +12,9 @@ const TenantList = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedTenant, setSelectedTenant] = useState(null);
-  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false); 
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [unitDetails, setUnitDetails] = useState(null); 
+  const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
 
 
   const [editData, setEditData] = useState({
@@ -108,6 +110,16 @@ const TenantList = () => {
     setIsDeleteModalOpen(true);
   };
 
+  const handleUnitClick = async (unitId) => {
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant/unit/${unitId}`);
+      setUnitDetails(response.data[0]); 
+      setIsUnitModalOpen(true);
+    } catch (err) {
+      setError('Failed to fetch unit details.');
+    }
+  };
+
   // Submit edited data to the API
   const handleEditSubmit = async () => {
     try {
@@ -168,9 +180,9 @@ const TenantList = () => {
   };
 
   // Live validation for additional notes (min length 10 characters)
- const validateAdditionalNotes = () => {
-  return editData.additionalNotes && editData.additionalNotes.length >= 10;
-};
+//  const validateAdditionalNotes = () => {
+//   return editData.additionalNotes && editData.additionalNotes.length >= 10;
+// };
 
   const handleAddClick = () => {
     window.location.href = '/app/tenant-add';
@@ -199,30 +211,34 @@ const TenantList = () => {
           onAdd={handleAddClick}
           columns={[
             {
-              label: 'Full Name',
-              key: 'fullName',
+              label: "Full Name",
+              key: "fullName",
             },
             {
-              label: 'Phone Number',
-              key: 'phoneNumber',
+              label: "Phone Number",
+              key: "phoneNumber",
             },
             {
-              label: 'Payment Status',
-              key: 'paymentStatus',
+              label: "Payment Status",
+              key: "paymentStatus",
             },
             {
-              label: 'Unit Number',
-              key: 'unitNumber',
-              render: (row) => row.Unit?.unitNumber || 'N/A',
+              label: "Advance",
+              key: "advance",
             },
             {
-              label: 'Floor',
-              key: 'floorNumber',
-              render: (row) => row.Floor?.floorNumber || 'N/A',
+              label: "Unit Number",
+              key: "unitNumber",
+              render: (row) => row.Unit?.unitNumber || "N/A",
             },
             {
-              label: 'Status',
-              key: 'status',
+              label: "Floor",
+              key: "floorNumber",
+              render: (row) => row.Floor?.floorNumber || "N/A",
+            },
+            {
+              label: "Status",
+              key: "status",
             },
             {
               label: 'Actions',
@@ -247,6 +263,12 @@ const TenantList = () => {
                   >
                     Details
                   </button>
+                  <button
+                    onClick={() => handleUnitClick(row.unitId)}
+                    className="bg-green-500 text-white py-1 px-2 rounded"
+                  >
+                    Units
+                  </button>
                 </div>
               ),
             },
@@ -256,7 +278,7 @@ const TenantList = () => {
 
       {/* Edit Modal */}
       {isEditModalOpen && selectedTenant && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 mt-12">
           <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl mb-4">Edit Tenant</h2>
 
@@ -372,12 +394,14 @@ const TenantList = () => {
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Status</label>
-              <input
-                type="text"
-                value={editData.status}
-                onChange={(e) => setEditData({ ...editData, status: e.target.value })}
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              />
+              <select
+               value={editData.status}
+               onChange={(e) => setEditData({ ...editData, status: e.target.value })}
+               className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+               >
+               <option value="active">Active</option>
+               <option value="Inactive">In active</option>
+              </select>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">TIN</label>
@@ -425,7 +449,7 @@ const TenantList = () => {
               <button
                 onClick={handleEditSubmit}
                 className="bg-blue-500 text-white px-4 py-2 rounded"
-                disabled={!validateAdditionalNotes() || isSaving}
+                disabled={ isSaving}
               >
                 {isSaving ? 'Saving...' : 'Save'}
               </button>
@@ -458,108 +482,230 @@ const TenantList = () => {
         </div>
       )}
        {/* Tenant Details Modal */}
-      {isDetailsModalOpen && selectedTenant && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
-            <h2 className="text-xl mb-4">Tenant Details</h2>
-            <div className="mb-4">
-              <p><strong>Full Name:</strong> {selectedTenant.fullName}</p>
-              <p><strong>Phone Number:</strong> {selectedTenant.phoneNumber}</p>
-              <p><strong>Email:</strong> {selectedTenant.email}</p>
-              <p><strong>National ID:</strong> {selectedTenant.nationalId}</p>
-              <p><strong>Lease Start Date:</strong> {new Date(selectedTenant.leaseStartDate).toLocaleDateString()}</p>
-              <p><strong>Lease End Date:</strong> {new Date(selectedTenant.leaseEndDate).toLocaleDateString()}</p>
-              <p><strong>Payment Status:</strong> {selectedTenant.paymentStatus}</p>
-              <p><strong>Unit Number:</strong> {selectedTenant.Unit?.unitNumber || 'N/A'}</p>
-              <p><strong>Floor Number:</strong> {selectedTenant.Floor?.floorNumber || 'N/A'}</p>
-              <p><strong>Status:</strong> {selectedTenant.status}</p>
+       {isDetailsModalOpen && selectedTenant && (
+  <div
+    isOpen={isDetailsModalOpen}
+    onRequestClose={() => setIsDetailsModalOpen(false)}
+    contentLabel="Tenant Details"
+    className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 mt-12"
+  >
+    <div className="bg-base-100 p-6 rounded-lg min-w-[72vh] max-h-[90vh] overflow-y-auto mt-10 ml-6">
+      <h2 className="text-xl mb-4">Tenant Details</h2>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Full Name</label>
+        <p className="text-sm">{selectedTenant.fullName}</p>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Phone Number</label>
+        <p className="text-sm">{selectedTenant.phoneNumber}</p>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Email </label>
+        <p className="text-sm">{selectedTenant.email}</p>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">National ID</label>
+        <p className="text-sm">{selectedTenant.nationalId}</p>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Lease Start Date</label>
+        <p className="text-sm">{selectedTenant.leaseStartDate ? new Date(selectedTenant.leaseStartDate).toLocaleDateString() : 'N/A'}</p>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Lease End Date</label>
+        <p className="text-sm">{selectedTenant.leaseEndDate ? new Date(selectedTenant.leaseEndDate).toLocaleDateString() : 'N/A'}</p>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Payment Status</label>
+        <p className="text-sm">{selectedTenant.paymentStatus}</p>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Advance</label>
+        <p className="text-sm">{selectedTenant.advance || 'N/A'}</p>
+      </div>
 
-              {/* Show document if it exists */}
-              {selectedTenant.document && (
-  <div className="mb-4">
-    <p><strong>Document:</strong></p>
-    {(() => {
-      const baseUrl = 'https://apartment.bruktiethiotour.com';
-
-      // Case 1: If document is a File object (after upload, before refresh)
-      if (selectedTenant.document instanceof File) {
-        const fileName = selectedTenant.document.name.toLowerCase();
-        if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.png')) {
-          // Temporarily display the File object as an image using URL.createObjectURL
-          return (
-            <div>
-              <img
-                src={URL.createObjectURL(selectedTenant.document)}
-                alt="Tenant Document Preview"
-                className="w-full h-auto max-h-64 object-contain"
-                onError={(e) => (e.target.src = '/path/to/fallback-image.jpg')}
-              />
-              <p className="text-sm text-gray-500">Preview (refresh to view uploaded file)</p>
-            </div>
-          );
-        } else {
-          // For PDF or other files, show the file name with a note
-          return <p>{fileName} (Uploaded, refresh to view)</p>;
-        }
-      }
-
-      // Case 2: If document is a string (URL from server)
-      const fullDocumentUrl = `${baseUrl}${selectedTenant.document.startsWith('/') ? '' : '/'}${selectedTenant.document}`;
-      if (fullDocumentUrl.endsWith('.pdf') || fullDocumentUrl.endsWith('.doc') || fullDocumentUrl.endsWith('.docx')) {
-        return (
-          <a
-            href={fullDocumentUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:underline"
-          >
-            View Document
-          </a>
-        );
-      } else if (
-        fullDocumentUrl.endsWith('.jpg') ||
-        fullDocumentUrl.endsWith('.jpeg') ||
-        fullDocumentUrl.endsWith('.png')
-      ) {
-        return (
-          <div>
-            <img
-              src={fullDocumentUrl}
-              alt="Tenant Document"
-              className="w-full h-auto max-h-64 object-contain"
-              onError={(e) => (e.target.src = '/path/to/fallback-image.jpg')}
-            />
-          </div>
-        );
-      } else {
-        return (
-          <a
-            href={fullDocumentUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-500 hover:underline"
-          >
-            View Document
-          </a>
-        );
-      }
-    })()}
-  </div>
-)}
-            </div>
-            <div className="flex justify-end">
-              <button
-                onClick={closeDetailsModal}
-                className="bg-gray-400 text-white px-4 py-2 rounded"
-              >
-                Close
-              </button>
-            </div>
+      {/* Car details section */}
+      {selectedTenant.TenantVehicles && selectedTenant.TenantVehicles.length > 0 && (
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">Car Details</label>
+          <div className="text-sm">
+            {selectedTenant.TenantVehicles.map((vehicle, index) => (
+              <div key={index} className="mb-2">
+                <p><strong>Car Name:</strong> {vehicle.carName}</p>
+                <p><strong>Car Plate:</strong> {vehicle.carPlate}</p>
+                <p><strong>Color:</strong> {vehicle.color}</p>
+              </div>
+            ))}
           </div>
         </div>
-     )}
+      )}
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Unit Number</label>
+        <p className="text-sm">{selectedTenant.Unit ? selectedTenant.Unit.unitNumber : 'N/A'}</p>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Floor Number</label>
+        <p className="text-sm">{selectedTenant.Floor ? selectedTenant.Floor.floorNumber : 'N/A'}</p>
+      </div>
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Status</label>
+        <p className="text-sm">{selectedTenant.status}</p>
+      </div>
+      {selectedTenant.document && (
+        <div className="mb-4">
+          <p><strong>Document:</strong></p>
+          {(() => {
+            const baseUrl = 'https://apartment.bruktiethiotour.com';
+
+            // Case 1: If document is a File object (after upload, before refresh)
+            if (selectedTenant.document instanceof File) {
+              const fileName = selectedTenant.document.name.toLowerCase();
+              if (fileName.endsWith('.jpg') || fileName.endsWith('.jpeg') || fileName.endsWith('.png')) {
+                return (
+                  <div>
+                    <img
+                      src={URL.createObjectURL(selectedTenant.document)}
+                      alt="Tenant Document Preview"
+                      className="w-full h-auto max-h-64 object-contain"
+                      onError={(e) => (e.target.src = '/path/to/fallback-image.jpg')}
+                    />
+                    <p className="text-sm text-gray-500">Preview (refresh to view uploaded file)</p>
+                  </div>
+                );
+              } else {
+                return <p>{fileName} (Uploaded, refresh to view)</p>;
+              }
+            }
+
+            // Case 2: If document is a string (URL from server)
+            const fullDocumentUrl = `${baseUrl}${selectedTenant.document.startsWith('/') ? '' : '/'}${selectedTenant.document}`;
+            if (fullDocumentUrl.endsWith('.pdf') || fullDocumentUrl.endsWith('.doc') || fullDocumentUrl.endsWith('.docx')) {
+              return (
+                <a
+                  href={fullDocumentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
+                  View Document
+                </a>
+              );
+            } else if (
+              fullDocumentUrl.endsWith('.jpg') ||
+              fullDocumentUrl.endsWith('.jpeg') ||
+              fullDocumentUrl.endsWith('.png')
+            ) {
+              return (
+                <div>
+                  <img
+                    src={fullDocumentUrl}
+                    alt="Tenant Document"
+                    className="w-full h-auto max-h-64 object-contain"
+                    onError={(e) => (e.target.src = '/path/to/fallback-image.jpg')}
+                  />
+                </div>
+              );
+            } else {
+              return (
+                <a
+                  href={fullDocumentUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:underline"
+                >
+                  View Document
+                </a>
+              );
+            }
+          })()}
+        </div>
+      )}
+      <div className="flex justify-end">
+        <button
+          onClick={() => setIsDetailsModalOpen(false)}
+          className="bg-gray-400 text-white px-4 py-2 rounded"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
 
+{isUnitModalOpen && unitDetails && (
+    <div
+      isOpen={isUnitModalOpen}
+      onRequestClose={() => setIsUnitModalOpen(false)}
+      contentLabel="Unit Details"
+      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 mt-12"
+    >
+    <div className="bg-base-100 p-6 rounded-lg min-w-[72vh] max-h-[90vh] overflow-y-auto mt-10 ml-6">
+      <h2 className="text-xl mb-4">Unit Details</h2>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Unit Number</label>
+        <p className="text-sm">{unitDetails.Unit ? unitDetails.Unit.unitNumber : 'N/A'}</p>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Size</label>
+        <p className="text-sm">{unitDetails.Unit.size} sq ft</p>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Status</label>
+        <p className="text-sm">{unitDetails.Unit.status}</p>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Available Equipments</label>
+        <p className="text-sm">
+          {unitDetails.Unit.availableEquipments 
+            ? JSON.parse(unitDetails.Unit.availableEquipments).join(', ') 
+            : 'N/A'}
+        </p>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Problems</label>
+        <p className="text-sm">
+          {unitDetails.Unit.problems 
+            ? JSON.parse(unitDetails.Unit.problems).join(', ') 
+            : 'N/A'}
+        </p>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Rented Date</label>
+        <p className="text-sm">
+          {unitDetails.Unit.rentedDate 
+            ? new Date(unitDetails.Unit.rentedDate).toLocaleDateString() 
+            : 'N/A'}
+        </p>
+      </div>
+
+      <div className="mb-4">
+        <label className="block text-sm font-medium mb-2">Vacated Date</label>
+        <p className="text-sm">
+          {unitDetails.Unit.vacatedDate 
+            ? new Date(unitDetails.Unit.vacatedDate).toLocaleDateString() 
+            : 'N/A'}
+        </p>
+      </div>
+
+      <div className="flex justify-end">
+        <button
+          onClick={() => setIsUnitModalOpen(false)}
+          className="bg-gray-400 text-white px-4 py-2 rounded"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+)}
       {/* Modal for success/error messages */}
       <Modal 
         isOpen={modal.isOpen}

@@ -52,10 +52,13 @@ const AllPaymentsPage = () => {
     setPrice(payment.price);
     setPaymentMethod(payment.paymentMethod);
     setStatus(payment.status);
-    setPaymentDate(payment.paymentDate);
+
+    const formattedPaymentDate = new Date(payment.paymentDate).toISOString().split('T')[0];
+    setPaymentDate(formattedPaymentDate)
+
     setIsEditModalOpen(true);
   };
-
+  
   // Handle delete button click
   const handleDeleteClick = (payment) => {
     setSelectedPayment(payment);
@@ -161,7 +164,7 @@ const AllPaymentsPage = () => {
     {
       key: "paymentDate",
       label: "Payment Date",
-      render: (row) => new Date(row.paymentDate).toLocaleString(),
+      render: (row) => new Date(row.paymentDate).toLocaleDateString(),
     },
     {
       label: "Actions",

@@ -64,7 +64,7 @@ const PaymentTypesPage = () => {
       setIsEditModalOpen(false);
       setModalOpen(true);
       setMessageType('success');
-      setMessage("Payment request type updated successfully!");
+      setMessage("Payment type updated successfully!");
       fetchPaymentTypes(); // Refresh data
     } catch (err) {
       setError('Failed to update payment type');
@@ -84,7 +84,7 @@ const PaymentTypesPage = () => {
       setIsDeleteModalOpen(false);
       setModalOpen(true);
       setMessageType('success');
-      setMessage("Payment request type deleted successfully!");
+      setMessage("Payment type deleted successfully!");
       fetchPaymentTypes(); // Refresh data
     } catch (err) {
       

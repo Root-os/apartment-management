@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import TitleCard from "../../components/Cards/TitleCard";
+import Modal from '../../components/Modal';
 
 const EmployeeRegistration = () => {
   const [employee, setEmployee] = useState({
@@ -21,6 +22,10 @@ const EmployeeRegistration = () => {
   });
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  const [message, setMessage] = useState('');
 
   const token = localStorage.getItem("token");
 
@@ -35,6 +40,7 @@ const EmployeeRegistration = () => {
 
   // Submit handler for the form
   const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
 
     if (!token) {
@@ -53,8 +59,9 @@ const EmployeeRegistration = () => {
         }
       );
       if (response.data.success) {
-        setSuccess("Employee registered successfully!");
-        setError(null);
+        setModalOpen(true);
+        setMessageType('success');  
+        setMessage('Register successfully');
         // You can also reset the form if needed
         setEmployee({
           fname: "",
@@ -65,17 +72,20 @@ const EmployeeRegistration = () => {
           salary: "",
           position: "",
           hireDate: "",
-          shift: "day",
-          department: "IT",
-          employmentType: "full-time",
+          shift: "",
+          department: "",
+          employmentType: "",
           emergencyContact: "",
           address: "",
           bankAccount: "",
         });
       }
     } catch (err) {
-      setError(err.response?.data?.message || "An error occurred");
-      setSuccess(null);
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Failed to register employee');
+    }finally {
+      setLoading(false);
     }
   };
 
@@ -169,6 +179,8 @@ const EmployeeRegistration = () => {
               name="salary"
               value={employee.salary}
               onChange={handleChange}
+              min="0"
+              step="1"
               required
               className="bg-base-100 mt-1 p-2 w-full border border-gray-300 rounded-md"
             />
@@ -299,13 +311,20 @@ const EmployeeRegistration = () => {
             <button
               type="submit"
               className="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-700"
+              disabled={loading}
             >
-              Register Employee
+             {loading ? 'registering...':' Register Employee'}
             </button>
           </div>
         </div>
       </form>
     </TitleCard>
+    <Modal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        messageType={messageType} 
+        message={message} 
+      />
     </>
   );
 };

@@ -50,6 +50,7 @@ const PaymentRequestView = lazy(() => import('../pages/protected/PaymentRequestV
 const notficationAdd = lazy(() => import('../pages/protected/Notfication/add'));
 const allNotfication = lazy(() => import('../pages/protected/Notfication/viewAll'));
 const bulkNotfication = lazy(() => import('../pages/protected/Notfication/bulkNotfi'));
+const MyNotification = lazy(() => import('../pages/protected/Notfication/MyNotification'));
 
 // Email
 const singleEmail = lazy(() => import('../pages/protected/email/addsingleEmail'));
@@ -159,6 +160,7 @@ const LetterTypeAdd = lazy(() => import('../pages/protected/letter/addLetterType
 const letterTypeView = lazy(() => import('../pages/protected/letter/allLetterType'))
 const LetterSend = lazy(() => import('../pages/protected/letter/sendLetter'))
 const AllSentLetters=lazy(() => import('../pages/protected/letter/allLetterSent'))
+const PdfLetter =lazy(() => import('../pages/protected/letter/PdfLetter'))
 
 //stock
 
@@ -213,7 +215,12 @@ const tenantRoutes = [
   {
     path: '/my-order',
     component: myOrder,
-  }
+  },
+  
+  {
+    path: '/my-notification',
+    component: MyNotification,
+  },
 ];
 
 const employeeRoutes = [
@@ -802,6 +809,10 @@ const adminRoutes = [
 {
   path: '/all-sent-letters', 
   component: AllSentLetters,  
+},
+{
+  path: '/letters-in-pdf', 
+  component: PdfLetter,  
 },
 
 

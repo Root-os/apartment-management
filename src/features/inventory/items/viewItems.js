@@ -155,7 +155,7 @@ const ItemsPage = () => {
     },
     {
       key: 'expirationDate',
-      label: 'Expiration',
+      label: 'Expiration Date',
       render: (row) => new Date(row.expirationDate).toLocaleDateString(),
     },
     {

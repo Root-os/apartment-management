@@ -11,11 +11,11 @@ const AddParking = () => {
   const [tenantId, setTenantId] = useState("");
   const [timeIn, setTimeIn] = useState("");
   const [timeOut, setTimeOut] = useState("");
-  const [isTenant, setIsTenant] = useState(true);
+  const [isTenant, setIsTenant] = useState(true); // Default to tenant
   const [parkingSpaceId, setParkingSpaceId] = useState(""); 
+  const [status, setStatus] = useState("onparking"); // Default status "onparking"
   const [tenants, setTenants] = useState([]);
-  const [status, setStatus] = useState("onparking"); 
-
+  const [tenantCar, setTenantCar] = useState(null); // For tenant's car details
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
@@ -32,44 +32,91 @@ const AddParking = () => {
       });
   }, []);
 
+  // Handle checkbox toggle for Is Tenant
+  const handleIsTenantChange = (e) => {
+    setIsTenant(e.target.checked);
+    if (!e.target.checked) {
+      // If not tenant, reset tenant data
+      setTenantId("");
+      setTenantCar(null);
+    }
+  };
+
+  // Handle tenant selection
+  const handleTenantChange = (e) => {
+    const selectedTenant = tenants.find(tenant => tenant.id === parseInt(e.target.value));
+    setTenantId(selectedTenant.id);
+    if (selectedTenant && selectedTenant.TenantVehicles.length > 0) {
+      // If tenant has a car, auto-fill car details
+      setTenantCar(selectedTenant.TenantVehicles[0]);
+      setCarPlate(selectedTenant.TenantVehicles[0].carPlate);
+      setCarName(selectedTenant.TenantVehicles[0].carName);
+    } else {
+      // If no car, clear car details and allow manual input
+      setTenantCar(null);
+      setCarPlate("");
+      setCarName("");
+    }
+  };
+
+  // Handle the status change
+  const handleStatusChange = (e) => {
+    setStatus(e.target.value);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     setLoading(true);
-
+  
     // Convert the times to UTC format
     const timeInUTC = timeIn ? new Date(timeIn).toISOString() : "";
-    // const timeOutUTC = timeOut ? new Date(timeOut).toISOString() : ""; 
-
+  
+    // Prepare parking data payload
     const parkingData = {
       carPlate,
       carName,
       driverName,
       driverPhone,
-      tenantId,
-      timeIn: timeInUTC, // UTC formatted time
-      // timeOut: timeOutUTC, // UTC formatted time 
+      timeIn: timeInUTC,
       isTenant,
       status,
-      parkingSpaceId,
     };
-
+  
+    // Add tenantId only if isTenant is true
+    if (isTenant) {
+      parkingData.tenantId = tenantId;
+    }
+  
+    // Add parkingSpaceId only if it's not empty
+    if (parkingSpaceId) {
+      parkingData.parkingSpaceId = parkingSpaceId;
+    }
+  
+    // Log the data that will be sent to the server
+    console.log("Sending parking data to server:", parkingData);
+  
     axios
       .post(`${process.env.REACT_APP_BASE_URL}parking`, parkingData)
       .then((response) => {
+        // Log the successful response from the server
+        console.log("Server response:", response);
+        
         setCarPlate("");
         setCarName("");
         setDriverName("");
         setDriverPhone("");
         setTenantId("");
         setTimeIn("");
-        setTimeOut("");
-
+  
         setModalOpen(true);
         setMessageType('success');
         setMessage('Parking data added successfully');
         window.location.href='/app/parking-view';
       })
-      .catch(() => {
+      .catch((error) => {
+        // Log the error response from the server
+        console.error("Error from server:", error.response);
+  
         setModalOpen(true);
         setMessageType('error');
         setMessage('Unable to add parking data.');
@@ -78,11 +125,49 @@ const AddParking = () => {
         setLoading(false); 
       });
   };
-
+  
+  
+  
   return (
     <>
       <TitleCard title="Add Parking Data" topMargin={'mt-4'}>
         <form onSubmit={handleSubmit} className="bg-base-100 p-6 rounded-lg shadow-md">
+          {/* Tenant Checkbox */}
+          <div className="mb-4">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={isTenant}
+                onChange={handleIsTenantChange}
+                className="mr-2"
+              />
+              <span className="text-sm">Is Tenant?</span>
+            </label>
+          </div>
+
+          
+          {/* Tenant Select */}
+          {isTenant && (
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Tenant</label>
+              <select
+                value={tenantId} 
+                onChange={handleTenantChange}
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+              >
+                <option value="">Select Tenant</option>
+                {tenants.map((tenant) => (
+                  <option key={tenant.id} value={tenant.id}>
+                    {tenant.fullName}
+                  </option>
+                ))}
+              </select>
+              {tenantId && tenantCar === null && (
+                <p className="text-sm text-red-500 mt-2">Tenant has no car. Please enter car details manually.</p>
+              )}
+            </div>
+          )}
+
           {/* Car Plate */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Car Plate</label>
@@ -123,30 +208,12 @@ const AddParking = () => {
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Driver Phone</label>
             <input
-              type="text"
+              type="number"
               value={driverPhone}
               onChange={(e) => setDriverPhone(e.target.value)}
               className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               required
             />
-          </div>
-
-          {/* Tenant Select */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Tenant</label>
-            <select
-              value={tenantId}
-              onChange={(e) => setTenantId(e.target.value)}
-              className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              required
-            >
-              <option value="">Select Tenant</option>
-              {tenants.map((tenant) => (
-                <option key={tenant.id} value={tenant.id}>
-                  {tenant.fullName}
-                </option>
-              ))}
-            </select>
           </div>
 
           {/* Time In */}
@@ -171,8 +238,22 @@ const AddParking = () => {
               value={parkingSpaceId}
               onChange={(e) => setParkingSpaceId(e.target.value)}
               className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              required
             />
+          </div>
+
+          {/* Status */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Status</label>
+            <select
+              value={status}
+              onChange={handleStatusChange}
+              className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+            >
+              <option value="onparking">On Parking</option>
+              <option value="offparking">Off Parking</option>
+              <option value="reserved">Reserved</option>
+              <option value="vacant">Vacant</option>
+            </select>
           </div>
 
           {/* Submit Button */}

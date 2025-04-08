@@ -26,30 +26,39 @@ const SendBulkEmail = () => {
 
   // Handle form submit
   const onSubmit = async (data) => {
-    setLoading(true);
+    setLoading(true); // Show loading indicator
     const payload = {
       subject: data.subject,
       content: data.content,
     };
-
+  
     try {
-       await axios.post(`${process.env.REACT_APP_BASE_URL}email/send-bulk`, payload, {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}email/send-bulk`, payload, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-
-      setModalOpen(true);
-      setMessageType('success');
-      setMessage('Bulk email sent successfully');
+  
+      // Check if the response status is OK and contains valid data
+      if (response.status === 201 && response.data?.emailStatus) {
+        setModalOpen(true);
+        setMessageType('success');
+        setMessage('Bulk email sent successfully');
+      } else {
+        // If response structure is not as expected, throw an error
+        throw new Error('Unexpected response structure');
+      }
     } catch (err) {
+      // Handle error and show error modal
+      console.error('Error response:', err); // Log the error for debugging
       setModalOpen(true);
       setMessageType('error');
       setMessage(err.response?.data?.message || 'An error occurred while sending the bulk email.');
     } finally {
-      setLoading(false); 
+      setLoading(false); // Hide loading indicator
     }
   };
+  
 
   return (
     <><TitleCard title={'Send Bulk Email'} topMargin={'mt-1'}>

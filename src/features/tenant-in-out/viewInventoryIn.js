@@ -29,7 +29,7 @@ const TenantInventoryPage = () => {
   useEffect(() => {
     const fetchInventoryData = async () => {
       setLoading(true);
-      setError(null); // Reset error state
+      setError(null); 
       const token = localStorage.getItem('token');
       
       if (!token) {
@@ -39,7 +39,7 @@ const TenantInventoryPage = () => {
       }
 
       try {
-        const response = await axios.get('https://apartment.bruktiethiotour.com/api/tenant-inventory', {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant-inventory`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -55,7 +55,7 @@ const TenantInventoryPage = () => {
           type: inventory.type || 'N/A',
           checkedBy: inventory.checkedBy || 'N/A',
           notes: inventory.notes || '',
-          items: inventory.items || '[]', // Ensure items is always a string
+          items: inventory.items || '[]', 
         }));
         setInventoryData(formattedData);
       } catch (err) {
@@ -439,7 +439,7 @@ const TenantInventoryPage = () => {
               <div className="mb-4">
                 <h3 className="text-lg font-medium">Inventory Info:</h3>
                 <p><strong>Type:</strong> {selectedInventory.type}</p>
-                <p><strong>Checked By:</strong> {selectedInventory.checkedBy}</p>
+                {/* <p><strong>Checked By:</strong> {selectedInventory.checkedBy}</p> */}
                 <p><strong>Notes:</strong> {selectedInventory.notes}</p>
               </div>
 

@@ -78,11 +78,16 @@ const ExpensePage = () => {
   const handleEditClick = (expense) => {
     setSelectedExpense(expense);
     setAmount(expense.amount);
-    setDate(new Date(expense.date).toISOString().split('T')[0]);
+    
+    // Convert the date into 'yyyy-mm-dd' format correctly
+    const localDate = new Date(expense.date).toLocaleDateString('en-CA');  // 'en-CA' gives 'yyyy-mm-dd'
+    setDate(localDate);  // Set the state with the correctly formatted date
+    
     setDescription(expense.description);
     setExpenseTypeId(expense.expenseTypeId || '');
     setIsEditModalOpen(true);
   };
+  
 
   const handleDeleteClick = (expense) => {
     setSelectedExpense(expense);

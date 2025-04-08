@@ -39,7 +39,7 @@ const PaymentTypeForm = () => {
       // Display success message
       setModalOpen(true);
       setMessageType('success');
-      setMessage("Payment request type added successfully!");
+      setMessage("Payment type added successfully!");
 
       setName("");
       setDescription("");

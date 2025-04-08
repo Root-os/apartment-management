@@ -22,8 +22,8 @@ const ComplaintsPage = () => {
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
 
-  const [isImageViewerOpen, setIsImageViewerOpen] = useState(false); // Manage the modal visibility
-  const [currentImage, setCurrentImage] = useState(null); // Store the clicked image URL
+  const [isImageViewerOpen, setIsImageViewerOpen] = useState(false); 
+  const [currentImage, setCurrentImage] = useState(null); 
   const [zoomLevel, setZoomLevel] = useState(1);
 
   useEffect(() => {
@@ -47,8 +47,8 @@ const ComplaintsPage = () => {
 
     const fetchEmployees = async () => {
       try {
-        const token = localStorage.getItem('token'); // Get admin token from localStorage
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/users`, {
+        const token = localStorage.getItem('token'); 
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/employee`, {
           headers: {
             Authorization: `Bearer ${token}`, 
           },
@@ -124,8 +124,8 @@ const ComplaintsPage = () => {
           complaint.id === complaintToAssign.id
             ? {
                 ...complaint,
-                assignedEmployeeId: response.data.complaint.assignedEmployeeId, // 8
-                assignedEmployee: response.data.complaint.assignedEmployee,     // { id: 8, fname: "sura", lname: "asm", email: "sura@gmail.com" }
+                assignedEmployeeId: response.data.complaint.assignedEmployeeId, 
+                assignedEmployee: response.data.complaint.assignedEmployee,     
               }
             : complaint
         )
@@ -160,27 +160,42 @@ const ComplaintsPage = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token'); // Get admin token from localStorage
-      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}complaints/update-status`, {
-        complaintId: complaintToUpdateStatus.id,
-        status: status,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Include token in headers
+      const response = await axios.put(
+        `${process.env.REACT_APP_BASE_URL}complaints/update-status`,
+        {
+          complaintId: complaintToUpdateStatus.id,
+          status: status,
         },
-      });
-      setComplaints((prevComplaints) => prevComplaints.map((complaint) =>
-        complaint.id === complaintToUpdateStatus.id ? response.data.complaint : complaint
-      ));
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token in headers
+          },
+        }
+      );
+      
+      // Preserve the assignedEmployee while updating the status
+      setComplaints((prevComplaints) =>
+        prevComplaints.map((complaint) =>
+          complaint.id === complaintToUpdateStatus.id
+            ? {
+                ...complaint,
+                status: response.data.complaint.status, // Update only status
+                // Don't overwrite assignedEmployee, keep the existing one
+                assignedEmployee: complaint.assignedEmployee,
+              }
+            : complaint
+        )
+      );
+      
       setLoading(false);
       setIsUpdateStatusModalOpen(false);
       setComplaintToUpdateStatus(null);
       setStatus('');
-
+  
       setModalOpen(true);
       setMessageType('success');
       setMessage('Status updated successfully');
     } catch (error) {
-      // setError('There was an error updating the complaint status!');
       console.error('There was an error updating the complaint status!', error);
       setLoading(false);
       setModalOpen(true);
@@ -188,6 +203,7 @@ const ComplaintsPage = () => {
       setMessage('Unable to update, please try again');
     }
   };
+  
 
   const renderEmployeeName = (row) => {
     if (row.assignedEmployee) {

@@ -6,7 +6,6 @@ const GenerateReceiptPage = () => {
   const { state } = useLocation(); // Get the state passed from AllPaymentsPage
   const { payments } = state || { payments: [] }; // Default to empty array if no payments are passed
   const [companyInfo, setCompanyInfo] = useState(null);
-  const [sealBase64, setSealBase64] = useState(null);
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -20,16 +19,6 @@ const GenerateReceiptPage = () => {
         const settings = response.data;
         if (settings && settings.length > 0) {
           setCompanyInfo(settings[0]);
-
-          // Fetch and prepare the seal image
-          if (settings[0].seal) {
-            const sealResponse = await fetch(settings[0].seal);
-            if (sealResponse.ok) {
-              const sealBlob = await sealResponse.blob();
-              const sealBase64Data = await blobToBase64(sealBlob);
-              setSealBase64(sealBase64Data);
-            }
-          }
         }
       } catch (error) {
         console.error("Failed to fetch company settings:", error);
@@ -38,15 +27,6 @@ const GenerateReceiptPage = () => {
 
     fetchSettings();
   }, []);
-
-  const blobToBase64 = (blob) => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    });
-  };
 
   if (payments.length === 0) {
     return <p className="text-center text-lg text-gray-700">No payments available.</p>;
@@ -60,9 +40,6 @@ const GenerateReceiptPage = () => {
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-200">
       {/* Company Information */}
       <div className="text-center mb-6">
-        {sealBase64 && (
-          <img src={sealBase64} alt="Company Seal" className="mx-auto mb-4" width="100" height="100" />
-        )}
         <h1 className="text-3xl font-semibold text-blue-600">{companyInfo?.buildingName || "Company Name"}</h1>
         <p className="text-lg text-gray-600">{companyInfo?.buildingAddress || "Company Address"}</p>
       </div>
@@ -82,6 +59,16 @@ const GenerateReceiptPage = () => {
         <p className="text-lg text-gray-600">Status: {payments[0].status}</p>
       </div>
 
+      {companyInfo?.seal && (
+          <div className="flex justify-center mb-4">
+            <img
+              src={companyInfo.seal} // Dynamically use the seal URL from the settings
+              alt="Company Seal"
+              className="w-32 h-32 rounded-full object-cover"
+            />
+          </div>
+        )}
+
       {/* Item List (Prices) */}
       <div className="mb-6">
         <table className="w-full table-auto text-left border-collapse">
@@ -94,8 +81,8 @@ const GenerateReceiptPage = () => {
           <tbody>
             {payments.map((payment, index) => (
               <tr key={index}>
-                <td className="px-4 py-2 border-b text-sm text-gray-700">ETB-{payment.price}</td>
-                <td className="px-4 py-2 border-b text-sm text-gray-700">{payment.details || "N/A"}</td>
+                <td className="px-4 py-2  text-sm text-gray-700">ETB-{payment.price}</td>
+                <td className="px-4 py-2  text-sm text-gray-700">{payment.details || "N/A"}</td>
               </tr>
             ))}
           </tbody>

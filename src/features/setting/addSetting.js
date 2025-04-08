@@ -12,7 +12,9 @@ const SettingForm = () => {
   const [postOfficeAddress, setPostOfficeAddress] = useState('');
   const [logos, setLogos] = useState(null);  
   const [seal, setSeal] = useState(null);    
-
+  const [chargingCost, setChargingCost] = useState('');  // Added chargingCost state
+  const [parkingCost, setParkingCost] = useState('');    // Added parkingCost state
+  
   // UI state
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -32,7 +34,9 @@ const SettingForm = () => {
       !phoneNumber.trim() ||
       !postOfficeAddress.trim() ||
       !logos ||
-      !seal
+      !seal ||
+      !chargingCost.trim() ||
+      !parkingCost.trim()  // Validate new fields
     ) {
       setLoading(false);
       setModalOpen(true);
@@ -45,6 +49,8 @@ const SettingForm = () => {
     formData.append('buildingName', buildingName);
     formData.append('buildingAddress', buildingAddress);
     formData.append('email', email);
+    formData.append('chargingCost', chargingCost);  // Include chargingCost
+    formData.append('parkingCost', parkingCost);    // Include parkingCost
     formData.append('phoneNumber', phoneNumber);
     formData.append('postOfficeAddress', postOfficeAddress);
     formData.append('logos', logos);
@@ -78,6 +84,8 @@ const SettingForm = () => {
       setPostOfficeAddress('');
       setLogos(null);
       setSeal(null);
+      setChargingCost('');
+      setParkingCost('');
     } catch (error) {
       setLoading(false);
       setModalOpen(true);
@@ -141,7 +149,7 @@ const SettingForm = () => {
               Phone Number
             </label>
             <input
-              type="text"
+              type="number"
               id="phoneNumber"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
@@ -160,6 +168,40 @@ const SettingForm = () => {
               id="postOfficeAddress"
               value={postOfficeAddress}
               onChange={(e) => setPostOfficeAddress(e.target.value)}
+              required
+              disabled={loading}
+              className="bg-base-100 mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="parkingCost" className="block text-sm font-medium text-white-700">
+              Parking Cost
+            </label>
+            <input
+              type="number"
+              id="parkingCost"
+              value={parkingCost}
+              min="1"
+              step="1"
+              onChange={(e) => setParkingCost(e.target.value)}
+              required
+              disabled={loading}
+              className="bg-base-100 mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="chargingCost" className="block text-sm font-medium text-white-700">
+              Charging Cost
+            </label>
+            <input
+              type="number"
+              id="chargingCost"
+              value={chargingCost}
+              min="1"
+              step="1"
+              onChange={(e) => setChargingCost(e.target.value)}
               required
               disabled={loading}
               className="bg-base-100 mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"

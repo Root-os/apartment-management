@@ -10,13 +10,14 @@ const ChargingPage = () => {
   const [selectedCharging, setSelectedCharging] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // New state for detail modal
   const [carPlate, setCarPlate] = useState('');
   const [carName, setCarName] = useState('');
   const [isTenant, setIsTenant] = useState(true);
   const [tenantId, setTenantId] = useState('');
   const [chargingStartTime, setChargingStartTime] = useState('');
   const [chargingEndTime, setChargingEndTime] = useState('');
-  const [chargingCost, setChargingCost] = useState('');
+  const [chargingCost, setChargingCost] = useState(null);
   const [status, setStatus] = useState('');
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
@@ -53,6 +54,15 @@ const ChargingPage = () => {
     fetchTenants();
   }, []);
 
+  // Helper function to format date to local time for datetime-local input
+  const formatToLocalDateTime = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const offset = date.getTimezoneOffset() * 60000; // Offset in milliseconds
+    const localDate = new Date(date.getTime() - offset); // Adjust to local time
+    return localDate.toISOString().slice(0, 16); // Format as YYYY-MM-DDTHH:mm
+  };
+
   const handleEditClick = (charging) => {
     console.log('Edit Clicked:', charging);
     setSelectedCharging(charging);
@@ -60,21 +70,21 @@ const ChargingPage = () => {
     setCarName(charging.carName);
     setIsTenant(charging.isTenant);
     setTenantId(charging.tenantId);
-  
-    // Ensure proper datetime-local format (YYYY-MM-DDTHH:MM)
-    setChargingStartTime(charging.chargingStartTime 
-      ? new Date(charging.chargingStartTime).toISOString().slice(0, 16) 
-      : '');
-    setChargingEndTime(charging.chargingEndTime 
-      ? new Date(charging.chargingEndTime).toISOString().slice(0, 16) 
-      : '');
+    setChargingStartTime(formatToLocalDateTime(charging.chargingStartTime));
+    setChargingEndTime(formatToLocalDateTime(charging.chargingEndTime));
     setChargingCost(charging.chargingCost);
     setStatus(charging.status);
     setIsEditModalOpen(true);
   };
+
   const handleDeleteClick = (charging) => {
     setSelectedCharging(charging);
     setIsDeleteModalOpen(true);
+  };
+
+  const handleDetailClick = (charging) => {
+    setSelectedCharging(charging);
+    setIsDetailModalOpen(true);
   };
 
   const handleEdit = async () => {
@@ -85,14 +95,13 @@ const ChargingPage = () => {
         carName,
         isTenant,
         tenantId: Number(tenantId),
-        // Convert to ISO string for API consistency
         chargingStartTime: chargingStartTime ? new Date(chargingStartTime).toISOString() : null,
         chargingEndTime: chargingEndTime ? new Date(chargingEndTime).toISOString() : null,
         status,
       };
-  
+
       console.log('Updating Charging Data:', updatedCharging);
-  
+
       const response = await axios.put(`${chargingApiUrl}/${selectedCharging.id}`, updatedCharging);
       const updatedData = chargingData.map((charging) =>
         charging.id === selectedCharging.id ? response.data : charging
@@ -100,7 +109,7 @@ const ChargingPage = () => {
       setChargingData(updatedData);
       setIsEditModalOpen(false);
       setSelectedCharging(null);
-  
+
       setModalOpen(true);
       setMessageType('success');
       setMessage('Charging data updated successfully');
@@ -111,6 +120,7 @@ const ChargingPage = () => {
       setLoading(false);
     }
   };
+
   const handleDelete = async () => {
     setLoading(true);
     try {
@@ -131,9 +141,9 @@ const ChargingPage = () => {
   };
 
   const columns = [
-    { label: 'Car Plate', key: 'carPlate' },
-    { label: 'Car Name', key: 'carName' },
-    { label: 'Is Tenant', key: 'isTenant', render: (row) => (row.isTenant ? 'Yes' : 'No') },
+    // { label: 'Car Plate', key: 'carPlate' },
+    // { label: 'Car Name', key: 'carName' },
+    // { label: 'Is Tenant', key: 'isTenant', render: (row) => (row.isTenant ? 'Yes' : 'No') },
     {
       label: 'Tenant Name',
       key: 'tenantId',
@@ -142,21 +152,25 @@ const ChargingPage = () => {
         return tenant ? tenant.fullName : 'N/A';
       },
     },
+    // {
+    //   label: 'Charging Start Time',
+    //   key: 'chargingStartTime',
+    //   render: (row) => row.chargingStartTime
+    //     ? new Date(row.chargingStartTime).toLocaleString()
+    //     : 'N/A',
+    // },
+    // {
+    //   label: 'Charging End Time',
+    //   key: 'chargingEndTime',
+    //   render: (row) => row.chargingEndTime
+    //     ? new Date(row.chargingEndTime).toLocaleString()
+    //     : 'N/A',
+    // },
     {
-      label: 'Charging Start Time',
-      key: 'chargingStartTime',
-      render: (row) => row.chargingStartTime
-        ? new Date(row.chargingStartTime).toLocaleString() 
-        : 'N/A',
+      label: 'Charging Cost',
+      key: 'chargingCost',
+      render: (row) => row.chargingCost != null ? row.chargingCost : 'N/A',
     },
-    {
-      label: 'Charging End Time',
-      key: 'chargingEndTime',
-      render: (row) => row.chargingEndTime
-        ? new Date(row.chargingEndTime).toLocaleString() 
-        : 'N/A',
-    },
-    { label: 'Charging Cost', key: 'chargingCost' },
     { label: 'Status', key: 'status' },
     {
       label: 'Actions',
@@ -165,7 +179,7 @@ const ChargingPage = () => {
         <div className="flex justify-end space-x-2">
           <button
             onClick={() => handleEditClick(row)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md"
           >
             Edit
           </button>
@@ -174,6 +188,12 @@ const ChargingPage = () => {
             className="bg-red-500 text-white px-4 py-2 rounded-md"
           >
             Delete
+          </button>
+          <button
+            onClick={() => handleDetailClick(row)}
+            className="bg-gray-500 text-white px-4 py-2 rounded-md"
+          >
+            Detail
           </button>
         </div>
       ),
@@ -284,23 +304,11 @@ const ChargingPage = () => {
                 <input
                   type="datetime-local"
                   id="chargingEndTime"
-                  // value={chargingEndTime}
+                  value={chargingEndTime}
                   onChange={(e) => setChargingEndTime(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-              {/* <div className="mb-4">
-                <label htmlFor="chargingCost" className="block text-sm font-medium text-white-700">
-                  Charging Cost
-                </label>
-                <input
-                  type="number"
-                  id="chargingCost"
-                  value={chargingCost}
-                  onChange={(e) => setChargingCost(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div> */}
               <div className="mb-4">
                 <label htmlFor="status" className="block text-sm font-medium text-white-700">
                   Status
@@ -312,17 +320,17 @@ const ChargingPage = () => {
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="charging">Charging</option>
-                  <option value="competeCharging">Compete Charging</option>
+                  <option value="completed">completed</option>
+                  <option value="pending">Pending</option>
                 </select>
               </div>
-
               <div className="flex justify-end">
                 <button
                   type="submit"
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
                   disabled={loading}
                 >
-                  {loading ? 'saving...' : 'Save'}
+                  {loading ? 'Saving...' : 'Save'}
                 </button>
                 <button
                   type="button"
@@ -345,6 +353,49 @@ const ChargingPage = () => {
             <div className="flex justify-end space-x-2">
               <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
               <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Detail Modal */}
+      {isDetailModalOpen && selectedCharging && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
+          <div className="bg-base-100 p-6 rounded-md w-1/3 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">Charging Details</h2>
+            <div className="mb-4 space-y-2">
+              <p><strong>Car Plate:</strong> {selectedCharging.carPlate}</p>
+              <p><strong>Car Name:</strong> {selectedCharging.carName}</p>
+              <p><strong>Is Tenant:</strong> {selectedCharging.isTenant ? 'Yes' : 'No'}</p>
+              <p>
+                <strong>Tenant Name:</strong>{' '}
+                {tenants.find((tenant) => tenant.id === selectedCharging.tenantId)?.fullName || 'N/A'}
+              </p>
+              <p>
+                <strong>Charging Start Time:</strong>{' '}
+                {selectedCharging.chargingStartTime
+                  ? new Date(selectedCharging.chargingStartTime).toLocaleString()
+                  : 'N/A'}
+              </p>
+              <p>
+                <strong>Charging End Time:</strong>{' '}
+                {selectedCharging.chargingEndTime
+                  ? new Date(selectedCharging.chargingEndTime).toLocaleString()
+                  : 'N/A'}
+              </p>
+              <p>
+                <strong>Charging Cost:</strong>{' '}
+                {selectedCharging.chargingCost != null ? selectedCharging.chargingCost : 'N/A'}
+              </p>
+              <p><strong>Status:</strong> {selectedCharging.status}</p>
+            </div>
+            <div className="flex justify-end">
+              <button
+                onClick={() => setIsDetailModalOpen(false)}
+                className="bg-gray-400 text-white px-4 py-2 rounded-md"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

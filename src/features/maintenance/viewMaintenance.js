@@ -21,6 +21,7 @@ const MaintenancePage = () => {
     cost: '',
     itemId: '',
     unitId: ''
+
   });
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -103,17 +104,25 @@ const MaintenancePage = () => {
   };
 
   // Function to handle edit modal opening
-  const openEditModal = (record) => {
-    setEditingRecord(record);
-    setFormData({
-      date: record.date,
-      description: record.description,
-      cost: record.cost,
-      itemId: record.itemId,
-      unitId: record.unitId
-    });
-    setIsModalOpen(true);
-  };
+const openEditModal = (record) => {
+  setEditingRecord(record);
+
+  // Check if itemId exists, if so set isItem to true, otherwise false
+  const isItem = record.itemId != null;
+
+  setFormData({
+    date: record.date,
+    description: record.description,
+    cost: record.cost,
+    itemId: record.itemId,
+    unitId: record.unitId,
+    isItem: isItem, // Set the initial state of isItem based on the record
+    name: isItem ? '' : record.name // If it's an item, name is not used
+  });
+
+  setIsModalOpen(true);
+};
+
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -138,80 +147,110 @@ const MaintenancePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+  
+    // Dynamically build the payload based on whether isItem is true or false
+    const payload = {
+      date: formData.date,
+      description: formData.description,
+      cost: parseFloat(formData.cost),
+      unitId: parseInt(formData.unitId),
+      isItem: formData.isItem,
+      ...(formData.isItem && { itemId: parseInt(formData.itemId) }), // Include itemId if isItem is true
+      ...(formData.isItem === false && { name: formData.name }) // Include name if isItem is false
+    };
+  
     try {
       const response = await axios.put(
         `${process.env.REACT_APP_BASE_URL}maintenance/${editingRecord.id}`,
-        {
-          date: formData.date,
-          description: formData.description,
-          cost: parseFloat(formData.cost),
-          itemId: parseInt(formData.itemId),
-          unitId: parseInt(formData.unitId)
-        }
+        payload
       );
       const updatedData = maintenanceData.map((item) =>
         item.id === editingRecord.id ? response.data : item
       );
       setMaintenanceData(updatedData);
       closeModal();
-
+  
       setModalOpen(true);
       setMessageType('success');
-      setMessage('Maintenance data updated successfully!')
+      setMessage('Maintenance data updated successfully!');
     } catch (err) {
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Unable to edit Maintenance data')
+      setMessage('Unable to edit Maintenance data');
     } finally {
       setLoading(false);
     }
   };
+  
 
   const columns = [
     {
-        label: 'Item',
-        key: 'itemName',
-        render: (row) => getItemName(row.itemId), // Display item name
+      label: 'Item',
+      key: 'itemName',
+      render: (row) => getItemName(row.itemId),
+      style: { width: '150px' },  // Minimized column size for 'Item'
+    },
+    {
+      label: 'Name',
+      key: 'name',
+      style: { width: '150px' },  // Minimized column size for 'Name'
+    },
+    {
+      label: 'Unit',
+      key: 'unitNumber',
+      render: (row) => getUnitNumber(row.unitId),
+      style: { width: '100px' },  // Minimized column size for 'Unit'
+    },
+    {
+      label: 'Description',
+      key: 'description',
+      style: { width: '200px' },  // Minimized column size for 'Description'
+    },
+    {
+      label: 'Cost',
+      key: 'cost',
+      style: { width: '100px' },  // Minimized column size for 'Cost'
+    },
+    {
+      label: 'Maintenance Date',
+      key: 'date',
+      render: (row) => {
+        if (row.date) {
+          const date = new Date(row.date);
+          return date.toLocaleDateString('en-US');
+        }
+        return 'N/A';
       },
-      {
-        label: 'Unit',
-        key: 'unitNumber',
-        render: (row) => getUnitNumber(row.unitId), // Display unit number
-      },
-      { label: 'Description', key: 'description' },
-      { label: 'Cost', key: 'cost' },
-      { 
-          label: 'Date', 
-          key: 'date', 
-          render: (row) => {
-            if (row.date) {
-              const date = new Date(row.date);
-              return date.toLocaleDateString('en-US'); 
-            }
-            return 'N/A'; 
-          }
-        },
+      style: { width: '150px' },  // Minimized column size for 'Date'
+    },
     {
       label: 'Actions',
       key: 'actions',
       render: (row) => (
-        <div>
+        <div className="flex justify-end space-x-2">
           <button
             onClick={() => openEditModal(row)}
-             className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+            className="bg-blue-500 text-white px-3 py-1 rounded-md text-sm"
           >
             Edit
           </button>
           <button
             onClick={() => handleDeleteButtonClick(row)}
-            className="bg-red-500 text-white px-4 py-2 rounded-md"
+            className="bg-red-500 text-white px-3 py-1 rounded-md text-sm"
           >
             Delete
           </button>
+          <button
+            onClick={() => (row)}
+            className="bg-gray-500 text-white px-3 py-1 rounded-md text-sm"
+          >
+            Details
+          </button>
         </div>
-      )
-    }
+      ),
+    },
   ];
+  
 
   const handleAddClick = () => {
     window.location.href = '/app/add-maintenance';
@@ -236,6 +275,51 @@ const MaintenancePage = () => {
           <div className="modal-box">
             <h3 className="text-xl font-semibold">Edit Maintenance Record</h3>
             <form onSubmit={handleSubmit} className="mt-4">
+
+            {/* <div className="mb-4">
+              <label htmlFor="isItem" className="block text-sm">Is Item?</label>
+              <input
+                type="checkbox"
+                id="isItem"
+                name="isItem"
+                checked={formData.isItem}
+                onChange={handleInputChange}
+                className="checkbox"
+              />
+            </div> */}
+
+          {formData.isItem ? (
+            <div className="mb-4">
+              <label htmlFor="itemId" className="block text-sm">Item</label>
+              <select
+                id="itemId"
+                name="itemId"
+                value={formData.itemId}
+                onChange={handleInputChange}
+                className="select select-bordered w-full"
+              >
+                {items.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.itemName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <div className="mb-4">
+              <label htmlFor="name" className="block text-sm">Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name || ''}
+                onChange={handleInputChange}
+                className="input input-bordered w-full"
+              />
+            </div>
+          )}
+
+
               <div className="mb-4">
                 <label htmlFor="date" className="block text-sm">Date</label>
                 <input
@@ -272,7 +356,7 @@ const MaintenancePage = () => {
                   step="0.01"
                 />
               </div>
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label htmlFor="itemId" className="block text-sm">Item</label>
                 <select
                   id="itemId"
@@ -288,7 +372,7 @@ const MaintenancePage = () => {
                     </option>
                   ))}
                 </select>
-              </div>
+              </div> */}
               <div className="mb-4">
                 <label htmlFor="unitId" className="block text-sm">Unit</label>
                 <select

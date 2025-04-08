@@ -39,11 +39,7 @@ const AllOrdersPage = () => {
   // Handle edit button click
   const handleEditClick = (order) => {
     setSelectedOrder(order);
-    setOrderDate(order.orderDate);
-    setAmount(order.amount);
-    setNotes(order.notes);
-    setReceiptImage(order.receiptImage);
-    setStatus(order.status);
+    setStatus(order.status); // Set initial status of selected order
     setIsEditModalOpen(true);
   };
 
@@ -60,53 +56,42 @@ const AllOrdersPage = () => {
   };
 
   // Handle edit request
-  const handleEdit = async () => {
+  const handleApproveStatus = async (orderId, newStatus) => {
     setLoading(true);
+    const token = localStorage.getItem('token');  // Fetch token from localStorage
+  
     try {
-      const updatedOrder = {
-        orderDate,
-        amount,
-        notes,
-        receiptImage,
-        orderTypeId: selectedOrder.orderTypeId,
-        status
-      };
-
-      const formData = new FormData();
-      formData.append('orderDate', updatedOrder.orderDate);
-      formData.append('amount', updatedOrder.amount);
-      formData.append('notes', updatedOrder.notes);
-      formData.append('orderTypeId', updatedOrder.orderTypeId);
-      formData.append('status', updatedOrder.status);
-      if (receiptImage instanceof File) {
-        formData.append('receiptImage', receiptImage);
-      }
-
-      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}order/${selectedOrder.id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: `Bearer ${token}`
-        },
-      });
-      const updatedData = orders.map((order) =>
-        order.id === selectedOrder.id ? response.data : order
+      // Send the PUT request to update the status
+      const response = await axios.put(
+        `${process.env.REACT_APP_BASE_URL}order/approve/${orderId}`,
+        { status: newStatus },  // Only the status is updated
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,  // Include the token in the Authorization header
+          },
+        }
       );
-      setOrders(updatedData);
-      setIsEditModalOpen(false);
-      setSelectedOrder(null);
-
+  
+      // If the response is successful, update the order list with the new status
+      const updatedOrders = orders.map((order) =>
+        order.id === orderId ? response.data : order
+      );
+      setOrders(updatedOrders);
+  
+      // Show success message in a modal
       setModalOpen(true);
       setMessageType('success');
-      setMessage('Order updated successfully.');
+      setMessage('Order status updated successfully.');
     } catch (error) {
+      // If an error occurs, show an error message in a modal
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Unable to update order.');
+      setMessage('Unable to update order status.');
     } finally {
       setLoading(false);
     }
   };
-
+  
   // Handle delete request
   const handleDelete = async () => {
     setLoading(true);
@@ -159,7 +144,7 @@ const AllOrdersPage = () => {
           </button>
           <button
             onClick={() => handleDetailClick(row)}
-            className="bg-green-500 text-white px-4 py-2 rounded-md"
+            className="bg-gray-500 text-white px-4 py-2 rounded-md"
           >
             Detail
           </button>
@@ -179,50 +164,18 @@ const AllOrdersPage = () => {
           showSearch={true}
         />
       )}
-      {/* Edit Modal */}
+      {/* Edit Modal to change Status */}
 {isEditModalOpen && (
   <div className="mt-10 fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
     <div className="bg-base-100 p-6 rounded-md w-1/3 max-h-[80vh] overflow-y-auto">
-      <h2 className="text-2xl font-bold mb-4">Edit Order</h2>
-      <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
-        <div className="mb-4">
-          <label htmlFor="orderDate" className="block text-sm font-medium text-white-700">
-            Order Date
-          </label>
-          <input
-            type="date"
-            id="orderDate"
-            value={orderDate.split('T')[0]}
-            onChange={(e) => setOrderDate(e.target.value)}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="amount" className="block text-sm font-medium text-white-700">
-            Amount
-          </label>
-          <input
-            type="number"
-            id="amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="notes" className="block text-sm font-medium text-white-700">
-            Notes
-          </label>
-          <textarea
-            id="notes"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          ></textarea>
-        </div>
+      <h2 className="text-2xl font-bold mb-4">Edit Order Status</h2>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleApproveStatus(selectedOrder.id, status);  // Only update the status
+        }}
+      >
+        {/* Status Field */}
         <div className="mb-4">
           <label htmlFor="status" className="block text-sm font-medium text-white-700">
             Status
@@ -239,18 +192,8 @@ const AllOrdersPage = () => {
             <option value="canceled">Canceled</option>
           </select>
         </div>
-        <div className="mb-4">
-          <label htmlFor="receiptImage" className="block text-sm font-medium text-white-700">
-            Receipt Image
-          </label>
-          <input
-            type="file"
-            id="receiptImage"
-            onChange={(e) => setReceiptImage(e.target.files[0])}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        
+
+        {/* Submit & Cancel Buttons */}
         <div className="flex justify-end">
           <button
             type="submit"
@@ -272,6 +215,7 @@ const AllOrdersPage = () => {
   </div>
 )}
 
+      
 
       {/* Delete Modal */}
       {isDeleteModalOpen && (

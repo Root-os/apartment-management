@@ -5,6 +5,7 @@ import Modal from '../../components/Modal';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import LoadingComponent from '../../components/loading';
 
 // Define the validation schema for editing notification
 const validationSchema = yup.object().shape({
@@ -39,7 +40,7 @@ const ViewNotification = () => {
             Authorization: `Bearer ${token}`
           }
         });
-        setNotifications(response.data.rows);
+        setNotifications(response.data.data || []); // Use 'data' instead of 'rows'
       } catch (err) {
         setError('An error occurred while fetching the notifications.');
       } finally {
@@ -64,20 +65,20 @@ const ViewNotification = () => {
     fetchNotificationTypes();
   }, []);
 
-  // Handle form submit for editing notification
   const onSubmit = async (data) => {
     setLoading(true);
-
     try {
       const response = await axios.put(`${process.env.REACT_APP_BASE_URL}notification/update/${selectedNotification.id}`, data, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-
       setModalMessageType('success');
       setModalMessage('Notification updated successfully');
-      setNotifications(notifications.map(notification => notification.id === selectedNotification.id ? response.data : notification));
+      // Adjust based on actual API response structure
+      setNotifications(notifications.map(notification => 
+        notification.id === selectedNotification.id ? response.data.notification || response.data : notification
+      ));
       setSelectedNotification(null);
       setIsEditModalOpen(false);
     } catch (err) {
@@ -88,17 +89,14 @@ const ViewNotification = () => {
     }
   };
 
-  // Handle delete notification
   const handleDelete = async () => {
     setLoading(true);
-
     try {
       await axios.delete(`${process.env.REACT_APP_BASE_URL}notification/delete-admin/${selectedNotification.id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-
       setModalMessageType('success');
       setModalMessage('Notification deleted successfully');
       setNotifications(notifications.filter(notification => notification.id !== selectedNotification.id));
@@ -112,7 +110,6 @@ const ViewNotification = () => {
     }
   };
 
-  // Open edit form and set selected notification
   const handleEditClick = (notification) => {
     setSelectedNotification(notification);
     setValue('title', notification.title);
@@ -122,7 +119,6 @@ const ViewNotification = () => {
     setIsEditModalOpen(true);
   };
 
-  // Open delete confirmation modal
   const handleDeleteClick = (notification) => {
     setSelectedNotification(notification);
     setIsDeleteModalOpen(true);
@@ -134,11 +130,14 @@ const ViewNotification = () => {
     { key: 'type', label: 'Type', render: (notification) => notification.type ? notification.type.name : 'N/A' },
     { key: 'receiver_type', label: 'Receiver Type' },
     { 
-        key: 'isRead', 
-        label: 'Status', 
-        render: (notification) => notification.isRead ? "Read" : "Sent" 
-      },
-    { key: 'actions', label: 'Actions', render: (notification) => (
+      key: 'isRead', 
+      label: 'Status', 
+      render: (notification) => notification.isRead ? "Read" : "Sent" 
+    },
+    { 
+      key: 'actions', 
+      label: 'Actions', 
+      render: (notification) => (
         <div className="flex space-x-2">
           <button
             onClick={() => handleEditClick(notification)}
@@ -159,7 +158,6 @@ const ViewNotification = () => {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold text-center mb-6">Notifications</h1>
       {error && (
         <div className="p-4 mb-6 bg-red-100 text-red-700 border border-red-400 rounded-md">
           {error}
@@ -167,7 +165,7 @@ const ViewNotification = () => {
       )}
       {loading ? (
         <div className="text-center">
-          <p>Loading.</p>
+         <LoadingComponent/>
         </div>
       ) : (
         <TableComponent

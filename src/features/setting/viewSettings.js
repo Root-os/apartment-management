@@ -15,6 +15,8 @@ const CurrencySettingsPage = () => {
     email: '',
     phoneNumber: '',
     postOfficeAddress: '',
+    chargingCost: '',
+    parkingCost: '',
     logo: null, // New field for logo
     seal: null, // New field for seal
   });
@@ -50,6 +52,8 @@ const CurrencySettingsPage = () => {
       email: setting.email,
       phoneNumber: setting.phoneNumber,
       postOfficeAddress: setting.postOfficeAddress,
+      chargingCost: setting.chargingCost || '',
+      parkingCost: setting.parkingCost || '', 
       logo: null, // Reset the logo to null
       seal: null, // Reset the seal to null
     });
@@ -77,6 +81,8 @@ const CurrencySettingsPage = () => {
     formDataToSubmit.append('email', formData.email);
     formDataToSubmit.append('phoneNumber', formData.phoneNumber);
     formDataToSubmit.append('postOfficeAddress', formData.postOfficeAddress);
+    formDataToSubmit.append('chargingCost', formData.chargingCost); // Add chargingCost
+    formDataToSubmit.append('parkingCost', formData.parkingCost); // Add parkingCost
   
     // Append the files (logo and seal) if selected
     if (formData.logo) {
@@ -98,22 +104,25 @@ const CurrencySettingsPage = () => {
         }
       )
       .then(() => {
-        // Create object URLs for the new logo and seal
-        const updatedLogoUrl = formData.logo ? URL.createObjectURL(formData.logo) : selectedSetting.logos;
-        const updatedSealUrl = formData.seal ? URL.createObjectURL(formData.seal) : selectedSetting.seal;
-  
-        // Update the state immediately to reflect the new values
+        // Update the data immediately to reflect the new values
         const updatedData = data.map((item) =>
           item.id === selectedSetting.id
             ? {
                 ...item,
-                logos: updatedLogoUrl,
-                seal: updatedSealUrl,
+                buildingName: formData.buildingName,  // Update the text fields
+                buildingAddress: formData.buildingAddress,
+                email: formData.email,
+                phoneNumber: formData.phoneNumber,
+                postOfficeAddress: formData.postOfficeAddress,
+                chargingCost: formData.chargingCost,  // Update charging cost
+                parkingCost: formData.parkingCost,  // Update parking cost
+                logos: formData.logo ? URL.createObjectURL(formData.logo) : item.logos,  // Update the logos if changed
+                seal: formData.seal ? URL.createObjectURL(formData.seal) : item.seal,  // Update the seal if changed
               }
             : item
         );
-  
-        setData(updatedData); // Update the table with the new logo and seal URLs
+    
+        setData(updatedData); // Update the table with the new data
         setIsEditModalOpen(false); // Close the edit modal
         setModalOpen(true); // Open the success modal
         setMessageType('success');
@@ -126,9 +135,11 @@ const CurrencySettingsPage = () => {
         setMessage('Unable to update setting.');
       })
       .finally(() => {
-        setButtonLoading(false); // Stop the loading indicator
+        setButtonLoading(false); 
       });
   };
+  
+  
   
   
 
@@ -173,6 +184,16 @@ const CurrencySettingsPage = () => {
     { key: 'email', label: 'Email' },
     { key: 'phoneNumber', label: 'Phone Number' },
     { key: 'postOfficeAddress', label: 'Post Office Address' },
+    {
+      key: 'chargingCost',
+      label: 'Charging Cost',
+      render: (setting) => setting.chargingCost || 'N/A', // Render charging cost
+    },
+    {
+      key: 'parkingCost',
+      label: 'Parking Cost',
+      render: (setting) => setting.parkingCost || 'N/A', // Render parking cost
+    },
     {
       key: 'logos',
       label: 'Logo',
@@ -310,6 +331,31 @@ const CurrencySettingsPage = () => {
                   className="w-full bg-base-100 p-2 border rounded"
                 />
               </div>
+
+              <div>
+          <label className="block text-sm font-medium text-white-700 mb-1">Charging Cost</label>
+          <input
+            type="text"
+            value={formData.chargingCost}
+            onChange={(e) =>
+              setFormData({ ...formData, chargingCost: e.target.value })
+            }
+            className="w-full bg-base-100 p-2 border rounded"
+          />
+        </div>
+
+        {/* New field for Parking Cost */}
+        <div>
+          <label className="block text-sm font-medium text-white-700 mb-1">Parking Cost</label>
+          <input
+            type="text"
+            value={formData.parkingCost}
+            onChange={(e) =>
+              setFormData({ ...formData, parkingCost: e.target.value })
+            }
+            className="w-full bg-base-100 p-2 border rounded"
+          />
+        </div>
 
               {/* File Upload for Logo */}
               <div>

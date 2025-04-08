@@ -125,7 +125,7 @@ const AddBillPayment = () => {
           <label htmlFor="tenantId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tenant</label>
           <select
             id="tenantId"
-            className="w-full bg-base-100 p-2 border border-gray-300 rounded text-gray-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             value={tenantId}
             onChange={(e) => setTenantId(e.target.value)}
             required
@@ -141,12 +141,12 @@ const AddBillPayment = () => {
           <label htmlFor="billPaymentTypeId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Bill Payment Type</label>
           <select
             id="billPaymentTypeId"
-            className="w-full bg-base-100 p-2 border border-gray-300 rounded text-gray-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             value={billPaymentTypeId}
             onChange={(e) => setBillPaymentTypeId(e.target.value)}
             required
           >
-            <option value="" disabled>Select Bill Payment Type</option>
+            <option value="" disabled>Select</option>
             {billTypes.map((billType) => (
               <option key={billType.id} value={billType.id} className="text-black dark:text-gray-300">{billType.typeName}</option>
             ))}
@@ -158,7 +158,7 @@ const AddBillPayment = () => {
           <input
             type="number"
             id="amount"
-            className="w-full bg-base-100 p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+             className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             required
@@ -172,7 +172,7 @@ const AddBillPayment = () => {
           <input
             type="number"
             id="amountPaid"
-            className="w-full bg-base-100 p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+             className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             value={amountPaid}
             onChange={(e) => setAmountPaid(e.target.value)}
             required
@@ -186,7 +186,7 @@ const AddBillPayment = () => {
           <input
             type="date"
             id="startDate"
-            className="w-full bg-base-100 p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             required
@@ -198,7 +198,7 @@ const AddBillPayment = () => {
           <input
             type="date"
             id="endDate"
-            className="w-full bg-base-100 p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
             required
@@ -209,7 +209,7 @@ const AddBillPayment = () => {
           <label htmlFor="paymentMethod" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Method</label>
           <select
             id="paymentMethod"
-            className="w-full bg-base-100 p-2 border border-gray-300 rounded text-gray-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             value={paymentMethod}
             onChange={(e) => setPaymentMethod(e.target.value)}
             required
@@ -226,7 +226,7 @@ const AddBillPayment = () => {
           <input
             type="date"
             id="paymentDate"
-            className="w-full bg-base-100 p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             value={paymentDate}
             onChange={(e) => setPaymentDate(e.target.value)}
             required
@@ -237,7 +237,7 @@ const AddBillPayment = () => {
           <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
           <select
             id="status"
-            className="w-full bg-base-100 p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             value={status}
             onChange={(e) => setStatus(e.target.value)}
             required

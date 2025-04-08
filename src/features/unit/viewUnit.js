@@ -261,16 +261,6 @@ const UnitList = () => {
         return <ul>{problems.map((item, index) => <li key={index}>{item}</li>)}</ul>;
       },
     },
-    // {
-    //   Header: "Rented Date",
-    //   accessor: "rentedDate",
-    //   Cell: ({ value }) => (value ? new Date(value).toLocaleDateString() : "N/A"),
-    // },
-    // {
-    //   Header: "Vacated Date",
-    //   accessor: "vacatedDate",
-    //   Cell: ({ value }) => (value ? new Date(value).toLocaleDateString() : "N/A"),
-    // },
     {
       Header: "Floor",
       accessor: "floorId",
@@ -518,7 +508,7 @@ const handleAddClick = () => {  window.location.href = '/app/unit-add';};
               <ul>
                 {unitDetails.units.map(unit => (
                   <li key={unit.id}>
-                    <strong>Unit Number:</strong> {unit.unitNumber}<br />
+                    <strong className="text-blue-600" >Unit Number:</strong> {unit.unitNumber}<br />
                     <strong>Size:</strong> {unit.size} sq ft<br />
                     <strong>Status:</strong> {unit.status}<br />
                     <strong>Available Equipments:</strong>
@@ -533,8 +523,6 @@ const handleAddClick = () => {  window.location.href = '/app/unit-add';};
                         <li key={index}>{problem}</li>
                       ))}
                     </ul>
-                    <strong>Rented Date:</strong> {new Date(unit.rentedDate).toLocaleDateString()}<br />
-                    <strong>Vacated Date:</strong> {new Date(unit.vacatedDate).toLocaleDateString()}<br />
                   </li>
                 ))}
               </ul>

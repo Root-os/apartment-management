@@ -266,24 +266,19 @@ const ViewBillPayment = () => {
       {/* Detail Modal */}
       {isDetailModalOpen && selectedPayment && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 px-4">
-          <div className="bg-white p-6 rounded-lg w-full max-w-2xl">
+          <div className="bg-base-100 px-6 rounded-lg w-full max-w-3xl sm:max-w-md">
             <h2 className="text-xl mb-4">Payment Details</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <p><strong>Tenant Name:</strong> {selectedPayment.Tenant?.fullName || 'N/A'}</p>
               <p><strong>Unit Number:</strong> {selectedPayment.Tenant?.Unit?.unitNumber || 'N/A'}</p>
               <p><strong>Floor Number:</strong> {selectedPayment.Tenant?.Floor?.floorNumber || 'N/A'}</p>
               <p><strong>Bill Type:</strong> {selectedPayment.BillType?.typeName || 'N/A'}</p>
-              <p><strong>Amount:</strong> {selectedPayment.amountPaid || 'N/A'}</p>
               <p><strong>Start Date:</strong> {selectedPayment.startDate ? new Date(selectedPayment.startDate).toLocaleDateString() : 'N/A'}</p>
               <p><strong>End Date:</strong> {selectedPayment.endDate ? new Date(selectedPayment.endDate).toLocaleDateString() : 'N/A'}</p>
+              <p><strong>Amount:</strong> {selectedPayment.amountPaid || 'N/A'}</p>
               <p><strong>Status:</strong> {selectedPayment.status || 'N/A'}</p>
               <p><strong>Payment Method:</strong> {selectedPayment.paymentMethod || 'N/A'}</p>
               <p><strong>Payment Date:</strong> {selectedPayment.paymentDate ? new Date(selectedPayment.paymentDate).toLocaleDateString() : 'N/A'}</p>
-              {/* <p><strong>Document:</strong> {selectedPayment.Tenant?.document ? (
-                <a href={selectedPayment.Tenant.document} target="_blank" rel="noopener noreferrer" className="text-blue-500">View Document</a>
-              ) : 'N/A'}</p> */}
-              <p><strong>Lease End Date:</strong> {selectedPayment.Tenant?.leaseEndDate ? new Date(selectedPayment.Tenant.leaseEndDate).toLocaleDateString() : 'N/A'}</p>
-              <p><strong>Remaining Days:</strong> {selectedPayment.Tenant?.remainingDays ?? 'N/A'}</p>
             </div>
             <div className="flex justify-center mt-4">
               <button onClick={() => setIsDetailModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Close</button>
@@ -291,6 +286,7 @@ const ViewBillPayment = () => {
           </div>
         </div>
       )}
+
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

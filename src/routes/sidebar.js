@@ -140,6 +140,18 @@ const tenantRoutes =
     },
     ]
   },
+  {
+    path: '', 
+    icon: <MailIcon className={`${iconClasses} inline` }/>, 
+    name: 'Communication', 
+    submenu : [
+      {
+        path: '/app/my-notification',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'My Notfication ',
+      }
+    ]
+  }
 ];
 
 const employeeRoutes = [
@@ -436,11 +448,11 @@ const adminRoutes =
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Ten Days Tenant',
       },
-      {
-        path: '/app/tenant-filter',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Tenants Filter',
-      },
+      // {
+      //   path: '/app/tenant-filter',
+      //   icon: <EyeIcon className={submenuIconClasses}/>,
+      //   name: 'Tenants Filter',
+      // },
       {
         path: '/app/tenant-bill-add',
         icon: <PlusIcon className={submenuIconClasses}/>,

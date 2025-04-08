@@ -229,7 +229,7 @@ const FloorManagement = () => {
           <ul>
             {floorDetails.freeUnits.map(unit => (
               <li key={unit.id}>
-                <strong>Unit Number:</strong> {unit.unitNumber}<br />
+                <strong className="text-blue-700">Unit Number:</strong> {unit.unitNumber}<br />
                 <strong>Size:</strong> {unit.size} sq ft<br />
                 <strong>Status:</strong> {unit.status}<br />
                 <strong>Available Equipments:</strong>
@@ -244,8 +244,6 @@ const FloorManagement = () => {
                     <li key={index}>{problem}</li>
                   ))}
                 </ul>
-                <strong>Rented Date:</strong> {new Date(unit.rentedDate).toLocaleDateString()}<br />
-                <strong>Vacated Date:</strong> {new Date(unit.vacatedDate).toLocaleDateString()}<br />
               </li>
             ))}
           </ul>
