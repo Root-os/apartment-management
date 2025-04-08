@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
-import Modal from '../../components/Modal';
+import Modal from '../../components/Modal'; // Imported Modal for success/error messages
 import LoadingComponent from '../../components/loading';
 
 const token = localStorage.getItem('token');
@@ -10,7 +10,7 @@ const SentEmail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [emails, setEmails] = useState([]);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false); // Custom state for delete confirmation modal
   const [selectedEmail, setSelectedEmail] = useState(null);
   const [modalMessageType, setModalMessageType] = useState('success');
   const [modalMessage, setModalMessage] = useState('');
@@ -35,7 +35,7 @@ const SentEmail = () => {
   }, []);
 
   const handleDelete = async () => {
-    setLoading(true);
+    
 
     try {
       await axios.delete(`${process.env.REACT_APP_BASE_URL}email/delete-admin/${selectedEmail.id}`, {
@@ -47,19 +47,17 @@ const SentEmail = () => {
       setModalMessageType('success');
       setModalMessage('Email deleted successfully');
       setEmails(emails.filter(email => email.id !== selectedEmail.id));
-      setIsDeleteModalOpen(false);
+      setDeleteModalOpen(false); // Close the delete modal after deletion
       setSelectedEmail(null);
     } catch (err) {
       setModalMessageType('error');
       setModalMessage(err.response?.data?.message || 'An error occurred while deleting the email.');
-    } finally {
-      setLoading(false);
-    }
+    } 
   };
 
   const handleDeleteClick = (email) => {
     setSelectedEmail(email);
-    setIsDeleteModalOpen(true);
+    setDeleteModalOpen(true); // Show delete confirmation modal
   };
 
   const columns = [
@@ -89,7 +87,7 @@ const SentEmail = () => {
       )}
       {loading ? (
         <div className="text-center">
-          <LoadingComponent/>
+          <LoadingComponent />
         </div>
       ) : (
         <TableComponent
@@ -102,34 +100,39 @@ const SentEmail = () => {
         />
       )}
 
-      {/* Delete Confirmation Modal */}
-      <Modal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        messageType="warning"
-        message="Are you sure you want to delete this email?"
-        actions={[
-          {
-            label: "Cancel",
-            onClick: () => setIsDeleteModalOpen(false),
-            className: "bg-gray-400 text-white px-4 py-2 rounded"
-          },
-          {
-            label: "Delete",
-            onClick: handleDelete,
-            className: "bg-red-500 text-white px-4 py-2 rounded"
-          }
-        ]}
-      />
+      {/* Custom Delete Confirmation Modal */}
+      {deleteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-base-100 p-6 rounded-lg w-98">
+            <h2 className="text-xl font-bold mb-4">Confirm Delete</h2>
+            <p>Are you sure you want to delete this email?</p>
+            <div className="mt-4 flex justify-end gap-2">
+              <button
+                onClick={() => setDeleteModalOpen(false)} // Close modal on cancel
+                className="px-4 py-2 bg-gray-300 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete} // Proceed with delete
+                className="px-4 py-2 bg-red-500 text-white rounded"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Success/Error Modal */}
-      <Modal
-        isOpen={modalMessage !== ''}
-        onClose={() => setModalMessage('')}
-        messageType={modalMessageType === 'success' ? 'success' : 'error'}
-        message={modalMessage}
-       
-      />
+      {/* Success/Error Modal controlled by state */}
+      {modalMessage && (
+        <Modal
+          isOpen={modalMessage !== ''}
+          onClose={() => setModalMessage('')} 
+          messageType={modalMessageType}
+          message={modalMessage}
+        />
+      )}
     </div>
   );
 };

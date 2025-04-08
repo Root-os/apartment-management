@@ -47,7 +47,7 @@ const TenantInventoryTable = () => {
         </ul>
       ),
     },
-    { label: 'Checked By', key: 'checkedBy' },
+    // { label: 'Checked By', key: 'checkedBy' },
     { label: 'Notes', key: 'notes' },
   ];
 

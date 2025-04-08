@@ -64,18 +64,54 @@ const ChargingPage = () => {
   };
 
   const handleEditClick = (charging) => {
-    console.log('Edit Clicked:', charging);
     setSelectedCharging(charging);
     setCarPlate(charging.carPlate);
     setCarName(charging.carName);
-    setIsTenant(charging.isTenant);
-    setTenantId(charging.tenantId);
     setChargingStartTime(formatToLocalDateTime(charging.chargingStartTime));
     setChargingEndTime(formatToLocalDateTime(charging.chargingEndTime));
     setChargingCost(charging.chargingCost);
     setStatus(charging.status);
+    setIsTenant(charging.isTenant); // Set tenant status based on data
+    setTenantId(charging.tenantId || ''); // Ensure it's either an empty string or a valid tenant ID
+  
+    // If tenant exists and has a car, autofill the car details
+    if (charging.isTenant && charging.tenantId) {
+      const tenant = tenants.find((tenant) => tenant.id === charging.tenantId);
+      if (tenant && tenant.TenantVehicles && tenant.TenantVehicles.length > 0) {
+        const tenantCar = tenant.TenantVehicles[0]; // Assuming the first car
+        setCarPlate(tenantCar.carPlate || '');
+        setCarName(tenantCar.carName || '');
+      }
+    }
+  
     setIsEditModalOpen(true);
   };
+  
+  // Handle tenant change in the edit form
+  const handleTenantChange = (e) => {
+    const selectedTenantId = e.target.value;
+    console.log("Selected Tenant ID:", selectedTenantId);  // Log selected tenant ID
+    setTenantId(selectedTenantId);
+  
+    // Reset car details if tenant is changed
+    setCarPlate('');
+    setCarName('');
+  
+    const selectedTenant = tenants.find((tenant) => tenant.id === Number(selectedTenantId));  // Log selected tenant
+    if (selectedTenant) {
+      console.log("Selected Tenant:", selectedTenant);  // Log selected tenant
+      // If the tenant has vehicles, auto-fill the car details
+      if (selectedTenant.TenantVehicles && selectedTenant.TenantVehicles.length > 0) {
+        const tenantCar = selectedTenant.TenantVehicles[0];  // Get the first car
+        setCarPlate(tenantCar.carPlate || '');
+        setCarName(tenantCar.carName || '');
+      }
+    } else {
+      console.error("Tenant not found");
+    }
+  };
+  
+  
 
   const handleDeleteClick = (charging) => {
     setSelectedCharging(charging);
@@ -267,16 +303,16 @@ const ChargingPage = () => {
               </div>
               <div className="mb-4">
                 <label htmlFor="tenantId" className="block text-sm font-medium text-white-700">
-                  Tenant Name
+                  Select Tenant
                 </label>
                 <select
                   id="tenantId"
-                  value={tenantId}
-                  onChange={(e) => setTenantId(e.target.value)}
+                  value={tenantId}  // Set the selected tenant ID
+                  onChange={handleTenantChange}  // Trigger the tenant change handler
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled={!isTenant}
+                  disabled={!isTenant}  // Disable the field if isTenant is false
                 >
-                  <option value="">Select Tenant</option>
+                  <option value="">Select a tenant</option>
                   {tenants.map((tenant) => (
                     <option key={tenant.id} value={tenant.id}>
                       {tenant.fullName}
@@ -284,6 +320,7 @@ const ChargingPage = () => {
                   ))}
                 </select>
               </div>
+
               <div className="mb-4">
                 <label htmlFor="chargingStartTime" className="block text-sm font-medium text-white-700">
                   Charging Start Time

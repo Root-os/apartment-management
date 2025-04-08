@@ -22,6 +22,9 @@ const ComplaintsPage = () => {
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
 
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [complaintToView, setComplaintToView] = useState(null);
+
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false); 
   const [currentImage, setCurrentImage] = useState(null); 
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -63,6 +66,11 @@ const ComplaintsPage = () => {
     fetchComplaints();
     fetchEmployees();
   }, []);
+
+  const handleDetailClick = (complaint) => {
+    setComplaintToView(complaint);
+    setIsDetailModalOpen(true);
+  };
 
   // Handle delete button click
   const handleDeleteClick = (complaint) => {
@@ -254,7 +262,7 @@ const ComplaintsPage = () => {
       key: 'assignedEmployeeId',
       render: (row) => renderEmployeeName(row),
     },
-    { label: 'Complain Description', key: 'description' },
+    // { label: 'Complain Description', key: 'description' },
     { label: 'Urgency', key: 'urgency' },
     { label: 'Status', key: 'status' },
     { label: 'Tenant Feedback', key: 'tenantFeedback' },
@@ -281,6 +289,9 @@ const ComplaintsPage = () => {
             className="bg-green-400 text-white py-1 px-2 rounded"
           >
            Status
+          </button>
+          <button onClick={() => handleDetailClick(row)} className="bg-gray-500 text-white py-1 px-2 rounded">
+            Detail
           </button>
         </div>
       ),
@@ -382,49 +393,69 @@ const ComplaintsPage = () => {
         )}
 
          {/* Image Viewer Modal */}
-         {isImageViewerOpen && (
-      <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
-        <div className="relative bg-white p-4 rounded-lg max-w-[90vw] max-h-[90vh] flex flex-col">
-          {/* Control Buttons */}
-          <div className="flex justify-between items-center mb-4 z-10">
-            <div className="flex space-x-2">
+          {isImageViewerOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+          <div className="relative bg-white p-4 rounded-lg max-w-[90vw] max-h-[90vh] flex flex-col">
+            {/* Control Buttons */}
+            <div className="flex justify-between items-center mb-4 z-10">
+              <div className="flex space-x-2">
+                <button
+                  onClick={zoomOut}
+                  className="text-white bg-gray-800 px-4 py-2 rounded-full"
+                >
+                  Zoom Out
+                </button>
+                <button
+                  onClick={zoomIn}
+                  className="text-white bg-gray-800 px-4 py-2 rounded-full"
+                >
+                  Zoom In
+                </button>
+              </div>
               <button
-                onClick={zoomOut}
-                className="text-white bg-gray-800 px-4 py-2 rounded-full"
+                onClick={closeImageViewer}
+                className="text-white bg-gray-800 px-2 py-1 rounded-full"
               >
-                Zoom Out
-              </button>
-              <button
-                onClick={zoomIn}
-                className="text-white bg-gray-800 px-4 py-2 rounded-full"
-              >
-                Zoom In
+                X
               </button>
             </div>
-            <button
-              onClick={closeImageViewer}
-              className="text-white bg-gray-800 px-2 py-1 rounded-full"
-            >
-              X
-            </button>
-          </div>
 
-          {/* Image Container */}
-          <div className="flex-1 overflow-auto">
-            <img
-              src={currentImage}
-              alt="Zoomed Image"
-              style={{
-                transform: `scale(${zoomLevel})`,
-                transition: 'transform 0.3s ease',
-                transformOrigin: 'center', 
-              }}
-              className="max-w-full max-h-[80vh] object-contain"
-            />
+            {/* Image Container */}
+            <div className="flex-1 overflow-auto">
+              <img
+                src={currentImage}
+                alt="Zoomed Image"
+                style={{
+                  transform: `scale(${zoomLevel})`,
+                  transition: 'transform 0.3s ease',
+                  transformOrigin: 'center', 
+                }}
+                className="max-w-full max-h-[80vh] object-contain"
+              />
+            </div>
           </div>
-        </div>
+                </div>
+          )}
+         {isDetailModalOpen && complaintToView && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+              <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
+                <h2 className="text-xl font-bold mb-4">Complaint Details</h2>
+                <div className="space-y-2">
+                  <p><strong>Assigned Employee:</strong> {complaintToView.assignedEmployee ? `${complaintToView.assignedEmployee.fname} ${complaintToView.assignedEmployee.lname}` : 'Unassigned'}</p>
+                  <p><strong>Description:</strong> {complaintToView.description || 'N/A'}</p>
+                  <p><strong>Urgency:</strong> {complaintToView.urgency || 'N/A'}</p>
+                  <p><strong>Status:</strong> {complaintToView.status || 'N/A'}</p>
+                  <p><strong>Tenant Feedback:</strong> {complaintToView.tenantFeedback || 'N/A'}</p>
+                  <p><strong>Images:</strong> {renderImages(complaintToView.images)}</p>
+                  </div>
+                <div className="mt-4 flex justify-end">
+                  <button onClick={() => setIsDetailModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">
+                    Close
+                  </button>
+                </div>
               </div>
-        )}
+            </div>
+          )}
          <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

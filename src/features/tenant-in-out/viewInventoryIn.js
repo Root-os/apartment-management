@@ -247,7 +247,7 @@ const TenantInventoryPage = () => {
     { label: 'Tenant Phone', key: 'tenantPhone' },
     { label: 'Inventory Type', key: 'type' },
     // { label: 'Checked By', key: 'checkedBy' },
-    { label: 'Notes', key: 'notes' },
+    // { label: 'Notes', key: 'notes' },
     // {
     //   label: 'Items',
     //   key: 'items',

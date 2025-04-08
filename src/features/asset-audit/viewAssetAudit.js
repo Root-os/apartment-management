@@ -10,19 +10,20 @@ const AssetAuditPage = () => {
   const [btnLoading, setBtnLoading] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [detailModalOpen, setDetailModalOpen] = useState(false); // New state for detail modal
   const [selectedAudit, setSelectedAudit] = useState(null);
   const [formData, setFormData] = useState({});
   const [assetTypes, setAssetTypes] = useState([]);
   const [items, setItems] = useState([]);
+  const [isItemAudit, setIsItemAudit] = useState(false);
+  const [isAssetAudit, setIsAssetAudit] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
 
-  // Fetch all initial data
   const fetchData = async () => {
     try {
-      
       const auditsResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}asset-audits`);
       if (auditsResponse.data.success) {
         setData(auditsResponse.data.data);
@@ -35,7 +36,6 @@ const AssetAuditPage = () => {
 
       const itemsResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}items`);
       console.log("Items Response:", itemsResponse.data);
-      // Since the response is a plain array, set it directly
       setItems(itemsResponse.data);
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -50,6 +50,11 @@ const AssetAuditPage = () => {
 
   const handleEdit = (row) => {
     setSelectedAudit(row);
+    const hasItemId = row.item_id || row.Item?.id;
+    const hasAssetTypeId = row.asset_type_id || row.AssetType?.id;
+    setIsItemAudit(hasItemId && !hasAssetTypeId);
+    setIsAssetAudit(hasAssetTypeId && !hasItemId);
+
     setFormData({
       item_id: row.item_id || row.Item?.id || '',
       asset_type_id: row.asset_type_id || row.AssetType?.id || '',
@@ -68,49 +73,52 @@ const AssetAuditPage = () => {
     setDeleteModalOpen(true);
   };
 
+  const handleDetail = (row) => {
+    setSelectedAudit(row);
+    setDetailModalOpen(true); // Open detail modal
+  };
+
   const submitEdit = async () => {
-  setBtnLoading(true);
-  try {
-    const requestData = {
-      ...formData,
-      item_id: formData.item_id || undefined,
-      asset_type_id: formData.asset_type_id || undefined,
-    };
-
-    console.log("Request Data:", requestData);  
-
-    const response = await axios.put(
-      `${process.env.REACT_APP_BASE_URL}asset-audits/${selectedAudit.id}`,
-      requestData
-    );
-
-    if (response.data.success) {
-      const updatedAudit = {
-        ...response.data.data,
-        Item: items.find(item => item.id === Number(formData.item_id)),
-        AssetType: assetTypes.find(type => type.id === Number(formData.asset_type_id))
+    setBtnLoading(true);
+    try {
+      const requestData = {
+        ...formData,
+        item_id: formData.item_id || undefined,
+        asset_type_id: formData.asset_type_id || undefined,
       };
 
-      setData(prevData => prevData.map(item => 
-        item.id === selectedAudit.id ? updatedAudit : item
-      ));
-      setEditModalOpen(false);
+      console.log("Request Data:", requestData);  
 
+      const response = await axios.put(
+        `${process.env.REACT_APP_BASE_URL}asset-audits/${selectedAudit.id}`,
+        requestData
+      );
+
+      if (response.data.success) {
+        const updatedAudit = {
+          ...response.data.data,
+          Item: items.find(item => item.id === Number(formData.item_id)),
+          AssetType: assetTypes.find(type => type.id === Number(formData.asset_type_id))
+        };
+
+        setData(prevData => prevData.map(item => 
+          item.id === selectedAudit.id ? updatedAudit : item
+        ));
+        setEditModalOpen(false);
+
+        setModalOpen(true);
+        setMessageType('success');
+        setMessage('Asset audit updated successfully');
+      }
+    } catch (error) {
+      console.error("Error updating audit:", error);
       setModalOpen(true);
-      setMessageType('success');
-      setMessage('Asset audit updated successfully');
+      setMessageType('error');
+      setMessage('Unable to update asset audit.');
+    } finally {
+      setBtnLoading(false);
     }
-  } catch (error) {
-    console.error("Error updating audit:", error);
-    setModalOpen(true);
-    setMessageType('error');
-    setMessage('Unable to update asset audit.');
-  } finally {
-    setBtnLoading(false);
-  }
-};
-
-  
+  };
 
   const confirmDelete = async () => {
     try {
@@ -141,58 +149,60 @@ const AssetAuditPage = () => {
       render: (row) => row.AssetType ? row.AssetType.name : 'N/A',
     },
     { label: 'Asset Name', key: 'asset_name' },
-    { label: 'Existing Amount', key: 'existing_amount' },
-    { label: 'Damaged Amount', key: 'damaged_amount' },
-    { label: 'Lost Amount', key: 'lost_amount' },
+    { label: 'Existing', key: 'existing_amount' }, 
+    // { label: 'Damaged', key: 'damaged_amount' },   
+    // { label: 'Lost', key: 'lost_amount' },         
     { label: 'Status', key: 'status' },
     {
-        label: 'Date',
-        key: 'date',
-        render: (row) => {
-          // Convert the ISO date string to just YYYY-MM-DD format
-          return row.date ? new Date(row.date).toLocaleDateString('en-CA') : 'N/A';
-          // 'en-CA' gives YYYY-MM-DD format. You can use other locales like:
-          // 'en-US' for MM/DD/YYYY
-          // 'en-GB' for DD/MM/YYYY
-        }
+      label: 'Date',
+      key: 'date',
+      render: (row) => row.date ? new Date(row.date).toLocaleDateString('en-CA') : 'N/A',
     },
     {
       label: 'Actions',
       key: 'actions',
       render: (row) => (
-        <div className="flex gap-2">
+        <div className="flex justify-end space-x-2">
           <button 
             onClick={() => handleEdit(row)}
-            className="px-2 py-1 bg-blue-500 text-white rounded"
+           className="bg-blue-500 text-white px-2 py-1 rounded-md"
           >
             Edit
           </button>
           <button 
             onClick={() => handleDelete(row)}
-            className="px-2 py-1 bg-red-500 text-white rounded"
+             className="bg-red-500 text-white px-1 py-1 rounded-md"
           >
             Delete
+          </button>
+          <button 
+            onClick={() => handleDetail(row)}
+            className="bg-gray-400 text-white py-1 px-1 rounded"
+          >
+            Detail
           </button>
         </div>
       )
     }
   ];
+
   const handleAddClick = () => {
-    window.location.href='/app/add-asset-audit'
-  }
+    window.location.href = '/app/add-asset-audit';
+  };
 
   return (
     <>
-      {loading ? (<LoadingComponent/>):(
-      <TableComponent 
-        title="Asset Audits" 
-        data={data} 
-        columns={columns} 
-        showSearch={true}
-        exportable={true}
-        onAdd={handleAddClick}
-      />
-    )}
+      {loading ? (<LoadingComponent />) : (
+        <TableComponent 
+          title="Asset Audits" 
+          data={data} 
+          columns={columns} 
+          showSearch={true}
+          exportable={true}
+          onAdd={handleAddClick}
+          className="min-w-full table-compact" // Suggesting a compact class
+        />
+      )}
       {/* Edit Modal */}
       {editModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -205,6 +215,7 @@ const AssetAuditPage = () => {
                   value={formData.item_id}
                   onChange={(e) => setFormData({...formData, item_id: e.target.value})}
                   className="w-full bg-base-100 p-2 border rounded"
+                  disabled={isAssetAudit}
                 >
                   <option value="">Select Item</option>
                   {items.map(item => (
@@ -221,6 +232,7 @@ const AssetAuditPage = () => {
                   value={formData.asset_type_id}
                   onChange={(e) => setFormData({...formData, asset_type_id: e.target.value})}
                   className="w-full bg-base-100 p-2 border rounded"
+                  disabled={isItemAudit}
                 >
                   <option value="">Select Asset Type</option>
                   {assetTypes.map(assetType => (
@@ -238,6 +250,7 @@ const AssetAuditPage = () => {
                   value={formData.asset_name}
                   onChange={(e) => setFormData({...formData, asset_name: e.target.value})}
                   className="w-full bg-base-100 p-2 border rounded"
+                  disabled={isItemAudit}
                 />
               </div>
 
@@ -296,7 +309,7 @@ const AssetAuditPage = () => {
                 >
                   <option value="confirmed">Confirmed</option>
                   <option value="to_be_checked">To be checked</option>
-                  <option value="fail">fail</option>
+                  <option value="fail">Fail</option>
                 </select>
               </div>
             </div>
@@ -310,10 +323,9 @@ const AssetAuditPage = () => {
               <button
                 onClick={submitEdit}
                 className="px-4 py-2 bg-blue-500 text-white rounded"
-                disable={btnLoading}
+                disabled={btnLoading}
               >
-                {btnLoading ? 'Saving...':'Save'}
-                
+                {btnLoading ? 'Saving...' : 'Save'}
               </button>
             </div>
           </div>
@@ -343,12 +355,40 @@ const AssetAuditPage = () => {
           </div>
         </div>
       )}
-          <Modal
-            isOpen={modalOpen}
-            onClose={() => setModalOpen(false)}
-            messageType={messageType}
-            message={message}
-          />
+
+      {/* Detail Modal */}
+      {detailModalOpen && selectedAudit && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4">Asset Audit Details</h2>
+            <div className="space-y-2">
+              <p><strong>Item Name:</strong> {selectedAudit.Item ? selectedAudit.Item.itemName : 'N/A'}</p>
+              <p><strong>Asset Type:</strong> {selectedAudit.AssetType ? selectedAudit.AssetType.name : 'N/A'}</p>
+              <p><strong>Asset Name:</strong> {selectedAudit.asset_name || 'N/A'}</p>
+              <p><strong>Date:</strong> {selectedAudit.date ? new Date(selectedAudit.date).toLocaleDateString('en-CA') : 'N/A'}</p>
+              <p><strong>Existing Amount:</strong> {selectedAudit.existing_amount || 0}</p>
+              <p><strong>Damaged Amount:</strong> {selectedAudit.damaged_amount || 0}</p>
+              <p><strong>Lost Amount:</strong> {selectedAudit.lost_amount || 0}</p>
+              <p><strong>Status:</strong> {selectedAudit.status || 'N/A'}</p>
+              </div>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setDetailModalOpen(false)}
+                className="px-4 py-2 bg-gray-300 rounded"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
+      />
     </>
   );
 };

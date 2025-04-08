@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
+import Modal from '../../components/Modal'; 
 
 const TenantOrderPage = () => {
   const [orderTypes, setOrderTypes] = useState([]);
@@ -28,7 +29,7 @@ const TenantOrderPage = () => {
       .catch((error) => {
         console.error('There was an error fetching the order types:', error);
       })
-      .finally(() => { setIsLoading(false); })
+      .finally(() => { setIsLoading(false); });
   }, []);
 
   // Handle order button click
@@ -77,7 +78,7 @@ const TenantOrderPage = () => {
       setMessage('Unable to create order.');
     } finally {
       setLoading(false);
-      setModalOpen(true);
+      setModalOpen(true); // Open the modal after order submission attempt
     }
   };
 
@@ -136,6 +137,8 @@ const TenantOrderPage = () => {
                 <input
                   type="number"
                   id="amount"
+                  min="0"
+                  step="1"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -183,14 +186,17 @@ const TenantOrderPage = () => {
                 </button>
               </div>
             </form>
-            {message && (
-              <div className={`mt-4 text-${messageType === 'success' ? 'green' : 'red'}-500`}>
-                {message}
-              </div>
-            )}
           </div>
         </div>
       )}
+
+      {/* Modal to display success or error messages */}
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
+      />
     </div>
   );
 };

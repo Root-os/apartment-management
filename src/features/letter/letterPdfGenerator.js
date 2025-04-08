@@ -38,12 +38,13 @@ const LetterDetailPage = () => {
   }
 
   const tenant = letter.Tenant;
+  
   console.log('tenant',tenant)
 
   if (!tenant) {
     return <p className="text-center text-lg text-red-500">No tenant data available.</p>;
   }
-  
+  console.log("Tenant details: ", tenant);
 
   const currentDate = new Date(letter.letterDate || letter.createdAt).toLocaleDateString();
 
@@ -74,9 +75,10 @@ const LetterDetailPage = () => {
       <div className="mb-6">
         <p className="text-lg text-gray-600">Dear {tenant?.fullName || "N/A"},</p>
         <p className="text-lg text-gray-600">
-          As you know, you are a tenant in Floor {tenant?.floorId || "N/A"} on unit {tenant?.unitId || "N/A"}.
+          As you know, you are a tenant in Floor {tenant?.Floor?.floorNumber || "N/A"} on unit {tenant?.unitId || "N/A"}.
+        {letter?.description || "No description available"}
+
         </p>
-        <p className="text-lg text-gray-600">{letter?.description || "No description available"}</p>
       </div>
 
       {/* Closing and Signature */}

@@ -165,21 +165,25 @@ const ParkingPage = () => {
         price,
         status,
         isTenant,
-        tenantId: isTenant ? tenantId : null, // Only include tenantId if tenant is checked
+        tenantId: isTenant ? tenantId : null,
       };
 
       const response = await axios.put(`${process.env.REACT_APP_BASE_URL}parking/${selectedParking.id}`, updatedParking);
-      const updatedData = parkingData.map((parking) =>
-        parking.id === selectedParking.id ? response.data : parking
+      console.log('Updated parking response:', response.data);
+
+      // Update parkingData with a new array reference
+      const updatedParkingData = parkingData.map((parking) =>
+        parking.id === selectedParking.id ? { ...response.data } : { ...parking }
       );
-      setParkingData(updatedData);
+      setParkingData([...updatedParkingData]);
+
       setIsEditModalOpen(false);
       setSelectedParking(null);
-
       setModalOpen(true);
       setMessageType('success');
       setMessage('Parking data updated successfully');
     } catch (error) {
+      console.error('Error updating parking:', error);
       setModalOpen(true);
       setMessageType('error');
       setMessage('Unable to update parking data');
@@ -219,8 +223,11 @@ const ParkingPage = () => {
       label: 'Tenant Name',
       key: 'tenantId',
       render: (row) => {
-        const tenant = tenantList.find((tenant) => tenant.id === row.tenantId);
-        return tenant ? tenant.fullName : 'N/A';
+        const tenantName = row.Tenant?.fullName || 
+                          (row.tenantId && tenantList.find((tenant) => tenant.id === row.tenantId)?.fullName) || 
+                          'N/A';
+        console.log(`Rendering tenant name for row ${row.id}: ${tenantName}`);
+        return tenantName;
       },
     },
     
@@ -272,19 +279,22 @@ const ParkingPage = () => {
     window.location.href = '/app/parking-add';
   };
 
+  const tableKey = parkingData.map(p => `${p.id}-${p.updatedAt}`).join('-');
+
   return (
     <div>
       {pageLoading ? (
         <LoadingComponent />
       ) : (
         <TableComponent
-          title="Parking Data"
-          data={parkingData}
-          columns={columns}
-          showSearch={true}
-          exportable={true}
-          onAdd={handleAddClick}
-        />
+        key={tableKey}
+        title="Parking Data"
+        data={parkingData}
+        columns={columns}
+        showSearch={true}
+        exportable={true}
+        onAdd={handleAddClick}
+      />
       )}
       
       {/* Edit Modal */}
@@ -294,49 +304,49 @@ const ParkingPage = () => {
             <h2 className="text-2xl font-bold mb-4">Edit Parking Data</h2>
             <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
   
-            <div className="mb-4">
-  <label htmlFor="tenantId" className="block text-sm font-medium text-white-700">
-    Select Tenant
-  </label>
-  <select
-    id="tenantId"
-    value={tenantId}  // Set the selected tenant ID
-    onChange={handleTenantChange}  // Trigger the tenant change handler
-    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-    disabled={!isTenant}  // Disable the field if isTenant is false
-  >
-    <option value="">Select a tenant</option>
-    {tenantList.map((tenant) => (
-      <option key={tenant.id} value={tenant.id}>
-        {tenant.fullName}
-      </option>
-    ))}
-  </select>
-</div>
+              <div className="mb-4">
+                <label htmlFor="tenantId" className="block text-sm font-medium text-white-700">
+                  Select Tenant
+                </label>
+                <select
+                  id="tenantId"
+                  value={tenantId}  // Set the selected tenant ID
+                  onChange={handleTenantChange}  // Trigger the tenant change handler
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  disabled={!isTenant}  // Disable the field if isTenant is false
+                >
+                  <option value="">Select a tenant</option>
+                  {tenantList.map((tenant) => (
+                    <option key={tenant.id} value={tenant.id}>
+                      {tenant.fullName}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
 
 
 
-<div className="mb-4">
-  <label htmlFor="carPlate" className="block text-sm font-medium text-white-700">Car Plate</label>
-  <input
-    type="text"
-    id="carPlate"
-    value={carPlate}
-    onChange={(e) => setCarPlate(e.target.value)}
-    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-</div>
-<div className="mb-4">
-  <label htmlFor="carName" className="block text-sm font-medium text-white-700">Car Name</label>
-  <input
-    type="text"
-    id="carName"
-    value={carName}
-    onChange={(e) => setCarName(e.target.value)}
-    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-</div>
+              <div className="mb-4">
+                <label htmlFor="carPlate" className="block text-sm font-medium text-white-700">Car Plate</label>
+                <input
+                  type="text"
+                  id="carPlate"
+                  value={carPlate}
+                  onChange={(e) => setCarPlate(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="carName" className="block text-sm font-medium text-white-700">Car Name</label>
+                <input
+                  type="text"
+                  id="carName"
+                  value={carName}
+                  onChange={(e) => setCarName(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
               <div className="mb-4">
                 <label htmlFor="driverName" className="block text-sm font-medium text-white-700">Driver Name</label>
                 <input
