@@ -64,7 +64,7 @@ const TenantList = () => {
 
   const fetchFreeUnits = async (floorId) => {
     try {
-      const response = await axios.get(`https://apartment.bruktiethiotour.com/api/floor/${floorId}`);
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}floor/${floorId}`);
       console.log('Fetched freeUnits:', response.data);
       setUnits(Array.isArray(response.data.freeUnits) ? response.data.freeUnits : []);
     } catch (err) {
@@ -194,10 +194,10 @@ const TenantList = () => {
     };
 
     // Handle closing of the details modal
-    const closeDetailsModal = () => {
-      setIsDetailsModalOpen(false);
+    const navigateToRentAdd = () => {
+      window.location.href = '/app/rent-collection-add';
     };
-
+   
 
   return (
     <div>
@@ -218,10 +218,10 @@ const TenantList = () => {
               label: "Phone Number",
               key: "phoneNumber",
             },
-            {
-              label: "Payment Status",
-              key: "paymentStatus",
-            },
+            // {
+            //   label: "Payment Status",
+            //   key: "paymentStatus",
+            // },
             {
               label: "Advance",
               key: "advance",
@@ -268,6 +268,12 @@ const TenantList = () => {
                     className="bg-green-500 text-white py-1 px-2 rounded"
                   >
                     Units
+                  </button>
+                  <button
+                    onClick={() => navigateToRentAdd(row.unitId)}
+                    className="bg-indigo-500 text-white py-1 px-2 rounded"
+                  >
+                    Rent
                   </button>
                 </div>
               ),
@@ -509,11 +515,15 @@ const TenantList = () => {
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium mb-2">Lease Start Date</label>
-        <p className="text-sm">{selectedTenant.leaseStartDate ? new Date(selectedTenant.leaseStartDate).toLocaleDateString() : 'N/A'}</p>
+        <p className="text-sm">{selectedTenant.leaseStartDate ? new Date(selectedTenant.leaseStartDate).toISOString().split('T')[0] : 'N/A'}</p>
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium mb-2">Lease End Date</label>
-        <p className="text-sm">{selectedTenant.leaseEndDate ? new Date(selectedTenant.leaseEndDate).toLocaleDateString() : 'N/A'}</p>
+        <p className="text-sm">
+          {selectedTenant.leaseEndDate
+            ? new Date(selectedTenant.leaseEndDate).toISOString().split('T')[0]
+            : 'N/A'}
+        </p>
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium mb-2">Payment Status</label>
@@ -676,12 +686,11 @@ const TenantList = () => {
             : 'N/A'}
         </p>
       </div>
-
       <div className="mb-4">
         <label className="block text-sm font-medium mb-2">Rented Date</label>
         <p className="text-sm">
-          {unitDetails.Unit.rentedDate 
-            ? new Date(unitDetails.Unit.rentedDate).toLocaleDateString() 
+          {unitDetails.Unit.rentedDate
+            ? new Date(unitDetails.Unit.rentedDate).toISOString().split('T')[0]
             : 'N/A'}
         </p>
       </div>
@@ -689,11 +698,12 @@ const TenantList = () => {
       <div className="mb-4">
         <label className="block text-sm font-medium mb-2">Vacated Date</label>
         <p className="text-sm">
-          {unitDetails.Unit.vacatedDate 
-            ? new Date(unitDetails.Unit.vacatedDate).toLocaleDateString() 
+          {unitDetails.Unit.vacatedDate
+            ? new Date(unitDetails.Unit.vacatedDate).toISOString().split('T')[0]
             : 'N/A'}
         </p>
       </div>
+
 
       <div className="flex justify-end">
         <button

@@ -82,7 +82,7 @@ const SalaryPaymentForm = () => {
 
   return (
     <>
-      <TitleCard title={'Single Salary Payment'} topMargin={'mt-1'}>
+      <TitleCard title={'Add Single Employee Salary '} topMargin={'mt-1'}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Employee Dropdown */}
         <div>

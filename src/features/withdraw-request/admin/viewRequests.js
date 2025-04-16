@@ -296,7 +296,7 @@ useEffect(() => {
         return assignedEmployee ? `${assignedEmployee.fname} ${assignedEmployee.lname}` : 'Not Assigned';
       },
     },
-    { key: 'reason', label: 'Reason' },
+    // { key: 'reason', label: 'Reason' },
     {
       key: 'terminationDate',
       label: 'Termination Date',

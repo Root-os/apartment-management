@@ -116,7 +116,8 @@ const AddPaymentRequest = () => {
 
   return (
     <>
-      <TitleCard title={'Add Payment Request'} topMargin={'mt-1'}>
+    {/* Request Tenant Payment */}
+      <TitleCard title={'Request Tenant Paymentt'} topMargin={'mt-1'}>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Tenant Dropdown */}
           <div>

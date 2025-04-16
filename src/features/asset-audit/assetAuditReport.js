@@ -93,7 +93,7 @@ const AssetAuditReport = () => {
       label: 'Date',
       key: 'date',
       render: (row) => {
-        return row.date ? new Date(row.date).toLocaleDateString('en-CA') : 'N/A';
+        return row.date ? new Date(row.date).toISOString().split('T')[0] : 'N/A';
       }
     },
   ];

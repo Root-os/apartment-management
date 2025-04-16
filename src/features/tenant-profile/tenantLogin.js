@@ -50,7 +50,10 @@ const TenantLoginPage = () => {
 };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100">
+    <div
+      className="min-h-screen flex justify-center items-center bg-gray-100"
+      style={{ backgroundImage: 'url(/bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}
+    >
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
         <h2 className="text-2xl font-semibold mb-6 text-center">Tenant Login</h2>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}

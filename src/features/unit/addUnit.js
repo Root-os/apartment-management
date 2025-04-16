@@ -104,7 +104,7 @@ const AddFloorUnit = () => {
       setVacatedDate('');
       setFloorId('');
       setLoading(false);
-      window.location.href='/app/unit-view';
+      // window.location.href='/app/unit-view';
     } catch (err) {
       setLoading(false);
       setModalOpen(true);
@@ -115,7 +115,7 @@ const AddFloorUnit = () => {
 
   return (
     <>
-      <TitleCard title="Add Floor Unit" topMargin={"mt-4"}>
+      <TitleCard title="Add Floor Unit" topMargin={"mt-1"}>
 
       {error && <div className="bg-red-300 p-3 mb-4 text-red-800">{error}</div>}
 

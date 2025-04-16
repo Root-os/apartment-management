@@ -107,7 +107,7 @@ const PaymentAdd = () => {
 
   return (
     <>
-      <TitleCard title="Add Payment" topMargin={'mt-1'}>
+      <TitleCard title="Add Payment for Vendor" topMargin={'mt-1'}>
         {/* Form to input payment data */}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

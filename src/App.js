@@ -57,7 +57,7 @@ function App() {
              ? (
               <Layout />  // Protected route content
             ) : role?(role==='admin'||role==="employee"?
-              <Navigate to="/login" replace /> : <Navigate to="/tenant-login" replace />// Redirect to login if not authenticated
+              <Navigate to="/login" replace /> : <Navigate to="/tenant-login" replace />
             ):
             <Choice />
             

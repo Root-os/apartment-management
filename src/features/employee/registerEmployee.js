@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, {useEffect, useState } from "react";
 import axios from "axios";
 import TitleCard from "../../components/Cards/TitleCard";
 import Modal from '../../components/Modal';
 
 const EmployeeRegistration = () => {
+  const [roles, setRoles] = useState([]);
   const [employee, setEmployee] = useState({
     fname: "",
     lname: "",
@@ -88,6 +89,27 @@ const EmployeeRegistration = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+    
+      if (!token) return;
+  
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}roles`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setRoles(response.data);
+      } catch (error) {
+        console.error("Failed to fetch roles", error);
+      }
+    };
+  
+    fetchRoles();
+  }, []);
+  
 
   return (
     <>
@@ -215,6 +237,27 @@ const EmployeeRegistration = () => {
               className="bg-base-100 mt-1 p-2 w-full border border-gray-300 rounded-md"
             />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-white-700" htmlFor="roleId">
+              Role
+            </label>
+            <select
+              id="roleId"
+              name="roleId"
+              value={employee.roleId}
+              onChange={handleChange}
+              required
+              className="bg-base-100 mt-1 p-2 w-full border border-gray-300 rounded-md"
+            >
+              <option value="">Select a role</option>
+              {roles.map((role) => (
+                <option key={role.id} value={role.id}>
+                  {role.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
            <div><h2>The followings are Optional fields</h2></div>
           <div>
             <label className="block text-sm font-medium text-white-700" htmlFor="shift">

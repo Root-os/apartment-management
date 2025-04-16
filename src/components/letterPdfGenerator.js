@@ -24,7 +24,7 @@ const GeneratePdf = async (letter) => {
   pdf.text(`Phone: ${letter.Tenant.phoneNumber}`, 10, 70);
   pdf.text(`Email: ${letter.Tenant.email}`, 10, 80);
 
-  const letterDate = new Date(letter.letterDate).toLocaleDateString();
+  const letterDate = new Date(letter.letterDate).toISOString().split('T')[0];
   pdf.text(`Date: ${letterDate}`, pdf.internal.pageSize.getWidth() - 10, 50, { align: "right" });
 
   // Add the subject centered

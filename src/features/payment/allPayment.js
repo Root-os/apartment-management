@@ -206,7 +206,7 @@ const AllPaymentsPage = () => {
   return (
     <div className="container mx-auto p-6">
       <TableComponent
-        title="Payments List"
+        title="Payment made for Vendors "//Vendors Payment
         data={payments}
         columns={columns}
         exportable={true}

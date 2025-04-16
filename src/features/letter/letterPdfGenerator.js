@@ -9,6 +9,7 @@ const LetterDetailPage = () => {
 
   // Fetch company info only
   useEffect(() => {
+    console.log(letter);
     const fetchCompanyInfo = async () => {
       const token = localStorage.getItem("token");
       try {
@@ -75,7 +76,7 @@ const LetterDetailPage = () => {
       <div className="mb-6">
         <p className="text-lg text-gray-600">Dear {tenant?.fullName || "N/A"},</p>
         <p className="text-lg text-gray-600">
-          As you know, you are a tenant in Floor {tenant?.Floor?.floorNumber || "N/A"} on unit {tenant?.unitId || "N/A"}.
+          As you know, you are a tenant in Floor {tenant?.Floor?.floorNumber || "N/A"} on unit {tenant?.Unit?.unitNumber || "N/A"}.
         {letter?.description || "No description available"}
 
         </p>

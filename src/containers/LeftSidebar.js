@@ -9,7 +9,7 @@ import axios from 'axios';  // Don't forget to import axios
 function LeftSidebar() {
     const location = useLocation();
     const [expandedIndex, setExpandedIndex] = useState(null);
-    const [settingData, setSettingData] = useState(null);  // Add state for setting data
+    const [settingData, setSettingData] = useState(null); 
 
     const handleExpand = (index) => {
         // If the clicked tab is already expanded, close it
@@ -30,13 +30,12 @@ function LeftSidebar() {
 
     // Fetch setting data when the component mounts
     useEffect(() => {
-        const token = localStorage.getItem('token');  // Get token if needed for authorization
+        const token = localStorage.getItem('token'); 
 
-        // Fetch settings from the API
         axios
             .get(`${process.env.REACT_APP_BASE_URL}setting`, {
                 headers: {
-                    'Authorization': `Bearer ${token}`,  // Add the token to the header if necessary
+                    'Authorization': `Bearer ${token}`,  
                 },
             })
             .then((response) => {
@@ -98,21 +97,28 @@ function LeftSidebar() {
                                 />
                             ) : (
                                 <NavLink
-                                    end
-                                    to={route.path}
-                                    className={({ isActive }) =>
-                                        `${isActive ? 'font-semibold bg-green-700 text-white' : 'font-normal text-white'}`
-                                    }
-                                    onClick={handleLinkClick} 
-                                >
-                                    {route.icon} {route.name}
-                                    {location.pathname === route.path ? (
-                                        <span
-                                            className="absolute inset-y-0 left-0 w-1 rounded-tr-md rounded-br-md bg-primary"
-                                            aria-hidden="true"
-                                        ></span>
-                                    ) : null}
-                                </NavLink>
+                                end
+                                to={route.path}
+                                className={({ isActive }) =>
+                                  `relative px-4 py-2 rounded-md transition-all duration-200 ${
+                                    isActive
+                                    ? 'bg-white text-black font-bold shadow-md border-l-4 border-white'
+                                    : 'text-white hover:bg-green-500 hover:text-white'
+                            
+                                  }`
+                                }
+                                onClick={handleLinkClick}
+                              >
+                                {route.icon} {route.name}
+                              
+                                {/* Optional: visual left indicator */}
+                                {location.pathname === route.path && (
+                                  <span
+                                    className="absolute inset-y-0 left-0 w-1 bg-white rounded-tr-md rounded-br-md"
+                                    aria-hidden="true"
+                                  ></span>
+                                )}
+                              </NavLink>                              
                             )}
                         </li>
                     );

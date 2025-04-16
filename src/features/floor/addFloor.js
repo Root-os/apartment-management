@@ -56,7 +56,7 @@ const FloorForm = () => {
 
   return (
     <>
-      <TitleCard title="Add Floor" topMargin={"mt-4"}>
+      <TitleCard title="Register New Floor" topMargin={"mt-4"}>
       <form onSubmit={handleSubmit} className="space-y-4">
         
         <div className="flex flex-col">
@@ -74,21 +74,21 @@ const FloorForm = () => {
 
         {/* Number of Units */}
         <div className="flex flex-col">
-  <label htmlFor="noUnits" className="text-sm font-medium text-white-700">
-    Number of Units
-  </label>
-  <input
-    type="number"
-    id="noUnits"
-    name="noUnits"
-    value={formData.noUnits}
-    onChange={handleInputChange}
-    required
-    min="0"                
-    step="1"              
-    className="bg-base-100 mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-  />
-</div>
+          <label htmlFor="noUnits" className="text-sm font-medium text-white-700">
+            Total Units on this Floor
+          </label>
+          <input
+            type="number"
+            id="noUnits"
+            name="noUnits"
+            value={formData.noUnits}
+            onChange={handleInputChange}
+            required
+            min="0"                
+            step="1"              
+            className="bg-base-100 mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+        </div>
         {/* Status */}
         <div className="flex flex-col">
           <label htmlFor="status" className="text-sm font-medium text-white-700">Status</label>
@@ -99,8 +99,9 @@ const FloorForm = () => {
             onChange={handleInputChange}
             className="bg-base-100 mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
-            <option value="available">Available</option>
-            <option value="unavailable">Occupied</option>
+            <option value="active">active</option>
+            <option value="inActive">inactive</option>
+            <option value="under_construction">under_construction</option>
           </select>
         </div>
 

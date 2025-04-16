@@ -197,7 +197,7 @@ const SalaryPayments = () => {
         <LoadingComponent/>
       ) : (
         <TableComponent
-          title="Salaries"
+          title="All Employee Salary Payments"
           data={salaryData}
           columns={columns}
         />

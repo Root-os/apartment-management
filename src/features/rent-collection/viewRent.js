@@ -18,6 +18,12 @@ const RentCollectionPage = () => {
   const [modalMessage, setModalMessage] = useState('');
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  const [message, setMessage] = useState('');
+  const [noDataMessage, setNoDataMessage] = useState(false);
+
+
   const [filterParams, setFilterParams] = useState({
     paymentDateFrom: '',
     paymentDateTo: '',
@@ -100,14 +106,17 @@ const RentCollectionPage = () => {
     try {
       const updatedRent = { ...currentRent };
       await axios.put(`${process.env.REACT_APP_BASE_URL}rent-collection/${currentRent.id}`, updatedRent);
-      fetchRentData(); // Refetch data after updating
+      fetchRentData(); 
       closeModals();
-      setModalMessage('Rent updated successfully!');
-      setIsSuccessModalOpen(true);
+      setModalOpen(true);
+      setMessageType('success')
+      setMessage('Rent updated successfully!');
     } catch (error) {
       console.error('Error updating rent data:', error);
-      setModalMessage('Error updating rent. Please try again.');
-      setIsErrorModalOpen(true);
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Error updating rent. Please try again.');
+     
     }
   };
 
@@ -117,30 +126,56 @@ const RentCollectionPage = () => {
       await axios.delete(`${process.env.REACT_APP_BASE_URL}rent-collection/${currentRent}`);
       fetchRentData();
       closeModals();
-      setModalMessage('Rent deleted successfully!');
-      setIsSuccessModalOpen(true);
+      setModalOpen(true);
+      setMessageType('success')
+      setMessage('Rent deleted successfully!');
     } catch (error) {
       console.error('Error deleting rent data:', error);
-      setModalMessage('Error deleting rent. Please try again.');
-      setIsErrorModalOpen(true);
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Error deleting rent data. Please try again.');
     }
   };
 
+  const cleanFilterParams = (params) => {
+    const cleaned = {};
+    for (const key in params) {
+      if (params[key] !== '') {
+        cleaned[key] = params[key];
+      }
+    }
+    return cleaned;
+  };
+  
+
   // Handle Filter Submit
-  const handleFilter = async (e) => {
+  const handleFilterSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+  
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}rent-collection/filter`, filterParams);
-      setRentData(response.data);
-      setLoading(false);
+      const cleanedParams = cleanFilterParams(filterParams); // Ensure this cleans the filter params
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}rent-collection/filter`, cleanedParams);
+  
+      console.log('Filter Response:', response.data); // Log the response data
+      
+      // Check if the response message indicates no data found
+      if (response.data.message === "No rent collections found matching the filters") {
+        setRentData([]);
+        setNoDataMessage(true); // Set no data message flag
+      } else {
+        setRentData(response.data); // Set the filtered data
+        setNoDataMessage(false); // Clear no data message flag
+      }
     } catch (error) {
-      console.error('No rent collections found matching the filters:', error);
-      setModalMessage('No rent collections found matching the filters. Please try again other option.');
-      setIsErrorModalOpen(true);
-      setLoading(false);
+      console.error('Error filtering rent collections:', error);
+      setNoDataMessage(true); // Set no data message flag in case of error
+    } finally {
+     
     }
   };
+  
+  
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -149,7 +184,7 @@ const RentCollectionPage = () => {
 
   const columns = [
     { key: 'tenantName', label: 'Tenant Name', render: (rent) => rent.Tenant.fullName },
-    { key: 'amountPaid', label: 'Amount Paid' },
+    // { key: 'amountPaid', label: 'Amount Paid' },
     { key: 'paymentDate', label: 'Payment Date', render: (rent) => new Date(rent.paymentDate).toLocaleDateString() },
     { key: 'paymentMethod', label: 'Payment Method' },
     { key: 'status', label: 'Status' },
@@ -189,7 +224,7 @@ const RentCollectionPage = () => {
 
   return (
     <div className="p-8">
-      <form onSubmit={handleFilter} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+      <form onSubmit={handleFilterSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
         <div>
           <label htmlFor="paymentDateFrom" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Date From</label>
           <input
@@ -259,8 +294,9 @@ const RentCollectionPage = () => {
             className="mt-1 block w-full p-2 border border-gray-300 rounded"
           >
             <option value="">Select Status</option>
-            <option value="Paid">Paid</option>
             <option value="Pending">Pending</option>
+            <option value="Paid">Paid</option>
+            <option value="Overdue">Overdue</option>
           </select>
         </div>
         <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex justify-end">
@@ -278,6 +314,13 @@ const RentCollectionPage = () => {
         showSearch={true}
         exportable={true}
       />
+
+      {rentData.length === 0  && noDataMessage && (
+        <p className="text-center text-gray-500 mt-4">No data available for the selected filters.</p>
+      )}
+
+
+
 
       {/* History Modal */}
       {historyModalOpen && (
@@ -351,7 +394,8 @@ const RentCollectionPage = () => {
                   className="bg-base-100 w-full p-2 border border-gray-300 rounded"
                 >
                   <option value="Paid">Paid</option>
-                  <option value="pending">Pending</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Overdue">Overdue</option>
                 </select>
               </div>
               <div className="flex justify-between">
@@ -368,7 +412,7 @@ const RentCollectionPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-lg mx-4">
             <h2 className="text-xl mb-4">Are you sure you want to delete this rent collection?</h2>
-            <div className="flex justify-between">
+            <div className="flex justify-end space-x-1">
               <button onClick={closeModals} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
               <button onClick={handleDeleteRent} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
             </div>
@@ -397,16 +441,13 @@ const RentCollectionPage = () => {
           </div>
         </div>
       )}
-
-      {/* Success Modal */}
-      {isSuccessModalOpen && (
-        <Modal isOpen={isSuccessModalOpen} onClose={() => setIsSuccessModalOpen(false)} type="success" message={modalMessage} />
-      )}
-
-      {/* Error Modal */}
-      {isErrorModalOpen && (
-        <Modal isOpen={isErrorModalOpen} onClose={() => setIsErrorModalOpen(false)} type="error" message={modalMessage} />
-      )}
+        <Modal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          messageType={messageType}
+          message={message}
+        />
+   
     </div>
   );
 };

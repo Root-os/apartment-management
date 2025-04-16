@@ -156,7 +156,7 @@ const AssetAuditPage = () => {
     {
       label: 'Date',
       key: 'date',
-      render: (row) => row.date ? new Date(row.date).toLocaleDateString('en-CA') : 'N/A',
+      render: (row) => row.date ? new Date(row.date).toISOString().split('T')[0] : 'N/A',
     },
     {
       label: 'Actions',

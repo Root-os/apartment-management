@@ -32,6 +32,9 @@ const TenDaysTenant = () => {
   const openDetailsModal = (tenant) => {
     setSelectedTenant(tenant);
   };
+  const navigateToRentAdd = () => {
+    window.location.href = '/app/rent-collection-add';
+  };
 
   const columns = [
     {
@@ -41,10 +44,6 @@ const TenDaysTenant = () => {
     {
       label: "Phone Number",
       key: "phoneNumber",
-    },
-    {
-      label: "Payment Status",
-      key: "paymentStatus",
     },
     {
       label: "Advance",
@@ -74,6 +73,12 @@ const TenDaysTenant = () => {
             className="bg-gray-400 text-white py-1 px-2 rounded"
           >
             Detail
+          </button>
+          <button
+            onClick={() => navigateToRentAdd(row.unitId)}
+            className="bg-indigo-500 text-white py-1 px-3 rounded"
+          >
+            Rent
           </button>
         </div>
       ),
@@ -112,6 +117,8 @@ const TenDaysTenant = () => {
               <p><strong>National ID:</strong> {selectedTenant.nationalId}</p>
               <p><strong>Lease Start Date:</strong> {selectedTenant.leaseStartDate ? new Date(selectedTenant.leaseStartDate).toLocaleDateString() : 'N/A'}</p>
               <p><strong>Lease End Date:</strong> {selectedTenant.leaseEndDate ? new Date(selectedTenant.leaseEndDate).toLocaleDateString() : 'N/A'}</p>
+              {/* <p><strong>Rent Amount:</strong> {selectedTenant.rentAmount}</p> */}
+              <p><strong>Remaining Days:</strong> {selectedTenant.remainingDays}</p>
               <p><strong>Payment Status:</strong> {selectedTenant.paymentStatus}</p>
               <p><strong>Additional Notes:</strong> {selectedTenant.additionalNotes}</p>
               <p><strong>Advance:</strong> {selectedTenant.advance}</p>

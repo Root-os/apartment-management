@@ -5,65 +5,124 @@ import Modal from '../../components/Modal';
 
 const AddCollectedRent = () => {
   const [tenantId, setTenantId] = useState('');
-  const [amountPaid, setAmountPaid] = useState('');
   const [paymentDate, setPaymentDate] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('Cash');
-  const [paymentFrequency, setPaymentFrequency] = useState('by day');
+  const [paymentFrequency, setPaymentFrequency] = useState('');
   const [nextDueDate, setNextDueDate] = useState('');
   const [status, setStatus] = useState('paid');
 
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  const [message, setMessage] = useState('');
 
   const [tenants, setTenants] = useState([]);
+  const [rentCollections, setRentCollections] = useState([]);
+  const [amount, setAmount] = useState('');
 
+  // Fetch tenant list
   useEffect(() => {
     const fetchTenants = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
         setTenants(response.data);
       } catch (err) {
-        setError('Failed to fetch tenant data.');
-        setIsModalOpen(true);
+        setError('Failed to fetch tenant data. Please check your connection or try again later.');
       }
     };
 
     fetchTenants();
   }, []);
 
+  // Fetch rent collection data to extract tenant amounts
+  useEffect(() => {
+    const fetchRentCollections = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}rent-collection`);
+        setRentCollections(response.data);
+      } catch (err) {
+        console.error("Failed to fetch rent collection data:", err);
+        setError('Failed to load rent information. Try refreshing the page.');
+      }
+    };
+
+    fetchRentCollections();
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setMessage('');
     setError('');
-
+    setLoading(true);
+  
+    // Client-side validation
+    if (!tenantId || !paymentDate || !paymentMethod || !paymentFrequency || !nextDueDate || !status) {
+      setError('Please fill in all the fields.');
+      setLoading(false);
+      return;
+    }
+  
     const payload = {
       tenantId: parseInt(tenantId),
-      amountPaid: parseFloat(amountPaid),
       paymentDate,
       paymentMethod,
       paymentFrequency,
       nextDueDate,
       status
     };
-
+  
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}rent-collection`, payload);
+  
       setLoading(false);
-      setMessage(response.data.message); // Display success message
-      setIsModalOpen(true);
+      setModalOpen(true);
+      setMessageType('success');
+      setMessage("The collected rent has been added successfully");
+  
+      // Clear form
+      setTenantId('');
+      setPaymentDate('');
+      setPaymentMethod('Cash');
+      setPaymentFrequency('');
+      setNextDueDate('');
+      setStatus('paid');
+      setAmount('');
     } catch (err) {
+      console.error('Error while submitting:', err);
+  
+      let errorMsg = 'Something went wrong. Please try again.';
+  
+      if (err.response) {
+        if (err.response.data?.message) {
+          errorMsg = err.response.data.message;
+        } else if (err.response.data?.error) {
+          errorMsg = err.response.data.error;
+        } else {
+          errorMsg = `Server returned status code ${err.response.status}`;
+        }
+      } else if (err.request) {
+        errorMsg = 'No response from the server. Please check your connection.';
+      } else {
+        errorMsg = `Unexpected error: ${err.message}`;
+      }
+  
+      setError(errorMsg);
       setLoading(false);
-      setError('Error adding rent collection. Please try again.'); // Display error message
-      setIsModalOpen(true);
     }
   };
+  
 
   return (
     <>
       <TitleCard title="Add Collected Rent">
+        {/* Error Banner */}
+        {error && (
+          <div className="bg-red-100 text-red-700 border border-red-400 p-4 rounded mb-4">
+            {error}
+          </div>
+        )}
+
         {/* Rent Collection Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Tenant Dropdown */}
@@ -72,7 +131,20 @@ const AddCollectedRent = () => {
             <select
               id="tenantId"
               value={tenantId}
-              onChange={(e) => setTenantId(e.target.value)}
+              onChange={(e) => {
+                const selectedTenantId = e.target.value;
+                setTenantId(selectedTenantId);
+
+                const matchedTenant = rentCollections.find(
+                  (entry) => entry.tenantId.toString() === selectedTenantId
+                );
+
+                if (matchedTenant && matchedTenant.Tenant) {
+                  setAmount(matchedTenant.Tenant.amount);
+                } else {
+                  setAmount('');
+                }
+              }}
               className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
@@ -85,16 +157,15 @@ const AddCollectedRent = () => {
             </select>
           </div>
 
-          {/* Amount Paid Field */}
+          {/* Read-only Amount Field */}
           <div>
-            <label htmlFor="amountPaid" className="block text-sm font-medium text-white-700">Amount Paid</label>
+            <label htmlFor="amount" className="block text-sm font-medium text-white-700">Amount</label>
             <input
-              type="number"
-              id="amountPaid"
-              value={amountPaid}
-              onChange={(e) => setAmountPaid(e.target.value)}
-              className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
+              type="text"
+              id="amount"
+              value={amount}
+              readOnly
+              className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg text-gray-400 cursor-not-allowed"
             />
           </div>
 
@@ -137,6 +208,7 @@ const AddCollectedRent = () => {
               className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
+              <option value="" disabled hidden>Select payment frequency</option>
               <option value="Monthly">Monthly</option>
               <option value="Quarterly">Quarterly</option>
               <option value="Yearly">Yearly</option>
@@ -166,8 +238,10 @@ const AddCollectedRent = () => {
               className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             >
-              <option value="paid">Paid</option>
-              <option value="pending">pending</option>
+              <option value="">Select status</option>
+              <option value="Paid">Paid</option>
+              <option value="Pending">Pending</option>
+              <option value="Overdue">Overdue</option>
             </select>
           </div>
 
@@ -183,22 +257,12 @@ const AddCollectedRent = () => {
       </TitleCard>
 
       {/* Success and Error Modals */}
-      {message && (
-        <Modal
-          isOpen={true}
-          onClose={() => setMessage('')}
-          type="success"
-          message={message}
-        />
-      )}
-      {error && (
-        <Modal
-          isOpen={true}
-          onClose={() => setError('')}
-          type="error"
-          message={error}
-        />
-      )}
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
+      />
     </>
   );
 };

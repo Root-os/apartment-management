@@ -1,4 +1,5 @@
-/** Icons are imported separatly to reduce build time */
+import { jwtDecode } from "jwt-decode";
+
 import BellIcon from '@heroicons/react/24/outline/BellIcon'
 import DocumentTextIcon from '@heroicons/react/24/outline/DocumentTextIcon'
 import Squares2X2Icon from '@heroicons/react/24/outline/Squares2X2Icon'
@@ -45,19 +46,14 @@ import ExclamationCircleIcon from '@heroicons/react/24/outline/ExclamationCircle
 import MapPinIcon from '@heroicons/react/24/outline/MapPinIcon'
 import ArrowUpIcon from '@heroicons/react/24/outline/ArrowUpIcon'
 import PowerIcon from '@heroicons/react/24/outline/PowerIcon'
-
-
-
-
 import PlusIcon from '@heroicons/react/24/outline/PlusIcon'
 import EyeIcon from '@heroicons/react/24/outline/EyeIcon'
-
-
 
 const iconClasses = `h-6 w-6`
 const submenuIconClasses = `h-5 w-5`
 
-const role=localStorage.getItem('role')
+const token = localStorage.getItem('token');
+
 
 const tenantRoutes =
 [
@@ -109,12 +105,6 @@ const tenantRoutes =
     icon: <ArrowUpIcon className={`${iconClasses} inline` }/>, 
     name: 'Inventory In Out',  
     submenu : [
-     
-    //  {
-    //   path: '/app/withdraw-request-add',
-    //   icon: <PlusIcon className={submenuIconClasses}/>,
-    //   name: 'Add Request',
-    // },
     {
       path: '/app/tenant-view-in',
       icon: <EyeIcon className={submenuIconClasses}/>,
@@ -178,12 +168,6 @@ const employeeRoutes = [
     icon: <WalletIcon className={`${iconClasses} inline` }/>, 
     name: 'My Salary',  
     submenu : [
-     
-    //  {
-    //   path: '/',
-    //   icon: <PlusIcon className={submenuIconClasses}/>,
-    //   name: 'Add Request',
-    // },
     {
       path: '/app/employee-salary',
       icon: <EyeIcon className={submenuIconClasses}/>,
@@ -202,11 +186,6 @@ const employeeRoutes = [
         icon: <PlusIcon className={submenuIconClasses}/>,
         name: 'Add Purchase Request',
       },
-    // {
-    //   path: '/app/employee-salary',
-    //   icon: <EyeIcon className={submenuIconClasses}/>,
-    //   name: 'My Salary rHistory',
-    // },
     ]
   },
 
@@ -216,63 +195,11 @@ const employeeRoutes = [
 //admin side
 const adminRoutes =
 [
-
   {
     path: '/app',
     icon: <Squares2X2Icon className={iconClasses}/>, 
-
     name: 'Dashboard',  
-
   },
-  // {
-  //   path: '', 
-  //   icon: <DocumentDuplicateIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Pages', 
-  //   submenu : [
-  //     {
-  //       path: '/login',
-  //       icon: <ArrowRightOnRectangleIcon className={submenuIconClasses}/>,
-  //       name: 'Login',
-  //     },
-  //     {
-  //       path: '/register', 
-  //       icon: <UserIcon className={submenuIconClasses}/>, 
-  //       name: 'Register',
-  //     },
-  //     {
-  //       path: '/forgot-password',
-  //       icon: <KeyIcon className={submenuIconClasses}/>,
-  //       name: 'Forgot Password',
-  //     },
-  //     {
-  //       path: '/app/blank',
-  //       icon: <DocumentIcon className={submenuIconClasses}/>,
-  //       name: 'Blank Page',
-  //     },
-  //     {
-  //       path: '/app/404',
-  //       icon: <ExclamationTriangleIcon className={submenuIconClasses}/>,
-  //       name: '404',
-  //     },
-  //   ]
-  // },
-  // {
-  //   path: '', 
-  //   icon: <Cog6ToothIcon className={`${iconClasses} inline` }/>,
-  //   name: 'Settings', 
-  //   submenu : [
-  //     {
-  //       path: '/app/settings-profile', 
-  //       icon: <UserIcon className={submenuIconClasses}/>,
-  //       name: 'Profile', 
-  //     },
-  //    
-  //    
-  //   ]
-  // },
-  //
-  
-
   {
     path: '', 
     icon: <HomeIcon className={`${iconClasses} inline` }/>, 
@@ -281,22 +208,22 @@ const adminRoutes =
       {
         path: '/app/add-floor',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Floor ',
+        name: 'Add New Floor ',
       },
       {
         path: '/app/view-floor',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Floor Lists',
+        name: 'View Floors',
       },
       {
         path: '/app/add-unit',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add unit ',
+        name: 'Add New Unit ',
       },
       {
         path: '/app/view-unit',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Unit Lists',
+        name: 'View Units ',
       },
     ]
   },
@@ -309,12 +236,12 @@ const adminRoutes =
       {
         path: '/app/add-bill-type',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Bill Type',
+        name: 'Add New Bill Type',
       },
       {
         path: '/app/view-bill-type',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Bill Types',
+        name: 'View Bill Types',
       },
       {
         path: '/app/add-payment-for-goverment',
@@ -324,110 +251,75 @@ const adminRoutes =
       {
         path: '/app/view-payment-for-goverment',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Payments for gov.t ',
+        name: 'View paid Payments for gov.t ',
       },
       {
         path: '/app/expense-type-add',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Expense Type',
+        name: 'Add New Expense Type',
       },
       {
         path: '/app/expense-type-view',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Expense Types ',
+        name: 'View Expense Types ',
       },
       {
         path: '/app/expense-add',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Expense',
+        name: 'Add New Expense',
       },
       {
         path: '/app/expense-view',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Expense ',
+        name: 'View Expenses ',
       },
       {
         path: '/app/add-payment-type',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Payment Type',
+        name: 'Add New Payment Type',
       },
       {
         path: '/app/view-payment-type',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'View Payment Type',
+        name: 'View Payment Types',
       },
       {
         path: '/app/add-payment',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Payment Add',
+        name: 'Add New Payment',
       },
       {
         path: '/app/view-payments',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Payments',
+        name: 'View Payments Made',
       },
       {
         path: '/app/payment-request-add',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Payment Request',
+        name: 'Add New Payment Request',
       },
       {
         path: '/app/payment-request-view',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'View Payment Request',
+        name: 'View Payment Requests',
       },
       {
         path: '/app/add-mass-salary',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Mass Payment',
+        name: 'Add Mass Employee Salary ',
       },
       {
         path: '/app/add-single-salary',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Single Payment',
+        name: 'Add Single employee Salary',
       },
       {
         path: '/app/view-all-salary',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'View All Payment',
+        name: 'View All Sallery History',
       },
     ]
   },
-  // {
-  //   path: '', 
-  //   icon: <DocumentDuplicateIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Bill Payment for Gov.t', 
-  //   submenu : [
-  //     {
-  //       path: '/app/payment-goverment-add',
-  //       icon: <PlusIcon className={submenuIconClasses}/>,
-  //       name: 'Add Bill Payment',
-  //     },
-  //     {
-  //       path: '/app/payment-goverment-view',
-  //       icon: <EyeIcon className={submenuIconClasses}/>,
-  //       name: 'Payments for gov.t ',
-  //     },
-  //   ]
-  // },
-  // {
-  //   path: '', 
-  //   icon: <CreditCardIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Expense', 
-  //   submenu : [
-  //     {
-  //       path: '/app/expense-add',
-  //       icon: <PlusIcon className={submenuIconClasses}/>,
-  //       name: 'Add Expense',
-  //     },
-  //     {
-  //       path: '/app/expense-view',
-  //       icon: <EyeIcon className={submenuIconClasses}/>,
-  //       name: 'Expense ',
-  //     },
-  //   ]
-  // },
-  
   {
     path: '', 
     icon: <UserIcon className={`${iconClasses} inline` }/>, 
@@ -436,17 +328,17 @@ const adminRoutes =
       {
         path: '/app/tenant-add',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Tenant ',
+        name: 'Register New Tenant ',
       },
       {
         path: '/app/tenant-view',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Tenants ',
+        name: 'View Tenants ',
       },
       {
         path: '/app/ten-days-tenant',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Ten Days Tenant',
+        name: 'Near Expiry Tenants',
       },
       // {
       //   path: '/app/tenant-filter',
@@ -488,47 +380,21 @@ const adminRoutes =
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Withdraw Requests',
       },
+      {
+             path: '/app/rent-collection-add',
+            icon: <PlusIcon className={submenuIconClasses}/>,
+            name: 'Add Collected Rent',
+           },
+          {
+            path: '/app/rent-collection-view',
+             icon: <EyeIcon className={submenuIconClasses}/>,
+             name: 'Collected Rents ',
+           },
     ]
   },
-  // {
-  //   path: '', 
-  //   icon: <WalletIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Bills Paid by Tenant', 
-  //   submenu : [
-  //     {
-  //       path: '/app/tenant-bill-add',
-  //       icon: <PlusIcon className={submenuIconClasses}/>,
-  //       name: 'Add Tenant Bills',
-  //     },
-  //     {
-  //       path: '/app/tenant-bill-view',
-  //       icon: <EyeIcon className={submenuIconClasses}/>,
-  //       name: 'Tenant Bills ',
-  //     },
-  //   ]
-  // },
-  // {
-  //   path: '', 
-  //   icon: <WalletIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Rent collection', 
-  //   submenu : [
-  //     {
-  //       path: '/app/rent-collection-add',
-  //       icon: <PlusIcon className={submenuIconClasses}/>,
-  //       name: 'Add Collected Rent',
-  //     },
-  //     {
-  //       path: '/app/rent-collection-view',
-  //       icon: <EyeIcon className={submenuIconClasses}/>,
-  //       name: 'Collected Rents ',
-  //     },
-  //   ]
-  // },
   {
     path: '', 
-
     icon: <MapPinIcon className={`${iconClasses} inline` }/>, 
-
     name: 'Utility', 
     submenu : [
       {
@@ -573,23 +439,6 @@ const adminRoutes =
       },
     ]
   },
-  // {
-  //   path: '', 
-  //   icon: <CubeIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Inventory Item Types', 
-  //   submenu : [
-  //     {
-  //       path: '/app/item-type-add',
-  //       icon: <PlusIcon className={submenuIconClasses}/>,
-  //       name: 'Add Item Type',
-  //     },
-  //     {
-  //       path: '/app/item-type-view',
-  //       icon: <EyeIcon className={submenuIconClasses}/>,
-  //       name: 'View Item Type',
-  //     },
-  //   ]
-  // },
   {
     path: '', 
     icon: <CubeIcon className={`${iconClasses} inline` }/>, 
@@ -634,77 +483,6 @@ const adminRoutes =
         path: '/app/view-low-level-stock',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Low level stock',
-      },
-    ]
-  },
-  // {
-  //   path: '', 
-  //   icon: <PaperClipIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Payment Request', 
-  //   submenu : [
-  //     {
-  //       path: '/app/payment-request-add',
-  //       icon: <PlusIcon className={submenuIconClasses}/>,
-  //       name: 'Add Payment Request',
-  //     },
-  //     {
-  //       path: '/app/payment-request-view',
-  //       icon: <EyeIcon className={submenuIconClasses}/>,
-  //       name: 'View Payment Request',
-  //     },
-  //   ]
-  // },
-  // {
-  //   path: '', 
-  //   icon: <BellIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Notfication Type', 
-  //   submenu : [
-  //     {
-  //       path: '/app/notfication-type-add',
-  //       icon: <PlusIcon className={submenuIconClasses}/>,
-  //       name: 'Add Notfication Type',
-  //     },
-  //     {
-  //       path: '/app/notfication-type-view',
-  //       icon: <EyeIcon className={submenuIconClasses}/>,
-  //       name: 'View Notfication Type',  
-  //     },
-  //   ]
-  // },
-  // {
-  //   path: '', 
-
-  //   icon: <PowerIcon className={`${iconClasses} inline` }/>, 
-
-  //   name: 'Charging', 
-  //   submenu : [
-  //     {
-  //       path: '/app/charging-add',
-  //       icon: <PlusIcon className={submenuIconClasses}/>,
-  //       name: 'Add Charging',
-  //     },
-  //     {
-  //       path: '/app/charging-view',
-  //       icon: <EyeIcon className={submenuIconClasses}/>,
-  //       name: 'View Charging Info',  
-  //     },
-  //   ]
-  // },
-  {
-    path: '', 
-    icon: <CogIcon className={`${iconClasses} inline` }/>, 
-    name: 'Settings', 
-    submenu : [
-      {
-
-        path: '/app/add-setting',
-        icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Setting ',
-      },
-      {
-        path: '/app/view-settings',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'View ',
       },
     ]
   },
@@ -774,34 +552,8 @@ const adminRoutes =
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Sent Letters',
       }
-
-     
     ]
   },
-  // {
-  //   path: '', 
-  //   icon: <EnvelopeIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Email', 
-  //   submenu : [
-  //     {
-  //       path:"/app/send-single-email",
-  //       icon: <PlusIcon className={submenuIconClasses}/>,
-  //       name: 'Send Email ',
-  //     },
-  //     {
-  //       path:"/app/send-bulk-email",
-  //       icon: <PlusIcon className={submenuIconClasses}/>,
-  //       name: 'Send Bulk Email ',
-  //     },
-  //     {
-  //       path:"/app/send-emails",
-  //       icon: <EyeIcon className={submenuIconClasses}/>,
-  //       name: 'All Emails ',
-  //     }
-  //   ]
-  // },
-
-
   //report
   {
     path: '', 
@@ -862,42 +614,14 @@ const adminRoutes =
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Item Assignment Report',
     },
+    {
+      path: '/app/view-revenue-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Revenue Report',
+    },
 
     ]
   },
-  //complain
-  // {
-  //   path: '', 
-  //   icon: <ExclamationCircleIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Complain from tenant',  
-  //   submenu : [
-     
-  //    {
-  //     path: '/app/complain-fromT-view',
-  //     icon: <EyeIcon className={submenuIconClasses}/>,
-  //     name: 'View Complaints',
-  //   },
-  //   {
-  //     path: '/app/admin-view-assigneds',
-  //     icon: <EyeIcon className={submenuIconClasses}/>,
-  //     name: 'Assigned Staff',
-  //   },
-  //   ]
-  // },
-  // {
-  //   path: '', 
-  //   icon: <ArrowUpIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Withdrawal requests from tenant',  
-  //   submenu : [
-     
-  //    {
-  //     path: '/app/view-withdraw-requests',
-  //     icon: <EyeIcon className={submenuIconClasses}/>,
-  //     name: 'View Requests',
-  //   },
-  //   ]
-  // },
-  //purchase
   {
     path: '', 
     icon: <CreditCardIcon className={`${iconClasses} inline` }/>, 
@@ -951,42 +675,6 @@ const adminRoutes =
     },
     ]
   },
-  // {
-  //   path: '', 
-  //   icon: <ShoppingBagIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Purchase Request',  
-  //   submenu : [
-     
-  //    {
-  //     path: '/app/add-purchase-request',
-  //     icon: <PlusIcon className={submenuIconClasses}/>,
-  //     name: 'Add Purchase Request',
-  //   },
-  //   {
-  //     path: '/app/view-purchase-request',
-  //     icon: <EyeIcon className={submenuIconClasses}/>,
-  //     name: 'Purchase requests ',
-  //   },
-  //   ]
-  // },
-  // {
-  //   path: '', 
-  //   icon: <WrenchIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Maintenance ',  
-  //   submenu : [
-     
-  //    {
-  //     path: '/app/add-maintenance',
-  //     icon: <PlusIcon className={submenuIconClasses}/>,
-  //     name: 'Add Maintenance',
-  //   },
-  //   {
-  //     path: '/app/view-maintenance',
-  //     icon: <EyeIcon className={submenuIconClasses}/>,
-  //     name: 'View Maintenance info ',
-  //   },
-  //   ]
-  // },
   {
     path: '', 
     icon: <ClipboardIcon className={`${iconClasses} inline` }/>, 
@@ -1006,47 +694,6 @@ const adminRoutes =
 
     ]
   },
-
-  // {
-  //   path: '', 
-  //   icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Service Type',  
-  //   submenu : [
-     
-  //    {
-  //     path: '/app/add-service-type',
-  //     icon: <PlusIcon className={submenuIconClasses}/>,
-  //     name: 'Service Type Add',
-  //   },
-  //   {
-  //     path: '/app/view-service-types',
-  //     icon: <EyeIcon className={submenuIconClasses}/>,
-  //     name: 'Service Type',
-  //   },
-  //   ]
-  // },
-
-  //vendor
-  // {
-  //   path: '', 
-  //   icon: <BuildingOfficeIcon className={`${iconClasses} inline` }/>, 
-  //   name: 'Vendor',  
-  //   submenu : [
-     
-  //    {
-  //     path: '/app/add-service-type',
-  //     icon: <PlusIcon className={submenuIconClasses}/>,
-  //     name: 'Add Service Type ',
-  //   },
-  //   {
-  //     path: '/app/view-service-types',
-  //     icon: <EyeIcon className={submenuIconClasses}/>,
-  //     name: 'Service Type',
-  //   },
-  //   ]
-  // },
-  //order
-
   {
     path: '', 
     icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
@@ -1075,7 +722,6 @@ const adminRoutes =
     icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
     name: 'Asset',  
     submenu : [
-     
      {
       path: '/app/add-asset',
       icon: <PlusIcon className={submenuIconClasses}/>,
@@ -1086,16 +732,7 @@ const adminRoutes =
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'View Assets',
     },
-   
-    ]
-  },
-  {
-    path: '', 
-    icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
-    name: 'Asset Audit',  
-    submenu : [
-     
-     {
+    {
       path: '/app/add-asset-audit',
       icon: <PlusIcon className={submenuIconClasses}/>,
       name: 'Add Asset Audit',
@@ -1110,7 +747,6 @@ const adminRoutes =
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Asset Audit Reports',
     },
-   
     ]
   },
   {
@@ -1118,7 +754,6 @@ const adminRoutes =
     icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
     name: 'Employee',  
     submenu : [
-     
      {
       path: '/app/add-employee',
       icon: <PlusIcon className={submenuIconClasses}/>,
@@ -1129,10 +764,102 @@ const adminRoutes =
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'View all employees',
     },
-   
+    ]
+  },
+  {
+    path: '', 
+    icon: <CogIcon className={`${iconClasses} inline` }/>, 
+    name: 'Settings', 
+    submenu : [
+      {
+        path: '/app/add-setting',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Setting ',
+      },
+      {
+        path: '/app/view-settings',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View ',
+      },
+      {
+        path: '/app/add-role',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Role ',
+      },
+      {
+        path: '/app/view-role',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View Roles',
+      },
+      {
+        path: '/app/add-permission',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Permission ',
+      },
+      {
+        path: '/app/view-permission',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View Permissions',
+      },
+      {
+        path: '/app/assign-permission',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Assign Permissions  ',
+      },
+      {
+        path: '/app/revoke-permission',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Revoke Permissions',
+      },
+      // {
+      //   path: '/app/register-user',
+      //   icon: <PlusIcon className={submenuIconClasses}/>,
+      //   name: 'User Registration  ',
+      // },
     ]
   },
   
 ]
-const routes = role === 'admin' ? adminRoutes : role === 'employee' ? employeeRoutes : tenantRoutes;
-export default routes
+
+let routes = [];
+
+if (token) {
+  try {
+    const decoded = jwtDecode(token);
+
+    const role = decoded.role;
+    const permissions = decoded.permissions || [];
+
+    if (role === 'admin') {
+      routes = adminRoutes;
+    } else if (role === 'tenant') {
+      routes = tenantRoutes;
+    } else {
+     
+      routes = [...employeeRoutes];
+
+      // Add specific modules from adminRoutes based on permissions
+      const permittedModules = [];
+
+      for (const module of adminRoutes) {
+        if (!module.name) continue;
+
+        // If permission includes the module name (case-insensitive match)
+        const hasPermission = permissions.some((perm) =>
+          perm.toLowerCase().includes(module.name.toLowerCase())
+        );
+
+        if (hasPermission) {
+          permittedModules.push(module);
+        }
+      }
+
+      routes = [...routes, ...permittedModules];
+    }
+
+  } catch (error) {
+    console.error("Token decode failed", error);
+  }
+}
+
+export default routes;

@@ -52,7 +52,7 @@ const MassSalaryPayment = () => {
 
   return (
     <>
-      <TitleCard title={'Add Mass Salary'} topMargin={'mt-1'}>
+      <TitleCard title={'Add Mass Employee Salary'} topMargin={'mt-1'}>
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Payment Method */}
         <div>

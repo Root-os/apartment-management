@@ -1,5 +1,5 @@
 import Header from "./Header"
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 import routes from '../routes'
 
 import { Suspense, lazy } from 'react'
@@ -9,48 +9,48 @@ import { useEffect, useRef } from "react"
 
 const Page404 = lazy(() => import('../pages/protected/404'))
 
-
 function PageContent(){
     const mainContentRef = useRef(null);
     const {pageTitle} = useSelector(state => state.header)
 
-
     // Scroll back to top on new page load
     useEffect(() => {
-        mainContentRef.current.scroll({
-            top: 0,
-            behavior: "smooth"
-        });
+        if (mainContentRef.current) {
+            mainContentRef.current.scroll({
+                top: 0,
+                behavior: "smooth"
+            });
+        }
     }, [pageTitle])
 
-    return(
-        <div className="drawer-content flex flex-col ">
-            <Header/>
-            <main className="flex-1 overflow-y-auto md:pt-4 pt-4 px-6  bg-base-200" ref={mainContentRef}>
-                <Suspense fallback={<SuspenseContent />}>
-                        <Routes>
-                            {
-                                routes.map((route, key) => {
-                                    return(
-                                        <Route
-                                            key={key}
-                                            exact={true}
-                                            path={`${route.path}`}
-                                            element={<route.component />}
-                                        />
-                                    )
-                                })
-                            }
+    // Flatten the routes array (in case of admin grouped routes)
+    const flattenRoutes = (routes) => {
+        return routes.flatMap(route => route.routes ? route.routes : [route]);
+    };
 
-                            {/* Redirecting unknown url to 404 page */}
-                            <Route path="*" element={<Page404 />} />
-                        </Routes>
+    const allRoutes = flattenRoutes(routes);
+
+    return (
+        <div className="drawer-content flex flex-col">
+            <Header />
+            <main className="flex-1 overflow-y-auto md:pt-4 pt-4 px-6 bg-base-200" ref={mainContentRef}>
+                <Suspense fallback={<SuspenseContent />}>
+                    <Routes>
+                        {allRoutes.map((route, key) => (
+                            <Route
+                                key={key}
+                                path={route.path}
+                                element={<route.component />}
+                            />
+                        ))}
+                        {/* 404 fallback */}
+                        <Route path="*" element={<Page404 />} />
+                    </Routes>
                 </Suspense>
                 <div className="h-16"></div>
             </main>
-        </div> 
+        </div>
     )
 }
-
 
 export default PageContent

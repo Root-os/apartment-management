@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import LoadingComponent from '../../components/loading';
 import {
@@ -16,7 +16,8 @@ import {
   FaDolly,
   FaMoneyBillAlt,
   FaFileInvoiceDollar,
-  FaHome, FaQuestionCircle
+  FaHome,
+  FaQuestionCircle,
 } from 'react-icons/fa';
 import UnitStatusReport from './components/diagram';
 import RemainingTenants from './components/tenDaysTenant';
@@ -25,38 +26,63 @@ import RecentComplaintList from './components/recentComplent';
 
 const Dashboard = () => {
   const [counts, setCounts] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // Loading on mount
   const [error, setError] = useState('');
   const [isWrapped, setIsWrapped] = useState(false);
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState(''); // Empty initially
+  const [endDate, setEndDate] = useState(''); // Empty initially
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const params = {};
-
-        if (startDate) params.startDate = startDate;
-        if (endDate) params.endDate = endDate;
-
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}dashboard`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          params,
-        });
-        setCounts(transformData(response.data));
-      } catch (error) {
-        setError('Error loading data: ');
-        console.error('Error fetching data');
-      } finally {
-        setLoading(false);
+  const fetchData = async (params = {}) => {
+    try {
+      setLoading(true);
+      setError('');
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
       }
-    };
+      console.log('Request URL:', `${process.env.REACT_APP_BASE_URL}/dashboard`, params);
 
-    fetchData();
-  }, [startDate, endDate]);
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/dashboard`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Cache-Control': 'no-cache',
+        },
+        params,
+      });
+      console.log('Raw response:', response.data);
+      const transformed = transformData(response.data);
+      console.log('Transformed data:', transformed);
+      setCounts(transformed);
+    } catch (error) {
+      setError('Error loading data: ' + error.message);
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Initial data fetch on mount
+  useEffect(() => {
+    fetchData(); // No params to fetch full dataset
+  }, []);
+
+  const handleFilterClick = () => {
+    if (!startDate && !endDate) {
+      setError('Please select at least one date to filter');
+      return;
+    }
+    const params = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    fetchData(params);
+  };
+
+  const handleClearClick = () => {
+    setStartDate('');
+    setEndDate('');
+    setError('');
+    fetchData(); // Fetch full dataset
+  };
 
   const generateRandomColor = () => {
     const letters = '0123456789ABCDEF';
@@ -72,7 +98,7 @@ const Dashboard = () => {
     for (const [key, value] of Object.entries(data)) {
       transformedData[key] = {};
       for (const [subKey, subValue] of Object.entries(value)) {
-        transformedData[key][keyMapping[subKey]] = subValue;
+        transformedData[key][keyMapping[subKey] || subKey] = subValue;
       }
     }
     return transformedData;
@@ -99,7 +125,6 @@ const Dashboard = () => {
     totalTenants: 'Total Tenants',
     activeTenants: 'Active Tenants',
     inactiveTenants: 'Inactive Tenants',
-    terminatedTenants: 'Terminated Tenants',
     totalVehicles: 'Total Vehicles',
     totalInventory: 'Total Inventory',
     moveInInventories: 'Move-In Inventories',
@@ -120,9 +145,7 @@ const Dashboard = () => {
     processedWithdrawals: 'Processed Withdrawals',
     totalEmails: 'Total Emails',
     sentEmails: 'Sent Emails',
-    readEmails: 'Read Emails',
     totalEmployees: 'Total Employees',
-    adminEmployees: 'Admin Employees',
     totalSalaries: 'Total Salaries',
     pendingSalaries: 'Pending Salaries',
     paidSalaries: 'Paid Salaries',
@@ -166,6 +189,7 @@ const Dashboard = () => {
 
   const handleDateChange = (e) => {
     const { name, value } = e.target;
+    console.log(`Changing ${name} to:`, value);
     if (name === 'startDate') {
       setStartDate(value);
     } else if (name === 'endDate') {
@@ -174,11 +198,30 @@ const Dashboard = () => {
   };
 
   if (loading) {
-    return <LoadingComponent/>;
+    return <LoadingComponent />;
   }
   if (error) {
-    return <div>{error}</div>;
+    return <div className="text-red-500">{error}</div>;
   }
+
+  // console.log('Rendering counts:', counts);
+  const CardWrapper = ({ children }) => {
+    return (
+      <div
+        className={`
+          bg-white dark:bg-gray-800
+          shadow rounded-lg
+          p-3 text-sm
+          transition-all duration-300 ease-in-out
+          max-h-[600px] overflow-hidden
+          min-h-[80px]
+        `}
+      >
+        {children}
+      </div>
+    );
+  };
+  
 
   return (
     <div className="container mx-auto p-4">
@@ -188,76 +231,102 @@ const Dashboard = () => {
         </button> */}
       </div>
       <div className="flex flex-col sm:flex-row justify-end mb-4 gap-4 sm:gap-2">
-  <input
-    type="date"
-    name="startDate"
-    value={startDate}
-    onChange={handleDateChange}
-    className="border p-2 w-full sm:w-auto"
-  />
-  <input
-    type="date"
-    name="endDate"
-    value={endDate}
-    onChange={handleDateChange}
-    className="border p-2 w-full sm:w-auto"
-  />
-</div>
+        <input
+          type="date"
+          name="startDate"
+          value={startDate}
+          onChange={handleDateChange}
+          className="border p-2 w-full sm:w-auto"
+          placeholder="Select start date"
+        />
+        <input
+          type="date"
+          name="endDate"
+          value={endDate}
+          onChange={handleDateChange}
+          className="border p-2 w-full sm:w-auto"
+          placeholder="Select end date"
+        />
+        <button
+          onClick={handleFilterClick}
+          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 w-full sm:w-auto"
+        >
+          Filter
+        </button>
+        <button
+          onClick={handleClearClick}
+          className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600 w-full sm:w-auto"
+        >
+          Clear
+        </button>
+      </div>
 
-      <div
-        className={`grid gap-4 ${
-          isWrapped ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3'
-        }`}
-      >
-       {counts && (
-  <>
-    {Object.keys(counts).map((key) => (
-      <div
-        key={key}
-        className="card hover:shadow-xl transition-all transform hover:scale-105 relative"
-        style={{ backgroundColor: generateRandomColor() }}
-      >
-        <div className="absolute top-2 left-2 flex items-center space-x-2">
-          {/* Ensure iconMapping[key] is not undefined */}
-          <div>{iconMapping[key] || <FaQuestionCircle size={30} title="Unknown" />}</div>
-          
-          {/* Ensure keyMapping[key] is not undefined */}
-          <h3 className="text-xl font-semibold text-black">
-            {keyMapping[key] || key} {/* Fallback to the key if no mapping found */}
-          </h3>
+      {counts ? (
+        <div
+          className={`grid gap-4 ${
+            isWrapped ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3'
+          }`}
+        >
+          {Object.keys(counts).map((key) => (
+            <div
+              key={key}
+              className="card hover:shadow-xl transition-all transform hover:scale-105 relative"
+              style={{ backgroundColor: generateRandomColor() }}
+            >
+              <div className="absolute top-2 left-2 flex items-center space-x-2">
+                <div>{iconMapping[key] || <FaQuestionCircle size={30} title="Unknown" />}</div>
+                <h3 className="text-xl font-semibold text-black">
+                  {keyMapping[key] || key}
+                </h3>
+              </div>
+              <div className="card-body p-6 mt-10">
+                <ul className="text-sm text-black">
+                  {Object.keys(counts[key]).map((subKey) => (
+                    <li key={subKey}>
+                      {subKey}: {counts[key][subKey]}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="card-body p-6 mt-10">
-          <ul className="text-sm text-black">
-            {Object.keys(counts[key]).map((subKey) => (
-              <li key={subKey}>
-                {subKey}: {counts[key][subKey]}
-              </li>
-            ))}
-          </ul>
+      ) : (
+        <div className="text-gray-500">No data available</div>
+      )}
+
+{counts && (
+  <>
+    <hr className="my-6 border-t-2 border-dotted border-gray-500 dark:border-gray-300" />
+    <div className="container mx-auto px-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Left Column */}
+        <div className="flex flex-col gap-4">
+          <CardWrapper>
+            <RemainingTenants />
+          </CardWrapper>
+          <CardWrapper>
+            <UnitStatusReport />
+          </CardWrapper>
+        </div>
+
+        {/* Right Column */}
+        <div className="flex flex-col gap-4">
+          <CardWrapper>
+            <LowStockAlert />
+          </CardWrapper>
+          <CardWrapper>
+            <RecentComplaintList />
+          </CardWrapper>
         </div>
       </div>
-    ))}
+    </div>
   </>
 )}
 
-      </div>
-      <hr className="my-6 border-t-2 border-dotted border-gray-500 dark:border-gray-300" />
-      <div className="container mx-auto p-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 ">
-          <div className="bg-white shadow-lg rounded-lg dark:bg-gray-800">
-            <UnitStatusReport />
-          </div>
-          <div className="bg-white shadow-lg rounded-lg dark:bg-gray-800">
-            <RemainingTenants />
-          </div>
-          <div className="bg-white shadow-lg rounded-lg dark:bg-gray-800">
-            <LowStockAlert />
-          </div>
-          <div className="bg-white shadow-lg rounded-lg dark:bg-gray-800">
-            <RecentComplaintList />
-          </div>
-        </div>
-      </div>
+
+
+
     </div>
   );
 };

@@ -28,7 +28,7 @@ const RecentComplaintList = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6 dark:bg-slate-900 dark:text-white">
+    <div>
       <h1 className="text-2xl font-bold mb-4">Recent Complaints</h1>
       <div className="w-full max-w-4xl bg-white shadow-md rounded-lg p-6 dark:bg-gray-800 ">
         {complaints.length > 0 ? (

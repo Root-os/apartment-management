@@ -221,7 +221,7 @@ const handleDetailClick = (payment) => {
         </div>
       ) : (
         <TableComponent
-          title="Bill Payments"
+          title="Paid Bill Payments for Gov't"
           data={billPayments}
           columns={columns}
           rowsPerPageOptions={[5, 10, 15]}

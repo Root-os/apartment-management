@@ -34,7 +34,7 @@ const BillPaymentPage = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('Bill type added successfully');
-      window.location.href='/app/bill-type-view';
+      // window.location.href='/app/bill-type-view';
       // Reset form fields
       setFormData({
         typeName: '',

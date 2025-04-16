@@ -68,14 +68,17 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-base-200 flex items-center">
+    <div
+      className="min-h-screen flex justify-center items-center "
+      style={{ backgroundImage: 'url(/bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}
+    >
       <div className="card mx-auto w-full max-w-xl shadow-xl">
-        <div className=" bg-base-100 rounded-xl">
+        <div className="  rounded-xl">
           {/* <div>
             <LandingIntro />
           </div> */}
           <div className="py-24 px-10">
-            <h2 className="text-2xl font-semibold mb-2 text-center">Login</h2>
+            <h2 className="text-white font-bold mb-2 text-center">Login</h2>
             <form onSubmit={submitForm}>
               <div className="mb-4">
                 <InputText
@@ -84,6 +87,8 @@ function Login() {
                   updateType="email"
                   containerStyle="mt-4"
                   labelTitle="Email"
+                  labelStyle={' font-bold text-white-700'}
+                  InputTextStyle= "text-red-500"
                   updateFormValue={updateFormValue}
                 />
                 <InputText
@@ -92,6 +97,8 @@ function Login() {
                   updateType="password"
                   containerStyle="mt-4"
                   labelTitle="Password"
+                  labelStyle={' font-bold text-white-700'}
+                  InputTextStyle= "text-red-500"
                   updateFormValue={updateFormValue}
                 />
               </div>
