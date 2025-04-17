@@ -236,6 +236,7 @@ const EmployeeList = () => {
             <p><strong>Position:</strong> {selectedEmployee.EmployeeDetail?.position || 'N/A'}</p>
             <p><strong>Salary:</strong> {selectedEmployee.EmployeeDetail?.salary || 'N/A'}</p>
             <p><strong>Department:</strong> {selectedEmployee.EmployeeDetail?.department || 'N/A'}</p>
+            <p><strong>Role:</strong> {selectedEmployee.Role?.name || 'N/A'}</p>
             <p><strong>Work Shift:</strong> {selectedEmployee.EmployeeDetail?.shift || 'N/A'}</p>
             <p><strong>Address:</strong> {selectedEmployee.EmployeeDetail?.address || 'N/A'}</p>
             <p><strong>Hire Date:</strong> {new Date(selectedEmployee.EmployeeDetail?.hireDate).toLocaleDateString()}</p>

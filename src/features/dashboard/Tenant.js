@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FaBell, FaCreditCard, FaExclamationCircle, FaHome, FaCar, FaParking } from 'react-icons/fa';
-
+import Loading from '../../components/loading';
 const TenantDashboard = () => {
   const [counts, setCounts] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -50,7 +50,7 @@ const TenantDashboard = () => {
   };
 
   if (loading) {
-    return <div>Loading.</div>;
+    return <div><Loading/></div>;
   }
   if (error) {
     return <div>{error}</div>;

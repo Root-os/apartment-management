@@ -60,7 +60,7 @@ const tenantRoutes =
   {
     path: '/app',
     icon: <Squares2X2Icon className={iconClasses}/>, 
-    name: 'tenant-Dashboard',  
+    name: 'Dashboard',  
   },
   
   //complain
@@ -146,6 +146,11 @@ const tenantRoutes =
 
 const employeeRoutes = [
   {
+    path: '/app',
+    icon: <Squares2X2Icon className={iconClasses}/>, 
+    name: 'Dashboard',  
+  },
+  {
     path: '', 
     icon: <ArrowUpIcon className={`${iconClasses} inline` }/>, 
     name: 'Stock Out',  
@@ -177,14 +182,14 @@ const employeeRoutes = [
   },
   {
     path: '', 
-    icon: <DocumentTextIcon className={`${iconClasses} inline` }/>, 
-    name: 'Purchase Request',  
+    icon: <MailIcon className={`${iconClasses} inline` }/>, 
+    name: 'Notfications',  
     submenu : [
      
       {
-        path: '/app/add-purchase-request',
+        path: '/app/view-my-notfication',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Purchase Request',
+        name: 'My Notfications',
       },
     ]
   },

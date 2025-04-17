@@ -51,6 +51,7 @@ const notficationAdd = lazy(() => import('../pages/protected/Notfication/add'));
 const allNotfication = lazy(() => import('../pages/protected/Notfication/viewAll'));
 const bulkNotfication = lazy(() => import('../pages/protected/Notfication/bulkNotfi'));
 const MyNotification = lazy(() => import('../pages/protected/Notfication/MyNotification'));
+const EmpNotfication = lazy(() => import('../pages/protected/Notfication/EmpNotfication'));
 
 // Email
 const singleEmail = lazy(() => import('../pages/protected/email/addsingleEmail'));
@@ -230,6 +231,10 @@ const employeeRoutes = [
   {
     path: '/add-purchase-request',
     component: PurchaseRequestAdd,
+  },
+  {
+    path: '/view-my-notfication',
+    component: EmpNotfication,
   },
 ];
 

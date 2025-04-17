@@ -45,11 +45,11 @@ const TenantNotificationPage = () => {
       label: 'Body',
       key: 'body',
     },
-    {
-      label: 'Status',
-      key: 'isRead',
-      render: (row) => (row.isRead ? 'Read' : 'Unread'),
-    },
+    // {
+    //   label: 'Status',
+    //   key: 'isRead',
+    //   render: (row) => (row.isRead ? 'Read' : 'Unread'),
+    // },
     {
       label: 'Type',
       key: 'type',

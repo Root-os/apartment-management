@@ -3,19 +3,22 @@ import { useDispatch } from 'react-redux'
 import { setPageTitle } from '../../features/common/headerSlice'
 import Dashboard from '../../features/dashboard/index'
 import TenantDashboard from '../../features/dashboard/Tenant'
+import EmployeeDashboard from '../../features/dashboard/employeeDashboard'
 
-function InternalPage(){
-    const dispatch = useDispatch()
+function InternalPage() {
+  const dispatch = useDispatch()
 
-    useEffect(() => {
-        dispatch(setPageTitle({ title : ""}))
-      }, [])
-const role = localStorage.getItem('role');
+  useEffect(() => {
+    dispatch(setPageTitle({ title: "" }))
+  }, [])
 
+  const role = localStorage.getItem('role')
 
-    return(
-       role==='tenant'?<TenantDashboard />: <Dashboard />
-    )
+  return (
+    role === 'tenant' ? <TenantDashboard /> :
+    role === 'employee' ? <EmployeeDashboard /> :
+    <Dashboard />
+  )
 }
 
 export default InternalPage

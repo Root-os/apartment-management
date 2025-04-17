@@ -114,7 +114,7 @@ const ViewMyRequest = () => {
     {
       key: 'terminationDate',
       label: 'Termination Date',
-      render: (row) => new Date(row.terminationDate).toLocaleDateString()
+      render: (row) => new Date(row.terminationDate).toISOString().split('T')[0]
     },
     { label: 'Status', key: 'status' },
     { label: 'Admin Response', key: 'adminResponse' },

@@ -363,8 +363,8 @@ const handleDetailClick = (payment) => {
               <div>
                 <p><strong>Bill Type:</strong> {selectedDetail.BillType?.typeName}</p>
                 <p><strong>Amount:</strong> {selectedDetail.amount}</p>
-                <p><strong>Start Date:</strong> {new Date(selectedDetail.startDate).toLocaleDateString()}</p>
-                <p><strong>End Date:</strong> {new Date(selectedDetail.endDate).toLocaleDateString()}</p>
+                <p><strong>Start Date:</strong> {new Date(selectedDetail.startDate).toISOString().split('T')[0]}</p>
+                <p><strong>End Date:</strong> {new Date(selectedDetail.endDate).toISOString().split('T')[0]}</p>
                 <p><strong>Status:</strong> {selectedDetail.status}</p>
                 <p><strong>Payment Method:</strong> {selectedDetail.paymentMethod}</p>
                 <p><strong>Description:</strong> {selectedDetail.description}</p>

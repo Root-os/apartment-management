@@ -133,7 +133,7 @@ const MyOrdersPage = () => {
 
   const columns = [
     { key: 'OrderType.name', label: 'Order Name', render: (row) => row.OrderType?.name || 'N/A' },
-    { key: 'orderDate', label: 'Order Date',render:(row)=>new Date(row.orderDate).toLocaleDateString() },
+    { key: 'orderDate', label: 'Order Date',render:(row)=>new Date(row.orderDate).toISOString().split('T')[0]},
     { key: 'amount', label: 'Amount' },
     { key: 'totalprice', label: 'Total Price' },
     { key: 'status', label: 'Status' },

@@ -20,7 +20,7 @@ const StockoutPage = () => {
   const fetchStockoutData = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}stockout/for-requester`, 
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}stockout/my-request`, 
           {
               headers: {
                 Authorization: `Bearer ${token}`,
