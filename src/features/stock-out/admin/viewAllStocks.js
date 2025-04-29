@@ -62,7 +62,7 @@ const StockOutRequestPage = () => {
         approvalReason: editItem.approvalReason,
       };
 
-      const response = await axios.put(`https://apartment.bruktiethiotour.com/api/stockout/approve/${editItem.id}`, payload, {
+      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}stockout/approve/${editItem.id}`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

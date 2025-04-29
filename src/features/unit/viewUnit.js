@@ -168,7 +168,7 @@ const UnitList = () => {
 
   const handleDetailClick = async (unit) => {
     try {
-      const response = await axios.get(`https://apartment.bruktiethiotour.com/api/unit/floor/${unit.floorId}`);
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit/floor/${unit.floorId}`);
       setUnitDetails(response.data);
       setIsDetailModalOpen(true);
     } catch (error) {
@@ -195,13 +195,13 @@ const UnitList = () => {
     try {
       let response;
       if (selectedStatus.includes("free") && selectedStatus.includes("rented")) {
-        response = await axios.get(`https://apartment.bruktiethiotour.com/api/unit`);
+        response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit`);
       } else if (selectedStatus.includes("free")) {
-        response = await axios.get(`https://apartment.bruktiethiotour.com/api/unit/free/units`);
+        response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit/free/units`);
       } else if (selectedStatus.includes("rented")) {
-        response = await axios.get(`https://apartment.bruktiethiotour.com/api/unit/rented/units`);
+        response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit/rented/units`);
       } else {
-        response = await axios.get(`https://apartment.bruktiethiotour.com/api/unit`);
+        response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit`);
       }
       setFilteredUnits(response.data);
     } catch (error) {
