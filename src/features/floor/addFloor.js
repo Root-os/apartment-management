@@ -23,7 +23,7 @@ const FloorForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
+    try {    
          setIsLoading(true);
 
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}floor`, formData, {
