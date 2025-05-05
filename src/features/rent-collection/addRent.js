@@ -115,7 +115,7 @@ const AddCollectedRent = () => {
 
   return (
     <>
-      <TitleCard title="Add Collected Rent">
+      <TitleCard title="Add  Rent Collection">
         {/* Error Banner */}
         {error && (
           <div className="bg-red-100 text-red-700 border border-red-400 p-4 rounded mb-4">
@@ -159,14 +159,14 @@ const AddCollectedRent = () => {
 
           {/* Read-only Amount Field */}
           <div>
-            <label htmlFor="amount" className="block text-sm font-medium text-white-700">Amount</label>
-            <input
-              type="text"
-              id="amount"
-              value={amount}
-              readOnly
-              className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg text-gray-400 cursor-not-allowed"
-            />
+         
+      <input
+        type="hidden"
+        id="amount"
+        value={amount}
+        readOnly
+        className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg text-gray-400 cursor-not-allowed"
+      />
           </div>
 
           {/* Payment Date Field */}

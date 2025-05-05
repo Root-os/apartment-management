@@ -294,7 +294,7 @@ const UnitList = () => {
     },
   ];
 
-const handleAddClick = () => {  window.location.href = '/app/unit-add';};
+const handleAddClick = () => {  window.location.href = '/app/add-unit';};
 
   return (
     <div>

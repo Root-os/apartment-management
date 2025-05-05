@@ -566,7 +566,7 @@ const TenantList = () => {
         <div className="mb-4">
           <p><strong>Document:</strong></p>
           {(() => {
-            const baseUrl = 'https://apartment.bruktiethiotour.com';
+            const baseUrl = 'process.env.BASE_URL';
 
             // Case 1: If document is a File object (after upload, before refresh)
             if (selectedTenant.document instanceof File) {

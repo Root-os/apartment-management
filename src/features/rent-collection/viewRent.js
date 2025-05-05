@@ -146,8 +146,6 @@ const RentCollectionPage = () => {
     }
     return cleaned;
   };
-  
-
   // Handle Filter Submit
   const handleFilterSubmit = async (e) => {
     e.preventDefault();
@@ -173,10 +171,6 @@ const RentCollectionPage = () => {
      
     }
   };
-  
-  
-  
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFilterParams({ ...filterParams, [name]: value });
@@ -185,41 +179,42 @@ const RentCollectionPage = () => {
   const columns = [
     { key: 'tenantName', label: 'Tenant Name', render: (rent) => rent.Tenant.fullName },
     // { key: 'amountPaid', label: 'Amount Paid' },
-    { key: 'paymentDate', label: 'Payment Date', render: (rent) => new Date(rent.paymentDate).toLocaleDateString() },
-    { key: 'paymentMethod', label: 'Payment Method' },
-    { key: 'status', label: 'Status' },
+    { key: 'paymentDate', label: 'paid from', render: (rent) => new Date(rent.paymentDate).toISOString().split('T')[0] },
+    { key: 'nextDueDate', label: 'paid to', render: (rent) => new Date(rent.nextDueDate).toISOString().split('T')[0]},
+    { key: 'paidDays', label: 'paid days' },
+    { key: 'amountPaid', label: 'Amount Paid', render: (data) => Math.ceil(data.amountPaid) },
     {
-      key: 'actions',
-      label: 'Actions',
-      render: (rent) => (
-        <div className="flex space-x-2">
-          <button
-            onClick={() => openEditModal(rent)}
-            className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-700"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => openDeleteModal(rent.id)}
-            className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-700"
-          >
-            Delete
-          </button>
-          <button
-            onClick={() => openDetailsModal(rent)}
-            className="bg-gray-500 text-white py-1 px-2 rounded hover:bg-gray-700"
-          >
-            Details
-          </button>
-          <button
-            onClick={() => openHistoryModal(rent.tenantId)}
-            className="bg-green-500 text-white py-1 px-2 rounded hover:bg-green-700"
-          >
-            Payment History
-          </button>
-        </div>
-      )
-    }
+        key: 'actions',
+        label: 'Actions',
+        render: (rent) => (
+          <div className="flex gap-2 text-sm">
+            <button
+              onClick={() => openEditModal(rent)}
+              className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => openDeleteModal(rent.id)}
+              className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+            >
+              Delete
+            </button>
+            <button
+              onClick={() => openDetailsModal(rent)}
+              className="bg-gray-500 text-white px-2 py-1 rounded hover:bg-gray-600"
+            >
+              Details
+            </button>
+            <button
+              onClick={() => openHistoryModal(rent.tenantId)}
+              className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
+            >
+              Payment History
+            </button>
+          </div>
+        )
+      }
   ];
 
   return (
@@ -318,10 +313,6 @@ const RentCollectionPage = () => {
       {rentData.length === 0  && noDataMessage && (
         <p className="text-center text-gray-500 mt-4">No data available for the selected filters.</p>
       )}
-
-
-
-
       {/* History Modal */}
       {historyModalOpen && (
         <HistoryModal
@@ -433,7 +424,7 @@ const RentCollectionPage = () => {
               <p><strong>Floor Number:</strong> {currentRent.Tenant.Floor.floorNumber}</p>
               <p><strong>Paid Days:</strong> {currentRent.paidDays}</p>
               <p><strong>Payment Frequency:</strong> {currentRent.paymentFrequency}</p>
-              <p><strong>Next Due Date:</strong> {new Date(currentRent.nextDueDate).toLocaleDateString()}</p>
+              <p><strong>Next Due Date:</strong> {new Date(currentRent.nextDueDate).toISOString().split('T')[0]}</p>
             </div>
             <div className="flex justify-center mt-4">
               <button onClick={closeModals} className="bg-gray-400 text-white px-4 py-2 rounded">Close</button>

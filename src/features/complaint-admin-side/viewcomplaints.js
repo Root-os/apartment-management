@@ -243,10 +243,10 @@ const ComplaintsPage = () => {
       return imageArray.map((image, index) => (
         <img
           key={index}
-          src={`https://apartment.bruktiethiotour.com/${image}`}
+          src={`process.env.BASE_URL/${image}`}
           alt={`Complaint Image ${index + 1}`}
           className="w-16 h-16 object-cover cursor-pointer"
-          onClick={() => openImageViewer(`https://apartment.bruktiethiotour.com/${image}`)} // Open image viewer
+          onClick={() => openImageViewer(`process.env.BASE_URL/${image}`)} // Open image viewer
         />
       ));
     } catch (error) {

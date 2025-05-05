@@ -388,7 +388,7 @@ const VendorsPage = () => {
                 <strong>Contract Terms:</strong>{" "}
                 {selectedVendor.contractTerms ? (
                   <a
-                    href={`https://apartment.bruktiethiotour.com/${
+                    href={`process.env.BASE_URL/${
                       selectedVendor.contractTerms.includes("service/")
                         ? selectedVendor.contractTerms
                         : `service/${selectedVendor.contractTerms}`

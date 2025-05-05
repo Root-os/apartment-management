@@ -32,7 +32,7 @@ const TenantFilterList = () => {
   }, []);
 
   const getDocumentUrl = (document) => {
-    return `https://apartment.bruktiethiotour.com${document}`;
+    return `process.env.BASE_URL${document}`;
   };
 
   const isImage = (fileName) => {

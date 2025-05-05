@@ -276,7 +276,14 @@ const TenantReport = () => {
               <p><strong>Status:</strong> {currentTenant.status}</p>
               <p><strong>Unit Number:</strong> {currentTenant.Unit?.unitNumber}</p>
               <p><strong>Floor Number:</strong> {currentTenant.Floor?.floorNumber}</p>
-              <p><strong>Document:</strong> <a href={`https://apartment.bruktiethiotour.com/home/houseeth/apartment.bruktiethiotour.com/uploads${currentTenant.document}`} target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 underline">View Document</a></p>
+              <p><strong>Document:</strong> <a
+                href={`${process.env.REACT_APP_BASE}${currentTenant.document}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-blue-600 underline"
+              >
+                View Document
+              </a></p>
             </div>
             <div className="flex justify-center mt-4">
               <button onClick={() => setDetailsModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Close</button>

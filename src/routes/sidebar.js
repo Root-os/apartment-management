@@ -232,7 +232,85 @@ const adminRoutes =
       },
     ]
   },
- 
+  {
+    path: '', 
+    icon: <UserIcon className={`${iconClasses} inline` }/>, 
+    name: 'Tenant', 
+    submenu : [
+      {
+        path: '/app/tenant-add',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Register New Tenant ',
+      },
+      {
+        path: '/app/tenant-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View Tenants ',
+      },
+      {
+        path: '/app/ten-days-tenant',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Near Expiry Tenants',
+      },
+      // {
+      //   path: '/app/tenant-filter',
+      //   icon: <EyeIcon className={submenuIconClasses}/>,
+      //   name: 'Tenants Filter',
+      // },
+      {
+        path: '/app/tenant-bill-report',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Tenant Bill Report',
+      },
+      {
+        path: '/app/tenant-report',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Tenant Report',
+      },
+      {
+        path: '/app/complain-from-tenant',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View Complaints',
+      },
+      {
+        path: '/app/admin-view-assigneds',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Assigned Staff for complain',
+      },
+      {
+        path: '/app/view-withdraw-requests',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Withdraw Requests',
+      },
+      {
+             path: '/app/rent-collection-add',
+            icon: <PlusIcon className={submenuIconClasses}/>,
+            name: 'Add Collected Rent',
+           },
+          {
+            path: '/app/rent-collection-view',
+             icon: <EyeIcon className={submenuIconClasses}/>,
+             name: 'Collected Rents ',
+           },
+    ]
+  },
+  {
+    path: '', 
+    icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
+    name: 'Employee',  
+    submenu : [
+     {
+      path: '/app/add-employee',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Register Employee',
+    },
+    {
+      path: '/app/view-employee',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View all employees',
+    },
+    ]
+  },
   {
     path: '', 
     icon: <WalletIcon className={`${iconClasses} inline` }/>, 
@@ -257,6 +335,16 @@ const adminRoutes =
         path: '/app/view-payment-for-goverment',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'View paid Payments for gov.t ',
+      },
+      {
+        path: '/app/tenant-bill-add',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Tenant Bills',
+      },
+      {
+        path: '/app/tenant-bill-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Tenant Bills ',
       },
       {
         path: '/app/expense-type-add',
@@ -327,74 +415,176 @@ const adminRoutes =
   },
   {
     path: '', 
-    icon: <UserIcon className={`${iconClasses} inline` }/>, 
-    name: 'Tenant', 
+    icon: <CubeIcon className={`${iconClasses} inline` }/>, 
+    name: 'Inventory ', 
     submenu : [
       {
-        path: '/app/tenant-add',
+        path: '/app/item-type-add',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Register New Tenant ',
+        name: 'Add Item Type',
       },
       {
-        path: '/app/tenant-view',
+        path: '/app/item-type-view',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'View Tenants ',
+        name: 'View Item Type',
       },
       {
-        path: '/app/ten-days-tenant',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Near Expiry Tenants',
-      },
-      // {
-      //   path: '/app/tenant-filter',
-      //   icon: <EyeIcon className={submenuIconClasses}/>,
-      //   name: 'Tenants Filter',
-      // },
-      {
-        path: '/app/tenant-bill-add',
+        path: '/app/item-add',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Tenant Bills',
+        name: 'Add Item ',
       },
       {
-        path: '/app/tenant-bill-view',
+        path: '/app/item-view',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Tenant Bills ',
+        name: 'View Items',
       },
       {
-        path: '/app/tenant-bill-report',
+        path: '/app/add-in-out',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Inventory In/Out',
+      },
+      {
+        path: '/app/view-in-out',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Tenant Bill Report',
+        name: 'View Inventory information',
       },
       {
-        path: '/app/tenant-report',
+        path: '/app/view-stocks',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Tenant Report',
+        name: 'Stock out requests',
       },
       {
-        path: '/app/complain-from-tenant',
+        path: '/app/view-low-level-stock',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'View Complaints',
+        name: 'Low level stock',
       },
-      {
-        path: '/app/admin-view-assigneds',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Assigned Staff for complain',
-      },
-      {
-        path: '/app/view-withdraw-requests',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Withdraw Requests',
-      },
-      {
-             path: '/app/rent-collection-add',
-            icon: <PlusIcon className={submenuIconClasses}/>,
-            name: 'Add Collected Rent',
-           },
-          {
-            path: '/app/rent-collection-view',
-             icon: <EyeIcon className={submenuIconClasses}/>,
-             name: 'Collected Rents ',
-           },
+    ]
+  },
+  {
+    path: '', 
+    icon: <CreditCardIcon className={`${iconClasses} inline` }/>, 
+    name: 'Purchase',  
+    submenu : [
+     
+     {
+      path: '/app/add-purchase',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Purchase',
+    },
+    {
+      path: '/app/view-purchase',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Purchases ',
+    },
+    {
+      path: '/app/add-purchase-request',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Purchase Request',
+    },
+    {
+      path: '/app/view-purchase-request',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Purchase requests ',
+    },
+    {
+      path: '/app/add-vendor',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Vendor Add',
+    },
+    {
+      path: '/app/view-vendors',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Vendors',
+    },
+    {
+      path: '/app/purchase-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Purchase Report',
+    },
+    {
+      path: '/app/add-service-type',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Service Type Add',
+    },
+    {
+      path: '/app/view-service-types',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Service Type',
+    },
+    ]
+  },
+  {
+    path: '', 
+    icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
+    name: 'Order',  
+    submenu : [
+     
+     {
+      path: '/app/add-orderType',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Order Type',
+    },
+    {
+      path: '/app/view-order-types',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Order Type',
+    },
+    {
+      path: '/app/all-order',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'All Orders',
+    }
+    ]
+  },
+  {
+    path: '', 
+    icon: <ClipboardIcon className={`${iconClasses} inline` }/>, 
+    name: 'Item Assignments',  
+    submenu : [
+     
+     {
+      path: '/app/add-item-assignments',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Item',
+    },
+    {
+      path: '/app/view-item-assignments',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View Item Assignments',
+    },
+
+    ]
+  },
+  {
+    path: '', 
+    icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
+    name: 'Asset',  
+    submenu : [
+     {
+      path: '/app/add-asset',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Asset',
+    },
+    {
+      path: '/app/view-asset',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View Assets',
+    },
+    {
+      path: '/app/add-asset-audit',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'Add Asset Audit',
+    },
+    {
+      path: '/app/view-asset-audit',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'View Asset Audits',
+    },
+    {
+      path: '/app/view-audit-report',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Asset Audit Reports',
+    },
     ]
   },
   {
@@ -441,53 +631,6 @@ const adminRoutes =
         path: '/app/view-returns',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Returns',
-      },
-    ]
-  },
-  {
-    path: '', 
-    icon: <CubeIcon className={`${iconClasses} inline` }/>, 
-    name: 'Inventory ', 
-    submenu : [
-      {
-        path: '/app/item-type-add',
-        icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Item Type',
-      },
-      {
-        path: '/app/item-type-view',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'View Item Type',
-      },
-      {
-        path: '/app/item-add',
-        icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Item ',
-      },
-      {
-        path: '/app/item-view',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'View Items',
-      },
-      {
-        path: '/app/add-in-out',
-        icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Add Inventory In/Out',
-      },
-      {
-        path: '/app/view-in-out',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'View Inventory information',
-      },
-      {
-        path: '/app/view-stocks',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Stock out requests',
-      },
-      {
-        path: '/app/view-low-level-stock',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Low level stock',
       },
     ]
   },
@@ -625,150 +768,6 @@ const adminRoutes =
       name: 'Revenue Report',
     },
 
-    ]
-  },
-  {
-    path: '', 
-    icon: <CreditCardIcon className={`${iconClasses} inline` }/>, 
-    name: 'Purchase',  
-    submenu : [
-     
-     {
-      path: '/app/add-purchase',
-      icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Add Purchase',
-    },
-    {
-      path: '/app/view-purchase',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'Purchases ',
-    },
-    {
-      path: '/app/add-purchase-request',
-      icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Add Purchase Request',
-    },
-    {
-      path: '/app/view-purchase-request',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'Purchase requests ',
-    },
-    {
-      path: '/app/add-vendor',
-      icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Vendor Add',
-    },
-    {
-      path: '/app/view-vendors',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'Vendors',
-    },
-    {
-      path: '/app/purchase-report',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'Purchase Report',
-    },
-    {
-      path: '/app/add-service-type',
-      icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Service Type Add',
-    },
-    {
-      path: '/app/view-service-types',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'Service Type',
-    },
-    ]
-  },
-  {
-    path: '', 
-    icon: <ClipboardIcon className={`${iconClasses} inline` }/>, 
-    name: 'item-assignments',  
-    submenu : [
-     
-     {
-      path: '/app/add-item-assignments',
-      icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Add Item',
-    },
-    {
-      path: '/app/view-item-assignments',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'View Item Assignments',
-    },
-
-    ]
-  },
-  {
-    path: '', 
-    icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
-    name: 'Order',  
-    submenu : [
-     
-     {
-      path: '/app/add-orderType',
-      icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Add Order Type',
-    },
-    {
-      path: '/app/view-order-types',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'Order Type',
-    },
-    {
-      path: '/app/all-order',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'All Orders',
-    }
-    ]
-  },
-  {
-    path: '', 
-    icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
-    name: 'Asset',  
-    submenu : [
-     {
-      path: '/app/add-asset',
-      icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Add Asset',
-    },
-    {
-      path: '/app/view-asset',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'View Assets',
-    },
-    {
-      path: '/app/add-asset-audit',
-      icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Add Asset Audit',
-    },
-    {
-      path: '/app/view-asset-audit',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'View Asset Audits',
-    },
-    {
-      path: '/app/view-audit-report',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'Asset Audit Reports',
-    },
-    ]
-  },
-  {
-    path: '', 
-    icon: <CalendarIcon className={`${iconClasses} inline` }/>, 
-    name: 'Employee',  
-    submenu : [
-     {
-      path: '/app/add-employee',
-      icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Register Employee',
-    },
-    {
-      path: '/app/view-employee',
-      icon: <EyeIcon className={submenuIconClasses}/>,
-      name: 'View all employees',
-    },
     ]
   },
   {

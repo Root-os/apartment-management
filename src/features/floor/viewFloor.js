@@ -149,7 +149,7 @@ const FloorManagement = () => {
   ];
 
   const handleAddClick = () => {
-   window.location.href = '/app/floor-add';
+   window.location.href = '/app/add-floor';
   };
 
   return (

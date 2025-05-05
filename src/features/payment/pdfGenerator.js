@@ -154,17 +154,6 @@ const GenerateReceiptPage = () => {
         <p className="text-sm font-bold text-gray-700">Thank you for your business!</p>
       </div>
 
-      {/* Notes Section */}
-      <div className="mb-6">
-        <h3 className="text-sm font-bold text-gray-700 uppercase">Notes</h3>
-        <p className="text-sm text-gray-600">
-          Write payment method used, e.g., cash/credit/cheque.
-        </p>
-        <p className="text-sm text-gray-600">
-          Add terms here, e.g., warranty, returns policy.
-        </p>
-      </div>
-
       {/* Print Button */}
       <div className="text-center">
         <button

@@ -234,10 +234,7 @@ const AddTenant = () => {
       console.log('API Response:', response.data);
 
       // Reset form fields
-      setFullName('');
-      setEmail('');
-      setDocument(null);
-      setPhoneNumber('');
+      setFullName('');   setEmail('');     setDocument(null);      setPhoneNumber('');
       setHasCar(false);
       setCarName('');
       setCarPlate('');
@@ -311,9 +308,7 @@ const AddTenant = () => {
 
           {/* Phone Number */}
           <div>
-            <label className="block text-sm font-semibold mb-2">
-              Phone Number <span className="text-red-500">*</span>
-            </label>
+            <label className="block text-sm font-semibold mb-2"> Phone Number <span className="text-red-500">*</span></label>            
             <input
               type="text"
               value={phoneNumber}
@@ -321,18 +316,13 @@ const AddTenant = () => {
                 setPhoneNumber(e.target.value);
                 setErrors((prev) => ({ ...prev, phoneNumber: validatePhoneNumber(e.target.value) }));
               }}
-              className={`bg-base-100 w-full p-3 border rounded-md ${
-                errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
-              }`}
-            />
+              className={`bg-base-100 w-full p-3 border rounded-md ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'}`} />
             {errors.phoneNumber && <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>}
           </div>
 
           {/* National ID */}
           <div>
-            <label className="block text-sm font-semibold mb-2">
-              National ID <span className="text-red-500">*</span>
-            </label>
+            <label className="block text-sm font-semibold mb-2"> National ID <span className="text-red-500">*</span> </label>
             <input
               type="text"
               value={nationalId}

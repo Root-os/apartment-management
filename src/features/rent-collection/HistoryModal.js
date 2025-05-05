@@ -31,12 +31,12 @@ const HistoryModal = ({ isOpen, onClose, tenantInfo, paymentHistory }) => {
               <tbody>
                 {paymentHistory.map((payment) => (
                   <tr key={payment.id}>
-                    <td className="py-2 px-4 border-b dark:border-gray-700">{payment.amountPaid}</td>
-                    <td className="py-2 px-4 border-b dark:border-gray-700">{new Date(payment.paymentDate).toLocaleDateString()}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-700">{Math.ceil(payment.amountPaid)}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-700">{new Date(payment.paymentDate).toISOString().split('T')[0]}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-700">{payment.paidDays}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-700">{payment.paymentMethod}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-700">{payment.paymentFrequency}</td>
-                    <td className="py-2 px-4 border-b dark:border-gray-700">{new Date(payment.nextDueDate).toLocaleDateString()}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-700">{new Date(payment.nextDueDate).toISOString().split('T')[0]}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-700">{payment.status}</td>
                   </tr>
                 ))}

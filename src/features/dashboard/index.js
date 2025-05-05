@@ -40,9 +40,9 @@ const Dashboard = () => {
       if (!token) {
         throw new Error('No authentication token found');
       }
-      console.log('Request URL:', `${process.env.REACT_APP_BASE_URL}/dashboard`, params);
+      console.log('Request URL:', `${process.env.REACT_APP_BASE_URL}dashboard`, params);
 
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/dashboard`, {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}dashboard`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Cache-Control': 'no-cache',

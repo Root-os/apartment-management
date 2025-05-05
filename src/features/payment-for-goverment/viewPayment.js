@@ -196,7 +196,7 @@ const handleDetailClick = (payment) => {
   ];
 
   const handleAddClick = () => {
-    window.location.href = '/app/payment-goverment-add';
+    window.location.href = '/app/add-payment-for-goverment';
   };
 
   return (

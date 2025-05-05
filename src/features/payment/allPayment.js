@@ -75,7 +75,7 @@ const AllPaymentsPage = () => {
     const filteredPayments = payments.filter((payment) => payment.vendorId === vendorId);
 
     // Navigate to GenerateReceiptPage and pass the filtered payments via state
-    navigate("/app/payment-reciept", { state: { payments: filteredPayments } });
+    navigate("/app/payment-receipt", { state: { payments: filteredPayments } });
   };
 
 
