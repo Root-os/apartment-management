@@ -179,7 +179,7 @@ const PurchasesPage = () => {
       render: (row) => {
         if (row.expirationDate) {
           const date = new Date(row.expirationDate);
-          return date.toLocaleDateString('en-US');
+          return date.toISOString().split('T')[0];
         }
         return 'N/A';
       }

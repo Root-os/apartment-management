@@ -28,7 +28,7 @@ const AllSendLetterPage = () => {
       .then((response) => {
         const formattedLetters = response.data.map((letter) => ({
           ...letter,
-          letterDate: letter.letterDate ? new Date(letter.letterDate).toLocaleDateString() : "",
+          letterDate: letter.letterDate ? new Date(letter.letterDate).toISOString().split('T')[0] : "",
         }));
         setLetters(formattedLetters);
       })
@@ -295,13 +295,13 @@ const AllSendLetterPage = () => {
               <p><strong>Letter Type:</strong> {selectedLetter.LetterType.name}</p>
               <p><strong>Tenant:</strong> {selectedLetter.Tenant.fullName}</p>
               <p><strong>Description:</strong> {selectedLetter.description}</p>
-              <p><strong>Date:</strong> {selectedLetter.Date ? new Date(selectedLetter.Date).toLocaleDateString() : "N/A"}</p>
+              <p><strong>Date:</strong> {selectedLetter.Date ? new Date(selectedLetter.Date).toISOString().split('T')[0]: "N/A"}</p>
               <p><strong>Status:</strong> {selectedLetter.status}</p>
               <p><strong>Tenant Phone:</strong> {selectedLetter.Tenant.phoneNumber}</p>
               <p><strong>Tenant Email:</strong> {selectedLetter.Tenant.email}</p>
               <p><strong>Tenant National ID:</strong> {selectedLetter.Tenant.nationalId}</p>
-              <p><strong>Lease Start:</strong> {new Date(selectedLetter.Tenant.leaseStartDate).toLocaleDateString()}</p>
-              <p><strong>Lease End:</strong> {new Date(selectedLetter.Tenant.leaseEndDate).toLocaleDateString()}</p>
+              <p><strong>Lease Start:</strong> {new Date(selectedLetter.Tenant.leaseStartDate).toISOString().split('T')[0]}</p>
+              <p><strong>Lease End:</strong> {new Date(selectedLetter.Tenant.leaseEndDate).toISOString().split('T')[0]}</p>
               <p><strong>Payment Status:</strong> {selectedLetter.Tenant.paymentStatus}</p>
               <p><strong>Additional Notes:</strong> {selectedLetter.Tenant.additionalNotes}</p>
               <p><strong>Advance:</strong> {selectedLetter.Tenant.advance}</p>

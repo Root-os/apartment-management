@@ -388,15 +388,18 @@ const VendorsPage = () => {
   <strong>Contract Terms:</strong>{" "}
   {selectedVendor.contractTerms ? (
     <a
-      href={`${
-        selectedVendor.contractTerms.includes("http") ? selectedVendor.contractTerms : `${process.env.BASE_URL}/${selectedVendor.contractTerms}`
-      }`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-blue-600 hover:text-blue-800 underline"
-    >
-      See Document
-    </a>
+    href={`${
+      selectedVendor.contractTerms.includes("http")
+        ? selectedVendor.contractTerms
+        : `${process.env.REACT_APP_BASE}/${selectedVendor.contractTerms}`
+    }`}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-blue-600 hover:text-blue-800 underline"
+  >
+    See Document
+  </a>
+  
   ) : (
     "No document available"
   )}

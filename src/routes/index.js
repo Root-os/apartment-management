@@ -30,6 +30,8 @@ const TenantBillAdd = lazy(() => import('../pages/protected/TenantBillAdd'));
 const TenantBillView = lazy(() => import('../pages/protected/TenantBillView'));
 const TenDays = lazy(() => import('../pages/protected/tendaysTenants'));
 const TenantFilter = lazy(() => import('../pages/protected/tenantfilterlist'));
+const NewVehicle = lazy(() => import('../pages/protected/tenantvehicle/NewVehicle'));
+const TenantVehicles = lazy(() => import('../pages/protected/tenantvehicle/ViewVehicle'));
 
 const RentAdd = lazy(() => import('../pages/protected/RentAdd'));
 const RentView = lazy(() => import('../pages/protected/RentView'));
@@ -294,6 +296,9 @@ const adminRoutes = [
       { path: '/view-withdraw-requests', component: ViewWithdrawRequests },
       { path: '/rent-collection-add', component: RentAdd },
       { path: '/rent-collection-view', component: RentView },
+      {path: '/add-tenant-vehicle', component: NewVehicle},
+      { path:  '/tenant/:tenantId/vehicles', component: TenantVehicles }
+
     ],
   },
   {

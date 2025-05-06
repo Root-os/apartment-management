@@ -365,7 +365,7 @@ const AssetAuditPage = () => {
               <p><strong>Item Name:</strong> {selectedAudit.Item ? selectedAudit.Item.itemName : 'N/A'}</p>
               <p><strong>Asset Type:</strong> {selectedAudit.AssetType ? selectedAudit.AssetType.name : 'N/A'}</p>
               <p><strong>Asset Name:</strong> {selectedAudit.asset_name || 'N/A'}</p>
-              <p><strong>Date:</strong> {selectedAudit.date ? new Date(selectedAudit.date).toLocaleDateString('en-CA') : 'N/A'}</p>
+              <p><strong>Date:</strong> {selectedAudit.date ? new Date(selectedAudit.date).toISOString().split('T')[0]: 'N/A'}</p>
               <p><strong>Existing Amount:</strong> {selectedAudit.existing_amount || 0}</p>
               <p><strong>Damaged Amount:</strong> {selectedAudit.damaged_amount || 0}</p>
               <p><strong>Lost Amount:</strong> {selectedAudit.lost_amount || 0}</p>

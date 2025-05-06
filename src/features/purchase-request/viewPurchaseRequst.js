@@ -449,7 +449,7 @@ const PurchasesRequestPage = () => {
             <p><strong>Vendor Name:</strong> {vendors.find(v => v.id === selectedDetailRequest.vendorId)?.fname || selectedDetailRequest.vendorName || 'N/A'}</p>
             <p><strong>Vendor Phone:</strong> {selectedDetailRequest.vendorPhone}</p>
             <p><strong>Amount:</strong> {selectedDetailRequest.amount}</p>
-            <p><strong>Request Date:</strong> {new Date(selectedDetailRequest.requestDate).toLocaleDateString('en-US')}</p>
+            <p><strong>Request Date:</strong> {new Date(selectedDetailRequest.requestDate).toISOString().split('T')[0]}</p>
             <p><strong>Status:</strong> {selectedDetailRequest.status}</p>
             <p><strong>Reason:</strong> {selectedDetailRequest.reason}</p>
             <button

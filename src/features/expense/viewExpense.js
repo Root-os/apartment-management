@@ -20,6 +20,7 @@ const ExpensePage = () => {
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
   const [pageLoading, setPageLoading] = useState(true);
+  const totalExpenseAmount = expenses.reduce((total, expense) => total + parseFloat(expense.amount), 0);
 
   // Function to fetch expenses and expense types
   const fetchData = async () => {
@@ -80,7 +81,7 @@ const ExpensePage = () => {
     setAmount(expense.amount);
     
     // Convert the date into 'yyyy-mm-dd' format correctly
-    const localDate = new Date(expense.date).toLocaleDateString('en-CA');  // 'en-CA' gives 'yyyy-mm-dd'
+    const localDate = new Date(expense.date).toISOString().split('T')[0];  // 'en-CA' gives 'yyyy-mm-dd'
     setDate(localDate);  // Set the state with the correctly formatted date
     
     setDescription(expense.description);
@@ -178,6 +179,10 @@ const ExpensePage = () => {
           onAdd={handleAddClick}
         />
       )}
+      <div className="mt-4 text-right text-lg font-semibold text-gray-800 px-4">
+  Total Expense Amount: <span className="text-red-600">{totalExpenseAmount.toFixed(2)}</span>
+</div>
+
 
       {isEditModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

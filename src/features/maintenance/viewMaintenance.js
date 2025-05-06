@@ -217,7 +217,7 @@ const openEditModal = (record) => {
       render: (row) => {
         if (row.date) {
           const date = new Date(row.date);
-          return date.toLocaleDateString('en-US');
+          return date.toISOString().split('T')[0];
         }
         return 'N/A';
       },

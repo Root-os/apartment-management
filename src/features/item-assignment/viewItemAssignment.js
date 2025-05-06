@@ -185,9 +185,9 @@ const ItemAssignmentsPage = () => {
         render: (row) => {
             if (row.assignDate) {
               const date = new Date(row.assignDate);
-              return date.toLocaleDateString('en-US'); 
+              return date.toISOString().split('T')[0]; 
             }
-            return 'N/A';
+            return 'N/A'; 
           }
     },
     {

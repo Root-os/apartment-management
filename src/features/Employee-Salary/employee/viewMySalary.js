@@ -38,7 +38,7 @@ const MySalaryPayments = () => {
       render: (row) => {
         if (row.paymentFromDate) {
           const date = new Date(row.paymentFromDate);
-          return date.toLocaleDateString('en-US'); 
+          return date.toISOString().split('T')[0]; 
         }
         return 'N/A';
       }
@@ -47,7 +47,7 @@ const MySalaryPayments = () => {
       render: (row) => {
         if (row.paymentToDate) {
           const date = new Date(row.paymentToDate);
-          return date.toLocaleDateString('en-US'); 
+          return date.toISOString().split('T')[0]; 
         }
         return 'N/A';
       }

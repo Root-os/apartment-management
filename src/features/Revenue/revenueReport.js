@@ -73,11 +73,11 @@ const ReportPage = () => {
                   <tr>
                     <th className="p-2 text-left">Amount</th>
                     <th className="p-2 text-left">Date</th>
-                    {hasTenant && <th className="p-2 text-left">Tenant ID</th>}
+                    {/* {hasTenant && <th className="p-2 text-left">Tenant ID</th>} */}
                   </tr>
                 </thead>
                 <tbody>
-                  {renderRecords(section.records, hasTenant)}
+                  {renderRecords(section.records)}
                 </tbody>
               </table>
               <p className="text-right font-medium">Subtotal: <span className="font-semibold">{totalValue}</span></p>

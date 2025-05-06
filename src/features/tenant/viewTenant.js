@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import { useNavigate } from 'react-router-dom';
 
 const TenantList = () => {
   const [tenants, setTenants] = useState([]);
@@ -15,6 +16,8 @@ const TenantList = () => {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [unitDetails, setUnitDetails] = useState(null); 
   const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
+
+  const navigate = useNavigate();
 
 
   const [editData, setEditData] = useState({
@@ -197,8 +200,26 @@ const TenantList = () => {
     const navigateToRentAdd = () => {
       window.location.href = '/app/rent-collection-add';
     };
-   
 
+ const handleCarClick = (tenant) => {
+  console.log("handleCarClick triggered"); // Check if the function is triggered
+  console.log("Tenant ID:", tenant.id);
+  console.log("TenantVehicles (raw):", tenant.TenantVehicles);
+  console.log("Is array:", Array.isArray(tenant.TenantVehicles));
+  console.log("Length:", tenant.TenantVehicles?.length);
+
+  // Safely handle undefined or null TenantVehicles
+  if (Array.isArray(tenant.TenantVehicles) && tenant.TenantVehicles.length > 0) {
+    // Tenant has vehicles, navigate to the vehicles page
+    navigate(`/tenant/${tenant.id}/vehicles`);
+  } else {
+    // Tenant has no vehicles, navigate to the add vehicle form page
+    navigate('/add-tenant-vehicle', { state: { tenantId: tenant.id } });
+  }
+};
+    
+    
+    
   return (
     <div>
       {/* Page Loading */}
@@ -279,6 +300,13 @@ const TenantList = () => {
                   >
                     Rent
                   </button>
+                  <button
+  onClick={() => handleCarClick(row)} // Ensure 'row' is the full tenant object
+  className="bg-yellow-500 text-white py-1 px-2 rounded"
+>
+  Car
+</button>
+
                 </div>
               ),
             },
@@ -430,24 +458,6 @@ const TenantList = () => {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            {/* <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Description</label>
-              <input
-                type="text"
-                value={editData.description}
-                onChange={(e) => setEditData({ ...editData, description: e.target.value })}
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              />
-            </div> */}
-            {/* <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Car Name</label>
-              <input
-                type="text"
-                value={editData.carName}
-                onChange={(e) => setEditData({ ...editData, carName: e.target.value })}
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              />
-            </div> */}
           
             <div className="flex justify-end space-x-2">
               <button

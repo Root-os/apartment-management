@@ -80,8 +80,8 @@ const TenantReport = () => {
     { key: 'tenantName', label: 'Tenant Name', render: (data) => data.fullName },
     { key: 'unitNumber', label: 'Unit Number', render: (data) => data.Unit?.unitNumber },
     { key: 'floorNumber', label: 'Floor Number', render: (data) => data.Floor?.floorNumber },
-    { key: 'paymentStatus', label: 'Payment Status', render: (data) => data.paymentStatus },
-    { key: 'leaseStartDate', label: 'Lease Start Date', render: (data) => data.leaseStartDate ? new Date(data.leaseStartDate).toISOString().split('T')[0]: 'N/A' },
+    // { key: 'paymentStatus', label: 'Payment Status', render: (data) => data.paymentStatus },
+    { key: 'leaseStartDate', label: 'Lease Start Date', render: (data) => data.leaseStartDate ? new Date(data.leaseStartDate).toISOString().split('T')[0] : 'N/A' },
     { key: 'leaseEndDate', label: 'Lease End Date', render: (data) => data.leaseEndDate ? new Date(data.leaseEndDate).toISOString().split('T')[0]: 'N/A' },
     { key: 'status', label: 'Status', render: (data) => data.status },
     {
@@ -265,7 +265,7 @@ const TenantReport = () => {
               <p><strong>Phone Number:</strong> {currentTenant.phoneNumber}</p>
               <p><strong>Email:</strong> {currentTenant.email || 'N/A'}</p>
               <p><strong>National ID:</strong> {currentTenant.nationalId}</p>
-              <p><strong>Lease Start Date:</strong> {currentTenant.leaseStartDate ? new Date(currentTenant.leaseStartDate).toISOString().split('T')[0] : 'N/A'}</p>
+              <p><strong>Lease Start Date:</strong> {currentTenant.leaseStartDate ? new Date(currentTenant.leaseStartDate).toISOString().split('T')[0]:'N/A'}</p>
               <p><strong>Lease End Date:</strong> {currentTenant.leaseEndDate ? new Date(currentTenant.leaseEndDate).toISOString().split('T')[0]: 'N/A'}</p>
               <p><strong>Payment Status:</strong> {currentTenant.paymentStatus}</p>
               <p><strong>Additional Notes:</strong> {currentTenant.additionalNotes}</p>

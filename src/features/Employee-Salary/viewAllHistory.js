@@ -265,8 +265,8 @@ const SalaryPayments = () => {
             <div className="mb-4">
               <p><strong>Employee Name:</strong> {selectedSalaryDetail.User.fname} {selectedSalaryDetail.User.lname}</p>
               <p><strong>Amount:</strong> {selectedSalaryDetail.amount}</p>
-              <p><strong>Payment From Date:</strong> {new Date(selectedSalaryDetail.paymentFromDate).toLocaleDateString('en-US')}</p>
-              <p><strong>Payment To Date:</strong> {new Date(selectedSalaryDetail.paymentToDate).toLocaleDateString('en-US')}</p>
+              <p><strong>Payment From Date:</strong> {new Date(selectedSalaryDetail.paymentFromDate).toISOString().split('T')[0]}</p>
+              <p><strong>Payment To Date:</strong> {new Date(selectedSalaryDetail.paymentToDate).toISOString().split('T')[0]}</p>
               <p><strong>Payment Method:</strong> {selectedSalaryDetail.paymentMethod}</p>
               <p><strong>Status:</strong> {selectedSalaryDetail.status}</p>
               <p><strong>Pension Contribution:</strong> {selectedSalaryDetail.pensionContribution}</p>
