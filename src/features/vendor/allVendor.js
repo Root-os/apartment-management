@@ -385,24 +385,23 @@ const VendorsPage = () => {
                 {selectedVendor.ServiceType?.name}
               </p>
               <p>
-                <strong>Contract Terms:</strong>{" "}
-                {selectedVendor.contractTerms ? (
-                  <a
-                    href={`process.env.BASE_URL/${
-                      selectedVendor.contractTerms.includes("service/")
-                        ? selectedVendor.contractTerms
-                        : `service/${selectedVendor.contractTerms}`
-                    }`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-800 underline"
-                  >
-                    See Document
-                  </a>
-                ) : (
-                  "No document available"
-                )}
-              </p>
+  <strong>Contract Terms:</strong>{" "}
+  {selectedVendor.contractTerms ? (
+    <a
+      href={`${
+        selectedVendor.contractTerms.includes("http") ? selectedVendor.contractTerms : `${process.env.BASE_URL}/${selectedVendor.contractTerms}`
+      }`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-blue-600 hover:text-blue-800 underline"
+    >
+      See Document
+    </a>
+  ) : (
+    "No document available"
+  )}
+</p>
+
             </div>
             <div className="flex justify-end">
               <button

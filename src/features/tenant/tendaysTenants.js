@@ -15,18 +15,26 @@ const TenDaysTenant = () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant/10days/remaining`);
         setTenants(response.data);
-        setLoading(false);
+        setError('');
       } catch (err) {
-        setError('Failed to fetch tenant data.');
+        if (err.response && err.response.status === 404) {
+          // No tenants found - this is not an error, just empty data
+          setTenants([]);
+          setError('');
+        } else {
+          // Other errors (e.g., server down)
+          setError('Failed to fetch tenant data.');
+        }
+      } finally {
         setLoading(false);
       }
     };
-
+  
     fetchTenants();
   }, []);
-
+  
   const getDocumentUrl = (document) => {
-    return `process.env.BASE_URL${document}`;
+    return `${process.env.REACT_APP_BASE}${document}`;
   };
 
   const openDetailsModal = (tenant) => {
@@ -94,17 +102,25 @@ const TenDaysTenant = () => {
 
       {/* Loading state */}
       {loading ? (
-        <div className="text-center p-4"><LoadingComponent/></div>
-      ) : (
-        <TableComponent
-          title=""
-          data={tenants}
-          columns={columns}
-          rowsPerPageOptions={[5, 10, 15]}
-          showSearch={true}
-          exportable={true}
-        />
-      )}
+  <div className="text-center p-4"><LoadingComponent /></div>
+) : (
+  <div>
+    <TableComponent
+      title=""
+      data={tenants}
+      columns={columns}
+      rowsPerPageOptions={[5, 10, 15]}
+      showSearch={true}
+      exportable={true}
+    />
+    {tenants.length === 0 && (
+      <div className="text-center text-gray-500 mt-4">
+        No tenants found whose lease ends in 10 days or less.
+      </div>
+    )}
+  </div>
+)}
+
 
       {/* Details Modal */}
       {selectedTenant && (
@@ -128,7 +144,7 @@ const TenDaysTenant = () => {
               <p><strong>Status:</strong> {selectedTenant.status}</p>
               <p><strong>Unit Number:</strong> {selectedTenant.Unit?.unitNumber}</p>
               <p><strong>Floor Number:</strong> {selectedTenant.Floor?.floorNumber}</p>
-              <p><strong>Document:</strong> <a href={`process.env.BASE_URL${selectedTenant.document}`} target="_blank" rel="noopener noreferrer">View Document</a></p>
+              <p><strong>Document:</strong> <a href={`${process.env.REACT_APP_BASE}${selectedTenant.document}`} target="_blank" rel="noopener noreferrer">View Document</a></p>
             </div>
             <div className="flex justify-center mt-4">
               <button onClick={() => setSelectedTenant(null)} className="bg-gray-400 text-white px-4 py-2 rounded">Close</button>

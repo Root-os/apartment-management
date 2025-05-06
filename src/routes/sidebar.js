@@ -489,7 +489,7 @@ const adminRoutes =
     {
       path: '/app/add-vendor',
       icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Vendor Add',
+      name: 'New Vendor',
     },
     {
       path: '/app/view-vendors',
@@ -625,7 +625,7 @@ const adminRoutes =
       {
         path: '/app/add-return',
         icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'Return Add',
+        name: 'New Return',
       },
       {
         path: '/app/view-returns',

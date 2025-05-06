@@ -227,6 +227,10 @@ const TenantList = () => {
               key: "advance",
             },
             {
+              label: "rent",
+              key: "amount",
+            },
+            {
               label: "Unit Number",
               key: "unitNumber",
               render: (row) => row.Unit?.unitNumber || "N/A",
@@ -566,7 +570,7 @@ const TenantList = () => {
         <div className="mb-4">
           <p><strong>Document:</strong></p>
           {(() => {
-            const baseUrl = 'process.env.BASE_URL';
+            const baseUrl = `${process.env.REACT_APP_BASE}`;
 
             // Case 1: If document is a File object (after upload, before refresh)
             if (selectedTenant.document instanceof File) {
