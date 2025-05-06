@@ -75,8 +75,8 @@ const TenantBillReport = () => {
     { key: 'tenantName', label: 'Tenant Name', render: (payment) => payment?.Tenant?.fullName || 'N/A' },
     { key: 'billTypeName', label: 'Bill Type', render: (payment) => payment?.BillType?.typeName || 'N/A' },
     { key: 'amountPaid', label: 'Amount Paid', render: (payment) => payment?.amountPaid ?? 'N/A' },
-    { key: 'startDate', label: 'Start Date', render: (payment) => (payment?.startDate ? new Date(payment.startDate).toLocaleDateString() : 'N/A') },
-    { key: 'endDate', label: 'End Date', render: (payment) => (payment?.endDate ? new Date(payment.endDate).toLocaleDateString() : 'N/A') },
+    { key: 'startDate', label: 'Start Date', render: (payment) => (payment?.startDate ? new Date(payment.startDate).toISOString().split('T')[0]: 'N/A') },
+    { key: 'endDate', label: 'End Date', render: (payment) => (payment?.endDate ? new Date(payment.endDate).toISOString().split('T')[0]: 'N/A') },
     { key: 'status', label: 'Status', render: (payment) => payment?.status || 'N/A' },
   ];
 

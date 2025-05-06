@@ -154,8 +154,8 @@ const handleDetailClick = (payment) => {
   const columns = [
     { key: 'billType', label: 'Bill Type', render: (payment) => payment.BillType?.typeName },
     { key: 'amount', label: 'Amount' },
-    // { key: 'startDate', label: 'Start Date', render: (payment) => new Date(payment.startDate).toLocaleDateString() },
-    // { key: 'endDate', label: 'End Date', render: (payment) => new Date(payment.endDate).toLocaleDateString() },
+    // { key: 'startDate', label: 'Start Date', render: (payment) => new Date(payment.startDate).toISOString().split('T')[0]},
+    // { key: 'endDate', label: 'End Date', render: (payment) => new Date(payment.endDate).toISOString().split('T')[0]},
     { key: 'status', label: 'Status' },
     { key: 'paymentMethod', label: 'Payment Method' },
     // { 

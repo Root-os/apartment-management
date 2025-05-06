@@ -28,7 +28,7 @@ const ExpensePage = () => {
       const expenseData = expenseResponse.data.map(expense => ({
         id: expense.id,
         amount: expense.amount,
-        date: new Date(expense.date).toLocaleDateString(),
+        date: new Date(expense.date).toISOString().split('T')[0],
         description: expense.description,
         expenseType: expense.expenseType.name,
         expenseTypeId: expense.expenseType.id,
@@ -112,7 +112,7 @@ const ExpensePage = () => {
       const updatedExpenseData = expenseResponse.data.map(expense => ({
         id: expense.id,
         amount: expense.amount,
-        date: new Date(expense.date).toLocaleDateString(),
+        date: new Date(expense.date).toISOString().split('T')[0],
         description: expense.description,
         expenseType: expense.expenseType.name,
         expenseTypeId: expense.expenseType.id,

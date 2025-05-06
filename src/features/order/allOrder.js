@@ -121,7 +121,7 @@ const AllOrdersPage = () => {
     { key: 'OrderType.name', label: 'Type Name',render:(row)=>row.OrderType?.name ||'N/A' },
     { key: 'Tenant.fullName', label: 'Full Name',render:(row)=>row.Tenant?.fullName ||'N/A' },
 
-    { key: 'orderDate', label: 'Order Date',render:(row) => new Date(row.orderDate).toLocaleDateString() },
+    { key: 'orderDate', label: 'Order Date',render:(row) => new Date(row.orderDate).toISOString().split('T')[0] },
     { key: 'amount', label: 'Amount' },
     { key: 'totalprice', label: 'Total Price' },
     { key: 'status', label: 'Status' },
@@ -237,7 +237,7 @@ const AllOrdersPage = () => {
             <h2 className="text-2xl font-bold mb-4">Order Details</h2>
             {selectedOrder && (
               <>
-                <p><strong>Order Date:</strong> {new Date(selectedOrder.orderDate).toLocaleDateString()}</p>
+                <p><strong>Order Date:</strong> {new Date(selectedOrder.orderDate).toISOString().split('T')[0]}</p>
                 <p><strong>Amount:</strong> {selectedOrder.amount}</p>
                 <p><strong>Total Price:</strong> {selectedOrder.totalprice}</p>
                 <p><strong>Status:</strong> {selectedOrder.status}</p>

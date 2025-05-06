@@ -164,7 +164,7 @@ const AllPaymentsPage = () => {
     {
       key: "paymentDate",
       label: "Payment Date",
-      render: (row) => new Date(row.paymentDate).toLocaleDateString(),
+      render: (row) => new Date(row.paymentDate).toISOString().split('T')[0],
     },
     {
       label: "Actions",

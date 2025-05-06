@@ -131,8 +131,8 @@ const TenDaysTenant = () => {
               <p><strong>Phone Number:</strong> {selectedTenant.phoneNumber}</p>
               <p><strong>Email:</strong> {selectedTenant.email || 'N/A'}</p>
               <p><strong>National ID:</strong> {selectedTenant.nationalId}</p>
-              <p><strong>Lease Start Date:</strong> {selectedTenant.leaseStartDate ? new Date(selectedTenant.leaseStartDate).toLocaleDateString() : 'N/A'}</p>
-              <p><strong>Lease End Date:</strong> {selectedTenant.leaseEndDate ? new Date(selectedTenant.leaseEndDate).toLocaleDateString() : 'N/A'}</p>
+              <p><strong>Lease Start Date:</strong> {selectedTenant.leaseStartDate ? new Date(selectedTenant.leaseStartDate).toISOString().split('T')[0]: 'N/A'}</p>
+              <p><strong>Lease End Date:</strong> {selectedTenant.leaseEndDate ? new Date(selectedTenant.leaseEndDate).toISOString().split('T')[0]: 'N/A'}</p>
               {/* <p><strong>Rent Amount:</strong> {selectedTenant.rentAmount}</p> */}
               <p><strong>Remaining Days:</strong> {selectedTenant.remainingDays}</p>
               <p><strong>Payment Status:</strong> {selectedTenant.paymentStatus}</p>

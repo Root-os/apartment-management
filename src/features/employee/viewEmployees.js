@@ -239,7 +239,7 @@ const EmployeeList = () => {
             <p><strong>Role:</strong> {selectedEmployee.Role?.name || 'N/A'}</p>
             <p><strong>Work Shift:</strong> {selectedEmployee.EmployeeDetail?.shift || 'N/A'}</p>
             <p><strong>Address:</strong> {selectedEmployee.EmployeeDetail?.address || 'N/A'}</p>
-            <p><strong>Hire Date:</strong> {new Date(selectedEmployee.EmployeeDetail?.hireDate).toLocaleDateString()}</p>
+            <p><strong>Hire Date:</strong> {new Date(selectedEmployee.EmployeeDetail?.hireDate).toISOString().split('T')[0]}</p>
             <div className="mt-4">
               <button
                 className="px-4 py-2 bg-gray-500 text-white rounded"

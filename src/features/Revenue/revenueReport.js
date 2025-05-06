@@ -40,7 +40,7 @@ const ReportPage = () => {
       records.map((rec, idx) => (
         <tr key={idx} className="border-b">
           <td className="p-2">{formatAmount(rec.amount)}</td>
-          <td className="p-2">{new Date(rec.date).toLocaleDateString()}</td>
+          <td className="p-2">{new Date(rec.date).toISOString().split('T')[0]}</td>
           {hasTenant && <td className="p-2">{rec.tenantId}</td>}
         </tr>
       ))

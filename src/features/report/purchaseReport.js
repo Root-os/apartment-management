@@ -83,8 +83,8 @@ const PurchaseReport = () => {
     { key: 'amount', label: 'Amount' },
     { key: 'price', label: 'Price' },
     { key: 'totalPrice', label: 'Total Price' },
-    { key: 'date', label: 'Purchase Date', render: (data) => new Date(data.date).toLocaleDateString() },
-    { key: 'expirationDate', label: 'Expiration Date', render: (data) => new Date(data.expirationDate).toLocaleDateString() },
+    { key: 'date', label: 'Purchase Date', render: (data) => new Date(data.date).toISOString().split('T')[0]},
+    { key: 'expirationDate', label: 'Expiration Date', render: (data) => new Date(data.expirationDate).toISOString().split('T')[0]},
     { key: 'description', label: 'Description' },
   ];
   

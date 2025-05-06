@@ -371,8 +371,8 @@ const PurchasesPage = () => {
             <p><strong>Price:</strong> {selectedPurchase?.price}</p>
             <p><strong>Total Price:</strong> {selectedPurchase?.totalPrice}</p>
             <p><strong>Description:</strong> {selectedPurchase?.description}</p>
-            <p><strong>Expiration Date:</strong> {new Date(selectedPurchase?.expirationDate).toLocaleDateString()}</p>
-            <p><strong>Purchase Date:</strong> {new Date(selectedPurchase?.date).toLocaleDateString()}</p>
+            <p><strong>Expiration Date:</strong> {new Date(selectedPurchase?.expirationDate).toISOString().split('T')[0]}</p>
+            <p><strong>Purchase Date:</strong> {new Date(selectedPurchase?.date).toISOString().split('T')[0]}</p>
             {/* Add any other details you wish to show */}
             <div className="flex justify-end mt-4">
               <button

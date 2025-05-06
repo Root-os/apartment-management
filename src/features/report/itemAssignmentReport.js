@@ -80,7 +80,7 @@ const ItemAssignmentReport = () => {
     {
       key: 'assignDate',
       label: 'Assignment Date',
-      render: (data) => new Date(data.assignDate).toLocaleDateString(),
+      render: (data) => new Date(data.assignDate).toISOString().split('T')[0],
     },
     { key: 'assignType', label: 'Assignment Type' },
   ];

@@ -166,11 +166,11 @@ const TenantFilterList = () => {
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Lease Start Date</label>
-              <p className="text-sm">{selectedTenant.leaseStartDate ? new Date(selectedTenant.leaseStartDate).toLocaleDateString() : 'N/A'}</p>
+              <p className="text-sm">{selectedTenant.leaseStartDate ? new Date(selectedTenant.leaseStartDate).toISOString().split('T')[0]: 'N/A'}</p>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Lease End Date</label>
-              <p className="text-sm">{selectedTenant.leaseEndDate ? new Date(selectedTenant.leaseEndDate).toLocaleDateString() : 'N/A'}</p>
+              <p className="text-sm">{selectedTenant.leaseEndDate ? new Date(selectedTenant.leaseEndDate).toISOString().split('T')[0]: 'N/A'}</p>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Payment Status</label>
@@ -305,7 +305,7 @@ const TenantFilterList = () => {
         <label className="block text-sm font-medium mb-2">Rented Date</label>
         <p className="text-sm">
           {unitDetails.Unit.rentedDate 
-            ? new Date(unitDetails.Unit.rentedDate).toLocaleDateString() 
+            ? new Date(unitDetails.Unit.rentedDate).toISOString().split('T')[0] 
             : 'N/A'}
         </p>
       </div>
@@ -314,7 +314,7 @@ const TenantFilterList = () => {
         <label className="block text-sm font-medium mb-2">Vacated Date</label>
         <p className="text-sm">
           {unitDetails.Unit.vacatedDate 
-            ? new Date(unitDetails.Unit.vacatedDate).toLocaleDateString() 
+            ? new Date(unitDetails.Unit.vacatedDate).toISOString().split('T')[0]
             : 'N/A'}
         </p>
       </div>

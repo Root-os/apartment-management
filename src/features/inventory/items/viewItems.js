@@ -156,7 +156,7 @@ const ItemsPage = () => {
     {
       key: 'expirationDate',
       label: 'Expiration Date',
-      render: (row) => new Date(row.expirationDate).toLocaleDateString(),
+      render: (row) => new Date(row.expirationDate).toISOString().split('T')[0],
     },
     {
       label: 'Actions',
@@ -354,7 +354,7 @@ const ItemsPage = () => {
                 <span className="font-medium">Minimum Amount:</span> {selectedItem.min_amount}
               </div>
               <div>
-                <span className="font-medium">Expiration Date:</span> {new Date(selectedItem.expirationDate).toLocaleDateString()}
+                <span className="font-medium">Expiration Date:</span> {new Date(selectedItem.expirationDate).toISOString().split('T')[0]}
               </div>
               <div>
                 <span className="font-medium">Details:</span> {selectedItem.itemDetails}
@@ -409,7 +409,7 @@ const ItemsPage = () => {
                   {auditHistory.map((history) => (
                     <li key={history.id} className="mb-4">
                       <div><strong>Asset Name:</strong> {history.asset_name}</div>
-                      <div><strong>Date:</strong> {new Date(history.date).toLocaleDateString()}</div>
+                      <div><strong>Date:</strong> {new Date(history.date).toISOString().split('T')[0]}</div>
                       <div><strong>Status:</strong> {history.status}</div>
                       <div><strong>Existing Amount:</strong> {history.existing_amount}</div>
                       <div><strong>Damaged Amount:</strong> {history.damaged_amount}</div>

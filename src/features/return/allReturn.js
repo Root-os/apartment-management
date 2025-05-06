@@ -156,7 +156,7 @@ const ReturnsPage = () => {
     { key: 'Item.itemName', label: 'Item', render: (row) => row.Item?.itemName || 'N/A' },
     { key: 'quantity', label: 'Quantity' },
     { key: 'reason', label: 'Reason' },
-    { key: 'returnDate', label: 'Return Date', render: (row) => new Date(row.returnDate).toLocaleDateString() },
+    { key: 'returnDate', label: 'Return Date', render: (row) => new Date(row.returnDate).toISOString().split('T')[0]},
     {
       label: 'Actions',
       key: 'actions',

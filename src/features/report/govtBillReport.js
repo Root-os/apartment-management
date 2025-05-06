@@ -68,8 +68,8 @@ const GovtBillReport = () => {
   const columns = [
     { key: 'billType', label: 'Bill Type', render: (data) => data.BillType?.typeName || 'N/A' },
     { key: 'amount', label: 'Amount' },
-    { key: 'startDate', label: 'Start Date', render: (data) => new Date(data.startDate).toLocaleDateString() },
-    { key: 'endDate', label: 'End Date', render: (data) => new Date(data.endDate).toLocaleDateString() },
+    { key: 'startDate', label: 'Start Date', render: (data) => new Date(data.startDate).toISOString().split('T')[0] },
+    { key: 'endDate', label: 'End Date', render: (data) => new Date(data.endDate).toISOString().split('T')[0] },
     { key: 'status', label: 'Status' },
     { key: 'paymentMethod', label: 'Payment Method' },
     { key: 'description', label: 'Description' }

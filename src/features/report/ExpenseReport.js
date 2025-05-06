@@ -58,7 +58,7 @@ const ExpenseReport = () => {
   const columns = [
     { key: 'expenseType.name', label: 'Expense Type', render: (expense) => expense.expenseType.name },
     { key: 'amount', label: 'Amount' },
-    { key: 'date', label: 'Date', render: (expense) => new Date(expense.date).toLocaleDateString() },
+    { key: 'date', label: 'Date', render: (expense) => new Date(expense.date).toISOString().split('T')[0] },
     { key: 'description', label: 'Description' },
   ];
 

@@ -47,7 +47,7 @@ const LetterDetailPage = () => {
   }
   console.log("Tenant details: ", tenant);
 
-  const currentDate = new Date(letter.letterDate || letter.createdAt).toLocaleDateString();
+  const currentDate = new Date(letter.letterDate || letter.createdAt).toISOString().split('T')[0];
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-200">

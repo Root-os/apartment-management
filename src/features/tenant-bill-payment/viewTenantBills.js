@@ -273,12 +273,12 @@ const ViewBillPayment = () => {
               <p><strong>Unit Number:</strong> {selectedPayment.Tenant?.Unit?.unitNumber || 'N/A'}</p>
               <p><strong>Floor Number:</strong> {selectedPayment.Tenant?.Floor?.floorNumber || 'N/A'}</p>
               <p><strong>Bill Type:</strong> {selectedPayment.BillType?.typeName || 'N/A'}</p>
-              <p><strong>Start Date:</strong> {selectedPayment.startDate ? new Date(selectedPayment.startDate).toLocaleDateString() : 'N/A'}</p>
-              <p><strong>End Date:</strong> {selectedPayment.endDate ? new Date(selectedPayment.endDate).toLocaleDateString() : 'N/A'}</p>
+              <p><strong>Start Date:</strong> {selectedPayment.startDate ? new Date(selectedPayment.startDate).toISOString().split('T')[0]: 'N/A'}</p>
+              <p><strong>End Date:</strong> {selectedPayment.endDate ? new Date(selectedPayment.endDate).toISOString().split('T')[0]: 'N/A'}</p>
               <p><strong>Amount:</strong> {selectedPayment.amountPaid || 'N/A'}</p>
               <p><strong>Status:</strong> {selectedPayment.status || 'N/A'}</p>
               <p><strong>Payment Method:</strong> {selectedPayment.paymentMethod || 'N/A'}</p>
-              <p><strong>Payment Date:</strong> {selectedPayment.paymentDate ? new Date(selectedPayment.paymentDate).toLocaleDateString() : 'N/A'}</p>
+              <p><strong>Payment Date:</strong> {selectedPayment.paymentDate ? new Date(selectedPayment.paymentDate).toISOString().split('T')[0]: 'N/A'}</p>
             </div>
             <div className="flex justify-center mt-4">
               <button onClick={() => setIsDetailModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Close</button>

@@ -15,7 +15,7 @@ const LowStockItems = () => {
     {
       key: 'expirationDate',
       label: 'Expiration',
-      render: (row) => new Date(row.expirationDate).toLocaleDateString(),
+      render: (row) => new Date(row.expirationDate).toISOString().split('T')[0],
     },
     { label: 'Amount', key: 'itemAmount' },
     { label: 'Unit', key: 'unit' },

@@ -300,7 +300,7 @@ useEffect(() => {
     {
       key: 'terminationDate',
       label: 'Termination Date',
-      render: (row) => new Date(row.terminationDate).toLocaleDateString()
+      render: (row) => new Date(row.terminationDate).toISOString().split('T')[0]
     },
     { key: 'status', label: 'Status' },
     { key: 'adminResponse', label: 'Admin Response' },
@@ -499,7 +499,7 @@ useEffect(() => {
       <div className="mb-4">
         <p><strong>Tenant Name:</strong> {getTenantNameById(selectedRequest.tenantId)}</p>
         <p><strong>Reason:</strong> {selectedRequest.reason}</p>
-        <p><strong>Termination Date:</strong> {new Date(selectedRequest.terminationDate).toLocaleDateString()}</p>
+        <p><strong>Termination Date:</strong> {new Date(selectedRequest.terminationDate).toISOString().split('T')[0]}</p>
         <p><strong>Status:</strong> {selectedRequest.status}</p>
         <p><strong>Admin Response:</strong> {selectedRequest.adminResponse}</p>
         <p><strong>Tenant Feedback:</strong> {selectedRequest.tenantFeedback}</p>
