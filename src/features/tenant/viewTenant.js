@@ -202,23 +202,12 @@ const TenantList = () => {
     };
 
  const handleCarClick = (tenant) => {
-  console.log("handleCarClick triggered"); // Check if the function is triggered
-  console.log("Tenant ID:", tenant.id);
-  console.log("TenantVehicles (raw):", tenant.TenantVehicles);
-  console.log("Is array:", Array.isArray(tenant.TenantVehicles));
-  console.log("Length:", tenant.TenantVehicles?.length);
-
-  // Safely handle undefined or null TenantVehicles
-  if (Array.isArray(tenant.TenantVehicles) && tenant.TenantVehicles.length > 0) {
-    // Tenant has vehicles, navigate to the vehicles page
-    navigate(`/tenant/${tenant.id}/vehicles`);
+  if (tenant.TenantVehicles.length > 0) {
+    navigate(`/app/tenant/${tenant.id}/vehicles`);
   } else {
-    // Tenant has no vehicles, navigate to the add vehicle form page
-    navigate('/add-tenant-vehicle', { state: { tenantId: tenant.id } });
+    navigate('/app/add-tenant-vehicle', { state: { tenantId: tenant.id } });
   }
 };
-    
-    
     
   return (
     <div>
@@ -239,10 +228,6 @@ const TenantList = () => {
               label: "Phone Number",
               key: "phoneNumber",
             },
-            // {
-            //   label: "Payment Status",
-            //   key: "paymentStatus",
-            // },
             {
               label: "Advance",
               key: "advance",
@@ -301,11 +286,11 @@ const TenantList = () => {
                     Rent
                   </button>
                   <button
-  onClick={() => handleCarClick(row)} // Ensure 'row' is the full tenant object
-  className="bg-yellow-500 text-white py-1 px-2 rounded"
->
-  Car
-</button>
+                    onClick={() => handleCarClick(row)} // Ensure 'row' is the full tenant object
+                    className="bg-yellow-500 text-white py-1 px-2 rounded"
+                  >
+                    Car
+                  </button>
 
                 </div>
               ),

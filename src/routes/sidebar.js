@@ -182,6 +182,19 @@ const employeeRoutes = [
   },
   {
     path: '', 
+    icon: <EnvelopeIcon className={`${iconClasses} inline` }/>, 
+    name: 'Assigned Complain',  
+    submenu : [
+     
+      {
+        path: '/app/view-assigned-complain',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Assigned Complain',  
+      },
+    ]
+  },
+  {
+    path: '', 
     icon: <MailIcon className={`${iconClasses} inline` }/>, 
     name: 'Notfications',  
     submenu : [

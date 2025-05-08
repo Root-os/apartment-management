@@ -16,8 +16,8 @@ function InternalPage() {
 
   return (
     role === 'tenant' ? <TenantDashboard /> :
-    role === 'employee' ? <EmployeeDashboard /> :
-    <Dashboard />
+    role === 'admin' ? <Dashboard /> :
+    <EmployeeDashboard />
   )
 }
 

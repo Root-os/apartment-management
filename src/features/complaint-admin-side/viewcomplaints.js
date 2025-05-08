@@ -235,24 +235,45 @@ const ComplaintsPage = () => {
   // Zoom functions for image viewer
   const zoomIn = () => setZoomLevel(prevZoom => Math.min(prevZoom + 0.1, 3)); // Max zoom level
   const zoomOut = () => setZoomLevel(prevZoom => Math.max(prevZoom - 0.1, 1)); // Min zoom level
-
+  
   // Render complaint images
   const renderImages = (images) => {
+    console.log("IMAGES RAW:", images);
+
     try {
-      const imageArray = JSON.parse(images);
-      return imageArray.map((image, index) => (
-        <img
-          key={index}
-          src={`process.env.BASE_URL/${image}`}
-          alt={`Complaint Image ${index + 1}`}
-          className="w-16 h-16 object-cover cursor-pointer"
-          onClick={() => openImageViewer(`process.env.BASE_URL/${image}`)} // Open image viewer
-        />
-      ));
+      // Defensive check
+      let imageArray = [];
+  
+      if (typeof images === 'string') {
+        imageArray = JSON.parse(images);
+      } else if (Array.isArray(images)) {
+        imageArray = images;
+      } else {
+        throw new Error('Invalid image format');
+      }
+  
+      return imageArray.map((image, index) => {
+        const cleanImageUrl = image.replace(/\\/g, '/');
+        const fullImageUrl = cleanImageUrl.startsWith('http')
+          ? cleanImageUrl
+          : `${process.env.REACT_APP_BASE}/${cleanImageUrl}`;
+  
+        return (
+          <img
+            key={index}
+            src={fullImageUrl}
+            alt={`Complaint Image ${index + 1}`}
+            className="w-16 h-16 object-cover cursor-pointer"
+            onClick={() => openImageViewer(fullImageUrl)}
+          />
+        );
+      });
     } catch (error) {
+      console.error('Error rendering images:', error);
       return 'No images available';
     }
   };
+  
 
   // Columns for the TableComponent
   const columns = [

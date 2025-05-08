@@ -86,7 +86,9 @@ const RevenueReport=lazy(() => import('../pages/protected/Report/RevenueReport')
 // Complaint tenant side
 const ComplainByTenant = lazy(() => import('../pages/protected/ComplainByTenant'));
 const ComplainByTenantView = lazy(() => import('../pages/protected/ComplainByTenantView'));
-// Complaint admin side
+const ViewAssigned = lazy(() => import('../pages/protected/complain/ViewAssigned'));
+
+// Complaint admin 
 const ComplainFromTenant = lazy(() => import('../pages/protected/ComplainFromTenant'));
 const AssignedStaff = lazy(() => import('../pages/protected/AssignedStaff'));
 // Withdraw request tenant side
@@ -174,70 +176,26 @@ const RevokePermission = lazy(() => import('../pages/protected/permission/Revoke
 const token = localStorage.getItem('token');
 
 const tenantRoutes = [
-  {
-    path: '/',
-    component: Dashboard,
-  },
-  {
-    path: '/complain-tenant-add',
-    component: ComplainByTenant,
-  },
-  {
-    path: '/complain-tenant-view',
-    component: ComplainByTenantView,
-  },
-  {
-    path: '/withdraw-request-add',
-    component: WithdrawRequestAdd,
-  },
-  {
-    path: '/withdraw-request-view',
-    component: MyWithdrawRequest,
-  },
-  {
-    path: '/tenant-view-in',
-    component: tenantViewInOut,
-  },
-  {
-    path: '/view-order-menu', 
-    component: tenantOrderPage,
-  },
-  {
-    path: '/my-order',
-    component: myOrder,
-  },
-  
-  {
-    path: '/my-notification',
-    component: MyNotification,
-  },
+  {path: '/', component: Dashboard,},
+  {path: '/complain-tenant-add', component: ComplainByTenant,},
+  {path: '/complain-tenant-view', component: ComplainByTenantView,},
+  {path: '/withdraw-request-add', component: WithdrawRequestAdd,},
+  {path: '/withdraw-request-view', component: MyWithdrawRequest,},
+  {path: '/tenant-view-in', component: tenantViewInOut,},
+  {path: '/view-order-menu', component: tenantOrderPage,},
+  {path: '/my-order', component: myOrder,},
+  {path: '/my-notification', component: MyNotification,},
+ 
 ];
 
 const employeeRoutes = [
-  {
-    path: '/',
-    component: Dashboard,
-  },
-  {
-    path: '/employee-request-history',
-    component: EmpRequestHistory,
-  },
-  {
-    path: '/employee-initial-request',
-    component: InitialRequest,
-  },
-  {
-    path: '/employee-salary',
-    component: MySallary,
-  },
-  {
-    path: '/add-purchase-request',
-    component: PurchaseRequestAdd,
-  },
-  {
-    path: '/view-my-notfication',
-    component: EmpNotfication,
-  },
+  {path: '/', component: Dashboard,},
+  {path: '/employee-request-history', component: EmpRequestHistory,},
+  {path: '/employee-initial-request', component: InitialRequest,},
+  {path: '/employee-salary', component: MySallary,},
+  { path: '/add-purchase-request',component: PurchaseRequestAdd,},
+  { path: '/view-my-notfication', component: EmpNotfication,},
+  {path: '/view-assigned-complain', component: ViewAssigned,},
 ];
 
 const adminRoutes = [
@@ -442,17 +400,14 @@ if (token) {
      
       routes = [...employeeRoutes];
 
-      // Add specific modules from adminRoutes based on permissions
       const permittedModules = [];
 
       for (const module of adminRoutes) {
         if (!module.name) continue;
 
-        // If permission includes the module name (case-insensitive match)
         const hasPermission = permissions.some((perm) =>
           perm.toLowerCase().includes(module.name.toLowerCase())
         );
-
         if (hasPermission) {
           permittedModules.push(module);
         }

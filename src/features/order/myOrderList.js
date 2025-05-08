@@ -165,17 +165,17 @@ const MyOrdersPage = () => {
     },
   ];
 
-  return (
-    <div>
-      {isLoading ? (<LoadingComponent />) : (
-        <TableComponent
-          title="My Orders"
-          data={orders}
-          columns={columns}
-          exportable={true}
-          showSearch={true}
-        />
-      )}
+return (
+  <div>
+    {isLoading ? (<LoadingComponent />) : (
+      <TableComponent
+        title="My Orders"
+        data={orders}
+        columns={columns}
+        exportable={true}
+        showSearch={true}
+      />
+    )}
      {/* Edit Modal */}
 {isEditModalOpen && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -266,7 +266,13 @@ const MyOrdersPage = () => {
           <p><strong>Total Price:</strong> {selectedOrder.totalprice}</p>
           <p><strong>Status:</strong> {selectedOrder.status}</p>
           <p><strong>Notes:</strong> {selectedOrder.notes}</p>
-          <p><strong>Receipt Image:</strong> <a className='text-blue-800 underline' href={`process.env.BASE_URL/${selectedOrder.receiptImage}`} target="_blank" rel="noopener noreferrer">View</a></p>
+          <p><strong>Receipt Image:</strong></p>
+          <button
+            onClick={() => window.open(selectedOrder.receiptImage, '_blank')}
+            className="text-blue-800 underline"
+          >
+            View Receipt
+          </button>
           <p><strong>Order Type:</strong> {selectedOrder.OrderType.name}</p>
           <p><strong>Description:</strong> {selectedOrder.OrderType.description}</p>
           <p><strong>Price:</strong> {selectedOrder.OrderType.price}</p>
@@ -278,27 +284,26 @@ const MyOrdersPage = () => {
     </div>
   </div>
 )}
-
-          {/* Delete Modal */}
-          {isDeleteModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-base-100 p-6 rounded-lg w-98">
-            <h2 className="text-xl mb-4">Are you sure you want to delete this order?</h2>
-            <div className="flex justify-end space-x-2">
-              <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-              <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <Modal
-        isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
-        messageType={messageType}
-        message={message}
-      />
+{/* Delete Modal */}
+{isDeleteModalOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-base-100 p-6 rounded-lg w-98">
+      <h2 className="text-xl mb-4">Are you sure you want to delete this order?</h2>
+      <div className="flex justify-end space-x-2">
+        <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
+        <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
+      </div>
     </div>
+  </div>
+)}
+
+  <Modal
+  isOpen={modalOpen}
+  onClose={() => setModalOpen(false)}
+  messageType={messageType}
+  message={message}
+  />
+  </div>
   );
 };
 

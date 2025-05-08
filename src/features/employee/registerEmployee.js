@@ -20,6 +20,7 @@ const EmployeeRegistration = () => {
     emergencyContact: "",
     address: "",
     bankAccount: "",
+    roleId:'',
   });
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);

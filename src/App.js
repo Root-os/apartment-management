@@ -41,36 +41,45 @@ function App() {
 
   return (
     <Router>
-      <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/tenant-login" element={<TenantLogin />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/register" element={<Register />} />
-       
+  <Routes>
+    {/* Public routes */}
+    <Route path="/login" element={<Login />} />
+    <Route path="/tenant-login" element={<TenantLogin />} />
+    <Route path="/forgot-password" element={<ForgotPassword />} />
+    <Route path="/register" element={<Register />} />
 
-        {/* Protected routes */}
-        <Route
-          path="/app/*"
-          element={
-            isAuthenticated 
-             ? (
-              <Layout />  // Protected route content
-            ) : role?(role==='admin'||role==="employee"?
-              <Navigate to="/login" replace /> : <Navigate to="/tenant-login" replace />
-            ):
-            <Choice />
-            
-          }
-        />
-
-        {/* Catch-all route to ensure that all paths redirect based on authentication */}
-       <Route path="*" element={
-         role?(role==='admin'|| role==="employee"?<Navigate to="/login" replace />:<Navigate to="/tenant-login" replace />):           
+    {/* Protected route */}
+    <Route
+      path="/app/*"
+      element={
+        isAuthenticated ? (
+          <Layout />
+        ) : role ? (
+          role === 'tenant'
+            ? <Navigate to="/tenant-login" replace />
+            : <Navigate to="/login" replace />
+        ) : (
           <Choice />
-        } />
-      </Routes>
-    </Router>
+        )
+      }
+    />
+
+    {/* Catch-all route */}
+    <Route
+      path="*"
+      element={
+        role ? (
+          role === 'tenant'
+            ? <Navigate to="/tenant-login" replace />
+            : <Navigate to="/login" replace />
+        ) : (
+          <Choice />
+        )
+      }
+    />
+  </Routes>
+</Router>
+ 
   );
 }
 

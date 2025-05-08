@@ -118,7 +118,7 @@ const AllOrdersPage = () => {
   };
 
   const columns = [
-    { key: 'OrderType.name', label: 'Type Name',render:(row)=>row.OrderType?.name ||'N/A' },
+    { key: 'OrderType.name', label: 'Order Type',render:(row)=>row.OrderType?.name ||'N/A' },
     { key: 'Tenant.fullName', label: 'Full Name',render:(row)=>row.Tenant?.fullName ||'N/A' },
 
     { key: 'orderDate', label: 'Order Date',render:(row) => new Date(row.orderDate).toISOString().split('T')[0] },
@@ -129,26 +129,26 @@ const AllOrdersPage = () => {
       label: 'Actions',
       key: 'actions',
       render: (row) => (
-        <>
+        <div className="justify-end space-x-2">
           <button
             onClick={() => handleEditClick(row)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+            className="bg-blue-500 text-white px-3 py-1 rounded-md mr-2"
           >
             Edit
           </button>
           <button
             onClick={() => handleDeleteClick(row)}
-            className="bg-red-500 text-white px-4 py-2 rounded-md mr-2"
+            className="bg-red-500 text-white px-2 py-1 rounded-md mr-2"
           >
             Delete
           </button>
           <button
             onClick={() => handleDetailClick(row)}
-            className="bg-gray-500 text-white px-4 py-2 rounded-md"
+            className="bg-gray-500 text-white px-2 py-1 rounded-md"
           >
             Detail
           </button>
-        </>
+        </div>
       ),
     },
   ];
@@ -165,58 +165,55 @@ const AllOrdersPage = () => {
         />
       )}
       {/* Edit Modal to change Status */}
-{isEditModalOpen && (
-  <div className="mt-10 fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-    <div className="bg-base-100 p-6 rounded-md w-1/3 max-h-[80vh] overflow-y-auto">
-      <h2 className="text-2xl font-bold mb-4">Edit Order Status</h2>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          handleApproveStatus(selectedOrder.id, status);  // Only update the status
-        }}
-      >
-        {/* Status Field */}
-        <div className="mb-4">
-          <label htmlFor="status" className="block text-sm font-medium text-white-700">
-            Status
-          </label>
-          <select
-            id="status"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          >
-            <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
-            <option value="canceled">Canceled</option>
-          </select>
+      {isEditModalOpen && (
+        <div className="mt-10 fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-base-100 p-6 rounded-md w-1/3 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">Edit Order Status</h2>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleApproveStatus(selectedOrder.id, status);  // Only update the status
+              }}
+            >
+              {/* Status Field */}
+              <div className="mb-4">
+                <label htmlFor="status" className="block text-sm font-medium text-white-700">
+                  Status
+                </label>
+                <select
+                  id="status"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="pending">Pending</option>
+                  <option value="completed">Completed</option>
+                  <option value="canceled">Canceled</option>
+                </select>
+              </div>
+
+              {/* Submit & Cancel Buttons */}
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                  disabled={loading}
+                >
+                  {loading ? 'Submitting...' : 'Submit'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="bg-gray-400 text-white px-4 py-2 rounded-md"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-
-        {/* Submit & Cancel Buttons */}
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-            disabled={loading}
-          >
-            {loading ? 'Submitting...' : 'Submit'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsEditModalOpen(false)}
-            className="bg-gray-400 text-white px-4 py-2 rounded-md"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
-
-      
-
+      )}
       {/* Delete Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -239,16 +236,21 @@ const AllOrdersPage = () => {
               <>
                 <p><strong>Order Date:</strong> {new Date(selectedOrder.orderDate).toISOString().split('T')[0]}</p>
                 <p><strong>Amount:</strong> {selectedOrder.amount}</p>
+                <p><strong>Single Price:</strong> {selectedOrder.OrderType.price}</p>
                 <p><strong>Total Price:</strong> {selectedOrder.totalprice}</p>
                 <p><strong>Status:</strong> {selectedOrder.status}</p>
-                <p><strong>Notes:</strong> {selectedOrder.notes}</p>
-                <p><strong>Receipt Image:</strong> <a className='text-blue-800 underline' href={`process.env.BASE_URL/${selectedOrder.receiptImage}`} target="_blank" rel="noopener noreferrer">View</a></p>
+                <p><strong>Receipt Image:</strong></p>
+                  <button
+                    onClick={() => window.open(selectedOrder.receiptImage, '_blank')}
+                    className="text-blue-800 underline"
+                  >
+                    View Receipt
+                  </button>
                 <p><strong>Tenant Name:</strong> {selectedOrder.Tenant?.fullName}</p>
                 <p><strong>Tenant Phone:</strong> {selectedOrder.Tenant.phoneNumber}</p>
                 <p><strong>Tenant Email:</strong> {selectedOrder.Tenant.email}</p>
                 <p><strong>Order Type:</strong> {selectedOrder.OrderType.name}</p>
                 <p><strong>Description:</strong> {selectedOrder.OrderType.description}</p>
-                <p><strong>Price:</strong> {selectedOrder.OrderType.price}</p>
               </>
             )}
             <div className="flex justify-end space-x-2 mt-4">

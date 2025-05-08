@@ -1,25 +1,25 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import TitleCard from '../../../components/Cards/TitleCard';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { ArrowLeft } from 'lucide-react'; // or any icon lib you use
+
 
 const AddVehicleForm = () => {
-  // Get the tenantId from the URL using React Router's useParams
-  const { tenantId } = useParams();
-  
-  // State to manage the form data
+  const location = useLocation();
+  const navigate = useNavigate();
+  const tenantId = location.state?.tenantId;
+
   const [formData, setFormData] = useState({
     carPlate: '',
     carName: '',
     color: ''
   });
 
-  // Loading state for form submission
   const [loading, setLoading] = useState(false);
-  
-  // State to display messages (success or error)
-  const [message, setMessage] = useState(null);
 
-  // Handle input changes
   const handleChange = (e) => {
     setFormData(prev => ({
       ...prev,
@@ -27,88 +27,114 @@ const AddVehicleForm = () => {
     }));
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Set loading to true
-    setMessage(null); // Reset previous messages
+    setLoading(true);
+
+    if (!tenantId) {
+      toast.error('Tenant ID missing. Cannot add vehicle.');
+      setLoading(false);
+      return;
+    }
 
     try {
-      // Send the POST request to add the vehicle, with tenantId passed in headers
-      const response = await axios.post('{{local}}/api/tenant-vehicle/', {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}tenant-vehicle/`, {
+        tenantId,
         carPlate: formData.carPlate,
         carName: formData.carName,
         color: formData.color
-      }, {
-        headers: {
-          'tenant-id': tenantId  // Pass tenantId via headers if needed
-        }
       });
 
-      setMessage(response.data.message); // Show success message
-      setFormData({ carPlate: '', carName: '', color: '' }); // Reset form fields
+      toast.success(response.data.message || 'Vehicle added successfully');
+      setFormData({ carPlate: '', carName: '', color: '' });
+
+      // Redirect after short delay
+      setTimeout(() => {
+        navigate(`/app/tenant/${tenantId}/vehicles`);
+      }, 1500);
+
     } catch (error) {
-      // Handle any errors (e.g. invalid form data)
-      setMessage(error.response?.data?.message || 'Error adding vehicle');
+      toast.error(error.response?.data?.message || 'Error adding vehicle');
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto bg-white shadow-xl rounded-2xl p-6 space-y-4 border">
-      <h2 className="text-xl font-bold text-gray-800">Add Vehicle</h2>
-      
-      {message && (
-        <div className="text-sm text-center text-blue-600 font-medium">
-          {message}
+    <>
+      <div className="flex justify-end mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-800 transition"
+          >
+            <ArrowLeft size={18} />
+            Back
+          </button>
         </div>
-      )}
+      <ToastContainer position="top-left" autoClose={3000} hideProgressBar />
+      <TitleCard title="Add Vehicle" topMargin="mt-6">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Car Plate */}
+          <div>
+            <label htmlFor="carPlate" className="block text-sm font-medium text-gray-700">
+              Car Plate
+            </label>
+            <input
+              type="text"
+              name="carPlate"
+              id="carPlate"
+              placeholder="Car Plate"
+              value={formData.carPlate}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
+          </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Car Plate Input */}
-        <input
-          type="text"
-          name="carPlate"
-          placeholder="Car Plate"
-          value={formData.carPlate}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
-          required
-        />
-        
-        {/* Car Name Input */}
-        <input
-          type="text"
-          name="carName"
-          placeholder="Car Name"
-          value={formData.carName}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
-          required
-        />
-        
-        {/* Car Color Input */}
-        <input
-          type="text"
-          name="color"
-          placeholder="Color"
-          value={formData.color}
-          onChange={handleChange}
-          className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
-          required
-        />
-        
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl transition"
-        >
-          {loading ? 'Submitting...' : 'Add Vehicle'}
-        </button>
-      </form>
-    </div>
+          {/* Car Name */}
+          <div>
+            <label htmlFor="carName" className="block text-sm font-medium text-gray-700">
+              Car Name
+            </label>
+            <input
+              type="text"
+              name="carName"
+              id="carName"
+              placeholder="Car Name"
+              value={formData.carName}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
+          </div>
+
+          {/* Color */}
+          <div>
+            <label htmlFor="color" className="block text-sm font-medium text-gray-700">
+              Color
+            </label>
+            <input
+              type="text"
+              name="color"
+              id="color"
+              placeholder="Color"
+              value={formData.color}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl transition"
+          >
+            {loading ? 'Submitting...' : 'Add Vehicle'}
+          </button>
+        </form>
+      </TitleCard>
+    </>
   );
 };
 

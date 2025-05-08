@@ -64,14 +64,19 @@ const AddPermissionPage = () => {
         >
           Permission Name
         </label>
-        <input
-          type="text"
-          id="permissionName"
-          value={permissionName}
-          onChange={(e) => setPermissionName(e.target.value)}
-          className="bg-base-100 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Enter permission name"
-        />
+        <select
+  id="permissionName"
+  value={permissionName}
+  onChange={(e) => setPermissionName(e.target.value)}
+  className="bg-base-100 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+>
+  <option value="">Select a permission</option>
+  <option value="Finance">Finance</option>
+  <option value="Order">Order</option>
+  <option value="Tenant">Tenants</option>
+  {/* Add more options as needed */}
+</select>
+
         <button
           type="submit"
           disabled={isLoading}

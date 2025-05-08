@@ -262,12 +262,20 @@ const WithdrawalRequests = () => {
 
   const [dropdownStates, setDropdownStates] = useState({});
 
-  const toggleDropdown = (rowId) => {
-    setDropdownStates((prevStates) => ({
-      ...prevStates,
-      [rowId]: !prevStates[rowId],
-    }));
-  };
+
+const toggleDropdown = (rowId) => {
+  setDropdownStates((prevStates) => {
+    const newStates = {};
+    // Collapse all dropdowns except the current one
+    Object.keys(prevStates).forEach((key) => {
+      newStates[key] = false;
+    });
+    return {
+      ...newStates,
+      [rowId]: !prevStates[rowId], // Toggle the current dropdown
+    };
+  });
+};
 
 // Then in the render part
 <div className={`dropdown-menu absolute right-0 mt-2 w-48 rounded-md shadow-lg ${dropdownOpen ? 'block' : 'hidden'}`}>
@@ -310,55 +318,64 @@ useEffect(() => {
       key: 'actions',
       label: 'Actions',
       render: (row) => (
-        <div className="relative dropdown-container">
-          <button
-            type="button"
-            className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded transition-colors duration-200"
-            onClick={() => toggleDropdown(row.id)}
-          >
-            Actions
-          </button>
-          <div
-            className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 ${
-              dropdownStates[row.id] ? 'block' : 'hidden'
-            }`}
-          >
-            <div className="py-1">
-              <button
-                onClick={() => handleStatusClick(row)}
-                className="block w-full text-left px-4 py-2 text-sm text-white bg-green-500 hover:bg-green-600 transition-colors duration-200"
-              >
-                Update
-              </button>
-              <button
-                onClick={() => handleAssignClick(row)}
-                className="block w-full text-left px-4 py-2 text-sm text-white bg-blue-500 hover:bg-blue-600 transition-colors duration-200"
-              >
-                Assign
-              </button>
-              <button
-                onClick={() => handleFinalizeClick(row)}
-                className="block w-full text-left px-4 py-2 text-sm text-white bg-purple-500 hover:bg-purple-600 transition-colors duration-200"
-              >
-                Finalize
-              </button>
-              <button
-                onClick={() => handleDeleteClick(row)}
-                className="block w-full text-left px-4 py-2 text-sm text-white bg-red-500 hover:bg-red-600 transition-colors duration-200"
-              >
-                Delete
-              </button>
-              <button
-                onClick={() => handleDetailClick(row)}
-                className="block w-full text-left px-4 py-2 text-sm text-white bg-gray-500 hover:bg-gray-600 transition-colors duration-200"
-              >
-                Details
-              </button>
-            </div>
-          </div>
-        </div>
+        <div className="relative dropdown-container bg-transparent">
+  <button
+    type="button"
+    className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded transition-all duration-200 flex items-center"
+    onClick={() => toggleDropdown(row.id)}
+  >
+    Actions
+    <svg
+      className="w-4 h-4 ml-2"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+    </svg>
+  </button>
+  <div
+    className={`absolute right-0 mt-2 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 transform transition-all duration-200 ${
+      dropdownStates[row.id] ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'
+    }`}
+  >
+    <div className="py-1">
+      <button
+        onClick={() => handleStatusClick(row)}
+        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-green-300 hover:text-green-700 transition-colors duration-200"
+      >
+        Update
+      </button>
+      <button
+        onClick={() => handleAssignClick(row)}
+        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-300 hover:text-blue-700 transition-colors duration-200"
+      >
+        Assign
+      </button>
+      <button
+        onClick={() => handleFinalizeClick(row)}
+        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-300 hover:text-purple-700 transition-colors duration-200"
+      >
+        Finalize
+      </button>
+      <button
+        onClick={() => handleDeleteClick(row)}
+        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-200 hover:text-red-700 transition-colors duration-200"
+      >
+        Delete
+      </button>
+      <button
+        onClick={() => handleDetailClick(row)}
+        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-400 hover:text-gray-700 transition-colors duration-200"
+      >
+        Details
+      </button>
+    </div>
+  </div>
+</div>
       ),
-    },
+    }
   
     
     

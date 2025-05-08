@@ -101,21 +101,21 @@ const TenantComplaintsPage = ({ tenantId }) => {
 
   // Render complaint images
   const renderImages = (images) => {
-    try {
-      const imageArray = JSON.parse(images);
-      return imageArray.map((image, index) => (
-        <img
-          key={index}
-          src={`process.env.BASE_URL/${image}`}
-          alt={`Complaint Image ${index + 1}`}
-          className="w-16 h-16 object-cover cursor-pointer"
-          onClick={() => openImageViewer(`process.env.BASE_URL/${image}`)} // Open image viewer
-        />
-      ));
-    } catch (error) {
+    if (!Array.isArray(images) || images.length === 0) {
       return 'No images available';
     }
+  
+    return images.map((image, index) => (
+      <img
+        key={index}
+        src={image} 
+        alt={`Complaint Image ${index + 1}`}
+        className="w-16 h-16 object-cover cursor-pointer"
+        onClick={() => openImageViewer(image)}
+      />
+    ));
   };
+  
 
   // Columns for TableComponent
   const columns = [

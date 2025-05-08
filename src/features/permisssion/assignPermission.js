@@ -93,72 +93,78 @@ const AssignPermissionsPage = () => {
     }
   };
 
+  const togglePermission = (id) => {
+    setSelectedPermissionIds((prev) =>
+      prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
+    );
+  };
+
   return (
     <div>
       <TitleCard title="Assign Permissions" topMargin="mt-1" >
+        {fetchingData ? (
+          <p className="text-gray-600 dark:text-gray-300">Loading roles and permissions...</p>
+        ) : (
+          <form onSubmit={handleAssignPermissions}>
+            {/* Role Dropdown */}
+            <div className="mb-4">
+              <label htmlFor="role" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                Select Role
+              </label>
+              <select
+                id="role"
+                value={selectedRoleId}
+                onChange={(e) => setSelectedRoleId(e.target.value)}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-base-100 dark:text-white"
+              >
+                <option value="">-- Select Role --</option>
+                {roles.map((role) => (
+                  <option key={role.id} value={role.id}>
+                    {role.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            {fetchingData ? (
-            <p className="text-gray-600 dark:text-gray-300">Loading roles and permissions...</p>
-            ) : (
-            <form onSubmit={handleAssignPermissions}>
-                {/* Role Dropdown */}
-                <div className="mb-4">
-                <label htmlFor="role" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                    Select Role
-                </label>
-                <select
-                    id="role"
-                    value={selectedRoleId}
-                    onChange={(e) => setSelectedRoleId(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-base-100 dark:text-white"
-                >
-                    <option value="">-- Select Role --</option>
-                    {roles.map((role) => (
-                    <option key={role.id} value={role.id}>
-                        {role.name}
-                    </option>
-                    ))}
-                </select>
-                </div>
+            {/* Permissions Button Group */}
+            <div className="mb-4">
+              <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                Select Permissions
+              </label>
+              <div className="flex flex-wrap gap-2">
+                {permissions.map((permission) => {
+                  const isSelected = selectedPermissionIds.includes(String(permission.id));
+                  return (
+                    <button
+                      key={permission.id}
+                      type="button"
+                      onClick={() => togglePermission(String(permission.id))}
+                      className={`px-4 py-2 rounded-md text-sm border ${
+                        isSelected
+                          ? 'bg-blue-600 text-white border-blue-700'
+                          : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-white border-gray-300 dark:border-gray-600'
+                      } hover:shadow-md`}
+                    >
+                      {permission.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
-                {/* Permissions Multi-select */}
-                <div className="mb-4">
-                <label htmlFor="permissions" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                    Select Permissions
-                </label>
-                <select
-                    id="permissions"
-                    multiple
-                    value={selectedPermissionIds}
-                    onChange={(e) =>
-                    setSelectedPermissionIds(
-                        Array.from(e.target.selectedOptions, (option) => option.value)
-                    )
-                    }
-                    className="w-full h-40 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-base-100 dark:text-white"
-                >
-                    {permissions.map((permission) => (
-                    <option key={permission.id} value={permission.id}>
-                        {permission.name}
-                    </option>
-                    ))}
-                </select>
-                <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">Hold Ctrl (Cmd on Mac) to select multiple</p>
-                </div>
-
-                {/* Submit Button */}
-                <button
-                type="submit"
-                disabled={isLoading}
-                className={`w-full py-2 px-4 text-white rounded-md transition-all ${
-                    isLoading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-                }`}
-                >
-                {isLoading ? 'Assigning...' : 'Assign Permissions'}
-                </button>
-            </form>
-            )}
-       </TitleCard>
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className={`w-full py-2 px-4 text-white rounded-md transition-all ${
+                isLoading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+              }`}
+            >
+              {isLoading ? 'Assigning...' : 'Assign Permissions'}
+            </button>
+          </form>
+        )}
+      </TitleCard>
 
       {/* Modal */}
       <Modal
