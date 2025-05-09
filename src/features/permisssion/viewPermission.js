@@ -127,12 +127,12 @@ const PermissionsPage = () => {
               <h2 className="text-lg font-semibold">{permission.name}</h2>
             </div>
             <div className="flex justify-end space-x-2">
-              <button
+              {/* <button
                 className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
                 onClick={() => openEditModal(permission)}
               >
                 Edit
-              </button>
+              </button> */}
               <button
                 className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600"
                 onClick={() => openDeleteModal(permission.id)}

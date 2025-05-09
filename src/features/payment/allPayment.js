@@ -70,15 +70,10 @@ const AllPaymentsPage = () => {
     setIsDetailModalOpen(true);
   };
 
-  const handleGenerateReceipt = (vendorId) => {
-    // Filter payments for the selected vendorId
-    const filteredPayments = payments.filter((payment) => payment.vendorId === vendorId);
-
-    // Navigate to GenerateReceiptPage and pass the filtered payments via state
-    navigate("/app/payment-receipt", { state: { payments: filteredPayments } });
+  const handleGenerateReceipt = (payment) => {
+    navigate("/app/payment-receipt", { state: { payment } });
   };
-
-
+  
   // Handle edit request
   const handleEdit = async () => {
     setLoading(true);
@@ -157,9 +152,9 @@ const AllPaymentsPage = () => {
       label: "Vendor",
       render: (row) => `${row.Vendor?.fname} ${row.Vendor?.lname}`,
     },
+    { key: "item", label: "Item" },
     { key: "price", label: "Price" },
-    { key: "leftMoney", label: "Left Money" },
-    { key: "paymentMethod", label: "Payment Method" },
+    { key: "description", label: "Description" },
     { key: "status", label: "Status" },
     {
       key: "paymentDate",
@@ -190,11 +185,11 @@ const AllPaymentsPage = () => {
             Detail
           </button>
           <button
-            onClick={() => handleGenerateReceipt(row.vendorId)} // Trigger navigation
-            className="bg-indigo-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
-          >
-            Receipt
-          </button>
+  onClick={() => handleGenerateReceipt(row)} // Pass the entire payment object
+  className="bg-indigo-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
+>
+  Receipt
+</button>
         </div>
       ),
     },
@@ -384,7 +379,13 @@ const AllPaymentsPage = () => {
                 {selectedPayment.Vendor.lname}
               </p> */}
               <p>
+                <strong>Item:</strong> {selectedPayment.item}
+              </p>
+              <p>
                 <strong>Price:</strong> {selectedPayment.price}
+              </p>
+              <p>
+                <strong>Description:</strong> {selectedPayment.description}
               </p>
               <p>
                 <strong>Left Money:</strong> {selectedPayment.leftMoney}

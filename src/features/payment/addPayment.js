@@ -4,15 +4,18 @@ import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
 
 const PaymentAdd = () => {
-  // State variables for form inputs
   const [vendorId, setVendorId] = useState('');
   const [itemId, setItemId] = useState('');
   const [price, setPrice] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [status, setStatus] = useState('');
   const [paymentDate, setPaymentDate] = useState('');
+  const [description, setDescription] = useState('');
+  const [item, setItem] = useState('');
+
   const [vendors, setVendors] = useState([]);
-  const [items, setItems] = useState([]);
+  const [vendorPurchases, setVendorPurchases] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
@@ -20,100 +23,90 @@ const PaymentAdd = () => {
   const [message, setMessage] = useState('');
 
   useEffect(() => {
-    // Fetch vendors
     axios
       .get(`${process.env.REACT_APP_BASE_URL}vendors`)
-      .then((response) => {
-        setVendors(response.data);
-      })
-      .catch((error) => {
-        console.error('There was an error fetching the vendors:', error);
-      });
-    
-    // Fetch items
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}items`)
-      .then((response) => {
-        setItems(response.data);
-      })
-      .catch((error) => {
-        console.error('There was an error fetching the items:', error);
-      });
+      .then((res) => setVendors(res.data))
+      .catch((err) => console.error('Error fetching vendors:', err));
   }, []);
+
+  // When vendor changes, fetch purchases
+  useEffect(() => {
+    if (!vendorId) return;
+
+    axios
+      .get(`${process.env.REACT_APP_BASE_URL}purchases`)
+      .then((res) => {
+        const purchasesForVendor = res.data.filter(p => p.vendorId === parseInt(vendorId));
+        setVendorPurchases(purchasesForVendor);
+      })
+      .catch((err) => console.error('Error fetching purchases:', err));
+  }, [vendorId]);
+
+  // When item changes, set itemName, description, and price
+  useEffect(() => {
+    if (!itemId || vendorPurchases.length === 0) return;
+
+    const selectedPurchase = vendorPurchases.find(p => p.itemId === parseInt(itemId));
+    if (selectedPurchase) {
+      setItem(selectedPurchase.Item?.itemName || '');
+      setDescription(selectedPurchase.description || '');
+      setPrice(selectedPurchase.totalPrice || '');
+    }
+  }, [itemId]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    // Reset messages before submitting
-    setMessage('');
+
     setError('');
-  
-    // Check if all fields are filled
+    setMessage('');
+
     if (!vendorId || !price || !paymentMethod || !status || !paymentDate) {
       setError('All fields are required');
       return;
     }
-  
-    // Set loading state to true when sending the request
+
     setLoading(true);
-  
+
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}payments`, {
+      await axios.post(`${process.env.REACT_APP_BASE_URL}payments`, {
         vendorId,
+        item,
+        description,
         price,
         paymentMethod,
         status,
         paymentDate,
       });
-  
+
       setVendorId('');
       setItemId('');
+      setItem('');
+      setDescription('');
       setPrice('');
       setPaymentMethod('');
       setStatus('');
       setPaymentDate('');
-  
+
       setModalOpen(true);
       setMessageType('success');
       setMessage('Payment added successfully.');
-      window.location.href='/app/view-payments';
-    } catch (error) {
-      if (error.response) {
-        if (error.response.status === 404) {
-          setModalOpen(true);
-          setMessageType('error');
-          setMessage(error.response.data?.message || 'Unable to add payment due to invalid data.');
-        } else if (error.response.status === 404) {
-          // Handle 404 error explicitly
-          setModalOpen(true);
-          setMessageType('error');
-          setMessage(error.response.data?.message || 'Purchase not found for the vendor.');
-        } else {
-          setModalOpen(true);
-          setMessageType('error');
-          setMessage('An error occurred. Please try again.');
-        }
-      } else {
-        // Handle network errors or unexpected issues
-        setModalOpen(true);
-        setMessageType('error');
-        setMessage('A network error occurred. Please check your connection and try again.');
-      }
+      window.location.href = '/app/view-payments';
+    } catch (err) {
+      const resMessage = err.response?.data?.message || 'An error occurred. Please try again.';
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage(resMessage);
     } finally {
       setLoading(false);
     }
   };
-  
 
   return (
     <>
-      <TitleCard title="Add Payment for Vendor" topMargin={'mt-1'}>
-        {/* Form to input payment data */}
+      <TitleCard title="Add Payment for Vendor" topMargin="mt-1">
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="vendorId" className="block text-sm font-medium text-white-700">
-              Vendor
-            </label>
+            <label htmlFor="vendorId" className="block text-sm font-medium text-white-700">Vendor</label>
             <select
               id="vendorId"
               value={vendorId}
@@ -121,9 +114,7 @@ const PaymentAdd = () => {
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
               required
             >
-              <option value="" disabled>
-                Select Vendor
-              </option>
+              <option value="" disabled>Select Vendor</option>
               {vendors.map((vendor) => (
                 <option key={vendor.id} value={vendor.id}>
                   {vendor.fname} {vendor.lname}
@@ -132,37 +123,31 @@ const PaymentAdd = () => {
             </select>
           </div>
 
-          {/* <div className="mb-4">
-            <label htmlFor="itemId" className="block text-sm font-medium text-white-700">
-              Item
-            </label>
-            <select
-              id="itemId"
-              value={itemId}
-              onChange={(e) => setItemId(e.target.value)}
-              className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
-              required
-            >
-              <option value="" disabled>
-                Select Item
-              </option>
-              {items.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.itemName}
-                </option>
-              ))}
-            </select>
-          </div> */}
+          {vendorPurchases.length > 0 && (
+            <div className="mb-4">
+              <label htmlFor="itemId" className="block text-sm font-medium text-white-700">Item</label>
+              <select
+                id="itemId"
+                value={itemId}
+                onChange={(e) => setItemId(e.target.value)}
+                className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
+                required
+              >
+                <option value="" disabled>Select Item</option>
+                {vendorPurchases.map((purchase) => (
+                  <option key={purchase.id} value={purchase.itemId}>
+                    {purchase.Item?.itemName}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="mb-4">
-            <label htmlFor="price" className="block text-sm font-medium text-white-700">
-              Price
-            </label>
+            <label htmlFor="price" className="block text-sm font-medium text-white-700">Price</label>
             <input
               type="number"
               id="price"
-              min="1"
-              step="1"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
@@ -171,9 +156,18 @@ const PaymentAdd = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="paymentMethod" className="block text-sm font-medium text-white-700">
-              Payment Method
-            </label>
+            <label htmlFor="description" className="block text-sm font-medium text-white-700">Description</label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+              className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label htmlFor="paymentMethod" className="block text-sm font-medium text-white-700">Payment Method</label>
             <select
               id="paymentMethod"
               value={paymentMethod}
@@ -181,9 +175,7 @@ const PaymentAdd = () => {
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
               required
             >
-              <option value="" disabled>
-                Select Payment Method
-              </option>
+              <option value="" disabled>Select Payment Method</option>
               <option value="cash">Cash</option>
               <option value="credit">Credit</option>
               <option value="bank transfer">Bank Transfer</option>
@@ -192,9 +184,7 @@ const PaymentAdd = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="status" className="block text-sm font-medium text-white-700">
-              Status
-            </label>
+            <label htmlFor="status" className="block text-sm font-medium text-white-700">Status</label>
             <select
               id="status"
               value={status}
@@ -202,9 +192,7 @@ const PaymentAdd = () => {
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
               required
             >
-              <option value="" disabled>
-                Select Status
-              </option>
+              <option value="" disabled>Select Status</option>
               <option value="complete">Complete</option>
               <option value="partial">Partial</option>
               <option value="pending">Pending</option>
@@ -212,9 +200,7 @@ const PaymentAdd = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="paymentDate" className="block text-sm font-medium text-white-700">
-              Payment Date
-            </label>
+            <label htmlFor="paymentDate" className="block text-sm font-medium text-white-700">Payment Date</label>
             <input
               type="date"
               id="paymentDate"
@@ -236,6 +222,7 @@ const PaymentAdd = () => {
           </div>
         </form>
       </TitleCard>
+
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

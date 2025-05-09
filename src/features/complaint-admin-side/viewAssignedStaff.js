@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
-// import NoImageIcon from '../../assets/no-image-icon.png'; // Assuming you have a no-image icon in your assets
 
 const ComplaintsPage = () => {
   const [employees, setEmployees] = useState([]);
@@ -14,9 +13,8 @@ const ComplaintsPage = () => {
   const [error, setError] = useState(null);
   const token = localStorage.getItem('token');
 
-  // Fetch employees data from API using Axios
+  // Fetch employees data
   useEffect(() => {
-    
     const fetchEmployees = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/users`, {
@@ -24,17 +22,19 @@ const ComplaintsPage = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setEmployees(response.data.users); 
+        setEmployees(response.data.users);
       } catch (err) {
         setError('Error fetching employees');
         console.error(err);
-      }finally {
+      } finally {
         setPageLoading(false);
       }
     };
 
     fetchEmployees();
   }, [token]);
+
+  // Fetch tenants data
   useEffect(() => {
     const fetchTenants = async () => {
       try {
@@ -53,7 +53,7 @@ const ComplaintsPage = () => {
     fetchTenants();
   }, [token]);
 
-  // Fetch complaints data for the selected employee
+  // Fetch complaints for selected employee
   const fetchComplaints = async (employeeId) => {
     setLoading(true);
     try {
@@ -71,7 +71,7 @@ const ComplaintsPage = () => {
     }
   };
 
-  // Handle employee selection change
+  // Handle employee selection
   const handleEmployeeChange = (e) => {
     const employeeId = e.target.value;
     setSelectedEmployeeId(employeeId);
@@ -94,9 +94,32 @@ const ComplaintsPage = () => {
     return tenant ? tenant.fullName : 'Unknown';
   };
 
-  // Define columns for TableComponent
-  const columns = [
+  // Render images
+  const renderImages = (images) => {
+    if (!images || images.length === 0) {
+      return <p className="text-gray-500">No Image</p>;
+    }
 
+    return images.map((image, index) => {
+      // Use the full URL directly from the API response
+      const imageUrl = image.startsWith('http') ? image : `${process.env.REACT_APP_BASE_URL}${image}`;
+      return (
+        <img
+          key={index}
+          src={imageUrl}
+          alt={`Complaint Image ${index + 1}`}
+          className="w-16 h-16 object-cover rounded"
+          onError={(e) => {
+            e.target.src = '/no-image-icon.png'; // Fallback image
+            e.target.alt = 'Image not available';
+          }}
+        />
+      );
+    });
+  };
+
+  // Table columns
+  const columns = [
     { label: 'Tenant Name', key: 'tenantId', render: (row) => getTenantNameById(row.tenantId) },
     { label: 'Description', key: 'description' },
     { label: 'Urgency', key: 'urgency' },
@@ -105,42 +128,31 @@ const ComplaintsPage = () => {
     { label: 'Images', key: 'images', render: (row) => renderImages(row.images) },
   ];
 
-  const renderImages = (images) => {
-    try {
-      const imageArray = JSON.parse(images);
-      if (imageArray.length === 0) {
-        return <p className="w-16 h-16 object-cover">No Image</p>;
-      }
-      return imageArray.map((image, index) => (
-        <img key={index} src={`process.env.BASE_URL/${image}`} alt={`Complaint Image ${index + 1}`} className="w-16 h-16 object-cover" />
-      ));
-    } catch (error) {
-      return <p className="w-16 h-16 object-cover">No Image </p>;
-    }
-  };
-
   return (
     <div>
-       {pageLoading ? (<LoadingComponent/>):(
-      <div className="mb-4">
-        <label htmlFor="employee" className="block text-lg font-medium text-white-700">Select Employee</label>
-        <select
-          id="employee"
-          value={selectedEmployeeId}
-          onChange={handleEmployeeChange}
-          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-        >
-          <option value="">Select an Employee</option>
-          {employees.map((employee) => (
-            <option key={employee.id} value={employee.id}>
-              {employee.fname}
-            </option>
-          ))}
-        </select>
-      </div>
+      {pageLoading ? (
+        <LoadingComponent />
+      ) : (
+        <div className="mb-4">
+          <label htmlFor="employee" className="block text-lg font-medium text-white-700">
+            Select Employee
+          </label>
+          <select
+            id="employee"
+            value={selectedEmployeeId}
+            onChange={handleEmployeeChange}
+            className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+          >
+            <option value="">Select an Employee</option>
+            {employees.map((employee) => (
+              <option key={employee.id} value={employee.id}>
+                {employee.fname}
+              </option>
+            ))}
+          </select>
+        </div>
       )}
       {error && <div className="text-red-500">{error}</div>}
-
       {!loading && !error && complaints.length === 0 && selectedEmployeeId && (
         <div className="text-white-700">This employee is not assigned to a complaint.</div>
       )}
