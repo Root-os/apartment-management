@@ -22,9 +22,13 @@ const SalaryPayments = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const columns = [
-    { label: 'Employee Name', key: 'employeeName', 
-      render: (row) => `${row.User.fname} ${row.User.lname}` || 'N/A',
+    { 
+      label: 'Employee Name', 
+      key: 'employeeName',
+      render: (row) =>
+        row.User ? `${row.User.fname} ${row.User.lname}` : 'N/A',
     },
+    
     { label: 'Amount', key: 'amount' },
     // { label: 'Payment From Date', key: 'paymentFromDate',
     //   render: (row) => {
@@ -263,7 +267,7 @@ const SalaryPayments = () => {
           <div className="bg-base-100 p-6 rounded-md w-1/3">
             <h2 className="text-2xl font-bold mb-4">Salary Payment Details</h2>
             <div className="mb-4">
-              <p><strong>Employee Name:</strong> {selectedSalaryDetail.User.fname} {selectedSalaryDetail.User.lname}</p>
+            <p><strong>Employee Name:</strong> {selectedSalaryDetail.User ? `${selectedSalaryDetail.User.fname} ${selectedSalaryDetail.User.lname}` : 'N/A'}</p>
               <p><strong>Amount:</strong> {selectedSalaryDetail.amount}</p>
               <p><strong>Payment From Date:</strong> {new Date(selectedSalaryDetail.paymentFromDate).toISOString().split('T')[0]}</p>
               <p><strong>Payment To Date:</strong> {new Date(selectedSalaryDetail.paymentToDate).toISOString().split('T')[0]}</p>
