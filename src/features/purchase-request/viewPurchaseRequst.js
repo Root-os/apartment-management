@@ -108,7 +108,7 @@ const PurchasesRequestPage = () => {
     setEditFormData({
       itemId: request.itemId,
       requestedBy: request.requestedBy,
-      // status: request.status,
+      status: request.status,
       amount: request.amount,
       requestDate: request.requestDate.split('T')[0], 
       reason: request.reason,
@@ -226,7 +226,7 @@ const PurchasesRequestPage = () => {
         return vendor ? vendor.fname : row.vendorName || 'N/A';
       }
     },
-    // { label: 'Status', key: 'status' },
+    { label: 'Status', key: 'status' },
     // { 
     //   label: 'Approved By', 
     //   key: 'approvedby.fname', 
@@ -328,7 +328,7 @@ const PurchasesRequestPage = () => {
                 </select>
               </div>
 
-              {/* <div className="mb-4">
+              <div className="mb-4">
                 <label className="block text-sm font-medium">Status</label>
                 <select
                   value={editFormData.status}
@@ -337,8 +337,9 @@ const PurchasesRequestPage = () => {
                 >
                   <option value="approved">Approved</option>
                   <option value="rejected">Rejected</option>
+                  <option value="pending">Pending</option>
                 </select>
-              </div> */}
+              </div>
 
               <div className="mb-4">
                 <label className="block text-sm font-medium">Amount</label>
@@ -388,7 +389,7 @@ const PurchasesRequestPage = () => {
                 </select>
               </div> */}
 
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label className="block text-sm font-medium">Vendor</label>
                 <select
                   value={editFormData.vendorId}
@@ -401,12 +402,12 @@ const PurchasesRequestPage = () => {
                   ) : (
                     vendors.map((vendor) => (
                       <option key={vendor.id} value={vendor.id}>
-                        {vendor.fname} {/* This is what will be displayed in the dropdown */}
+                        {vendor.fname}
                       </option>
                     ))
                   )}
                 </select>
-              </div>
+              </div> */}
 
               {/* <div className="mb-4">
                 <label className="block text-sm font-medium">Vendor Phone</label>

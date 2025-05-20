@@ -36,3 +36,26 @@
     transform: rotate(360deg);
   }
 }
+.marquee-wrapper {
+  overflow: hidden;
+  position: relative;
+  height: 3rem; /* adjust height as needed */
+  background-color: rgba(0, 0, 0, 0.6); /* optional background */
+  white-space: nowrap;
+}
+
+.marquee-content {
+  display: inline-block;
+  padding-left: 100%; /* push the first run off screen */
+  animation: marquee-loop 30s linear infinite;
+}
+
+@keyframes marquee-loop {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+

@@ -11,6 +11,7 @@ import TotalBookings from "../containers/countBooking";
 import ContactCount from "../containers/contactCount";
 import { NavLink, Link, useLocation } from "react-router-dom";
 
+
 function Header() {
   const dispatch = useDispatch();
   const { noOfNotifications, pageTitle } = useSelector((state) => state.header);
@@ -18,6 +19,7 @@ function Header() {
     localStorage.getItem("theme")
   );
 
+ 
   useEffect(() => {
     themeChange(false);
     if (currentTheme === null) {
@@ -32,6 +34,15 @@ function Header() {
     }
   }, []);
 
+  const location = useLocation();
+  const hiddenRoutes = [
+    "/app/letters-in-pdf",
+    "/app/payment-receipt",
+    "/app/view-revenue-report"
+  ];
+  if (hiddenRoutes.includes(location.pathname)) {
+    return null;
+  }
   // Opening right sidebar for notification
   const openNotification = () => {
     dispatch(

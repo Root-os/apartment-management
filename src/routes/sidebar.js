@@ -206,6 +206,16 @@ const employeeRoutes = [
       },
     ]
   },
+  {
+    path: '/app/add-purchase-request',
+    icon: <PlusIcon className={submenuIconClasses}/>,
+    name: 'Add Purchase Request',
+  },
+  {
+    path: '/app/view-purchase-request',
+    icon: <EyeIcon className={submenuIconClasses}/>,
+    name: 'Purchase requests ',
+  },
 
 
 ];

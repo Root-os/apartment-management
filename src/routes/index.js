@@ -194,6 +194,7 @@ const employeeRoutes = [
   {path: '/employee-initial-request', component: InitialRequest,},
   {path: '/employee-salary', component: MySallary,},
   { path: '/add-purchase-request',component: PurchaseRequestAdd,},
+  { path: '/view-purchase-request', component: PurchaseRequestView },
   { path: '/view-my-notfication', component: EmpNotfication,},
   {path: '/view-assigned-complain', component: ViewAssigned,},
 ];
