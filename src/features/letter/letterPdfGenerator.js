@@ -57,47 +57,61 @@ const LetterDetailPage = () => {
       </div>
 
       {/* Printable area only */}
-      <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-200 print:shadow-none print:border-none print:p-0 print:rounded-none print:block">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-semibold text-blue-600">{companyInfo?.buildingName || "Company Name"}</h1>
-          <p className="text-lg text-gray-600">{companyInfo?.buildingAddress || "Company Address"}</p>
-          <p className="text-lg text-gray-600">{companyInfo?.phoneNumber || "Company Phone"}</p>
-          <p className="text-lg text-gray-600">{companyInfo?.email || "Company Email"}</p>
-        </div>
+      <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-200 print:shadow-none print:border-none print:p-0 print:rounded-none print:block text-justify leading-7 text-gray-700">
 
-        <div className="mb-6">
-          <p className="text-lg text-gray-600">Date: {currentDate}</p>
-          <p className="text-lg text-gray-600">Subject: {letter.LetterType?.name || "N/A"}</p>
-        </div>
+  {/* Header */}
+  <div className="text-center mb-8">
+    <h1 className="text-3xl font-bold text-blue-600">{companyInfo?.buildingName || "Company Name"}</h1>
+    <p>{companyInfo?.buildingAddress || "Company Address"}</p>
+    <p>Phone: {companyInfo?.phoneNumber || "Company Phone"}</p>
+    <p>Email: {companyInfo?.email || "Company Email"}</p>
+  </div>
 
-        <div className="mb-6">
-          <p className="text-lg text-gray-600">To: {tenant?.fullName || "N/A"}</p>
-          <p className="text-lg text-gray-600">Phone: {tenant?.phoneNumber || "N/A"}</p>
-          <p className="text-lg text-gray-600">Email: {tenant?.email || "N/A"}</p>
-        </div>
+  {/* Date and Subject */}
+  <div className="mb-8 text-right">
+    <p className="mb-2">Date: {currentDate}</p>
+  </div>
 
-        <div className="mb-6">
-          <p className="text-lg text-gray-600">Dear {tenant?.fullName || "N/A"},</p>
-          <p className="text-lg text-gray-600">
-            As you know, you are a tenant in Floor {tenant?.Floor?.floorNumber || "N/A"} on unit {tenant?.Unit?.unitNumber || "N/A"}.
-            {letter?.description || "No description available"}
-          </p>
-        </div>
+  {/* Recipient Block */}
+  <div className="mb-8">
+    <p className="font-semibold mb-1">To:</p>
+    <p>{tenant?.fullName || "N/A"}</p>
+    <p>Phone: {tenant?.phoneNumber || "N/A"}</p>
+    <p>Email: {tenant?.email || "N/A"}</p>
+  </div>
+  {/* Subject */}
+  <div className="flex space-x-2 mb-4">
+    <p className="font-semibold mb-1">Subject:</p>
+    <p>{letter?.description || "No subject available."}</p>
+  </div>
 
-        <div className="mb-6">
-          <p className="text-lg text-gray-600">Sincerely,</p>
-          <div className="flex justify-center mb-4">
-            {companyInfo?.seal && (
-              <img
-                src={companyInfo.seal}
-                alt="Company Seal"
-                className="w-32 h-32 rounded-full object-cover"
-              />
-            )}
-          </div>
-          <p className="text-lg text-gray-600">{companyInfo?.companyName || "Company Representative"}</p>
-        </div>
+  {/* Salutation and Body */}
+  <div className="mb-8">
+    <p className="mb-4">Dear {tenant?.fullName || "Tenant"},</p>
+    <p>
+      This letter serves to formally inform you that you are currently residing in <strong>Floor {tenant?.Floor?.floorNumber || "N/A"}, Unit {tenant?.Unit?.unitNumber || "N/A"}</strong> of our property. <br /><br />
+      {letter?.description || "No description available."}
+    </p>
+  </div>
+
+  {/* Closing and Signature */}
+  <div className="mt-12">
+    <p className="mb-4">Sincerely,</p>
+
+    {companyInfo?.seal && (
+      <div className="mb-4">
+        <img
+          src={companyInfo.seal}
+          alt="Company Seal"
+          className="w-28 h-28 object-cover mb-2"
+        />
       </div>
+    )}
+
+    {/* <p className="font-semibold">{companyInfo?.companyName || "Company Representative"}</p> */}
+  </div>
+</div>
+
     </>
   );
 };
