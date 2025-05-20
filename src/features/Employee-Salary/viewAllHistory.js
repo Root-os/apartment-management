@@ -29,7 +29,8 @@ const SalaryPayments = () => {
         row.User ? `${row.User.fname} ${row.User.lname}` : 'N/A',
     },
     
-    { label: 'Amount', key: 'amount' },
+    { label: 'Amount', key: 'amount', render: (row) => row.amount != null ? Math.round(row.amount) : 'N/A',  },
+    { label: 'Allowance', key: 'allowance', render: (row) => row.allowance != null ? Math.round(row.allowance) : 'N/A',  },
     // { label: 'Payment From Date', key: 'paymentFromDate',
     //   render: (row) => {
     //     if (row.paymentFromDate) {
@@ -276,6 +277,7 @@ const SalaryPayments = () => {
               <p><strong>Pension Contribution:</strong> {selectedSalaryDetail.pensionContribution}</p>
               <p><strong>Income Tax:</strong> {selectedSalaryDetail.incomeTax}</p>
               <p><strong>Net Salary:</strong> {selectedSalaryDetail.netSalary}</p>
+              <p><strong>Allowance:</strong>{selectedSalaryDetail.allowance}</p>
             </div>
             <div className="flex justify-end">
               <button

@@ -49,8 +49,8 @@ const SettingForm = () => {
     formData.append('buildingName', buildingName);
     formData.append('buildingAddress', buildingAddress);
     formData.append('email', email);
-    formData.append('chargingCost', chargingCost);  // Include chargingCost
-    formData.append('parkingCost', parkingCost);    // Include parkingCost
+    formData.append('chargingCost', chargingCost); 
+    formData.append('parkingCost', parkingCost);    
     formData.append('phoneNumber', phoneNumber);
     formData.append('postOfficeAddress', postOfficeAddress);
     formData.append('logos', logos);

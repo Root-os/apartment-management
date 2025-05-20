@@ -524,6 +524,16 @@ const adminRoutes =
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Service Type',
     },
+    {
+      path: '/app/add-return',
+      icon: <PlusIcon className={submenuIconClasses}/>,
+      name: 'New Return',
+    },
+    {
+      path: '/app/view-returns',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Returns',
+    },
     ]
   },
   {
@@ -558,7 +568,7 @@ const adminRoutes =
      {
       path: '/app/add-item-assignments',
       icon: <PlusIcon className={submenuIconClasses}/>,
-      name: 'Add Item',
+      name: 'Assign Item',
     },
     {
       path: '/app/view-item-assignments',
@@ -634,16 +644,6 @@ const adminRoutes =
         path: '/app/view-maintenance',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Maintenance informations ',
-      },
-      {
-        path: '/app/add-return',
-        icon: <PlusIcon className={submenuIconClasses}/>,
-        name: 'New Return',
-      },
-      {
-        path: '/app/view-returns',
-        icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'Returns',
       },
     ]
   },

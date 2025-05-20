@@ -121,7 +121,7 @@ const GovtBillReport = () => {
           </div>
 
           {/* Created At */}
-          <div>
+          {/* <div>
             <label htmlFor="createdAt" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Created Time</label>
             <input
               type="date"
@@ -130,7 +130,7 @@ const GovtBillReport = () => {
               value={filterParams.createdAt}
               onChange={(e) => setFilterParams({ ...filterParams, createdAt: e.target.value })}
             />
-          </div>
+          </div> */}
 
           {/* Submit Button */}
           <div className="col-span-4 flex justify-end">

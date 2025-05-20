@@ -190,7 +190,6 @@ const UnitList = () => {
     acc[floor.id] = floor.floorNumber;
     return acc;
   }, {});
-  
   const handleSearchClick = async () => {
     try {
       let response;

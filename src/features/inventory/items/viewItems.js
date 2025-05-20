@@ -158,6 +158,7 @@ const ItemsPage = () => {
       label: 'Expiration Date',
       render: (row) => new Date(row.expirationDate).toISOString().split('T')[0],
     },
+    { key: 'unit', label: 'Unit' },
     {
       label: 'Actions',
       key: 'actions',
@@ -256,14 +257,27 @@ const ItemsPage = () => {
                 <label htmlFor="unit" className="block text-sm font-medium text-white-700">
                   Unit
                 </label>
-                <input
-                  type="text"
+                <select   
+                 type="text"
                   id="unit"
                   value={unit}
                   onChange={(e) => setUnit(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg"
-                  required
-                />
+                  className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
+                  placeholder="Enter measurment"
+                  required>
+                    <option value="Unit">Unit</option>
+                    <option value="Piece">Piece</option>
+                    <option value="Set">Set</option>
+                    <option value="Kilogram">Kilogram (kg)</option>
+                    <option value="Gram">Gram (g)</option>
+                    <option value="Liter">Liter (L)</option>
+                    <option value="Milliliter">Milliliter (ml)</option>
+                    <option value="Meter">Meter (m)</option>
+                    <option value="Centimeter">Centimeter (cm)</option>
+                    <option value="Box">Box</option>
+                    <option value="Pallet">Pallet</option>
+                    <option value="Pack">Pack</option>
+              </select>
               </div>
               <div className="mb-4">
                 <label htmlFor="itemCategoryId" className="block text-sm font-medium text-white-700">
@@ -342,12 +356,6 @@ const ItemsPage = () => {
                 <span className="font-medium">Item Amount:</span> {selectedItem.itemAmount}
               </div>
               <div>
-                <span className="font-medium">Purchase Amount:</span> {selectedItem.purchaseAmount}
-              </div>
-              <div>
-                <span className="font-medium">Total Amount:</span> {selectedItem.totalAmount}
-              </div>
-              <div>
                 <span className="font-medium">Unit:</span> {selectedItem.unit}
               </div>
               <div>
@@ -363,12 +371,6 @@ const ItemsPage = () => {
                 <span className="font-medium">Category:</span> 
                 {categories.find(cat => cat.id === selectedItem.itemCategoryId)?.categoryName || 'Uncategorized'}
               </div>
-              {/* <div>
-                <span className="font-medium">Created At:</span> {new Date(selectedItem.createdAt).toLocaleString()}
-              </div>
-              <div>
-                <span className="font-medium">Updated At:</span> {new Date(selectedItem.updatedAt).toLocaleString()}
-              </div> */}
             </div>
             <div className="flex justify-end mt-6">
               <button

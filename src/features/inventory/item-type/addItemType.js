@@ -42,7 +42,7 @@ const AddItemType = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('Item Type added successfully.');
-      window.location.href='/app/item-type-view';
+      // window.location.href='/app/item-type-view';
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');

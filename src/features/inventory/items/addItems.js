@@ -117,17 +117,27 @@ const AddItem = () => {
 
           <div className="mb-4">
             <label htmlFor="unit" className="block text-sm font-medium text-white-700">Unit</label>
-            <input
-              type="text"
+            <select   type="text"
               id="unit"
               value={unit}
               onChange={(e) => setUnit(e.target.value)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
               placeholder="Enter measurment"
-              required
-            />
+              required>
+                <option value="Unit">Unit</option>
+                <option value="Piece">Piece</option>
+                <option value="Set">Set</option>
+                <option value="Kilogram">Kilogram (kg)</option>
+                <option value="Gram">Gram (g)</option>
+                <option value="Liter">Liter (L)</option>
+                <option value="Milliliter">Milliliter (ml)</option>
+                <option value="Meter">Meter (m)</option>
+                <option value="Centimeter">Centimeter (cm)</option>
+                <option value="Box">Box</option>
+                <option value="Pallet">Pallet</option>
+                <option value="Pack">Pack</option>
+              </select>
           </div>
-
           <div className="mb-4">
             <label htmlFor="itemCategoryId" className="block text-sm font-medium text-white-700">Item Category</label>
             <select

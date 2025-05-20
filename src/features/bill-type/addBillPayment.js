@@ -82,7 +82,6 @@ const BillPaymentPage = () => {
             onChange={handleInputChange}
             rows="4"
             className="bg-base-100 mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            required
           ></textarea>
         </div>
 

@@ -396,22 +396,6 @@ const EmployeeList = () => {
               </div>
 
               <div className="mb-2">
-                <label className="block text-sm font-medium">Role</label>
-                <select
-                  className="w-full p-2 border border-gray-100 rounded mt-1"
-                  value={editEmployeeData.roleId}
-                  onChange={(e) => setEditEmployeeData({ ...editEmployeeData, roleId: e.target.value })}
-                >
-                  <option value="">Select a role</option>
-                  {roles.map((role) => (
-                    <option key={role.id} value={role.id}>
-                      {role.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="mb-2">
                 <label className="block text-sm font-medium">Address</label>
                 <input
                   type="text"

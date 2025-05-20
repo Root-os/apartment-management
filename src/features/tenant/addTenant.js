@@ -250,10 +250,13 @@ const AddTenant = () => {
       setAdvance('');
       setErrors({});
 
+      const password = response.data?.password || '';
       setModalOpen(true);
       setMessageType('success');
-      setMessage('Tenant added successfully.');
-      window.location.href = '/app/tenant-view';
+      setMessage(
+        `Tenant added successfully.\n\nTemporary Password: ${password}`
+      );
+      // window.location.href = '/app/tenant-view';
     } catch (err) {
       const errorMessage = err.response?.data?.error || 'Unknown error occurred';
       console.error('Error Response:', err.response?.data);
@@ -452,7 +455,7 @@ const AddTenant = () => {
           {/* Amount */}
           <div>
           <label className="block text-sm font-semibold mb-2">
-              Amount <span className="text-red-500">*</span>
+              Rent <span className="text-red-500">*</span>
             </label>
             <input
               type="number"

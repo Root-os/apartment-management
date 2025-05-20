@@ -4,7 +4,7 @@ import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 
 const PurchaseReport = () => {
-  const [itemTypes, setItemTypes] = useState([]);
+  const [itemCategorys, setItemTypes] = useState([]);
   const [vendors, setVendors] = useState([]); // Store vendor list
   const [filteredData, setFilteredData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,7 +14,7 @@ const PurchaseReport = () => {
   const [filterParams, setFilterParams] = useState({
     startDate: '',
     endDate: '',
-    itemTypeId: '',
+    itemCategoryId: '',
     vendorId: '', // Add vendorId to filter params
   });
 
@@ -71,21 +71,26 @@ const PurchaseReport = () => {
         return vendor ? `${vendor.fname} ${vendor.lname}` : 'Unknown Vendor'; 
       },
     },
+    // {
+    //   key: 'vendorPhone',
+    //   label: 'Vendor Phone',
+    //   render: (data) => {
+    //     const vendor = data.Vendor;
+    //     return vendor ? vendor.phone : 'N/A'; 
+    //   },
+    // },
     {
-      key: 'vendorPhone',
-      label: 'Vendor Phone',
-      render: (data) => {
-        const vendor = data.Vendor;
-        return vendor ? vendor.phone : 'N/A'; 
-      },
+      key: 'categoryName',
+      label: 'Item Category',
+      render: (data) => data.Item?.ItemCategory?.categoryName || 'N/A',
     },
     { key: 'itemName', label: 'Item Name', render: (data) => data.Item.itemName },
     { key: 'amount', label: 'Amount' },
+    { key: 'description', label: 'Description' },
     { key: 'price', label: 'Price' },
     { key: 'totalPrice', label: 'Total Price' },
     { key: 'date', label: 'Purchase Date', render: (data) => new Date(data.date).toISOString().split('T')[0]},
     { key: 'expirationDate', label: 'Expiration Date', render: (data) => new Date(data.expirationDate).toISOString().split('T')[0]},
-    { key: 'description', label: 'Description' },
   ];
   
 
@@ -120,16 +125,16 @@ const PurchaseReport = () => {
 
           {/* Item Type */}
           <div>
-            <label htmlFor="itemTypeId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Item Type</label>
+            <label htmlFor="itemCategoryId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Item Type</label>
             <select
-              id="itemTypeId"
+              id="itemCategoryId"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-              value={filterParams.itemTypeId}
-              onChange={(e) => setFilterParams({ ...filterParams, itemTypeId: e.target.value })}
+              value={filterParams.itemCategoryId}
+              onChange={(e) => setFilterParams({ ...filterParams, itemCategoryId: e.target.value })}
             >
               <option value="">Select Item Type</option>
-              {itemTypes.map((itemType) => (
-                <option key={itemType.id} value={itemType.id}>{itemType.categoryName}</option>
+              {itemCategorys.map((itemCategory) => (
+                <option key={itemCategory.id} value={itemCategory.id}>{itemCategory.categoryName}</option>
               ))}
             </select>
           </div>

@@ -220,31 +220,23 @@ const ParkingPage = () => {
   const columns = [
     { label: 'Is Tenant', key: 'isTenant', render: (row) => (row.isTenant ? 'Yes' : 'No') },
     {
-      label: 'Tenant Name',
-      key: 'tenantId',
+      label: 'Name',
+      key: 'name',
       render: (row) => {
-        const tenantName = row.Tenant?.fullName || 
-                          (row.tenantId && tenantList.find((tenant) => tenant.id === row.tenantId)?.fullName) || 
-                          'N/A';
-        console.log(`Rendering tenant name for row ${row.id}: ${tenantName}`);
-        return tenantName;
+        if (row.isTenant) {
+          const tenantName =
+            row.Tenant?.fullName ||
+            (row.tenantId && tenantList.find((tenant) => tenant.id === row.tenantId)?.fullName) ||
+            'N/A';
+          return tenantName;
+        } else {
+          return row.driverName || 'N/A';
+        }
       },
     },
     
     { label: 'Car Plate', key: 'carPlate' },
     { label: 'Car Name', key: 'carName' },
-    // { label: 'Driver Name', key: 'driverName' },
-    // { label: 'Driver Phone', key: 'driverPhone' },
-    // { 
-    //   label: 'Time In', 
-    //   key: 'timeIn',
-    //   render: (row) => formatDate(row.timeIn), 
-    // },
-    // { 
-    //   label: 'Time Out', 
-    //   key: 'timeOut',
-    //   render: (row) => formatDate(row.timeOut), 
-    // },
     { label: 'price', key: 'price' },
     { label: 'Status', key: 'status' },
     {
@@ -265,7 +257,7 @@ const ParkingPage = () => {
             Delete
           </button>
           <button
-        onClick={() => handleDetailClick(row)}  // Add Detail button
+        onClick={() => handleDetailClick(row)}  
         className="bg-gray-500 text-white px-4 py-2 rounded-md"
       >
         Detail

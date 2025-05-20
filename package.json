@@ -49,6 +49,7 @@
     "tippy.js": "^6.3.7",
     "venn.js": "^0.2.20",
     "web-vitals": "^2.1.4",
+    "xlsx": "^0.18.5",
     "yup": "^1.6.1"
   },
   "repository": {

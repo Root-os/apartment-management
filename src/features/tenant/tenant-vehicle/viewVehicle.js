@@ -24,7 +24,7 @@ const TenantVehicles = () => {
 
   const fetchVehicles = async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/tenant-vehicle/vehicles/${tenantId}`);
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant-vehicle/vehicles/${tenantId}`);
       if (response.data.success) {
         setVehicles(response.data.vehicles);
       }
@@ -118,7 +118,7 @@ const TenantVehicles = () => {
                 <th className="py-2 px-4 border-b">Car Plate</th>
                 <th className="py-2 px-4 border-b">Car Name</th>
                 <th className="py-2 px-4 border-b">Color</th>
-                <th className="py-2 px-4 border-b">Created At</th>
+                {/* <th className="py-2 px-4 border-b">Created At</th> */}
                 <th className="py-2 px-4 border-b">Actions</th>
               </tr>
             </thead>
@@ -128,9 +128,9 @@ const TenantVehicles = () => {
                   <td className="py-2 px-4 border-b">{vehicle.carPlate}</td>
                   <td className="py-2 px-4 border-b">{vehicle.carName}</td>
                   <td className="py-2 px-4 border-b">{vehicle.color}</td>
-                  <td className="py-2 px-4 border-b">
+                  {/* <td className="py-2 px-4 border-b">
                     {new Date(vehicle.createdAt).toLocaleDateString()}
-                  </td>
+                  </td> */}
                   <td className="py-2 px-4 border-b flex space-x-2">
                     <button
                       onClick={() => openEditModal(vehicle)}

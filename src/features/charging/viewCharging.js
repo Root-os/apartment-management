@@ -177,8 +177,6 @@ const ChargingPage = () => {
   };
 
   const columns = [
-    // { label: 'Car Plate', key: 'carPlate' },
-    // { label: 'Car Name', key: 'carName' },
     // { label: 'Is Tenant', key: 'isTenant', render: (row) => (row.isTenant ? 'Yes' : 'No') },
     {
       label: 'Tenant Name',
@@ -188,6 +186,8 @@ const ChargingPage = () => {
         return tenant ? tenant.fullName : 'N/A';
       },
     },
+     { label: 'Car Name', key: 'carName' },
+     { label: 'Car Plate', key: 'carPlate' },
     // {
     //   label: 'Charging Start Time',
     //   key: 'chargingStartTime',

@@ -243,32 +243,33 @@ const TenantInventoryPage = () => {
 
   const columns = [
     { label: 'Tenant Name', key: 'tenantName' },
-    { label: 'Tenant Email', key: 'tenantEmail' },
-    { label: 'Tenant Phone', key: 'tenantPhone' },
+    // { label: 'Tenant Email', key: 'tenantEmail' },
+    // { label: 'Tenant Phone', key: 'tenantPhone' },
     { label: 'Inventory Type', key: 'type' },
     // { label: 'Checked By', key: 'checkedBy' },
     // { label: 'Notes', key: 'notes' },
-    // {
-    //   label: 'Items',
-    //   key: 'items',
-    //   render: (row) => {
-    //     let items = [];
-    //     try {
-    //       items = Array.isArray(JSON.parse(row.items)) ? JSON.parse(row.items) : [];
-    //     } catch (e) {
-    //       console.error('Failed to parse items:', e);
-    //     }
-    //     return (
-    //       <ul className="list-disc pl-4">
-    //         {items.map((item, index) => (
-    //           <li key={index}>
-    //             {item.name} (Condition: {item.condition}, Quantity: {item.quantity})
-    //           </li>
-    //         ))}
-    //       </ul>
-    //     );
-    //   },
-    // },
+    {
+      label: 'Items',
+      key: 'items',
+      render: (row) => {
+        let items = [];
+        try {
+          items = Array.isArray(JSON.parse(row.items)) ? JSON.parse(row.items) : [];
+        } catch (e) {
+          console.error('Failed to parse items:', e);
+        }
+        return (
+          <ul className="list-disc pl-4">
+            {items.map((item, index) => (
+              <li key={index}>
+                {item.name} (Condition: {item.condition}, Quantity: {item.quantity})
+              </li>
+            ))}
+          </ul>
+        );
+      },
+    },
+    { label: 'Notes', key: 'notes' },
     {
       label: 'Actions',
       key: 'actions',

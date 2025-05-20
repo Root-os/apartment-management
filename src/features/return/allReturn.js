@@ -135,21 +135,36 @@ const ReturnsPage = () => {
     }
   };
 
-  const handleFilter = async () => {
-    try {
-      const payload = {};
-      if (filterVendorId) payload.vendorId = parseInt(filterVendorId);
-      if (filterItemId) payload.itemId = parseInt(filterItemId);
-  
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}returns/report`, payload);
-      setReturns(response.data); // Response already includes Vendor and Item
-    } catch (error) {
-      console.error('There was an error filtering the returns:', error);
+ const handleFilter = async () => {
+  try {
+    const payload = {};
+    if (filterVendorId) payload.vendorId = parseInt(filterVendorId);
+    if (filterItemId) payload.itemId = parseInt(filterItemId);
+
+    const response = await axios.post(`${process.env.REACT_APP_BASE_URL}returns/report`, payload);
+
+    // Directly handle if response is a message
+    if (Array.isArray(response.data)) {
+      setReturns(response.data);
+    } else if (response.data?.message) {
+      setReturns([]); // clear table
+      setModalOpen(true);
+      setMessageType('info');
+      setMessage(response.data.message); // shows "No returns found for the given filters."
+    } else {
+      // fallback if response is unexpected
+      setReturns([]);
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Failed to filter returns');
+      setMessage('Unexpected response from server.');
     }
-  };
+  } catch (error) {
+    console.error('There was an error filtering the returns:', error);
+    setModalOpen(true);
+    setMessageType('error');
+    setMessage('Failed to filter returns');
+  }
+};
 
   const columns = [
     { key: 'Vendor.fname', label: 'Vendor', render: (row) => `${row.Vendor?.fname || 'N/A'} ${row.Vendor?.lname || ''}` },

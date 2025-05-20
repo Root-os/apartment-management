@@ -172,18 +172,24 @@ const PurchasesPage = () => {
       render: (row) => row.Item ? row.Item.itemName : 'N/A',
     },
     { label: 'Description', key: 'description' },
-    // { label: 'Total Price', key: 'totalPrice' },
-    {
-      label: 'Expiration Date',
-      key: 'expirationDate',
-      render: (row) => {
-        if (row.expirationDate) {
-          const date = new Date(row.expirationDate);
-          return date.toISOString().split('T')[0];
-        }
-        return 'N/A';
-      }
-    },
+    { label: 'Amount', key: 'amount', render: (row) => row.amount != null ? Math.round(row.amount) : 'N/A' },
+     {
+        label: 'Single Price',
+        key: 'price',
+        render: (row) => row.price != null ? Math.round(row.price) : 'N/A',
+      },
+    { label: 'Total Price', key: 'totalPrice', render: (row) => row.totalPrice != null ? Math.round(row.totalPrice) : 'N/A', },
+    // {
+    //   label: 'Expiration Date',
+    //   key: 'expirationDate',
+    //   render: (row) => {
+    //     if (row.expirationDate) {
+    //       const date = new Date(row.expirationDate);
+    //       return date.toISOString().split('T')[0];
+    //     }
+    //     return 'N/A';
+    //   }
+    // },
     {
       label: 'Actions',
       key: 'actions',
@@ -367,8 +373,10 @@ const PurchasesPage = () => {
             <h2 className="text-2xl font-bold mb-4">Purchase Details</h2>
             {/* Display the details of the selected purchase */}
             <p><strong>Vendor Name:</strong> {selectedPurchase?.Vendor?.fname} {selectedPurchase?.Vendor?.lname}</p>
+            <p><strong>Item Name:</strong> {selectedPurchase?.Item?.itemName}</p>
+            <p><strong>Item Category:</strong> {selectedPurchase?.ItemCategory?.categoryName}</p>
             <p><strong>Amount:</strong> {selectedPurchase?.amount}</p>
-            <p><strong>Price:</strong> {selectedPurchase?.price}</p>
+            <p><strong>Single Price:</strong> {selectedPurchase?.price}</p>
             <p><strong>Total Price:</strong> {selectedPurchase?.totalPrice}</p>
             <p><strong>Description:</strong> {selectedPurchase?.description}</p>
             <p><strong>Expiration Date:</strong> {new Date(selectedPurchase?.expirationDate).toISOString().split('T')[0]}</p>

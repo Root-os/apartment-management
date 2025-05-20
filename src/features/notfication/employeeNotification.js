@@ -10,7 +10,7 @@ const NotificationPage = () => {
   const fetchNotifications = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}notification/my-notification`, {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}notification/staff-notification`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
+import { useSearchParams } from 'react-router-dom';
 
 const AddCollectedRent = () => {
+  const [searchParams] = useSearchParams();
+  const tenantIdFromUrl = searchParams.get('tenantId');
+
   const [tenantId, setTenantId] = useState('');
   const [paymentDate, setPaymentDate] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('Cash');
@@ -50,6 +54,23 @@ const AddCollectedRent = () => {
 
     fetchRentCollections();
   }, []);
+
+    // Autofill based on tenantId from URL (only once after tenants are loaded)
+  useEffect(() => {
+    if (tenants.length && tenantIdFromUrl) {
+      setTenantId(tenantIdFromUrl);
+
+      const matchedTenant = rentCollections.find(
+        (entry) => entry.tenantId.toString() === tenantIdFromUrl
+      );
+
+      if (matchedTenant?.Tenant) {
+        setAmount(matchedTenant.Tenant.amount);
+      } else {
+        setAmount('');
+      }
+    }
+  }, [tenants, rentCollections, tenantIdFromUrl]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -129,32 +150,30 @@ const AddCollectedRent = () => {
           <div>
             <label htmlFor="tenantId" className="block text-sm font-medium text-white-700">Tenant</label>
             <select
-              id="tenantId"
-              value={tenantId}
-              onChange={(e) => {
-                const selectedTenantId = e.target.value;
-                setTenantId(selectedTenantId);
+  id="tenantId"
+  value={tenantId}
+  onChange={(e) => {
+    const selectedId = e.target.value;
+    setTenantId(selectedId);
 
-                const matchedTenant = rentCollections.find(
-                  (entry) => entry.tenantId.toString() === selectedTenantId
-                );
+    const matched = rentCollections.find(
+      (entry) => entry.tenantId.toString() === selectedId
+    );
 
-                if (matchedTenant && matchedTenant.Tenant) {
-                  setAmount(matchedTenant.Tenant.amount);
-                } else {
-                  setAmount('');
-                }
-              }}
-              className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            >
-              <option value="">Select Tenant</option>
-              {tenants.map((tenant) => (
-                <option key={tenant.id} value={tenant.id}>
-                  {tenant.fullName}
-                </option>
-              ))}
-            </select>
+    setAmount(matched?.Tenant?.amount || '');
+  }}
+  className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+  disabled={Boolean(tenantIdFromUrl)}  // Disable only if tenantId came from parent
+  required
+>
+  <option value="">Select Tenant</option>
+  {tenants.map((tenant) => (
+    <option key={tenant.id} value={tenant.id}>
+      {tenant.fullName}
+    </option>
+  ))}
+</select>
+
           </div>
 
           {/* Read-only Amount Field */}

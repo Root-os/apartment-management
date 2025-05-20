@@ -75,10 +75,13 @@ const AddVendor = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('Vendor added successfully.');
-    } catch (error) {
+    }  catch (error) {
+      const errorMessage =
+        error.response?.data?.message || 'Unable to add vendor. Please try again.';
+
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Unable to add vendor');
+      setMessage(errorMessage);
     } finally {
       setLoading(false);
     }

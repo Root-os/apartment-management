@@ -37,18 +37,25 @@ const AddNotification = () => {
   const receiverType = watch('receiver_type');
 
   useEffect(() => {
-    const fetchUsers = async () => {
+   const fetchUsers = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/users`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-        setUsers(response.data.users.filter((user) => user.Role?.name === 'employee'));
+
+        const allUsers = response.data.users || [];
+        
+        // Exclude only 'admin' users
+        const nonAdminUsers = allUsers.filter(user => user.Role?.name?.toLowerCase() !== 'admin');
+
+        setUsers(nonAdminUsers);
       } catch (err) {
         console.error('Error fetching users', err);
       }
     };
+
 
     const fetchTenants = async () => {
       try {

@@ -240,12 +240,12 @@ const openEditModal = (record) => {
           >
             Delete
           </button>
-          <button
+          {/* <button
             onClick={() => (row)}
             className="bg-gray-500 text-white px-3 py-1 rounded-md text-sm"
           >
             Details
-          </button>
+          </button> */}
         </div>
       ),
     },

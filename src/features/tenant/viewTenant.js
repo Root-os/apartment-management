@@ -197,9 +197,11 @@ const TenantList = () => {
     };
 
     // Handle closing of the details modal
-    const navigateToRentAdd = () => {
-      window.location.href = '/app/rent-collection-add';
-    };
+ const navigateToRentAdd = () => {
+  window.location.href = '/app/rent-collection-add';
+};
+
+
 
  const handleCarClick = (tenant) => {
   if (tenant.TenantVehicles.length > 0) {
@@ -279,12 +281,14 @@ const TenantList = () => {
                   >
                     Units
                   </button>
-                  <button
-                    onClick={() => navigateToRentAdd(row.unitId)}
-                    className="bg-indigo-500 text-white py-1 px-2 rounded"
-                  >
-                    Rent
-                  </button>
+                <button
+  onClick={() => navigate(`/app/rent-collection-add?tenantId=${row.id}`)}
+  className="bg-indigo-500 text-white py-1 px-2 rounded"
+>
+  Rent
+</button>
+
+
                   <button
                     onClick={() => handleCarClick(row)} // Ensure 'row' is the full tenant object
                     className="bg-yellow-500 text-white py-1 px-2 rounded"

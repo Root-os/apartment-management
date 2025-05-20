@@ -40,7 +40,7 @@ const AddExpense = () => {
       setMessage('Expense added successfully');
       setName(''); 
       setDescription('');
-      window.location.href='/app/expense-type-view'
+      // window.location.href='/app/expense-type-view'
     } catch (err) {
       setError('An error occurred while adding the expense.');
       setModalOpen(true);

@@ -98,9 +98,12 @@ const ViewBillPayment = () => {
 
   const columns = [
     { key: 'tenantName', label: 'Tenant Name', render: (payment) => payment.Tenant.fullName },
-    { key: 'unitNumber', label: 'Unit Number', render: (payment) => payment.Tenant.Unit.unitNumber },
-    { key: 'floorNumber', label: 'Floor Number', render: (payment) => payment.Tenant.Floor.floorNumber },
+    { key: 'billType', label: 'Bill Type', render: (payment) => payment.BillType.typeName },
+    { key: 'amount', label: 'Amount', render: (payment) => payment.amountPaid },
     { key: 'status', label: 'Status' },
+    { key: 'startDate', label: 'Start Date', render: (payment) => payment.startDate ? new Date(payment.startDate).toISOString().split('T')[0] : 'N/A' },
+    { key: 'endDate', label: 'End Date', render: (payment) => payment.endDate ? new Date(payment.endDate).toISOString().split('T')[0] : 'N/A' },
+
     {
       key: 'actions',
       label: 'Actions',

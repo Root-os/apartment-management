@@ -110,34 +110,46 @@ const AddPurchaseForm = () => {
               </select>
             </div>
 
-            {/* Item Category Dropdown */}
+            {/* Item Dropdown (List item names instead of item IDs) */}
+            <div className="flex flex-col">
+              <label className="font-semibold">Item</label>
+              <select
+              value={itemId}
+              onChange={(e) => {
+                const selectedItemId = e.target.value;
+                setItemId(selectedItemId);
+
+                // Find the selected item
+                const selectedItem = itemList.find(item => item.id === parseInt(selectedItemId));
+                
+                // Autofill category if item found
+                if (selectedItem && selectedItem.itemCategoryId) {
+                  setItemCategoryId(selectedItem.itemCategoryId.toString());
+                }
+              }}
+              className="p-2 border rounded bg-base-100"
+              >
+                <option value="">Select Item</option>
+                {itemList.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.itemName}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+             {/* Item Category Dropdown */}
             <div className="flex flex-col">
               <label className="font-semibold">Item Category</label>
               <select 
                 value={itemCategoryId} 
                 onChange={(e) => setItemCategoryId(e.target.value)} 
                 className="p-2 border rounded bg-base-100"
+                disabled
               >
                 <option value="">Select Category</option>
                 {categoryList.map(category => (
                   <option key={category.id} value={category.id}>{category.categoryName}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Item Dropdown (List item names instead of item IDs) */}
-            <div className="flex flex-col">
-              <label className="font-semibold">Item</label>
-              <select
-                value={itemId}
-                onChange={(e) => setItemId(e.target.value)}
-                className="p-2 border rounded bg-base-100"
-              >
-                <option value="">Select Item</option>
-                {itemList.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.itemName} {/* Show item name instead of item ID */}
-                  </option>
                 ))}
               </select>
             </div>
@@ -157,7 +169,7 @@ const AddPurchaseForm = () => {
 
             {/* Price */}
             <div className="flex flex-col">
-              <label className="font-semibold">Price</label>
+              <label className="font-semibold">Single Price</label>
               <input 
                 type="number" 
                 value={price} 

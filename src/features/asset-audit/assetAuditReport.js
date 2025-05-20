@@ -85,7 +85,11 @@ const AssetAuditReport = () => {
 
   const columns = [
     { key: 'asset_name', label: 'Asset Name' },
-    {key: 'item_name', label: 'Item Name'},
+    {
+      label: 'Item Name',
+      key: 'Item.itemName',
+      render: (row) => row.Item ? row.Item.itemName : 'N/A',
+    },
     { key: 'existing_amount', label: 'Existing Amount' },
     { key: 'damaged_amount', label: 'Damaged Amount' },
     { key: 'lost_amount', label: 'Lost Amount' },

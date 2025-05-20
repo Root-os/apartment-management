@@ -103,7 +103,7 @@ const TenantReport = () => {
       <div className="container mx-auto p-4">
         <form onSubmit={handleFilterSubmit} className="grid grid-cols-4 gap-4">
           {/* Payment Status */}
-          <div>
+          {/* <div>
             <label htmlFor="paymentStatus" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Status</label>
             <select
               id="paymentStatus"
@@ -115,7 +115,7 @@ const TenantReport = () => {
               <option value="paid">Paid</option>
               <option value="unpaid">Unpaid</option>
             </select>
-          </div>
+          </div> */}
 
           {/* Lease Start Date From */}
           <div>
@@ -267,7 +267,6 @@ const TenantReport = () => {
               <p><strong>National ID:</strong> {currentTenant.nationalId}</p>
               <p><strong>Lease Start Date:</strong> {currentTenant.leaseStartDate ? new Date(currentTenant.leaseStartDate).toISOString().split('T')[0]:'N/A'}</p>
               <p><strong>Lease End Date:</strong> {currentTenant.leaseEndDate ? new Date(currentTenant.leaseEndDate).toISOString().split('T')[0]: 'N/A'}</p>
-              <p><strong>Payment Status:</strong> {currentTenant.paymentStatus}</p>
               <p><strong>Additional Notes:</strong> {currentTenant.additionalNotes}</p>
               <p><strong>Advance:</strong> {currentTenant.advance}</p>
               <p><strong>TIN:</strong> {currentTenant.tin}</p>
