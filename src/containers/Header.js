@@ -38,7 +38,8 @@ function Header() {
   const hiddenRoutes = [
     "/app/letters-in-pdf",
     "/app/payment-receipt",
-    "/app/view-revenue-report"
+    "/app/view-revenue-report",
+    "/app/law-letter"
   ];
   if (hiddenRoutes.includes(location.pathname)) {
     return null;

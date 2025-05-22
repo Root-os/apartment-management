@@ -30,3 +30,21 @@
     height: 120px;
     animation: spin 2s linear infinite;
 }
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    overflow: visible;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}

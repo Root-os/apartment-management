@@ -5,12 +5,14 @@ const Page404 = lazy(() => import('../pages/protected/404'));
 const Blank = lazy(() => import('../pages/protected/Blank'));
 const Bills = lazy(() => import('../pages/protected/Bills'));
 const ProfileSettings = lazy(() => import('../pages/protected/ProfileSettings'));
-
+//building
 const FloorAdd = lazy(() => import('../pages/protected/FloorAdd'));
 const FloorView = lazy(() => import('../pages/protected/FloorView'));
-
 const UnitAdd = lazy(() => import('../pages/protected/UnitAdd'));
 const UnitView = lazy(() => import('../pages/protected/UnitView'));
+const NewBuildingLaw = lazy(() => import('../pages/protected/BuildingLaw/NewBuildingLaw'));
+const ViewBuildingLaw = lazy(() => import('../pages/protected/BuildingLaw/ViewBuildingLaw'));
+const LawLetter = lazy(() => import('../pages/protected/BuildingLaw/LawLetter'));
 
 const BillPaymentView = lazy(() => import('../pages/protected/BillPaymentView'));
 const BillPaymentAdd = lazy(() => import('../pages/protected/BillPaymentAdd'));
@@ -185,6 +187,7 @@ const tenantRoutes = [
   {path: '/view-order-menu', component: tenantOrderPage,},
   {path: '/my-order', component: myOrder,},
   {path: '/my-notification', component: MyNotification,},
+  { path: '/law-letter', component: LawLetter },
  
 ];
 
@@ -217,6 +220,11 @@ const adminRoutes = [
       { path: '/view-floor', component: FloorView },
       { path: '/add-unit', component: UnitAdd },
       { path: '/view-unit', component: UnitView },
+      { path: '/add-building-law', component: NewBuildingLaw },
+      { path: '/view-building-law', component: ViewBuildingLaw },
+      { path: '/law-letter', component: LawLetter },
+
+
     ],
   },
   {

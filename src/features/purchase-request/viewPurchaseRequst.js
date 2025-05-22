@@ -6,6 +6,7 @@ import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 
 const PurchasesRequestPage = () => {
+  const role = localStorage.getItem('role');
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,16 +42,38 @@ const PurchasesRequestPage = () => {
   }); 
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}purchases-request`);
-        setData(response.data); 
-      } catch (err) {
-        setError('Error fetching data');
-      } finally {
-        setLoading(false);
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+     
+      const userId = localStorage.getItem('userId');
+
+      if (!token || !role || !userId) {
+        throw new Error('Missing user authentication data');
       }
-    };
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      let response;
+      if (role === 'admin') {
+        response = await axios.get(`${process.env.REACT_APP_BASE_URL}purchases-request`, { headers });
+      } else {
+        response = await axios.get(
+          `${process.env.REACT_APP_BASE_URL}purchases-request/user/${userId}`,
+          { headers }
+        );
+      }
+      setData(response.data);
+    } catch (err) {
+      console.error(err);
+      setError('Error fetching purchase requests');
+    } finally {
+      setLoading(false);
+    }
+  };
     fetchData();
   }, []);
 
@@ -309,6 +332,7 @@ const PurchasesRequestPage = () => {
                 </select>
               </div>
 
+              {role === 'admin' && (
               <div className="mb-4">
                 <label className="block text-sm font-medium">Requested By</label>
                 <select
@@ -317,7 +341,7 @@ const PurchasesRequestPage = () => {
                   className="mt-1 bg-base-100 w-full px-4 py-2 border rounded-md"
                 >
                   {loadingUsers ? (
-                    <option>Loading.</option>
+                    <option>Loading...</option>
                   ) : (
                     users.map((user) => (
                       <option key={user.id} value={user.id}>
@@ -327,6 +351,8 @@ const PurchasesRequestPage = () => {
                   )}
                 </select>
               </div>
+            )}
+
 
               <div className="mb-4">
                 <label className="block text-sm font-medium">Status</label>
@@ -369,55 +395,6 @@ const PurchasesRequestPage = () => {
                   className="mt-1 bg-base-100 w-full px-4 py-2 border rounded-md"
                 />
               </div>
-
-              {/* <div className="mb-4">
-                <label className="block text-sm font-medium">Approved By</label>
-                <select
-                  value={editFormData.approvedBy}
-                  onChange={(e) => setEditFormData({ ...editFormData, approvedBy: e.target.value })}
-                  className="mt-1 bg-base-100 w-full px-4 py-2 border rounded-md"
-                >
-                  {loadingUsers ? (
-                    <option>Loading.</option>
-                  ) : (
-                    users.map((user) => (
-                      <option key={user.id} value={user.id}>
-                        {user.fname}
-                      </option>
-                    ))
-                  )}
-                </select>
-              </div> */}
-
-              {/* <div className="mb-4">
-                <label className="block text-sm font-medium">Vendor</label>
-                <select
-                  value={editFormData.vendorId}
-                  onChange={(e) => setEditFormData({ ...editFormData, vendorId: e.target.value })}
-                  className="mt-1 bg-base-100 w-full px-4 py-2 border rounded-md"
-                >
-                  <option value="">Select Vendor</option>
-                  {loadingVendors ? (
-                    <option>Loading...</option>
-                  ) : (
-                    vendors.map((vendor) => (
-                      <option key={vendor.id} value={vendor.id}>
-                        {vendor.fname}
-                      </option>
-                    ))
-                  )}
-                </select>
-              </div> */}
-
-              {/* <div className="mb-4">
-                <label className="block text-sm font-medium">Vendor Phone</label>
-                <input
-                  type="text"
-                  value={editFormData.vendorPhone}
-                  onChange={(e) => setEditFormData({ ...editFormData, vendorPhone: e.target.value })}
-                  className="mt-1 bg-base-100 w-full px-4 py-2 border rounded-md"
-                />
-              </div> */}
 
               <div className="flex justify-end">
                 <button

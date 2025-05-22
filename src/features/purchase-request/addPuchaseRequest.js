@@ -15,7 +15,10 @@ const PurchaseRequestForm = () => {
 
   const [loadingItems, setLoadingItems] = useState(true);
   const [loadingUsers, setLoadingUsers] = useState(true);
-  const [loadingVendors, setLoadingVendors] = useState(true); // New loading state for vendors
+  const [loadingVendors, setLoadingVendors] = useState(true); 
+  const [role, setRole] = useState('');
+  const [userId, setUserId] = useState('');
+
 
   const [formData, setFormData] = useState({
     itemId: '',
@@ -50,26 +53,35 @@ const PurchaseRequestForm = () => {
       }
     };
 
-    const fetchUsers = async () => {
-      const token = localStorage.getItem('token'); 
-      if (!token) {
-        console.error("Token not found");
-        return;
-      }
+    const role = localStorage.getItem("role");
+  const userId = localStorage.getItem("userId");
+  const fname = localStorage.getItem("fname");
+  const lname = localStorage.getItem("lname");
 
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/users`, {
-          headers: {
-            Authorization: `Bearer ${token}` 
-          }
-        });
-        setUsers(response.data.users); 
-      } catch (err) {
-        console.error('Error fetching users:', err);
-      } finally {
-        setLoadingUsers(false);
-      }
-    };
+  setRole(role);
+  setUserId(userId);
+
+  const fetchUsers = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/users`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUsers(response.data.users);
+    } catch (err) {
+      console.error("Error fetching users:", err);
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  if (role === "admin") {
+    fetchUsers();
+  } else {
+    setUsers([{ id: userId, fname, lname }]); // inject name for display
+    setFormData((prev) => ({ ...prev, requestedBy: userId }));
+    setLoadingUsers(false);
+  }
 
     // New function to fetch vendors
     const fetchVendors = async () => {
@@ -132,23 +144,38 @@ const PurchaseRequestForm = () => {
             </select>
           </div>
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-white-700">Requested By</label>
-            <select
-              name="requestedBy"
-              value={formData.requestedBy}
-              onChange={handleChange}
-              className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
-              required
-            >
-              <option value="">Select User</option>
-              {users.map((user) => (
-                <option key={user.id} value={user.id}>
-                  {user.fname} {user.lname}
-                </option>
-              ))}
-            </select>
-          </div>
+     <div className="mb-4">
+  <label className="block text-sm font-medium text-white-700">Requested By</label>
+  {role === "admin" ? (
+    <select
+      name="requestedBy"
+      value={formData.requestedBy}
+      onChange={handleChange}
+      className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
+      required
+    >
+      <option value="">Select User</option>
+      {users.map((user) => (
+        <option key={user.id} value={user.id}>
+          {user.fname} {user.lname}
+        </option>
+      ))}
+    </select>
+  ) : (
+    <>
+      <input
+        type="text"
+        value={`${users[0]?.fname || ''} ${users[0]?.lname || ''}`}
+        readOnly
+        className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
+      />
+      <input type="hidden" name="requestedBy" value={userId} />
+    </>
+  )}
+</div>
+
+
+
 
           {/* <div className="mb-4">
             <label className="block text-sm font-medium text-white-700">Approved By</label>

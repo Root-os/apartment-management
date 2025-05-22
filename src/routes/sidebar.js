@@ -141,6 +141,11 @@ const tenantRoutes =
         name: 'My Notfication ',
       }
     ]
+  },
+  {
+      path: '/app/law-letter',
+      icon: <EyeIcon className={submenuIconClasses}/>,
+      name: 'Building Law ',
   }
 ];
 
@@ -206,15 +211,23 @@ const employeeRoutes = [
       },
     ]
   },
-  {
-    path: '/app/add-purchase-request',
-    icon: <PlusIcon className={submenuIconClasses}/>,
-    name: 'Add Purchase Request',
-  },
-  {
-    path: '/app/view-purchase-request',
-    icon: <EyeIcon className={submenuIconClasses}/>,
-    name: 'Purchase requests ',
+ {
+    path: '', 
+    icon: <CreditCardIcon className={`${iconClasses} inline` }/>, 
+    name: 'Purchase Request',  
+    submenu : [
+     
+     {
+        path: '/app/add-purchase-request',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Purchase Request',
+      },
+      {
+        path: '/app/view-purchase-request',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Purchase requests ',
+      },
+    ]
   },
 
 
@@ -253,6 +266,16 @@ const adminRoutes =
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'View Units ',
       },
+      {
+        path: '/app/add-building-law',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'New Building Law ',
+      },
+      {
+        path: '/app/view-building-law',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'View Units ',
+      }
     ]
   },
   {
@@ -306,15 +329,15 @@ const adminRoutes =
         name: 'Withdraw Requests',
       },
       {
-             path: '/app/rent-collection-add',
-            icon: <PlusIcon className={submenuIconClasses}/>,
-            name: 'Add Collected Rent',
-           },
-          {
-            path: '/app/rent-collection-view',
-             icon: <EyeIcon className={submenuIconClasses}/>,
-             name: 'Collected Rents ',
-           },
+        path: '/app/rent-collection-add',
+        icon: <PlusIcon className={submenuIconClasses}/>,
+        name: 'Add Collected Rent',
+      },
+      {
+        path: '/app/rent-collection-view',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Collected Rents ',
+      },
     ]
   },
   {
