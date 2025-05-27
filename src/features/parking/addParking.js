@@ -191,7 +191,7 @@ const AddParking = () => {
               required
             />
           </div>
-
+         {!isTenant && ( <>
           {/* Driver Name */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Driver Name</label>
@@ -200,10 +200,8 @@ const AddParking = () => {
               value={driverName}
               onChange={(e) => setDriverName(e.target.value)}
               className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              
             />
           </div>
-
           {/* Driver Phone */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Driver Phone</label>
@@ -215,7 +213,7 @@ const AddParking = () => {
               
             />
           </div>
-
+         </> )}
           {/* Time In */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Time In</label>

@@ -12,7 +12,8 @@ const AddChargingData = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [tenants, setTenants] = useState([]);
-  const [tenantCar, setTenantCar] = useState(null); // Store tenant's car info
+  const [driverName, setDriverName] = useState('');
+  const [tenantCar, setTenantCar] = useState(null); 
   const [messageType, setMessageType] = useState('success');
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -70,7 +71,8 @@ const AddChargingData = () => {
       carName,
       isTenant,
       tenantId: Number(tenantId),
-      chargingStartTime: chargingStartTimeInUTC, // Send the ISO string
+      driverName: isTenant ? '' : driverName, 
+      chargingStartTime: chargingStartTimeInUTC, 
     };
 
     try {
@@ -79,6 +81,7 @@ const AddChargingData = () => {
       setCarName('');
       setTenantId('');
       setChargingStartTime('');
+      setDriverName('');
 
       setModalOpen(true);
       setMessageType('success');
@@ -97,6 +100,46 @@ const AddChargingData = () => {
     <div>
       <TitleCard title={'Add Charging Data'} topMargin={'mt-2'}>
         <form onSubmit={handleSubmit} className="space-y-4">
+           <div className="flex items-center space-x-4">
+              <label htmlFor="isTenant" className="font-medium">Is Tenant?</label>
+              <input
+                type="checkbox"
+                id="isTenant"
+                checked={isTenant}
+                onChange={(e) => setIsTenant(e.target.checked)}
+                className="h-5 w-5"
+              />
+            </div>
+            {isTenant && ( 
+            <div className="flex flex-col">
+            <label htmlFor="tenantId" className="font-medium">Tenant </label>
+            <select
+              id="tenantId"
+              value={tenantId}
+              onChange={(e) => setTenantId(e.target.value)}
+              className="bg-base-100 px-4 py-2 border rounded-md"
+              disabled={!isTenant}
+              required={isTenant}
+            >
+              <option value="">Select Tenant</option>
+              {tenants.map((tenant) => (
+                <option key={tenant.id} value={tenant.id}>
+                  {tenant.fullName}
+                </option>
+              ))}
+            </select>
+          </div>
+            )}
+            {!isTenant && (
+            <div className="mb-4">
+            <label className="block text-sm font-medium mb-2">Driver Name</label>
+            <input
+              type="text"
+              value={driverName}
+              onChange={(e) => setDriverName(e.target.value)}
+              className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+            />
+          </div>)}
           <div className="flex flex-col">
             <label htmlFor="carPlate" className="font-medium">Car Plate</label>
             <input
@@ -122,25 +165,6 @@ const AddChargingData = () => {
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="tenantId" className="font-medium">Tenant </label>
-            <select
-              id="tenantId"
-              value={tenantId}
-              onChange={(e) => setTenantId(e.target.value)}
-              className="bg-base-100 px-4 py-2 border rounded-md"
-              disabled={!isTenant}
-              required={isTenant}
-            >
-              <option value="">Select Tenant</option>
-              {tenants.map((tenant) => (
-                <option key={tenant.id} value={tenant.id}>
-                  {tenant.fullName}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex flex-col">
             <label htmlFor="chargingStartTime" className="font-medium">Charging Start Time</label>
             <input
               type="datetime-local"
@@ -151,18 +175,6 @@ const AddChargingData = () => {
               required
             />
           </div>
-
-          <div className="flex items-center space-x-4">
-            <label htmlFor="isTenant" className="font-medium">Is Tenant?</label>
-            <input
-              type="checkbox"
-              id="isTenant"
-              checked={isTenant}
-              onChange={(e) => setIsTenant(e.target.checked)}
-              className="h-5 w-5"
-            />
-          </div>
-
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"

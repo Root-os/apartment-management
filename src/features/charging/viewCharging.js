@@ -177,31 +177,24 @@ const ChargingPage = () => {
   };
 
   const columns = [
-    // { label: 'Is Tenant', key: 'isTenant', render: (row) => (row.isTenant ? 'Yes' : 'No') },
+      { label: 'Is Tenant', key: 'isTenant', render: (row) => (row.isTenant ? 'Yes' : 'No') },
     {
-      label: 'Tenant Name',
-      key: 'tenantId',
+      label: 'Name',
+      key: 'name',
       render: (row) => {
-        const tenant = tenants.find((tenant) => tenant.id === row.tenantId);
-        return tenant ? tenant.fullName : 'N/A';
+        if (row.isTenant) {
+          const tenantName =
+            row.Tenant?.fullName ||
+            (row.tenantId && tenants.find((tenant) => tenant.id === row.tenantId)?.fullName) ||
+            'N/A';
+          return tenantName;
+        } else {
+          return row.driverName || 'N/A';
+        }
       },
     },
-     { label: 'Car Name', key: 'carName' },
-     { label: 'Car Plate', key: 'carPlate' },
-    // {
-    //   label: 'Charging Start Time',
-    //   key: 'chargingStartTime',
-    //   render: (row) => row.chargingStartTime
-    //     ? new Date(row.chargingStartTime).toLocaleString()
-    //     : 'N/A',
-    // },
-    // {
-    //   label: 'Charging End Time',
-    //   key: 'chargingEndTime',
-    //   render: (row) => row.chargingEndTime
-    //     ? new Date(row.chargingEndTime).toLocaleString()
-    //     : 'N/A',
-    // },
+    { label: 'Car Name', key: 'carName' },
+    { label: 'Car Plate', key: 'carPlate' },
     {
       label: 'Charging Cost',
       key: 'chargingCost',
