@@ -48,23 +48,33 @@ const AddStockOutRequestPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
     if (!selectedItemId || !reason || !requestedQuantity) {
       setError('Please fill all fields.');
       return;
     }
+
     if (reason.length < 10) {
       setError('Reason must be at least 10 characters long.');
       return;
     }
+
+    const selectedItem = items.find(item => item.id === Number(selectedItemId));
+    if (selectedItem && requestedQuantity > selectedItem.itemAmount) {
+      setError(`Requested quantity exceeds available stock. Only ${Math.floor(selectedItem.itemAmount)} ${selectedItem.itemName} available.`);
+      return;
+    }
+
     setLoading(true);
 
     try {
       const token = localStorage.getItem('token');
       const payload = {
         itemId: selectedItemId,
-        source: source,
-        reason: reason,
-        requestedQuantity: requestedQuantity,
+        source,
+        reason,
+        requestedQuantity,
       };
 
       const response = await axios.post(
@@ -82,11 +92,12 @@ const AddStockOutRequestPage = () => {
         setMessageType('success');
         setMessage('Stockout request added successfully');
       }
+
       setItems([]);
       setSource('store');
       setReason('');
       setRequestedQuantity('');
-      window.location.href='/app/employee-request-history';
+      window.location.href = '/app/employee-request-history';
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');
@@ -115,6 +126,11 @@ const AddStockOutRequestPage = () => {
               ))}
             </select>
           </div>
+         {selectedItemId && (
+            <p className="text-sm text-gray-400 mt-1">
+              Available: {parseInt(items.find(item => item.id === Number(selectedItemId))?.itemAmount || 0)}
+            </p>
+          )}
 
           <div className="mb-4">
             <label className="block text-white-700 font-semibold mb-2">Source</label>

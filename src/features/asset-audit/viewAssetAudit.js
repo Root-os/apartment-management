@@ -137,54 +137,63 @@ const AssetAuditPage = () => {
     }
   };
 
-  const columns = [
-    {
-      label: 'Item Name',
-      key: 'Item.itemName',
-      render: (row) => row.Item ? row.Item.itemName : 'N/A',
-    },
-    {
-      label: 'Asset Type',
-      key: 'AssetType.name',
-      render: (row) => row.AssetType ? row.AssetType.name : 'N/A',
-    },
-    { label: 'Asset Name', key: 'asset_name' },
-    { label: 'Existing', key: 'existing_amount' }, 
-    // { label: 'Damaged', key: 'damaged_amount' },   
-    // { label: 'Lost', key: 'lost_amount' },         
-    { label: 'Status', key: 'status' },
-    {
-      label: 'Date',
-      key: 'date',
-      render: (row) => row.date ? new Date(row.date).toISOString().split('T')[0] : 'N/A',
-    },
-    {
-      label: 'Actions',
-      key: 'actions',
-      render: (row) => (
-        <div className="flex justify-end space-x-2">
-          <button 
-            onClick={() => handleEdit(row)}
-           className="bg-blue-500 text-white px-2 py-1 rounded-md"
-          >
-            Edit
-          </button>
-          <button 
-            onClick={() => handleDelete(row)}
-             className="bg-red-500 text-white px-1 py-1 rounded-md"
-          >
-            Delete
-          </button>
-          <button 
-            onClick={() => handleDetail(row)}
-            className="bg-gray-400 text-white py-1 px-1 rounded"
-          >
-            Detail
-          </button>
-        </div>
-      )
+ const columns = [
+  {
+    label: 'Name',
+    key: 'name',
+    render: (row) => {
+      if (row.Item) {
+        return row.Item.itemName;
+      } else if (row.AssetType) {
+        return row.AssetType.name;
+      }
+      return 'N/A';
     }
-  ];
+  },
+  {
+    label: 'Type',
+    key: 'type',
+    render: (row) => {
+      if (row.Item) return 'Item';
+      if (row.AssetType) return 'Asset';
+      return 'Unknown';
+    }
+  },
+  { label: 'Existing', key: 'existing_amount' },        
+  { label: 'Status', key: 'status' },
+  {
+    label: 'Date',
+    key: 'date',
+    render: (row) =>
+      row.date ? new Date(row.date).toISOString().split('T')[0] : 'N/A',
+  },
+  {
+    label: 'Actions',
+    key: 'actions',
+    render: (row) => (
+      <div className="flex justify-end space-x-2">
+        <button 
+          onClick={() => handleEdit(row)}
+          className="bg-blue-500 text-white px-2 py-1 rounded-md"
+        >
+          Edit
+        </button>
+        <button 
+          onClick={() => handleDelete(row)}
+          className="bg-red-500 text-white px-1 py-1 rounded-md"
+        >
+          Delete
+        </button>
+        <button 
+          onClick={() => handleDetail(row)}
+          className="bg-gray-400 text-white py-1 px-1 rounded"
+        >
+          Detail
+        </button>
+      </div>
+    )
+  }
+];
 
   const handleAddClick = () => {
     window.location.href = '/app/add-asset-audit';

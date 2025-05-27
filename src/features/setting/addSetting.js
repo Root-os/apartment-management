@@ -11,7 +11,8 @@ const SettingForm = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [postOfficeAddress, setPostOfficeAddress] = useState('');
   const [logos, setLogos] = useState(null);  
-  const [seal, setSeal] = useState(null);    
+  const [seal, setSeal] = useState(null);   
+  const [qrImage, setQrImage] = useState(null); 
   const [chargingCost, setChargingCost] = useState('');  // Added chargingCost state
   const [parkingCost, setParkingCost] = useState('');    // Added parkingCost state
   
@@ -35,8 +36,9 @@ const SettingForm = () => {
       !postOfficeAddress.trim() ||
       !logos ||
       !seal ||
+      !qrImage ||
       !chargingCost.trim() ||
-      !parkingCost.trim()  // Validate new fields
+      !parkingCost.trim()  
     ) {
       setLoading(false);
       setModalOpen(true);
@@ -55,6 +57,7 @@ const SettingForm = () => {
     formData.append('postOfficeAddress', postOfficeAddress);
     formData.append('logos', logos);
     formData.append('seal', seal);
+    formData.append('qrImage', qrImage);
 
     const token = localStorage.getItem('token');
 
@@ -235,6 +238,20 @@ const SettingForm = () => {
               className="bg-base-100 mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+          <div className="mb-4">
+            <label htmlFor="qrImage" className="block text-sm font-medium text-white-700">
+              QR Image (Upload)
+            </label>
+            <input
+              type="file"
+              id="qrImage"
+              onChange={(e) => setQrImage(e.target.files[0])}
+              required
+              disabled={loading}
+              className="bg-base-100 mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
 
           <div className="flex justify-center items-center space-x-4">
             <button

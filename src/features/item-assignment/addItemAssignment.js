@@ -165,7 +165,6 @@ const ItemAssignmentForm = () => {
               required
             >
               <option value="User">User</option>
-              <option value="Unit">Unit</option>
             </select>
           </div>
 

@@ -83,25 +83,37 @@ const AssetAuditReport = () => {
     clearFields();
   };
 
-  const columns = [
-    { key: 'asset_name', label: 'Asset Name' },
-    {
-      label: 'Item Name',
-      key: 'Item.itemName',
-      render: (row) => row.Item ? row.Item.itemName : 'N/A',
-    },
-    { key: 'existing_amount', label: 'Existing Amount' },
-    { key: 'damaged_amount', label: 'Damaged Amount' },
-    { key: 'lost_amount', label: 'Lost Amount' },
-    { key: 'status', label: 'Status' },
-    {
-      label: 'Date',
-      key: 'date',
-      render: (row) => {
-        return row.date ? new Date(row.date).toISOString().split('T')[0] : 'N/A';
+ const columns = [
+  {
+    label: 'Name',
+    key: 'name',
+    render: (row) => {
+      if (row.Item) {
+        return row.Item.itemName;
+      } else if (row.AssetType) {
+        return row.AssetType.name;
       }
-    },
-  ];
+      return 'N/A';
+    }
+  },
+  {
+    label: 'Type',
+    key: 'type',
+    render: (row) => {
+      if (row.Item) return 'Item';
+      if (row.AssetType) return 'Asset';
+      return 'Unknown';
+    }
+  },
+  { label: 'Existing', key: 'existing_amount' },        
+  { label: 'Status', key: 'status' },
+  {
+    label: 'Date',
+    key: 'date',
+    render: (row) =>
+      row.date ? new Date(row.date).toISOString().split('T')[0] : 'N/A',
+  },
+];
 
   const handleDateChange = (event) => setDate(event.target.value);
   const handleStatusChange = (event) => setStatus(event.target.value);

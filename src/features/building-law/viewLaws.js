@@ -14,7 +14,7 @@ const BuildingRulesPage = () => {
 
   const fetchRules = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/building-law');
+      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}building-law`);
       setRules(res.data);
       setFiltered(res.data);
     } catch (error) {
@@ -36,7 +36,7 @@ const BuildingRulesPage = () => {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`http://localhost:5000/api/building-law/${editRule.id}`, {
+      await axios.put(`${process.env.REACT_APP_BASE_URL}building-law/${editRule.id}`, {
         description: editRule.description,
       });
       fetchRules();
@@ -48,7 +48,7 @@ const BuildingRulesPage = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:5000/api/building-law/${deleteRule.id}`);
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}building-law/${deleteRule.id}`);
       fetchRules();
       setDeleteRule(null);
     } catch (err) {

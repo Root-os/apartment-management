@@ -144,38 +144,28 @@ const PurchaseRequestForm = () => {
             </select>
           </div>
 
-     <div className="mb-4">
-  <label className="block text-sm font-medium text-white-700">Requested By</label>
-  {role === "admin" ? (
-    <select
-      name="requestedBy"
-      value={formData.requestedBy}
-      onChange={handleChange}
-      className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
-      required
-    >
-      <option value="">Select User</option>
-      {users.map((user) => (
-        <option key={user.id} value={user.id}>
-          {user.fname} {user.lname}
-        </option>
-      ))}
-    </select>
-  ) : (
-    <>
-      <input
-        type="text"
-        value={`${users[0]?.fname || ''} ${users[0]?.lname || ''}`}
-        readOnly
-        className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
-      />
-      <input type="hidden" name="requestedBy" value={userId} />
-    </>
-  )}
-</div>
-
-
-
+         {role === "admin" ? (
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-white-700">Requested By</label>
+              <select
+                name="requestedBy"
+                value={formData.requestedBy}
+                onChange={handleChange}
+                className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
+                required
+              >
+                <option value="">Select User</option>
+                {users.map((user) => (
+                  <option key={user.id} value={user.id}>
+                    {user.fname} {user.lname}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            // Just pass it silently
+            <input type="hidden" name="requestedBy" value={userId} />
+          )}
 
           {/* <div className="mb-4">
             <label className="block text-sm font-medium text-white-700">Approved By</label>
@@ -215,7 +205,7 @@ const PurchaseRequestForm = () => {
           </div>
 
           <div>
-            <label className="block font-medium mb-1">Amount</label>
+            <label className="block font-medium mb-1">Request Amount</label>
             <input
               type="number"
               name="amount"

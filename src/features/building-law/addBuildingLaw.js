@@ -3,32 +3,26 @@ import axios from 'axios';
 
 const AddBuildingLaw = () => {
   const [description, setDescription] = useState('');
-  const [image, setImage] = useState(null);
   const [message, setMessage] = useState('');
+  const [status, setStatus] = useState(null); // 'success' | 'error'
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!description) {
+    if (!description.trim()) {
+      setStatus('error');
       setMessage('Description is required.');
       return;
     }
 
-    const formData = new FormData();
-    formData.append('description', description);
-    if (image) {
-      formData.append('image', image);
-    }
-
     try {
-      const response = await axios.post('http://localhost:5000/api/building-law', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}building-law`, { description });
 
+      setStatus('success');
       setMessage(response.data.message || 'Rule added successfully!');
       setDescription('');
-      setImage(null);
     } catch (error) {
+      setStatus('error');
       setMessage(error.response?.data?.error || 'Failed to add rule.');
     }
   };
@@ -38,7 +32,11 @@ const AddBuildingLaw = () => {
       <h2 className="text-2xl font-semibold mb-4 text-gray-800">Add Building Rule</h2>
 
       {message && (
-        <div className="mb-4 p-3 bg-blue-100 text-blue-800 rounded">
+        <div
+          className={`mb-4 p-3 rounded ${
+            status === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          }`}
+        >
           {message}
         </div>
       )}
@@ -52,16 +50,6 @@ const AddBuildingLaw = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Enter the rule description..."
-          />
-        </div>
-
-        <div>
-          <label className="block text-gray-700 font-medium mb-1">Image (optional)</label>
-          <input
-            type="file"
-            accept="image/*"
-            className="block w-full text-gray-600"
-            onChange={(e) => setImage(e.target.files[0])}
           />
         </div>
 

@@ -43,6 +43,7 @@ function App() {
     <Router>
   <Routes>
     {/* Public routes */}
+    <Route path="/" element={<Choice />} />
     <Route path="/login" element={<Login />} />
     <Route path="/tenant-login" element={<TenantLogin />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />

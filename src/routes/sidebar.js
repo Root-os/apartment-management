@@ -85,7 +85,7 @@ const tenantRoutes =
   {
     path: '', 
     icon: <ArrowRightOnRectangleIcon className={`${iconClasses} inline` }/>, 
-    name: 'Withdraw Request',  
+    name: 'Notice to Vacate',  
     submenu : [
      
      {
@@ -139,14 +139,31 @@ const tenantRoutes =
         path: '/app/my-notification',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'My Notfication ',
-      }
+      },
+      {
+        path: '/app/my-letter',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'My Letters',
+      },
     ]
   },
   {
       path: '/app/law-letter',
       icon: <EyeIcon className={submenuIconClasses}/>,
       name: 'Building Law ',
-  }
+  },
+    {
+    path: '', 
+    icon: <WalletIcon className={`${iconClasses} inline` }/>, 
+    name: 'Rent History', 
+    submenu : [
+        {
+        path: '/app/tenant-rent-collection',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Paid Rents ',
+      },
+    ]
+  },
 ];
 
 const employeeRoutes = [
@@ -274,7 +291,7 @@ const adminRoutes =
       {
         path: '/app/view-building-law',
         icon: <EyeIcon className={submenuIconClasses}/>,
-        name: 'View Units ',
+        name: 'Building Law ',
       }
     ]
   },

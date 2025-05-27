@@ -17,8 +17,10 @@ const CurrencySettingsPage = () => {
     postOfficeAddress: '',
     chargingCost: '',
     parkingCost: '',
-    logo: null, // New field for logo
-    seal: null, // New field for seal
+    logo: null,
+    seal: null, 
+    qrImage: null,
+    qrImagePreview: null,
   });
   const [buttonLoading, setButtonLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -54,21 +56,25 @@ const CurrencySettingsPage = () => {
       postOfficeAddress: setting.postOfficeAddress,
       chargingCost: setting.chargingCost || '',
       parkingCost: setting.parkingCost || '', 
-      logo: null, // Reset the logo to null
-      seal: null, // Reset the seal to null
+      logo: null, 
+      seal: null, 
+      qrImage: null,
+      qrImagePreview: setting.qrImage || null,
     });
     setIsEditModalOpen(true);
   };
 
-  const handleImageChange = (e, field) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((prevData) => ({
-        ...prevData,
-        [field]: file, // Update either logo or seal with the selected file
-      }));
-    }
-  };
+const handleImageChange = (e, field) => {
+  const file = e.target.files[0];
+  if (file) {
+    setFormData((prevData) => ({
+      ...prevData,
+      [field]: file,
+      [`${field}Preview`]: URL.createObjectURL(file),
+    }));
+  }
+};
+
 
   const handleEditSubmit = () => {
     setButtonLoading(true);
@@ -91,7 +97,9 @@ const CurrencySettingsPage = () => {
     if (formData.seal) {
       formDataToSubmit.append('seal', formData.seal);
     }
-  
+    if (formData.qrImage) {
+      formDataToSubmit.append('qrImage', formData.qrImage);
+    }
     axios
       .put(
         `${process.env.REACT_APP_BASE_URL}setting/${selectedSetting.id}`,
@@ -138,10 +146,6 @@ const CurrencySettingsPage = () => {
         setButtonLoading(false); 
       });
   };
-  
-  
-  
-  
 
   // Handle Delete Click
   const handleDeleteClick = (setting) => {
@@ -231,6 +235,24 @@ const CurrencySettingsPage = () => {
             onError={(e) => {
               console.error('Failed to load seal:', sealUrl);
               e.target.src = 'https://placehold.co/50x50'; // Fallback image
+            }}
+          />
+        );
+      },
+    },
+    {
+      key: 'qrImage',
+      label: 'QR Image',
+      render: (setting) => {
+        const qrUrl = setting?.qrImage || 'https://placehold.co/50x50';
+        return (
+          <img
+            src={qrUrl}
+            alt="QR Code"
+            style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+            onError={(e) => {
+              console.error('Failed to load QR image:', qrUrl);
+              e.target.src = 'https://placehold.co/50x50';
             }}
           />
         );
@@ -382,8 +404,17 @@ const CurrencySettingsPage = () => {
                   <p className="mt-2 text-sm text-white-600">Seal selected: {formData.seal.name}</p>
                 )}
               </div>
+              {/* File Upload for QR Image */}
+              <div>
+                <label className="block text-sm font-medium text-white-700 mb-1">QR Image</label>
+                <input
+                  type="file"
+                  onChange={(e) => handleImageChange(e, 'qrImage')}
+                  className="w-full p-2 border rounded"
+                />
+               
+              </div>
             </div>
-
             <div className="mt-4 flex justify-end gap-2 shrink-0">
               <button
                 onClick={() => setIsEditModalOpen(false)} // Close modal

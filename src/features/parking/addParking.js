@@ -200,7 +200,7 @@ const AddParking = () => {
               value={driverName}
               onChange={(e) => setDriverName(e.target.value)}
               className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              required
+              
             />
           </div>
 
@@ -212,7 +212,7 @@ const AddParking = () => {
               value={driverPhone}
               onChange={(e) => setDriverPhone(e.target.value)}
               className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              required
+              
             />
           </div>
 

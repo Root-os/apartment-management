@@ -281,14 +281,12 @@ const TenantList = () => {
                   >
                     Units
                   </button>
-                <button
-  onClick={() => navigate(`/app/rent-collection-add?tenantId=${row.id}`)}
-  className="bg-indigo-500 text-white py-1 px-2 rounded"
->
-  Rent
-</button>
-
-
+                  <button
+                    onClick={() => navigate(`/app/rent-collection-add?tenantId=${row.id}`)}
+                    className="bg-indigo-500 text-white py-1 px-2 rounded"
+                  >
+                    Rent
+                  </button>
                   <button
                     onClick={() => handleCarClick(row)} // Ensure 'row' is the full tenant object
                     className="bg-yellow-500 text-white py-1 px-2 rounded"

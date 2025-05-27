@@ -34,6 +34,7 @@ const TenDays = lazy(() => import('../pages/protected/tendaysTenants'));
 const TenantFilter = lazy(() => import('../pages/protected/tenantfilterlist'));
 const NewVehicle = lazy(() => import('../pages/protected/tenantvehicle/NewVehicle'));
 const TenantVehicles = lazy(() => import('../pages/protected/tenantvehicle/ViewVehicle'));
+const TenantViewRent = lazy(() => import('../pages/protected/Rent/TenantViewRent'));
 
 const RentAdd = lazy(() => import('../pages/protected/RentAdd'));
 const RentView = lazy(() => import('../pages/protected/RentView'));
@@ -153,6 +154,9 @@ const letterTypeView = lazy(() => import('../pages/protected/letter/allLetterTyp
 const LetterSend = lazy(() => import('../pages/protected/letter/sendLetter'))
 const AllSentLetters=lazy(() => import('../pages/protected/letter/allLetterSent'))
 const PdfLetter =lazy(() => import('../pages/protected/letter/PdfLetter'))
+const MyLetter = lazy(() => import('../pages/protected/letter/MyLetter'))
+const NewResponse = lazy(() => import('../pages/protected/Letter-Response/NewResponse'))
+const TenantViewResponse = lazy(() => import('../pages/protected/Letter-Response/TenantViewResponse'))
 //stock
 //order
 const addOrderType=lazy(() => import('../pages/protected/order/orderTypeAdd'))
@@ -187,7 +191,11 @@ const tenantRoutes = [
   {path: '/view-order-menu', component: tenantOrderPage,},
   {path: '/my-order', component: myOrder,},
   {path: '/my-notification', component: MyNotification,},
-  { path: '/law-letter', component: LawLetter },
+  {path: '/law-letter', component: LawLetter },
+  {path: '/my-letter', component: MyLetter },
+  {path: '/new-letter-response', component: NewResponse },
+  {path: '/tenant-view-response', component: TenantViewResponse },
+  {path: '/tenant-rent-collection', component: TenantViewRent },
  
 ];
 
@@ -318,6 +326,7 @@ const adminRoutes = [
       { path: '/send-letter', component: LetterSend },
       { path: '/all-sent-letters', component: AllSentLetters },
       { path: '/letters-in-pdf', component: PdfLetter },
+      
     ],
   },
   {

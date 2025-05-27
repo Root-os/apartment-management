@@ -34,6 +34,7 @@ const PurchasesRequestPage = () => {
     requestedBy: '',
     status: '',
     amount: '',
+    approvedAmount: '',
     requestDate: '',
     reason: '',
     approvedBy: '',
@@ -133,6 +134,7 @@ const PurchasesRequestPage = () => {
       requestedBy: request.requestedBy,
       status: request.status,
       amount: request.amount,
+      approvedAmount: request.approvedAmount || '', 
       requestDate: request.requestDate.split('T')[0], 
       reason: request.reason,
       // approvedBy: request.approvedBy,
@@ -236,6 +238,12 @@ const PurchasesRequestPage = () => {
       render: (row) => row.item ? row.item.itemName : 'N/A' 
     },
     { 
+      label: 'Requested Amount', 
+      key: 'amount', 
+      render: (row) => parseInt(row.amount) 
+    },
+
+    { 
       label: 'Requested By', 
       key: 'requestedby.fname', 
       render: (row) => row.requestedby ? `${row.requestedby.fname} ${row.requestedby.lname}` : 'N/A' 
@@ -250,12 +258,7 @@ const PurchasesRequestPage = () => {
       }
     },
     { label: 'Status', key: 'status' },
-    // { 
-    //   label: 'Approved By', 
-    //   key: 'approvedby.fname', 
-    //   render: (row) => row.approvedby ? `${row.approvedby.fname} ${row.approvedby.lname}` : 'N/A' 
-    // },
-    { label: 'Reason', key: 'reason' },
+    { label: 'Approved Amount', key: 'approvedAmount', render: (row) => parseInt(row.approvedAmount) || 0 },
     {
       label: 'Actions',
       key: 'actions',
@@ -352,21 +355,6 @@ const PurchasesRequestPage = () => {
                 </select>
               </div>
             )}
-
-
-              <div className="mb-4">
-                <label className="block text-sm font-medium">Status</label>
-                <select
-                  value={editFormData.status}
-                  onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
-                  className="mt-1 bg-base-100 w-full px-4 py-2 border rounded-md"
-                >
-                  <option value="approved">Approved</option>
-                  <option value="rejected">Rejected</option>
-                  <option value="pending">Pending</option>
-                </select>
-              </div>
-
               <div className="mb-4">
                 <label className="block text-sm font-medium">Amount</label>
                 <input
@@ -395,7 +383,31 @@ const PurchasesRequestPage = () => {
                   className="mt-1 bg-base-100 w-full px-4 py-2 border rounded-md"
                 />
               </div>
-
+            {role === 'admin' && (
+              <div className="mb-4">
+                <label className="block text-sm font-medium">Status</label>
+                <select
+                  value={editFormData.status}
+                  onChange={(e) => setEditFormData({ ...editFormData, status: e.target.value })}
+                  className="mt-1 bg-base-100 w-full px-4 py-2 border rounded-md"
+                >
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="pending">Pending</option>
+                </select>
+              </div>
+            )}
+            {role === 'admin' && (
+               <div className="mb-4">
+                <label className="block text-sm font-medium">Approved Amount</label>
+                <input
+                  type="number"
+                  value={editFormData.approvedAmount}
+                  onChange={(e) => setEditFormData({ ...editFormData, approvedAmount: e.target.value })}
+                  className="mt-1 bg-base-100 w-full px-4 py-2 border rounded-md"
+                />
+              </div>
+             )}      
               <div className="flex justify-end">
                 <button
                   type="submit"
@@ -423,7 +435,7 @@ const PurchasesRequestPage = () => {
             <h2 className="text-xl font-semibold mb-4">Request Details</h2>
             <p><strong>Item Name:</strong> {selectedDetailRequest.item ? selectedDetailRequest.item.itemName : 'N/A'}</p>
             <p><strong>Requested By:</strong> {selectedDetailRequest.requestedby ? `${selectedDetailRequest.requestedby.fname} ${selectedDetailRequest.requestedby.lname}` : 'N/A'}</p>
-            <p><strong>Approved By:</strong> {selectedDetailRequest.approvedby ? `${selectedDetailRequest.approvedby.fname} ${selectedDetailRequest.approvedby.lname}` : 'N/A'}</p>
+            {/* <p><strong>Approved By:</strong> {selectedDetailRequest.approvedby ? `${selectedDetailRequest.approvedby.fname} ${selectedDetailRequest.approvedby.lname}` : 'N/A'}</p> */}
             <p><strong>Vendor Name:</strong> {vendors.find(v => v.id === selectedDetailRequest.vendorId)?.fname || selectedDetailRequest.vendorName || 'N/A'}</p>
             <p><strong>Vendor Phone:</strong> {selectedDetailRequest.vendorPhone}</p>
             <p><strong>Amount:</strong> {selectedDetailRequest.amount}</p>

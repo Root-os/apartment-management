@@ -4,15 +4,27 @@ import html2pdf from 'html2pdf.js';
 
 const LawPrintView = () => {
   const [rules, setRules] = useState([]);
+  const [companyInfo, setCompanyInfo] = useState(null);
   const a4Ref = useRef();
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/building-law')
-      .then(res => setRules(res.data))
-      .catch(err => console.error(err));
-  }, []);
+    const fetchData = async () => {
+      try {
+        const [rulesRes, settingRes] = await Promise.all([
+          axios.get(`${process.env.REACT_APP_BASE_URL}building-law`),
+          axios.get(`${process.env.REACT_APP_BASE_URL}setting`)
+        ]);
 
-  const latestImage = [...rules].reverse().find(rule => rule.image);
+        setRules(rulesRes.data);
+        const setting = settingRes.data?.[0];
+        setCompanyInfo(setting);
+      } catch (err) {
+        console.error("Error fetching data:", err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const shareUrl = window.location.href;
   const shareSupported = !!navigator.share;
@@ -32,11 +44,11 @@ const LawPrintView = () => {
   const handleDownloadPDF = () => {
     const element = a4Ref.current;
     const opt = {
-      margin:       0,
-      filename:     'building-rules.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' }
+      margin: 0,
+      filename: 'building-rules.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
     };
     html2pdf().set(opt).from(element).save();
   };
@@ -49,13 +61,28 @@ const LawPrintView = () => {
         className="bg-white shadow-lg mt-10 p-10 print:p-0 relative"
         style={{
           width: '794px',
-          minHeight: '1123px',
+          minHeight: '924px',
         }}
       >
+        {/* Optional Logo */}
+        {companyInfo?.logo && (
+          <div className="absolute top-10 left-10">
+            <img
+              src={companyInfo.logo}
+              alt="Company Logo"
+              className="w-24 h-24 object-contain"
+            />
+          </div>
+        )}
+
         {/* Header */}
         <header className="text-center border-b pb-4 mb-6 print:border-none">
-          <h1 className="text-3xl font-bold text-gray-800">Building Rules & Regulations</h1>
-          <p className="text-gray-600 mt-1 text-sm">Please read and follow all rules to maintain safety and order.</p>
+          <h1 className="text-3xl font-bold text-gray-800">
+            {companyInfo?.buildingName || "Building Rules & Regulations"}
+          </h1>
+          <p className="text-gray-600 mt-1 text-sm">
+            Please read and follow all rules to maintain safety and order.
+          </p>
         </header>
 
         {/* Rules */}
@@ -69,12 +96,12 @@ const LawPrintView = () => {
           </ol>
         </main>
 
-        {/* QR Image */}
-        {latestImage && (
-          <div className="absolute right-10 bottom-24 print:bottom-20">
+        {/* QR Image from settings */}
+        {companyInfo?.qrImage && (
+          <div className="absolute right-10 bottom-8 print:bottom-4">
             <img
-              src={latestImage.image}
-              alt="QR or Rule"
+              src={companyInfo.qrImage}
+              alt="QR Code"
               className="w-32 h-32 object-contain border border-gray-300 shadow"
             />
           </div>
@@ -82,7 +109,8 @@ const LawPrintView = () => {
 
         {/* Footer */}
         <footer className="absolute bottom-4 left-10 text-gray-500 text-sm">
-          Developed by <span className="font-semibold">AST</span>
+          {companyInfo?.buildingName && <p>{companyInfo.buildingName}</p>}
+          <p>Developed by <span className="font-semibold">AST</span></p>
         </footer>
       </div>
 
@@ -122,7 +150,6 @@ const LawPrintView = () => {
           </>
         )}
 
-        {/* PDF Button */}
         <button
           onClick={handleDownloadPDF}
           className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"

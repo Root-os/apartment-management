@@ -296,16 +296,16 @@ const ParkingPage = () => {
             <h2 className="text-2xl font-bold mb-4">Edit Parking Data</h2>
             <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
   
+              {isTenant && (
               <div className="mb-4">
                 <label htmlFor="tenantId" className="block text-sm font-medium text-white-700">
                   Select Tenant
                 </label>
                 <select
                   id="tenantId"
-                  value={tenantId}  // Set the selected tenant ID
-                  onChange={handleTenantChange}  // Trigger the tenant change handler
+                  value={tenantId}
+                  onChange={handleTenantChange}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled={!isTenant}  // Disable the field if isTenant is false
                 >
                   <option value="">Select a tenant</option>
                   {tenantList.map((tenant) => (
@@ -315,9 +315,7 @@ const ParkingPage = () => {
                   ))}
                 </select>
               </div>
-
-
-
+            )}
 
               <div className="mb-4">
                 <label htmlFor="carPlate" className="block text-sm font-medium text-white-700">Car Plate</label>
@@ -434,11 +432,11 @@ const ParkingPage = () => {
         </div>
       )}
 
-{isDetailModalOpen && selectedParkingDetails && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
-    <div className="bg-base-100 p-6 rounded-md w-1/3 max-h-[80vh] overflow-y-auto">
-      <h2 className="text-2xl font-bold mb-4">Parking Details</h2>
-      <div className="mb-4">
+  {isDetailModalOpen && selectedParkingDetails && (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
+      <div className="bg-base-100 p-6 rounded-md w-1/3 max-h-[80vh] overflow-y-auto">
+        <h2 className="text-2xl font-bold mb-4">Parking Details</h2>
+        <div className="mb-4">
         <p><strong>Car Plate:</strong> {selectedParkingDetails.carPlate}</p>
         <p><strong>Car Name:</strong> {selectedParkingDetails.carName}</p>
         <p><strong>Driver Name:</strong> {selectedParkingDetails.driverName}</p>

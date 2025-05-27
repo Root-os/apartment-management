@@ -151,7 +151,7 @@ const ItemsPage = () => {
     { 
       key: 'itemAmount', 
       label: 'Item Amount',
-      render: (row) => row.itemAmount
+      render: (row) => Math.floor(row.itemAmount)
     },
     {
       key: 'expirationDate',

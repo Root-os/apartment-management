@@ -190,6 +190,8 @@ const AllOrdersPage = () => {
                   <option value="pending">Pending</option>
                   <option value="completed">Completed</option>
                   <option value="canceled">Canceled</option>
+                  <option value="ready">Ready</option>
+                  <option value="approved">Approved</option>
                 </select>
               </div>
 

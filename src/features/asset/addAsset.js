@@ -7,16 +7,17 @@ const AddAsset = () => {
   // State for form input, loading, and response messages
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
+  const [amount, setAmount] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [loading, setLoading] = useState(false);  // Loading state for the button
-  const [modalOpen, setModalOpen] = useState(false); // State to control modal visibility
-  const [modalType, setModalType] = useState(''); // Modal type: 'success' or 'error'
-  const [modalMessage, setModalMessage] = useState(''); // Modal message
+  const [loading, setLoading] = useState(false);  
+  const [modalOpen, setModalOpen] = useState(false); 
+  const [modalType, setModalType] = useState(''); 
+  const [modalMessage, setModalMessage] = useState(''); 
 
   // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form behavior
+    e.preventDefault(); 
 
     // Reset messages before submitting
     setSuccessMessage('');
@@ -27,6 +28,7 @@ const AddAsset = () => {
     const assetData = {
       name,
       description,
+      amount,
     };
 
     try {
@@ -36,7 +38,8 @@ const AddAsset = () => {
       if (response.data.success) {
         setSuccessMessage(`Asset added successfully: ${response.data.data.name}`);
         setName('');  // Reset name input field
-        setDescription('');  // Reset description input field
+        setDescription('');  
+        setAmount('');
         setModalType('success'); // Set modal type to success
         setModalMessage(`Asset added successfully`); // Success message
       }
@@ -78,6 +81,19 @@ const AddAsset = () => {
               name="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              className="mt-2 bg-base-100 p-3 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label htmlFor="amount" className="block text-sm font-medium text-white-700">Amount</label>
+            <input
+              type="number"
+              id="amount"
+              name="amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
               className="mt-2 bg-base-100 p-3 w-full border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />

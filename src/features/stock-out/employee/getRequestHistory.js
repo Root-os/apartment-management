@@ -164,7 +164,7 @@ const StockoutPage = () => {
     { key: 'requestedQuantity', label: 'Requested Quantity' },
     { key: 'approvedQuantity', label: 'Approved Quantity' },
     { key: 'status', label: 'Status' },
-    { key: 'approvalReason', label: 'Reason' },
+    { key: 'approvalReason', label: 'Approval Reason' },
     // { key: 'fname', label: 'First Name' },
     // { key: 'lname', label: 'Last Name' },
     // { key: 'email', label: 'Email' },

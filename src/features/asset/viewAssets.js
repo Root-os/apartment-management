@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Card from '../../components/card';
+import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 
@@ -11,6 +11,7 @@ const AssetPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [categoryName, setCategoryName] = useState('');
   const [description, setDescription] = useState('');
+  const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -41,6 +42,7 @@ const AssetPage = () => {
     setSelectedAssetType(assetType);
     setCategoryName(assetType.name);
     setDescription(assetType.description);
+    setAmount(assetType.amount || '');
     setIsEditModalOpen(true);
   };
 
@@ -52,9 +54,10 @@ const AssetPage = () => {
   const handleEdit = async () => {
     setLoading(true);
     const updatedAssetType = {
-      ...selectedAssetType, // Preserve all existing properties
+      ...selectedAssetType, 
       name: categoryName,
       description: description,
+      amount: amount,
     };
 
     // Optimistically update the state immediately
@@ -71,6 +74,7 @@ const AssetPage = () => {
         {
           name: categoryName,
           description: description,
+          amount: amount,
         }
       );
 
@@ -129,19 +133,6 @@ const AssetPage = () => {
     }
   };
 
-  const getCardActions = (assetType) => [
-    {
-      label: 'Edit',
-      type: 'primary',
-      onClick: () => handleEditClick(assetType),
-    },
-    {
-      label: 'Delete',
-      type: 'secondary',
-      onClick: () => handleDeleteClick(assetType),
-    },
-  ];
-
   return (
     <>
       <div className="p-4 mb-6">
@@ -160,20 +151,36 @@ const AssetPage = () => {
       {pageLoading ? (
         <LoadingComponent />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredAssetTypes.length > 0 ? (
-            filteredAssetTypes.map((assetType) => (
-              <Card
-                key={assetType.id}
-                title={assetType.name}
-                content={assetType.description}
-                actions={getCardActions(assetType)}
-              />
-            ))
-          ) : (
-            <p>No asset found</p>
-          )}
-        </div>
+      <TableComponent
+      title="Assets"
+      data={filteredAssetTypes}
+      columns={[
+        { key: 'name', label: 'Name' },
+        { key: 'description', label: 'Description' },
+        { key: 'amount', label: 'Amount' },
+        {
+          key: 'actions',
+          label: 'Actions',
+          render: (row) => (
+            <div className="space-x-2">
+              <button
+                onClick={() => handleEditClick(row)}
+                className="bg-blue-500 text-white px-2 py-1 rounded"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDeleteClick(row)}
+                className="bg-red-500 text-white px-2 py-1 rounded"
+              >
+                Delete
+              </button>
+            </div>
+          ),
+        },
+      ]}
+      showSearch={false}
+    />
       )}
 
       {isEditModalOpen && (
@@ -202,6 +209,18 @@ const AssetPage = () => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label htmlFor="amount" className="block text-sm font-medium text-white-700">
+                  Amount
+                </label>  
+                <input
+                  type="number"
+                  id="amount"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" 
                 />
               </div>
               <div className="flex justify-end">

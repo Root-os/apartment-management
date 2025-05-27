@@ -180,7 +180,7 @@ const ItemAssignmentsPage = () => {
     },
     { label: 'Assign Type', key: 'assignType' },
     { label: 'Description', key: 'description' },
-    { label: 'Amount', key: 'amount' },
+    { label: 'Amount', key: 'amount', render : (row) => Math.floor(row.amount) },
     { label: 'Assign Date', key: 'assignDate',
         render: (row) => {
             if (row.assignDate) {
