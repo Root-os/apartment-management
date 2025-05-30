@@ -26,11 +26,11 @@ import RecentComplaintList from './components/recentComplent';
 
 const Dashboard = () => {
   const [counts, setCounts] = useState(null);
-  const [loading, setLoading] = useState(true); // Loading on mount
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [isWrapped, setIsWrapped] = useState(false);
-  const [startDate, setStartDate] = useState(''); // Empty initially
-  const [endDate, setEndDate] = useState(''); // Empty initially
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   const fetchData = async (params = {}) => {
     try {
@@ -61,9 +61,8 @@ const Dashboard = () => {
     }
   };
 
-  // Initial data fetch on mount
   useEffect(() => {
-    fetchData(); // No params to fetch full dataset
+    fetchData();
   }, []);
 
   const handleFilterClick = () => {
@@ -81,16 +80,14 @@ const Dashboard = () => {
     setStartDate('');
     setEndDate('');
     setError('');
-    fetchData(); // Fetch full dataset
+    fetchData();
   };
 
   const generateRandomColor = () => {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
+    const r = Math.floor(Math.random() * 100);
+    const g = Math.floor(Math.random() * 100);
+    const b = Math.floor(Math.random() * 100);
+    return `rgb(${r}, ${g}, ${b})`;
   };
 
   const transformData = (data) => {
@@ -167,21 +164,21 @@ const Dashboard = () => {
     overdueRentCollections: 'Overdue Rent Collections',
   };
 
-  const iconMapping = {
-    notifications: <FaBell size={30} title="Notifications" />,
-    paymentsRequest: <FaCreditCard size={30} title="Payments Request" />,
-    complaints: <FaExclamationCircle size={30} title="Complaints" />,
-    units: <FaBuilding size={30} title="Units" />,
-    tenants: <FaUserFriends size={30} title="Tenants" />,
-    tenantVehicles: <FaCar size={30} title="Tenant Vehicles" />,
-    expenses: <FaDollarSign size={30} title="Expenses" />,
-    emails: <FaEnvelope size={30} title="Emails" />,
-    employees: <FaUser size={30} title="Employees" />,
-    stockouts: <FaDolly size={30} title="Stockouts" />,
-    tenantPayments: <FaMoneyBillAlt size={30} title="Tenant Payments" />,
-    billPayments: <FaFileInvoiceDollar size={30} title="Bill Payments" />,
-    rentCollections: <FaHome size={30} title="Rent Collections" />,
-  };
+const iconMapping = {
+  notifications: <FaBell className="text-white text-5xl" title="Notifications" />,
+  paymentsRequest: <FaCreditCard className="text-white text-5xl" title="Payments Request" />,
+  complaints: <FaExclamationCircle className="text-white text-5xl" title="Complaints" />,
+  units: <FaBuilding className="text-white text-5xl" title="Units" />,
+  tenants: <FaUserFriends className="text-white text-5xl" title="Tenants" />,
+  tenantVehicles: <FaCar className="text-white text-5xl" title="Tenant Vehicles" />,
+  expenses: <FaDollarSign className="text-white text-5xl" title="Expenses" />,
+  emails: <FaEnvelope className="text-white text-5xl" title="Emails" />,
+  employees: <FaUser className="text-white text-5xl" title="Employees" />,
+  stockouts: <FaDolly className="text-white text-5xl" title="Stockouts" />,
+  tenantPayments: <FaMoneyBillAlt className="text-white text-5xl" title="Tenant Payments" />,
+  billPayments: <FaFileInvoiceDollar className="text-white text-5xl" title="Bill Payments" />,
+  rentCollections: <FaHome className="text-white text-5xl" title="Rent Collections" />,
+};
 
   const handleWrapToggle = () => {
     setIsWrapped(!isWrapped);
@@ -201,42 +198,40 @@ const Dashboard = () => {
     return <LoadingComponent />;
   }
   if (error) {
-    return <div className="text-red-500">{error}</div>;
+    return <div className="text-red-500 text-xl">{error}</div>;
   }
 
-  // console.log('Rendering counts:', counts);
   const CardWrapper = ({ children }) => {
     return (
       <div
         className={`
           bg-white dark:bg-gray-800
           shadow rounded-lg
-          p-3 text-sm
+          p-4 text-base
           transition-all duration-300 ease-in-out
           max-h-[600px] overflow-hidden
-          min-h-[80px]
+          min-h-[100px]
         `}
       >
         {children}
       </div>
     );
   };
-  
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex justify-end">
-        {/* <button onClick={handleWrapToggle} className="text-xl">
-          {isWrapped ? <FaCompress /> : <FaExpand />}
-        </button> */}
+    <div className="container mx-auto p-6">
+      <div className="flex justify-end mb-4">
+        <button onClick={handleWrapToggle} className="text-2xl">
+          {isWrapped ? <FaCompress size={24} /> : <FaExpand size={24} />}
+        </button>
       </div>
-      <div className="flex flex-col sm:flex-row justify-end mb-4 gap-4 sm:gap-2">
+      <div className="flex flex-col sm:flex-row justify-end mb-6 gap-4 sm:gap-3">
         <input
           type="date"
           name="startDate"
           value={startDate}
           onChange={handleDateChange}
-          className="border p-2 w-full sm:w-auto"
+          className="border p-3 text-base w-full sm:w-auto rounded-md"
           placeholder="Select start date"
         />
         <input
@@ -244,18 +239,18 @@ const Dashboard = () => {
           name="endDate"
           value={endDate}
           onChange={handleDateChange}
-          className="border p-2 w-full sm:w-auto"
+          className="border p-3 text-base w-full sm:w-auto rounded-md"
           placeholder="Select end date"
         />
         <button
           onClick={handleFilterClick}
-          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600 w-full sm:w-auto"
+          className="bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 text-base w-full sm:w-auto"
         >
           Filter
         </button>
         <button
           onClick={handleClearClick}
-          className="bg-gray-500 text-white p-2 rounded hover:bg-gray-600 w-full sm:w-auto"
+          className="bg-gray-500 text-white p-3 rounded-md hover:bg-gray-600 text-base w-full sm:w-auto"
         >
           Clear
         </button>
@@ -263,7 +258,7 @@ const Dashboard = () => {
 
       {counts ? (
         <div
-          className={`grid gap-4 ${
+          className={`grid gap-6 ${
             isWrapped ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3'
           }`}
         >
@@ -273,14 +268,14 @@ const Dashboard = () => {
               className="card hover:shadow-xl transition-all transform hover:scale-105 relative"
               style={{ backgroundColor: generateRandomColor() }}
             >
-              <div className="absolute top-2 left-2 flex items-center space-x-2">
-                <div>{iconMapping[key] || <FaQuestionCircle size={30} title="Unknown" />}</div>
-                <h3 className="text-xl font-semibold text-black">
+              <div className="absolute top-3 left-3 flex items-center space-x-3">
+                <div>{iconMapping[key] || <FaQuestionCircle className="text-white text-5xl" title="Unknown" />}</div>
+                <h3 className="text-2xl font-semibold text-white">
                   {keyMapping[key] || key}
                 </h3>
               </div>
-              <div className="card-body p-6 mt-10">
-                <ul className="text-sm text-black">
+              <div className="card-body p-8 mt-12">
+                <ul className="text-l text-white font-bold">
                   {Object.keys(counts[key]).map((subKey) => (
                     <li key={subKey}>
                       {subKey}: {counts[key][subKey]}
@@ -292,41 +287,37 @@ const Dashboard = () => {
           ))}
         </div>
       ) : (
-        <div className="text-gray-500">No data available</div>
+        <div className="text-gray-500 text-xl">No data available</div>
       )}
 
-{counts && (
-  <>
-    <hr className="my-6 border-t-2 border-dotted border-gray-500 dark:border-gray-300" />
-    <div className="container mx-auto px-2">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Left Column */}
-        <div className="flex flex-col gap-4">
-          <CardWrapper>
-            <RemainingTenants />
-          </CardWrapper>
-          <CardWrapper>
-            <UnitStatusReport />
-          </CardWrapper>
-        </div>
+      {counts && (
+        <>
+          <hr className="my-8 border-t-2 border-dotted border-gray-500 dark:border-gray-300" />
+          <div className="container mx-auto px-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Left Column */}
+              <div className="flex flex-col gap-6">
+                <CardWrapper>
+                  <RemainingTenants />
+                </CardWrapper>
+                <CardWrapper>
+                  <UnitStatusReport />
+                </CardWrapper>
+              </div>
 
-        {/* Right Column */}
-        <div className="flex flex-col gap-4">
-          <CardWrapper>
-            <LowStockAlert />
-          </CardWrapper>
-          <CardWrapper>
-            <RecentComplaintList />
-          </CardWrapper>
-        </div>
-      </div>
-    </div>
-  </>
-)}
-
-
-
-
+              {/* Right Column */}
+              <div className="flex flex-col gap-6">
+                <CardWrapper>
+                  <LowStockAlert />
+                </CardWrapper>
+                <CardWrapper>
+                  <RecentComplaintList />
+                </CardWrapper>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

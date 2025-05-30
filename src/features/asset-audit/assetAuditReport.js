@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
@@ -8,197 +8,204 @@ const AssetAuditReport = () => {
   const [status, setStatus] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [itemId, setItemId] = useState('');
+  const [assetTypeId, setAssetTypeId] = useState('');
+  const [items, setItems] = useState([]);
+  const [assetTypes, setAssetTypes] = useState([]);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Fetch data based on selected date
-  const fetchDataByDate = async (selectedDate) => {
-    setLoading(true);
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}asset-audits/date`, {
-        date: selectedDate
-      });
-      return response.data.data;
-    } catch (error) {
-      console.error("Error fetching data by date", error);
-      return [];
-    }
-  };
+  // Fetch dropdown options on mount
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      try {
+        const [itemsRes, assetTypesRes] = await Promise.all([
+          axios.get(`${process.env.REACT_APP_BASE_URL}items`),
+          axios.get(`${process.env.REACT_APP_BASE_URL}asset`)
+        ]);
+        setItems(itemsRes.data); // items is an array
+        setAssetTypes(assetTypesRes.data.data); // assetTypes is inside .data
+      } catch (error) {
+        console.error("Error fetching dropdown data", error);
+      }
+    };
 
-  // Fetch data based on selected status
-  const fetchDataByStatus = async (selectedStatus) => {
-    setLoading(true);
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}asset-audits/status`, {
-        status: selectedStatus
-      });
-      return response.data.data;
-    } catch (error) {
-      console.error("Error fetching data by status", error);
-      return [];
-    }
-  };
+    fetchDropdownData();
+  }, []);
 
-  // Fetch data based on selected date range and status
-  const fetchDataByStatusAndDateRange = async (selectedStatus, selectedStartDate, selectedEndDate) => {
-    setLoading(true);
-    try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}asset-audits/status/date-range`, {
-        status: selectedStatus,
-        startDate: selectedStartDate,
-        endDate: selectedEndDate
-      });
-      return response.data.data;
-    } catch (error) {
-      console.error("Error fetching data by status and date range", error);
-      return [];
-    }
-  };
-
-  // Clear all filter fields
   const clearFields = () => {
     setDate('');
     setStatus('');
     setStartDate('');
     setEndDate('');
+    setItemId('');
+    setAssetTypeId('');
   };
 
-  // Handle filter button click
   const handleFilter = async () => {
     setLoading(true);
-    let filteredData = [];
 
-    if (startDate && endDate && status) {
-      filteredData = await fetchDataByStatusAndDateRange(status, startDate, endDate);
-    }
-    else if (date) {
-      filteredData = await fetchDataByDate(date);
-    }
-    else if (status) {
-      filteredData = await fetchDataByStatus(status);
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}asset-audits/status/date-range`, {
+        status: status || undefined,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
+        itemId: itemId || undefined,
+        assetTypeId: assetTypeId || undefined,
+      });
+
+      setData(response.data.data);
+    } catch (error) {
+      console.error("Error filtering data", error);
+      setData([]);
     }
 
-    setData(filteredData);
     setLoading(false);
-    clearFields();
   };
 
- const columns = [
-  {
-    label: 'Name',
-    key: 'name',
-    render: (row) => {
-      if (row.Item) {
-        return row.Item.itemName;
-      } else if (row.AssetType) {
-        return row.AssetType.name;
+  const columns = [
+    {
+      label: 'Name',
+      key: 'name',
+      render: (row) => {
+        if (row.Item) return row.Item.itemName;
+        if (row.AssetType) return row.AssetType.name;
+        return 'N/A';
       }
-      return 'N/A';
-    }
-  },
-  {
-    label: 'Type',
-    key: 'type',
-    render: (row) => {
-      if (row.Item) return 'Item';
-      if (row.AssetType) return 'Asset';
-      return 'Unknown';
-    }
-  },
-  { label: 'Existing', key: 'existing_amount' },        
-  { label: 'Status', key: 'status' },
-  {
-    label: 'Date',
-    key: 'date',
-    render: (row) =>
-      row.date ? new Date(row.date).toISOString().split('T')[0] : 'N/A',
-  },
-];
-
-  const handleDateChange = (event) => setDate(event.target.value);
-  const handleStatusChange = (event) => setStatus(event.target.value);
-  const handleStartDateChange = (event) => setStartDate(event.target.value);
-  const handleEndDateChange = (event) => setEndDate(event.target.value);
+    },
+    {
+      label: 'Type',
+      key: 'type',
+      render: (row) => {
+        if (row.Item) return 'Item';
+        if (row.AssetType) return 'Asset';
+        return 'Unknown';
+      }
+    },
+    { label: 'Existing', key: 'existing_amount' },
+    { label: 'Status', key: 'status' },
+    {
+      label: 'Date',
+      key: 'date',
+      render: (row) =>
+        row.date ? new Date(row.date).toISOString().split('T')[0] : 'N/A',
+    },
+  ];
 
   return (
     <div className="p-6 bg-base-100 rounded-lg shadow-md w-full">
       <div className="flex justify-end items-center mb-4">
-        <div className="flex flex-col space-y-4">
-          {/* Filter Fields Row */}
-          <div className="flex items-center space-x-2">
-            {/* Date Picker (Single Date Filter) */}
-            <div className="flex flex-col">
-              <label htmlFor="date" className="text-sm font-medium">Audit Date</label>
-              <input
-                id="date"
-                type="date"
-                value={date}
-                onChange={handleDateChange}
-                className="bg-base-100 p-2 border rounded-md"
-              />
-            </div>
+        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6">
+  {/* <h2 className="text-lg font-semibold mb-4 text-gray-800">Filter Audit Reports</h2> */}
 
-            {/* Status Dropdown (Single Status Filter) */}
-            <div className="flex flex-col">
-              <label htmlFor="status" className="text-sm font-medium">Status</label>
-              <select
-                id="status"
-                value={status}
-                onChange={handleStatusChange}
-                className="bg-base-100 p-2 border rounded-md"
-              >
-                <option value="">Select Status</option>
-                <option value="confirmed">Confirmed</option>
-                <option value="fail">Fail</option>
-                <option value="to_be_checked">To be Checked</option>
-              </select>
-            </div>
+  {/* Horizontal Fields Row */}
+  <div className="flex flex-wrap gap-4">
+    {/* Status */}
+    <div className="flex flex-col">
+      <label className="text-sm font-medium text-gray-600">Status</label>
+      <select
+        value={status}
+        onChange={(e) => setStatus(e.target.value)}
+        className="w-48 rounded-xl border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+      >
+        <option value="">Select Status</option>
+        <option value="confirmed">Confirmed</option>
+        <option value="fail">Fail</option>
+        <option value="to_be_checked">To be Checked</option>
+      </select>
+    </div>
 
-            {/* Start Date Picker (Date Range Filter) */}
-            <div className="flex flex-col">
-              <label htmlFor="startDate" className="text-sm font-medium">Audit date from</label>
-              <input
-                id="startDate"
-                type="date"
-                value={startDate}
-                onChange={handleStartDateChange}
-                className="bg-base-100 p-2 border rounded-md"
-              />
-            </div>
+    {/* Item */}
+    <div className="flex flex-col">
+      <label className="text-sm font-medium text-gray-600">Item</label>
+      <select
+        value={itemId}
+        onChange={(e) => setItemId(e.target.value)}
+        className="w-48 rounded-xl border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+      >
+        <option value="">Select Item</option>
+        {items.map(item => (
+          <option key={item.id} value={item.id}>{item.itemName}</option>
+        ))}
+      </select>
+    </div>
 
-            {/* End Date Picker (Date Range Filter) */}
-            <div className="flex flex-col">
-              <label htmlFor="endDate" className="text-sm font-medium">Audit date to</label>
-              <input
-                id="endDate"
-                type="date"
-                value={endDate}
-                onChange={handleEndDateChange}
-                className="bg-base-100 p-2 border rounded-md"
-              />
-            </div>
-          </div>
+    {/* Asset Type */}
+    <div className="flex flex-col">
+      <label className="text-sm font-medium text-gray-600">Asset Type</label>
+      <select
+        value={assetTypeId}
+        onChange={(e) => setAssetTypeId(e.target.value)}
+        className="w-48 rounded-xl border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+      >
+        <option value="">Select Asset Type</option>
+        {assetTypes.map(asset => (
+          <option key={asset.id} value={asset.id}>{asset.name}</option>
+        ))}
+      </select>
+    </div>
 
-          {/* Filter Button Row */}
-          <div className="flex justify-end">
-            <button
-              onClick={handleFilter}
-              className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-              disabled={loading}
-            >
-              {loading ? 'Filtering...' : 'Filter'}
-            </button>
-          </div>
-        </div>
+      {/* Audit Date */}
+    <div className="flex flex-col">
+      <label className="text-sm font-medium text-gray-600">Audit Date</label>
+      <input
+        type="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+        className="w-40 rounded-xl border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+      />
+    </div>
+
+    {/* Start Date */}
+    <div className="flex flex-col">
+      <label className="text-sm font-medium text-gray-600">Audited Date From</label>
+      <input
+        type="date"
+        value={startDate}
+        onChange={(e) => setStartDate(e.target.value)}
+        className="w-40 rounded-xl border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+      />
+    </div>
+
+    {/* End Date */}
+    <div className="flex flex-col">
+      <label className="text-sm font-medium text-gray-600">Audited Date To</label>
+      <input
+        type="date"
+        value={endDate}
+        onChange={(e) => setEndDate(e.target.value)}
+        className="w-40 rounded-xl border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
+      />
+    </div>
+  </div>
+
+  {/* Buttons Below */}
+  <div className="flex justify-end gap-3 mt-6">
+    <button
+      onClick={clearFields}
+      className="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition"
+    >
+      Clear
+    </button>
+    <button
+      onClick={handleFilter}
+      disabled={loading}
+      className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition disabled:opacity-50"
+    >
+      {loading ? 'Filtering...' : 'Filter'}
+    </button>
+  </div>
+</div>
+
       </div>
 
       {loading ? (
-        <LoadingComponent/>
+        <LoadingComponent />
       ) : (
-        <TableComponent 
-          title="Asset Audit Reports" 
-          data={data} 
-          columns={columns} 
+        <TableComponent
+          title="Asset Audit Reports"
+          data={data}
+          columns={columns}
         />
       )}
     </div>

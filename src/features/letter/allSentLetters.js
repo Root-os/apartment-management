@@ -3,6 +3,10 @@ import axios from "axios";
 import TableComponent from "../../components/table";
 import Modal from "../../components/Modal";
 import { useNavigate } from "react-router-dom";
+import { MoreHorizontal } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+
+
 
 const AllSendLetterPage = () => {
   const [letters, setLetters] = useState([]);
@@ -22,6 +26,15 @@ const AllSendLetterPage = () => {
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
 
+  const [openDropdownId, setOpenDropdownId] = useState(null);
+
+  useEffect(() => {
+  const handleClick = () => setOpenDropdownId(null);
+  document.addEventListener("click", handleClick);
+  return () => document.removeEventListener("click", handleClick);
+}, []);
+
+  
   const fetchLetters = () => {
     axios
       .get(`${process.env.REACT_APP_BASE_URL}letter`)
@@ -125,6 +138,11 @@ const AllSendLetterPage = () => {
     }
   };
 
+ const handleRespondClick = (letter) => {
+  navigate(`/app/letter-response/${letter.id}`);
+};
+
+
   const handleGeneratePdf = (letter) => {
     navigate("/app/letters-in-pdf", { state: { letterDetails: letter } });
   };
@@ -133,38 +151,57 @@ const AllSendLetterPage = () => {
     { key: "LetterType.name", label: "Letter Type", render: (row) => row.LetterType?.name },
     { key: "Tenant.fullName", label: "Tenant", render: (row) => row.Tenant?.fullName },
     { key: "description", label: "Description" },
-    {
-      label: "Actions",
-      key: "actions",
-      render: (row) => (
-        <div className="flex flex-wrap gap-2 w-full md:grid md:grid-cols-2 md:gap-4">
+ {
+  label: "Actions",
+  key: "actions",
+  render: (row) => (
+    <div className="relative inline-block text-left" onClick={(e) => e.stopPropagation()}>
+      <button
+        onClick={() => setOpenDropdownId(openDropdownId === row.id ? null : row.id)}
+        className="text-blue-600 font-medium hover:underline inline-flex items-center"
+      >
+        Actions <span className="ml-1">▼</span>
+      </button>
+
+      {openDropdownId === row.id && (
+        <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-md shadow-lg z-10">
           <button
-            onClick={() => handleEditClick(row)}
-            className="bg-blue-500 text-white px-2 py-1 rounded-md w-full sm:w-auto min-w-[80px] text-center"
+            onClick={() => { handleEditClick(row); setOpenDropdownId(null); }}
+            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
           >
             Edit
           </button>
           <button
-            onClick={() => handleDeleteClick(row)}
-            className="bg-red-500 text-white px-2 py-1 rounded-md w-full sm:w-auto min-w-[80px] text-center"
+            onClick={() => { handleDeleteClick(row); setOpenDropdownId(null); }}
+            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-600"
           >
             Delete
           </button>
           <button
-            onClick={() => handleDetailClick(row)}
-            className="bg-gray-400 text-white px-2 py-1 rounded-md w-full sm:w-auto min-w-[80px] text-center"
+            onClick={() => { handleDetailClick(row); setOpenDropdownId(null); }}
+            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
           >
             Detail
           </button>
           <button
-            onClick={() => handleGeneratePdf(row)}
-            className="bg-indigo-500 text-white px-2 py-1 rounded-md w-full sm:w-auto min-w-[80px] text-center"
+            onClick={() => { handleGeneratePdf(row); setOpenDropdownId(null); }}
+            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-indigo-600"
           >
             Letter
           </button>
+          <button
+            onClick={() => { handleRespondClick(row); setOpenDropdownId(null); }}
+            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-green-600"
+          >
+            Response
+          </button>
         </div>
-      ),
-    },
+      )}
+    </div>
+  )
+}
+
+
   ];
 
   const handleAddClick = () => {

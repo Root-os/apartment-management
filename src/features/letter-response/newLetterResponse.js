@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+import TitleCard from '../../components/Cards/TitleCard';
 
 const RespondToLetter = () => {
   const location = useLocation();
@@ -85,18 +86,11 @@ const RespondToLetter = () => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded shadow">
-      <button
-        onClick={() => navigate(-1)} 
-        className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 mb-6"
-      >
-        ← Back
-      </button>
-
-      <h2 className="text-2xl font-bold mb-4">Respond to Letter</h2>
-
+    <>
+    <TitleCard title="New Letter Response" topMargin={'mt-1'}>
+   
       <div className="mb-4">
-        <p><strong>Tenant Name:</strong> {tenantName}</p>
+        {/* <p><strong>Tenant Name:</strong> {tenantName}</p> */}
         <p><strong>Letter Description:</strong> {letterDescription}</p>
       </div>
 
@@ -139,7 +133,14 @@ const RespondToLetter = () => {
           </p>
         )}
       </form>
-    </div>
+      </TitleCard>
+        <div>   <button
+        onClick={() => navigate(-1)} 
+        className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 mb-6"
+      >
+        ← Back
+      </button></div>
+    </>
   );
 };
 

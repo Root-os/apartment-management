@@ -155,12 +155,17 @@ const tenantRoutes =
     {
     path: '', 
     icon: <WalletIcon className={`${iconClasses} inline` }/>, 
-    name: 'Rent History', 
+    name: 'Payment History', 
     submenu : [
         {
         path: '/app/tenant-rent-collection',
         icon: <EyeIcon className={submenuIconClasses}/>,
         name: 'Paid Rents ',
+      },
+       {
+        path: '/app/tenant-payment-history',
+        icon: <EyeIcon className={submenuIconClasses}/>,
+        name: 'Paid Bills ',
       },
     ]
   },

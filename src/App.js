@@ -43,7 +43,8 @@ function App() {
     <Router>
   <Routes>
     {/* Public routes */}
-    <Route path="/" element={<Choice />} />
+    {/* <Route path="/" element={<Choice />} /> */}
+    
     <Route path="/login" element={<Login />} />
     <Route path="/tenant-login" element={<TenantLogin />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -60,7 +61,7 @@ function App() {
             ? <Navigate to="/tenant-login" replace />
             : <Navigate to="/login" replace />
         ) : (
-          <Choice />
+          <Navigate to="/login" replace />
         )
       }
     />
@@ -74,13 +75,12 @@ function App() {
             ? <Navigate to="/tenant-login" replace />
             : <Navigate to="/login" replace />
         ) : (
-          <Choice />
+          <Navigate to="/login" replace />
         )
       }
     />
   </Routes>
 </Router>
- 
   );
 }
 

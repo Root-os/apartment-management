@@ -65,6 +65,7 @@ const AddAssetAuditPage = () => {
         setDamagedAmount('');
         setLostAmount('');
         setStatus('');
+        window.location.href = '/app/view-asset-audit'; 
       }
     } catch (error) {
       console.error('Error:', error);

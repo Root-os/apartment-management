@@ -38,71 +38,74 @@ const AddMaintenancePage = () => {
   }, []);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-  
-    // Start by preparing the payload with common fields
-    const payload = {
-      date,
-      description,
-      cost: parseFloat(cost),
-      isItem,
-      unitId: parseInt(unitId),
-    };
-  
-    // When isItem is true, include itemId and exclude name
-    if (isItem) {
-      if (!itemId) {
-        setModalOpen(true);
-        setMessageType('error');
-        setMessage('Please select a valid item.');
-        setLoading(false);
-        return;
-      }
-  
-      payload.itemId = parseInt(itemId); // Add itemId to the payload
-      delete payload.name; // Ensure name is excluded when isItem is true
-    } else {
-      if (!name) {
-        setModalOpen(true);
-        setMessageType('error');
-        setMessage('Please provide a name for the maintenance.');
-        setLoading(false);
-        return;
-      }
-  
-      delete payload.itemId; // Ensure itemId is excluded when isItem is false
-      payload.name = name; // Add name to the payload
-    }
-  
-    try {
-      // Send the request to the API
-      await axios.post(`${process.env.REACT_APP_BASE_URL}maintenance`, payload);
-  
-      // Reset the form
-      setDate('');
-      setDescription('');
-      setCost('');
-      setItemId('');
-      setUnitId('');
-      setName('');
-      setIsItem(false);
-  
-      setModalOpen(true);
-      setMessageType('success');
-      setMessage('Maintenance data added successfully!');
-      window.location.href = '/app/view-maintenance';
-    } catch (err) {
+  e.preventDefault();
+  setLoading(true);
+
+  // Start by preparing the payload with common fields
+  const payload = {
+    date,
+    description,
+    cost: parseFloat(cost),
+    isItem,
+  };
+
+  // When isItem is true, include itemId and exclude unitId and name
+  if (isItem) {
+    if (!itemId) {
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Unable to add Maintenance data!');
-      console.error('Error adding maintenance data:', err.response ? err.response.data : err);
-    } finally {
+      setMessage('Please select a valid item.');
       setLoading(false);
+      return;
     }
-  };
-  
-  
+
+    payload.itemId = parseInt(itemId); // Add itemId
+  } else {
+    if (!name) {
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Please provide a name for the maintenance.');
+      setLoading(false);
+      return;
+    }
+    if (!unitId) {
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Please select a unit.');
+      setLoading(false);
+      return;
+    }
+
+    payload.name = name;
+    payload.unitId = parseInt(unitId); // Add unitId only when isItem is false
+  }
+
+  try {
+    await axios.post(`${process.env.REACT_APP_BASE_URL}maintenance`, payload);
+
+    // Reset form
+    setDate('');
+    setDescription('');
+    setCost('');
+    setItemId('');
+    setUnitId('');
+    setName('');
+    setIsItem(false);
+
+    setModalOpen(true);
+    setMessageType('success');
+    setMessage('Maintenance data added successfully!');
+    window.location.href = '/app/view-maintenance';
+  } catch (err) {
+    setModalOpen(true);
+    setMessageType('error');
+    setMessage('Unable to add Maintenance data!');
+    console.error('Error adding maintenance data:', err.response ? err.response.data : err);
+  } finally {
+    setLoading(false);
+  }
+};
+
   return (
     <>
       <TitleCard title="Add Maintenance" topMargin={'mt-2'}>
@@ -122,6 +125,7 @@ const AddMaintenancePage = () => {
           </div>
 
           {/* Item Select (Only visible if isItem is true) */}
+           {isItem && (
           <div>
             <label htmlFor="itemId" className="block text-sm font-medium text-white-700">
               Item
@@ -142,8 +146,11 @@ const AddMaintenancePage = () => {
               ))}
             </select>
           </div>
+          )}
 
           {/* Name Input (Only visible if isItem is false) */}
+         {!isItem && (
+          <>
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-white-700">
               Name
@@ -158,18 +165,18 @@ const AddMaintenancePage = () => {
               required={!isItem} // Make required if it's not an item
             />
           </div>
-
+         
           {/* Unit Select */}
           <div>
             <label htmlFor="unitId" className="block text-sm font-medium text-white-700">
-              Unit
+             Room/Unit
             </label>
             <select
               id="unitId"
               value={unitId}
               onChange={(e) => setUnitId(e.target.value)}
               className="mt-1 p-2 border border-gray-300 rounded-md w-full bg-base-100"
-              required
+              required={!isItem} 
             >
               <option value="">Select Unit</option>
               {units.map((unit) => (
@@ -179,7 +186,8 @@ const AddMaintenancePage = () => {
               ))}
             </select>
           </div>
-
+          </>
+           )}
           {/* Description Input */}
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-white-700">

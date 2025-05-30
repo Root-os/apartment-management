@@ -148,6 +148,7 @@ const PaymentTypeView = lazy(() => import('../pages/protected/PaymentType/Paymen
 const PaymentAdd = lazy(() => import('../pages/protected/payment/addPayment'))
 const PaymentView = lazy(() => import('../pages/protected/payment/allPayment'))
 const PaymentReciept = lazy(() => import('../pages/protected/PaymentReciept'))
+const TenantViewBills = lazy(() => import('../pages/protected/BillPayment/TenantViewBills'));
 //letter
 const LetterTypeAdd = lazy(() => import('../pages/protected/letter/addLetterType'))
 const letterTypeView = lazy(() => import('../pages/protected/letter/allLetterType'))
@@ -157,6 +158,7 @@ const PdfLetter =lazy(() => import('../pages/protected/letter/PdfLetter'))
 const MyLetter = lazy(() => import('../pages/protected/letter/MyLetter'))
 const NewResponse = lazy(() => import('../pages/protected/Letter-Response/NewResponse'))
 const TenantViewResponse = lazy(() => import('../pages/protected/Letter-Response/TenantViewResponse'))
+const AdminViewResponse = lazy(() => import('../pages/protected/Letter-Response/AdminViewResponse'))
 //stock
 //order
 const addOrderType=lazy(() => import('../pages/protected/order/orderTypeAdd'))
@@ -170,6 +172,7 @@ const AssetView = lazy(() => import('../pages/protected/Asset/AssetView'))
 const AssetAuditAdd = lazy(() => import('../pages/protected/AssetAudit/AssetAuditAdd'))
 const AssetAuditView = lazy(() => import('../pages/protected/AssetAudit/AssetAuditView'))
 const AssetAuditReport = lazy(() => import('../pages/protected/AssetAudit/AssetAuditReport'))
+const NavigateAuditHistory = lazy(() => import('../pages/protected/AssetAudit/NavigateAuditHistory'));
 //Role
 const RoleAdd = lazy(() => import('../pages/protected/Role/RoleAdd'))
 const RoleView = lazy(() => import('../pages/protected/Role/RoleView'))
@@ -196,6 +199,7 @@ const tenantRoutes = [
   {path: '/new-letter-response', component: NewResponse },
   {path: '/tenant-view-response', component: TenantViewResponse },
   {path: '/tenant-rent-collection', component: TenantViewRent },
+  {path: '/tenant-payment-history', component: TenantViewBills,},
  
 ];
 
@@ -326,6 +330,8 @@ const adminRoutes = [
       { path: '/send-letter', component: LetterSend },
       { path: '/all-sent-letters', component: AllSentLetters },
       { path: '/letters-in-pdf', component: PdfLetter },
+      { path: '/letter-response/:letterId', component: AdminViewResponse }
+
       
     ],
   },
@@ -374,6 +380,7 @@ const adminRoutes = [
       { path: '/view-asset', component: AssetView },
       { path: '/add-asset-audit', component: AssetAuditAdd },
       { path: '/view-asset-audit', component: AssetAuditView },
+      { path: '/navigate-audit-history', component: NavigateAuditHistory },
     ],
   },
   {

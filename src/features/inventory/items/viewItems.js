@@ -3,8 +3,10 @@ import axios from 'axios';
 import TableComponent from '../../../components/table';
 import Modal from '../../../components/Modal';
 import LoadingComponent from '../../../components/loading';
+import { useNavigate } from 'react-router-dom';
 
 const ItemsPage = () => {
+  const navigate = useNavigate();
   const [items, setItems] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -130,21 +132,11 @@ const ItemsPage = () => {
     }
   };
 
-  const handleAuditHistoryClick = (item) => {
-    setSelectedItem(item);
-    fetchAuditHistory(item.id);
-    setIsAuditHistoryModalOpen(true); // Open the audit history modal
-  };
+const handleAuditHistoryClick = (item) => {
+  setSelectedItem(item); 
+  navigate('/app/navigate-audit-history', { state: { id: item.id } });
+};
   
-  const fetchAuditHistory = async (itemId) => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}items/${itemId}/audit-history`);
-      setAuditHistory(response.data); // Set the audit history data
-    } catch (error) {
-      console.error('Error fetching audit history:', error);
-    }
-  };
-
   // Reduced columns for simpler table view
   const columns = [
     { key: 'itemName', label: 'Item Name' },
@@ -182,12 +174,9 @@ const ItemsPage = () => {
           >
             Delete
           </button>
-          <button
-            onClick={() => handleAuditHistoryClick(row)} // New button for audit history
-            className="bg-green-500 text-white px-3 py-1 rounded-md"
-          >
-            Audit History
-          </button>
+         <button onClick={() => handleAuditHistoryClick(row)}
+           className="bg-yellow-500 text-white px-3 py-1 rounded-md"
+          >View Audit</button>
         </div>
       ),
     },

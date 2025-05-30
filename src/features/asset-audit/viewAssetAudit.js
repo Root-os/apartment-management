@@ -21,28 +21,49 @@ const AssetAuditPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
+  const [allAuditData, setAllAuditData] = useState([]);
+
+  
 
   const fetchData = async () => {
-    try {
-      const auditsResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}asset-audits`);
-      if (auditsResponse.data.success) {
-        setData(auditsResponse.data.data);
-      }
+  try {
+    const auditsResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}asset-audits`);
+    if (auditsResponse.data.success) {
+      const allAudits = auditsResponse.data.data;
 
-      const assetTypesResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}asset`);
-      if (assetTypesResponse.data.success) {
-        setAssetTypes(assetTypesResponse.data.data);
-      }
+      // Group audits by item_id or asset_type_id
+      const grouped = {};
+      allAudits.forEach(audit => {
+        const key = audit.item_id || `asset-${audit.asset_type_id}`;
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(audit);
+      });
 
-      const itemsResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}items`);
-      console.log("Items Response:", itemsResponse.data);
-      setItems(itemsResponse.data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
+      // Get the latest audit in each group
+      const latestAudits = Object.values(grouped).map(group =>
+        group.reduce((latest, current) =>
+          new Date(current.date) > new Date(latest.date) ? current : latest
+        )
+      );
+
+      setData(latestAudits);      // Show only latest in table
+      setAllAuditData(allAudits); // Store all for hover history
     }
-  };
+
+    const assetTypesResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}asset`);
+    if (assetTypesResponse.data.success) {
+      setAssetTypes(assetTypesResponse.data.data);
+    }
+
+    const itemsResponse = await axios.get(`${process.env.REACT_APP_BASE_URL}items`);
+    setItems(itemsResponse.data);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchData();
@@ -142,12 +163,26 @@ const AssetAuditPage = () => {
     label: 'Name',
     key: 'name',
     render: (row) => {
-      if (row.Item) {
-        return row.Item.itemName;
-      } else if (row.AssetType) {
-        return row.AssetType.name;
-      }
-      return 'N/A';
+      const key = row.item_id || `asset-${row.asset_type_id}`;
+      const fullHistory = allAuditData
+        .filter(a => (a.item_id || `asset-${a.asset_type_id}`) === key)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      return (
+        <div className="relative group cursor-pointer">
+          {row.Item ? row.Item.itemName : row.AssetType?.name || 'N/A'}
+
+          <div className="absolute z-10 hidden group-hover:block bg-white border border-gray-300 shadow-md rounded p-2 text-sm top-full left-0 w-60">
+            <div className="font-semibold text-gray-700 mb-1">Audit History</div>
+            {fullHistory.map((h, i) => (
+              <div key={i} className="flex justify-between border-b border-gray-200 py-1 text-xs">
+                <span>{h.status}</span>
+                <span>{new Date(h.date).toISOString().split('T')[0]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
     }
   },
   {
@@ -159,10 +194,10 @@ const AssetAuditPage = () => {
       return 'Unknown';
     }
   },
-  { label: 'Existing', key: 'existing_amount' },        
+  { label: 'Existing Amount', key: 'existing_amount' },
   { label: 'Status', key: 'status' },
   {
-    label: 'Date',
+    label: 'Audit Date',
     key: 'date',
     render: (row) =>
       row.date ? new Date(row.date).toISOString().split('T')[0] : 'N/A',
@@ -172,19 +207,19 @@ const AssetAuditPage = () => {
     key: 'actions',
     render: (row) => (
       <div className="flex justify-end space-x-2">
-        <button 
+        <button
           onClick={() => handleEdit(row)}
           className="bg-blue-500 text-white px-2 py-1 rounded-md"
         >
           Edit
         </button>
-        <button 
+        <button
           onClick={() => handleDelete(row)}
           className="bg-red-500 text-white px-1 py-1 rounded-md"
         >
           Delete
         </button>
-        <button 
+        <button
           onClick={() => handleDetail(row)}
           className="bg-gray-400 text-white py-1 px-1 rounded"
         >
@@ -194,7 +229,6 @@ const AssetAuditPage = () => {
     )
   }
 ];
-
   const handleAddClick = () => {
     window.location.href = '/app/add-asset-audit';
   };

@@ -40,8 +40,9 @@ const AddAsset = () => {
         setName('');  // Reset name input field
         setDescription('');  
         setAmount('');
-        setModalType('success'); // Set modal type to success
-        setModalMessage(`Asset added successfully`); // Success message
+        setModalType('success'); 
+        setModalMessage(`Asset added successfully`);
+        window.location.href = '/app/view-asset'; 
       }
     } catch (error) {
       setErrorMessage('Error adding asset. Please try again.');

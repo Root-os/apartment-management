@@ -1,19 +1,19 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { setPageTitle } from '../../../features/common/headerSlice'
-import LetterResponseAdminSide from '../../../features/letter-response/adminViewResponses'
+import NavigateAssetAudit from '../../../features/asset-audit/navigateToAudit'
 
-function AllLetterSent(){
+function InternalPage(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : ""}))
+        dispatch(setPageTitle({ title : " "}))
       }, [])
 
 
     return(
-        <LetterResponseAdminSide />
+        <NavigateAssetAudit />
     )
 }
 
-export default AllLetterSent
+export default InternalPage

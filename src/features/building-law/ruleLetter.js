@@ -7,17 +7,79 @@ const LawPrintView = () => {
   const [companyInfo, setCompanyInfo] = useState(null);
   const a4Ref = useRef();
 
+  // Color space conversion utilities
+  const oklchToRgb = (l, c, h) => {
+    const lch = [l, c, h];
+    const lab = oklchToLab(lch);
+    const xyz = labToXyz(lab);
+    return xyzToRgb(xyz);
+  };
+
+  const oklchToLab = ([l, c, h]) => {
+    const a = c * Math.cos(h * Math.PI / 180);
+    const b = c * Math.sin(h * Math.PI / 180);
+    return [l, a, b];
+  };
+
+  const labToXyz = ([l, a, b]) => {
+    const y = (l + 0.16) * 116;
+    const x = a * 500 / 127 + y;
+    const z = b * -200 / 127 + y;
+    return [x, y, z];
+  };
+
+  const xyzToRgb = ([x, y, z]) => {
+    const r = 3.2404542 * x - 1.5371385 * y - 0.4985314 * z;
+    const g = -0.9692660 * x + 1.8760108 * y + 0.0415560 * z;
+    const b = 0.0556434 * x - 0.2040259 * y + 1.0572252 * z;
+    
+    return [
+      Math.max(0, Math.min(255, Math.round(r))),
+      Math.max(0, Math.min(255, Math.round(g))),
+      Math.max(0, Math.min(255, Math.round(b)))
+    ];
+  };
+
+  // Preload image to ensure it's available for html2canvas
+  const preloadImage = (url) => {
+    return new Promise((resolve, reject) => {
+      if (!url) {
+        console.warn('No image URL provided for preloading');
+        resolve(); // No image to preload
+        return;
+      }
+      console.log('Preloading image:', url); // Debug log
+      const img = new Image();
+      img.crossOrigin = 'Anonymous'; // Handle CORS
+      img.src = url;
+      img.onload = () => {
+        console.log('Image loaded successfully:', url);
+        resolve();
+      };
+      img.onerror = () => {
+        console.error(`Failed to load image: ${url}`);
+        resolve(); // Continue even if image fails to load
+      };
+    });
+  };
+
   useEffect(() => {
     const fetchData = async () => {
+      const token = localStorage.getItem("token");
       try {
         const [rulesRes, settingRes] = await Promise.all([
-          axios.get(`${process.env.REACT_APP_BASE_URL}building-law`),
-          axios.get(`${process.env.REACT_APP_BASE_URL}setting`)
+          axios.get(`${process.env.REACT_APP_BASE_URL}building-law`, {
+            headers: { Authorization: `Bearer ${token}` }
+          }),
+          axios.get(`${process.env.REACT_APP_BASE_URL}setting`, {
+            headers: { Authorization: `Bearer ${token}` }
+          })
         ]);
 
         setRules(rulesRes.data);
         const setting = settingRes.data?.[0];
         setCompanyInfo(setting);
+        console.log('Company Info:', setting); // Debug log
       } catch (err) {
         console.error("Error fetching data:", err);
       }
@@ -26,31 +88,112 @@ const LawPrintView = () => {
     fetchData();
   }, []);
 
-  const shareUrl = window.location.href;
-  const shareSupported = !!navigator.share;
-
   const handleShare = async () => {
     try {
-      await navigator.share({
-        title: 'Building Rules',
-        text: 'Check out our building rules',
-        url: shareUrl,
+      // Preload QR image and logo if they exist
+      await Promise.all([
+        preloadImage(companyInfo?.qrImage),
+        preloadImage(companyInfo?.logo)
+      ]);
+
+      const element = a4Ref.current;
+      const opt = {
+        margin: 0,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          letterRendering: true,
+          removeContainerWhitespace: true,
+          useCORS: true, // Enable CORS for images
+          onclone: (clonedDoc) => {
+            const styleSheets = Array.from(clonedDoc.getElementsByTagName('style'));
+            styleSheets.forEach(sheet => {
+              if (sheet.sheet && sheet.sheet.cssRules) {
+                Array.from(sheet.sheet.cssRules).forEach(rule => {
+                  if (rule.style && rule.style.cssText) {
+                    rule.style.cssText = rule.style.cssText
+                      .replace(/oklch\(([^)]+)\)/g, (match, p1) => {
+                        const [l, c, h] = p1.split(' ').map(Number);
+                        return `rgb(${oklchToRgb(l, c, h).join(',')})`;
+                      });
+                  }
+                });
+              }
+            });
+            // Ensure images have absolute URLs and CORS attributes
+            const images = clonedDoc.getElementsByTagName('img');
+            Array.from(images).forEach(img => {
+              if (img.src) {
+                img.crossOrigin = 'Anonymous';
+                // Convert relative URLs to absolute if necessary
+                if (!img.src.startsWith('http')) {
+                  const absoluteUrl = new URL(img.src, window.location.origin).href;
+                  console.log(`Converted relative URL ${img.src} to ${absoluteUrl}`); // Debug log
+                  img.src = absoluteUrl;
+                }
+              }
+            });
+          }
+        },
+        jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
+      };
+
+      const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+      const file = new File([pdfBlob], 'building-rules.pdf', { type: 'application/pdf' });
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const token = localStorage.getItem("token");
+      const response = await fetch(`${process.env.REACT_APP_BASE_URL}share/upload-receipt`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData,
       });
-    } catch (err) {
-      console.error('Share failed:', err);
+
+      const data = await response.json();
+      if (data.success) {
+        if (navigator.share) {
+          await navigator.share({
+            title: 'Building Rules',
+            text: 'Check out our building rules',
+            url: data.url,
+          });
+        } else {
+          window.open(data.url, '_blank');
+          alert('Share this link: ' + data.url);
+        }
+      } else {
+        alert('Upload failed: ' + data.error);
+      }
+    } catch (error) {
+      console.error('PDF generation or sharing failed:', error);
+      alert('Failed to generate or share PDF. Please try again.');
     }
   };
 
   const handleDownloadPDF = () => {
-    const element = a4Ref.current;
-    const opt = {
-      margin: 0,
-      filename: 'building-rules.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
-    };
-    html2pdf().set(opt).from(element).save();
+    try {
+      const element = a4Ref.current;
+      const opt = {
+        margin: 0,
+        filename: 'building-rules.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          letterRendering: true,
+          removeContainerWhitespace: true,
+          useCORS: true // Enable CORS for images
+        },
+        jsPDF: { unit: 'pt', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
+    } catch (error) {
+      console.error('PDF download failed:', error);
+      alert('Failed to download PDF. Please try again.');
+    }
   };
 
   return (
@@ -116,40 +259,12 @@ const LawPrintView = () => {
 
       {/* Action Buttons */}
       <div className="mt-6 flex justify-center gap-4 print:hidden">
-        {shareSupported ? (
-          <button
-            onClick={handleShare}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Share
-          </button>
-        ) : (
-          <>
-            <a
-              href={`https://wa.me/?text=${encodeURIComponent(shareUrl)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-            >
-              WhatsApp
-            </a>
-            <a
-              href={`https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=Building%20Rules`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-            >
-              Telegram
-            </a>
-            <a
-              href={`mailto:?subject=Building Rules&body=${encodeURIComponent(shareUrl)}`}
-              className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
-            >
-              Email
-            </a>
-          </>
-        )}
-
+        <button
+          onClick={handleShare}
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        >
+          Share
+        </button>
         <button
           onClick={handleDownloadPDF}
           className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"

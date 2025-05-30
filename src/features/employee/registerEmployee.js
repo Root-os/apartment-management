@@ -83,10 +83,19 @@ const EmployeeRegistration = () => {
         });
       }
     } catch (err) {
-      setModalOpen(true);
-      setMessageType('error');
-      setMessage('Failed to register employee');
-    }finally {
+  setModalOpen(true);
+  setMessageType('error');
+
+  // Try to extract the backend's error message safely
+  // console.log('Error response:',JSON.stringify( err.response?.data)); // Debug log
+  const backendMessage = err.response?.data?.message || "Failed to register employee";
+  
+  console.error("Registration error:", err);         // Full error
+  console.error("Backend message hjghghjgjgjhb:", backendMessage); // Extracted message
+
+  setMessage(backendMessage); // Show in Modal
+}
+finally {
       setLoading(false);
     }
   };

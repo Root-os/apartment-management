@@ -3,8 +3,10 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import { useNavigate } from 'react-router-dom';
 
 const AssetPage = () => {
+  const navigate = useNavigate();
   const [assetTypes, setAssetTypes] = useState([]);
   const [selectedAssetType, setSelectedAssetType] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -24,7 +26,7 @@ const AssetPage = () => {
     axios
       .get(`${process.env.REACT_APP_BASE_URL}asset`)
       .then((response) => {
-        setAssetTypes(response.data.data); // Assuming the asset list is under response.data.data
+        setAssetTypes(response.data.data);
         setPageLoading(false);
       })
       .catch((error) => {
@@ -54,13 +56,12 @@ const AssetPage = () => {
   const handleEdit = async () => {
     setLoading(true);
     const updatedAssetType = {
-      ...selectedAssetType, 
+      ...selectedAssetType,
       name: categoryName,
       description: description,
       amount: amount,
     };
 
-    // Optimistically update the state immediately
     setAssetTypes((prevAssetTypes) =>
       prevAssetTypes.map((assetType) =>
         assetType.id === selectedAssetType.id ? updatedAssetType : assetType
@@ -68,7 +69,6 @@ const AssetPage = () => {
     );
 
     try {
-      // Make the API call to update the asset on the server
       const response = await axios.put(
         `${process.env.REACT_APP_BASE_URL}asset/${selectedAssetType.id}`,
         {
@@ -78,14 +78,12 @@ const AssetPage = () => {
         }
       );
 
-      // Assuming the server returns the updated asset directly under response.data
-      const updatedAssetFromServer = response.data; // Adjust if nested, e.g., response.data.data
+      const updatedAssetFromServer = response.data;
 
-      // Update the state with the server response, merging with existing data
       setAssetTypes((prevAssetTypes) =>
         prevAssetTypes.map((assetType) =>
           assetType.id === selectedAssetType.id
-            ? { ...assetType, ...updatedAssetFromServer } // Merge to preserve all fields
+            ? { ...assetType, ...updatedAssetFromServer }
             : assetType
         )
       );
@@ -96,7 +94,6 @@ const AssetPage = () => {
       setMessageType('success');
       setMessage('Asset type updated successfully');
     } catch (error) {
-      // Rollback the optimistic update if the API call fails
       setAssetTypes((prevAssetTypes) =>
         prevAssetTypes.map((assetType) =>
           assetType.id === selectedAssetType.id ? selectedAssetType : assetType
@@ -115,7 +112,7 @@ const AssetPage = () => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}asset/${selectedAssetType.id}`); // Fixed URL typo
+      await axios.delete(`${process.env.REACT_APP_BASE_URL}asset/${selectedAssetType.id}`);
       setAssetTypes(assetTypes.filter((assetType) => assetType.id !== selectedAssetType.id));
       setIsDeleteModalOpen(false);
       setSelectedAssetType(null);
@@ -133,12 +130,14 @@ const AssetPage = () => {
     }
   };
 
+  const handleViewAuditClick = (assetTypeId) => {
+    console.log("Navigating with assetTypeId:", assetTypeId);
+    navigate('/app/navigate-audit-history', { state: { id: assetTypeId } });
+  };
+
   return (
     <>
       <div className="p-4 mb-6">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-white-800">Assets</h1>
-        </div>
         <input
           type="text"
           value={searchTerm}
@@ -151,36 +150,42 @@ const AssetPage = () => {
       {pageLoading ? (
         <LoadingComponent />
       ) : (
-      <TableComponent
-      title="Assets"
-      data={filteredAssetTypes}
-      columns={[
-        { key: 'name', label: 'Name' },
-        { key: 'description', label: 'Description' },
-        { key: 'amount', label: 'Amount' },
-        {
-          key: 'actions',
-          label: 'Actions',
-          render: (row) => (
-            <div className="space-x-2">
-              <button
-                onClick={() => handleEditClick(row)}
-                className="bg-blue-500 text-white px-2 py-1 rounded"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDeleteClick(row)}
-                className="bg-red-500 text-white px-2 py-1 rounded"
-              >
-                Delete
-              </button>
-            </div>
-          ),
-        },
-      ]}
-      showSearch={false}
-    />
+        <TableComponent
+          title="Assets"
+          data={filteredAssetTypes}
+          columns={[
+            { key: 'name', label: 'Name' },
+            { key: 'description', label: 'Description' },
+            { key: 'amount', label: 'Amount' },
+            {
+              key: 'actions',
+              label: 'Actions',
+              render: (row) => (
+                <div className="space-x-2">
+                  <button
+                    onClick={() => handleEditClick(row)}
+                    className="bg-blue-500 text-white px-2 py-1 rounded"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(row)}
+                    className="bg-red-500 text-white px-2 py-1 rounded"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    onClick={() => handleViewAuditClick(row.id)}
+                    className="bg-purple-500 text-white px-2 py-1 rounded"
+                  >
+                    View Audit
+                  </button>
+                </div>
+              ),
+            },
+          ]}
+          showSearch={false}
+        />
       )}
 
       {isEditModalOpen && (
@@ -214,13 +219,13 @@ const AssetPage = () => {
               <div>
                 <label htmlFor="amount" className="block text-sm font-medium text-white-700">
                   Amount
-                </label>  
+                </label>
                 <input
                   type="number"
                   id="amount"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="flex justify-end">

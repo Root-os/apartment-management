@@ -185,21 +185,22 @@ const openEditModal = (record) => {
 
   const columns = [
     {
-      label: 'Item',
-      key: 'itemName',
-      render: (row) => getItemName(row.itemId),
-      style: { width: '150px' },  // Minimized column size for 'Item'
-    },
-    {
       label: 'Name',
       key: 'name',
-      style: { width: '150px' },  // Minimized column size for 'Name'
+      render: (row) => {
+        return row.isItem
+          ? getItemName(row.itemId)
+          : row.name || 'N/A';
+      },
+      style: { width: '200px' },
     },
     {
-      label: 'Unit',
-      key: 'unitNumber',
-      render: (row) => getUnitNumber(row.unitId),
-      style: { width: '100px' },  // Minimized column size for 'Unit'
+      label: 'Room',
+      key: 'unitOrStore',
+      render: (row) => {
+        return row.isItem ? 'Store' : getUnitNumber(row.unitId);
+      },
+      style: { width: '150px' },
     },
     {
       label: 'Description',
@@ -373,6 +374,7 @@ const openEditModal = (record) => {
                   ))}
                 </select>
               </div> */}
+              {!formData.isItem && (
               <div className="mb-4">
                 <label htmlFor="unitId" className="block text-sm">Unit</label>
                 <select
@@ -390,7 +392,7 @@ const openEditModal = (record) => {
                   ))}
                 </select>
               </div>
-
+              )}
               <div className="modal-action">
                 <button type="button" className="btn" onClick={closeModal}>Cancel</button>
                 <button type="submit" 

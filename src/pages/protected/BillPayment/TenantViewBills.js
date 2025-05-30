@@ -1,19 +1,19 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import { setPageTitle } from '../../../features/common/headerSlice'
-import LetterResponseAdminSide from '../../../features/letter-response/adminViewResponses'
+import TenantPaymentHistory from '../../../features/tenant-bill-payment/tenantSideView'
 
-function AllLetterSent(){
+function InternalPage(){
     const dispatch = useDispatch()
 
     useEffect(() => {
-        dispatch(setPageTitle({ title : ""}))
+        dispatch(setPageTitle({ title : " "}))
       }, [])
 
 
     return(
-        <LetterResponseAdminSide />
+        <TenantPaymentHistory />
     )
 }
 
-export default AllLetterSent
+export default InternalPage
