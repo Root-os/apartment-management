@@ -10,47 +10,40 @@ const Choice = () => {
         { 
             title: 'BIRRA MALL Management System', 
             subtitle: 'Manage leasing, tenants, and operations for Birra Mall', 
-            bgColor: 'bg-green-700',
-            url:process.env.REACT_APP_BIRRA_MALL
+            bgColor: 'bg-green-700' 
         },
         { 
             title: 'BIRRA TOWER Management System', 
             subtitle: 'Oversee facilities and services for Birra Tower', 
-            bgColor: 'bg-yellow-900',
-            url:process.env.REACT_APP_BIRRA_TOWER 
+            bgColor: 'bg-yellow-900' 
         },
         { 
             title: 'BIRRA PLAZA Management System', 
             subtitle: 'Handle plaza operations and tenant coordination', 
-            bgColor: 'bg-teal-700' ,
-            url:process.env.REACT_APP_BIRRA_PLAZA
+            bgColor: 'bg-teal-700' 
         },
         { 
-            title: 'BIRRA GROUP Website Management System', 
+            title: 'BIRR GROUP Website Management System', 
             subtitle: 'Update and manage the Birr Group website content', 
-            bgColor: 'bg-teal-700',
-            url:process.env.REACT_APP_BIRR_GROUP
+            bgColor: 'bg-teal-700' 
         },
         { 
             title: 'BIRRA GROUP INVENTORY System', 
             subtitle: 'Track and manage inventory for Birra Group', 
             bgColor: 'bg-blue-900',
-            comingSoon: true,
-            url:process.env.REACT_APP_BIRRA_INVENTORY
+            comingSoon: true 
         },
         { 
             title: 'NAFISIFE INTERNATIONAL BUSINESS WEBSITE MANAGEMENT', 
             subtitle: 'Administer Nifesife’s international business website', 
             bgColor: 'bg-teal-700',
-            comingSoon: true ,
-            url:process.env.REACT_APP_NAFISIFE
+            comingSoon: true 
         },
         { 
             title: 'BIRRA APARTMENT WEBSITE MANAGEMENT', 
             subtitle: 'Control apartment trading and listings online', 
             highlight: 'ADMIN CONTROL', 
-            bgColor: 'bg-yellow-900',
-            url:process.env.REACT_APP_BIRRA_APARTMENT, 
+            bgColor: 'bg-yellow-900' 
         },
     ];
 
@@ -58,7 +51,7 @@ const Choice = () => {
         if (card.comingSoon) {
             setIsModalOpen(true);
         } else {
-            window.location.href = card.url; // Redirect to the respective URL
+            navigate('/login');
         }
     };
 

@@ -13,6 +13,7 @@ import { NavLink, Link, useLocation } from "react-router-dom";
 
 
 function Header() {
+  const role = localStorage.getItem("role");
   const dispatch = useDispatch();
   const { noOfNotifications, pageTitle } = useSelector((state) => state.header);
   const [currentTheme, setCurrentTheme] = useState(
@@ -80,9 +81,9 @@ function Header() {
   // Define pages for the dropdown
   const pages = [
     { name: "Add Tenant", path: "/app/tenant-add" },
-    { name: "View Unit", path: "/app/unit-view" },
+    { name: "View Unit", path: "/app/view-unit" },
     { name: "Notiffication", path: "/app/all-notfication" },
-    { name: "Complains", path: "/app/complain-fromT-view" },
+    { name: "Complains", path: "/app/complain-from-tenant" },
     { name: "Stocks", path: "/app/view-stocks" },
   ];
 
@@ -101,6 +102,7 @@ function Header() {
 
       <div className="flex-none">
         {/* Pages Dropdown */}
+        {role === "admin" &&(
         <div className="dropdown mr-4">
           <label tabIndex={0} className="btn btn-ghost">
             Pages
@@ -116,7 +118,7 @@ function Header() {
             ))}
           </ul>
         </div>
-
+        )}
         {/* Light and dark theme selection toggle */}
         <label className="swap">
           <input type="checkbox" />
@@ -162,6 +164,8 @@ function Header() {
             tabIndex={0}
             className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
           >
+            {role === "admin" && (
+              <>
             <li className="justify-between">
               <Link to={"/app/settings-profile"}>
                 Profile Settings
@@ -171,6 +175,8 @@ function Header() {
             <li>
               <Link to={"/app/settings-billing"}>Bill History</Link>
             </li>
+            </>
+            )}
             <div className="divider mt-0 mb-0"></div>
             <li>
               <a onClick={logoutUser}>Logout</a>

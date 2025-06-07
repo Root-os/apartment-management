@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import * as XLSX from 'xlsx';
+import React, { useState } from "react";
+import axios from "axios";
+import * as XLSX from "xlsx";
+import { useNavigate } from 'react-router-dom';
 
 const ReportPage = () => {
-  const [startDate, setStartDate] = useState('');
-  const [endDate, setEndDate] = useState('');
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const fetchReport = async () => {
     if (!startDate || !endDate) {
-      alert('Please select both start and end dates.');
+      alert("Please select both start and end dates.");
       return;
     }
 
@@ -21,18 +23,20 @@ const ReportPage = () => {
       });
       setReport(res.data);
     } catch (err) {
-      console.error('Error fetching report:', err);
-      alert('Failed to fetch report. Check the console for details.');
+      console.error("Error fetching report:", err);
+      alert("Failed to fetch report. Check the console for details.");
     } finally {
       setLoading(false);
     }
   };
 
   const formatAmount = (amount) => {
-  const num = parseFloat(amount || 0);
-  return `ETB ${num.toLocaleString('en-ET', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-};
-
+    const num = parseFloat(amount || 0);
+    return `ETB ${num.toLocaleString("en-ET", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
 
   const handlePrint = () => {
     window.print();
@@ -45,7 +49,7 @@ const ReportPage = () => {
 
     const addSheet = (data, sheetName) => {
       Object.entries(data).forEach(([key, section]) => {
-        if (key.startsWith('total')) return;
+        if (key.startsWith("total")) return;
         const records = section.records || [];
 
         if (records.length) {
@@ -57,19 +61,23 @@ const ReportPage = () => {
             return row;
           });
           const worksheet = XLSX.utils.json_to_sheet(sheetData);
-          XLSX.utils.book_append_sheet(workbook, worksheet, `${sheetName}-${key}`);
+          XLSX.utils.book_append_sheet(
+            workbook,
+            worksheet,
+            `${sheetName}-${key}`
+          );
         }
       });
     };
 
-    addSheet(report.incomes, 'Income');
-    addSheet(report.outcomes, 'Expenses');
+    addSheet(report.incomes, "Income");
+    addSheet(report.outcomes, "Expenses");
 
     XLSX.writeFile(workbook, `Revenue_Report_${startDate}_to_${endDate}.xlsx`);
   };
 
   const renderSection = (title, data, isIncome = true) => {
-    const totalKey = isIncome ? 'totalIncome' : 'totalOutcome';
+    const totalKey = isIncome ? "totalIncome" : "totalOutcome";
 
     return (
       <div className="mt-8 break-inside-avoid-page">
@@ -93,21 +101,27 @@ const ReportPage = () => {
           let sortedColumns = [];
 
           // Custom sort rules
-          if (key === 'salaryPayments') {
-            sortedColumns = ['user', 'netSalary', 'allowance', 'total', 'date'];
-          } else if (key === 'payments') {
+          if (key === "salaryPayments") {
+            sortedColumns = ["user", "netSalary", "allowance", "total", "date"];
+          } else if (key === "payments") {
             // Force vendor first, then item/others, then amount before date
-            const others = allCols.filter(c => !['vendor', 'amount', 'date'].includes(c));
-            sortedColumns = ['vendor', ...others, 'amount', 'date'];
+            const others = allCols.filter(
+              (c) => !["vendor", "amount", "date"].includes(c)
+            );
+            sortedColumns = ["vendor", ...others, "amount", "date"];
           } else {
             // Default: place amount before date, rest in natural order
-            const others = allCols.filter(c => c !== 'amount' && c !== 'date');
-            if ('amount' in sample) others.push('amount');
-            if ('date' in sample) others.push('date');
+            const others = allCols.filter(
+              (c) => c !== "amount" && c !== "date"
+            );
+            if ("amount" in sample) others.push("amount");
+            if ("date" in sample) others.push("date");
             sortedColumns = others;
           }
 
-          const sectionTotalKey = Object.keys(section).find(k => k.startsWith('total'));
+          const sectionTotalKey = Object.keys(section).find((k) =>
+            k.startsWith("total")
+          );
           const totalValue = formatAmount(section[sectionTotalKey]);
 
           return (
@@ -116,7 +130,7 @@ const ReportPage = () => {
               <table className="w-full border border-gray-300 mb-2">
                 <thead className="bg-gray-100">
                   <tr>
-                    {sortedColumns.map(col => (
+                    {sortedColumns.map((col) => (
                       <th key={col} className="p-2 text-left capitalize">
                         {col}
                       </th>
@@ -126,13 +140,14 @@ const ReportPage = () => {
                 <tbody>
                   {records.map((rec, idx) => (
                     <tr key={idx} className="border-b">
-                      {sortedColumns.map(col => (
+                      {sortedColumns.map((col) => (
                         <td key={col} className="p-2">
-                          {col === 'date'
-                            ? new Date(rec[col]).toISOString().split('T')[0]
-                            : typeof rec[col] === 'number' || /^\d+(\.\d+)?$/.test(rec[col])
+                          {col === "date"
+                            ? new Date(rec[col]).toISOString().split("T")[0]
+                            : typeof rec[col] === "number" ||
+                              /^\d+(\.\d+)?$/.test(rec[col])
                             ? formatAmount(rec[col])
-                            : rec[col] ?? '-'}
+                            : rec[col] ?? "-"}
                         </td>
                       ))}
                     </tr>
@@ -155,7 +170,21 @@ const ReportPage = () => {
 
   return (
     <div className="p-6 max-w-5xl mx-auto print:p-4">
-      <h1 className="text-3xl font-bold text-center mb-6 print:text-2xl">Revenue Report</h1>
+      <div className="mt-1 flex justify-end gap-4 print:hidden">
+        <button
+          onClick={() => navigate(-1)}
+          className="bg-gray-300 text-gray-800 px-4 rounded hover:bg-gray-400 flex items-center gap-2"
+        >
+          {/* Left Arrow SVG */}
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back
+        </button>
+      </div>
+      <h1 className="text-3xl font-bold text-center mb-6 print:text-2xl">
+        Revenue Report
+      </h1>
 
       <div className="flex flex-wrap justify-center gap-4 items-center mb-6 print:hidden">
         <div>
@@ -180,7 +209,7 @@ const ReportPage = () => {
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
           onClick={fetchReport}
         >
-          {loading ? 'Loading...' : 'Generate Report'}
+          {loading ? "Loading..." : "Generate Report"}
         </button>
 
         {report && (
@@ -202,9 +231,9 @@ const ReportPage = () => {
       </div>
 
       {report && (
-        <div className="mt-4 print:text-sm print:leading-tight">
-          {renderSection('Incomes', report.incomes, true)}
-          {renderSection('Expenses', report.outcomes, false)}
+        <div className="print-area mt-4 print:text-sm print:leading-tight">
+          {renderSection("Incomes", report.incomes, true)}
+          {renderSection("Expenses", report.outcomes, false)}
 
           <div className="text-right mt-8 text-2xl font-extrabold text-green-700 print:text-black">
             Net Profit: {formatAmount(report.netIncome)}

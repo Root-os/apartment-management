@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
+import { useNavigate } from 'react-router-dom';
 
 const GenerateReceiptPage = () => {
     const { state } = useLocation();
@@ -9,6 +10,7 @@ const GenerateReceiptPage = () => {
     const [companyInfo, setCompanyInfo] = useState(null);
     const [loading, setLoading] = useState(true);
     const receiptRef = useRef();
+    const navigate = useNavigate();
 
     // Color space conversion utilities
     const oklchToRgb = (l, c, h) => {
@@ -173,7 +175,20 @@ const GenerateReceiptPage = () => {
     });
 
     return (
-        <div className="max-w-3xl mx-auto my-6 print:max-w-full print:shadow-none print:border-none print:p-0">
+        <div className="print-area max-w-3xl mx-auto my-6 print:max-w-full print:shadow-none print:border-none print:p-0">
+            <div className="mt-1 flex justify-end gap-4 print:hidden">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="bg-gray-300 text-gray-800 px-4 rounded hover:bg-gray-400 flex items-center gap-2"
+                >
+                    {/* Left Arrow SVG */}
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                Back
+                </button>
+            </div>
+           
             <div
                 ref={receiptRef}
                 className="bg-white shadow-lg rounded-lg border border-gray-200 p-0"

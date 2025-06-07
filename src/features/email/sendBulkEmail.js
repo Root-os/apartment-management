@@ -15,7 +15,7 @@ const validationSchema = yup.object().shape({
 });
 
 const SendBulkEmail = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit, formState: { errors }, reset} = useForm({
     resolver: yupResolver(validationSchema)
   });
 
@@ -44,6 +44,7 @@ const SendBulkEmail = () => {
         setModalOpen(true);
         setMessageType('success');
         setMessage('Bulk email sent successfully');
+        reset(); 
       } else {
         // If response structure is not as expected, throw an error
         throw new Error('Unexpected response structure');

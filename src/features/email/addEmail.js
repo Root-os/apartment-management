@@ -16,7 +16,7 @@ const validationSchema = yup.object().shape({
 });
 
 const AddEmail = () => {
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit, formState: { errors }, reset } = useForm({
     resolver: yupResolver(validationSchema)
   });
 
@@ -62,6 +62,7 @@ const AddEmail = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('Email sent successfully');
+      reset(); 
     } catch (err) {
       setModalOpen(true);
       setMessageType('error');

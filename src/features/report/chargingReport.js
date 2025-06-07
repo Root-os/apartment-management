@@ -13,7 +13,7 @@ const ChargingReport = () => {
     carName: '',
     isTenant: false,
     tenantId: '',  
-    chargingStartTime: '',
+    dateRange: '',
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success')
@@ -122,13 +122,17 @@ const ChargingReport = () => {
 
           <div>
             <label htmlFor="chargingStartTime" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Charging Start Time</label>
-            <input
-              type="datetime-local"
-              id="chargingStartTime"
-              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-              value={filterParams.chargingStartTime}
-              onChange={(e) => setFilterParams({ ...filterParams, chargingStartTime: e.target.value })}
-            />
+       <input
+  type="date"
+  id="chargingDate"
+  className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+  onChange={(e) => {
+    const selectedDate = new Date(e.target.value);
+    const start = new Date(Date.UTC(selectedDate.getUTCFullYear(), selectedDate.getUTCMonth(), selectedDate.getUTCDate(), 0, 0, 0)).toISOString();
+    const end = new Date(Date.UTC(selectedDate.getUTCFullYear(), selectedDate.getUTCMonth(), selectedDate.getUTCDate(), 23, 59, 59)).toISOString();
+    setFilterParams({ ...filterParams, dateRange: `${start},${end}` });
+  }}
+/>
           </div>
 
           {/* Tenant Checkbox */}

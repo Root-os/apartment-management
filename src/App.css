@@ -59,3 +59,65 @@
   }
 }
 
+@media print {
+  body {
+    visibility: hidden;
+    background: white;
+  }
+
+  .print-area,
+  .print-area * {
+    visibility: visible !important;
+    color: black !important;
+    font-size: 20px !important; /* Increased from default */
+  }
+
+  .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background-color: white !important;
+    padding: 2rem; /* More padding for spacing */
+  }
+
+  .print-area table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px; /* Increased from 12px */
+  }
+
+  .print-area th,
+  .print-area td {
+    border: 1px solid #000;
+    padding: 10px; /* Increased padding */
+    text-align: left;
+  }
+
+  .print-area .hidden-on-print {
+    display: none !important;
+  }
+
+  .print-area tr {
+    page-break-inside: avoid;
+  }
+   .print-area th:last-child,
+  .print-area td:last-child {
+    display: none !important;
+  }
+   @page {
+    margin-top: 32mm; /* Adjust as needed (e.g., 32mm ≈ 1.25in) */
+    margin-bottom: 20mm;
+    margin-left: 10mm;
+    margin-right: 10mm;
+  }
+
+  /* Optional: Ensure the print-table uses full width and no shadow */
+  #print-table {
+    margin-top: 0 !important;
+    box-shadow: none !important;
+  }
+}
+
+
+

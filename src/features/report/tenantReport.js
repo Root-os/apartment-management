@@ -65,7 +65,7 @@ const TenantReport = () => {
       setModalMessage(message);
       setIsModalOpen(true);
       console.error("Error filtering data:", error);
-      setFilteredData([]); // Reset filteredData to empty array on error
+      setFilteredData([]); 
     } finally {
       setIsLoading(false); // Stop loading
     }

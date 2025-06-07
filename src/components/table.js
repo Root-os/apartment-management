@@ -125,9 +125,6 @@ const TableComponent = ({
           )}
         </div>
       </div>
-    
-  
-
       <div className="flex justify-between items-center mb-4">  
       {showSearch && (
         <div className="mb-4 flex items-center border p-2 rounded-lg">
@@ -149,36 +146,63 @@ const TableComponent = ({
       </div>
       </div>
       {/* Table */}
-      <table className="min-w-full table-auto border-collapse" id="table">
-        <thead>
-          <tr className="border-b bg-base-300 ">
-            {columns.map((column) => (
-              <th
-                key={column.key}
-                className="px-4 py-2 text-left font-medium text-white-700 cursor-pointer"
-                onClick={() => handleSort(column.key)}
-              >
-                {column.label}
-                {sortConfig.key === column.key && (
-                  sortConfig.direction === 'asc' ? <FaSortUp className="inline" /> : <FaSortDown className="inline" />
-                )}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedData.map((row, index) => (
-            <tr key={index} className="border-b">
-              {columns.map((column) => (
-                <td key={column.key} className={`px-4 ${rowPadding}`}>
-                  {column.render ? column.render(row) : row[column.key]}
-                </td>
-              ))}
-            </tr>
+<div className="print-area">
+  <table className="min-w-full table-auto border-collapse print:hidden" id="table">
+    <thead>
+      <tr className="border-b bg-base-300 ">
+        {columns.map((column) => (
+          <th
+            key={column.key}
+            className="px-4 py-2 text-left font-medium text-white-700 cursor-pointer"
+            onClick={() => handleSort(column.key)}
+          >
+            {column.label}
+            {sortConfig.key === column.key && (
+              sortConfig.direction === 'asc' ? <FaSortUp className="inline" /> : <FaSortDown className="inline" />
+            )}
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {paginatedData.map((row, index) => (
+        <tr key={index} className="border-b">
+          {columns.map((column) => (
+            <td key={column.key} className={`px-4 ${rowPadding}`}>
+              {column.render ? column.render(row) : row[column.key]}
+            </td>
           ))}
-        </tbody>
-      </table>
-
+        </tr>
+      ))}
+    </tbody>
+  </table>
+   {/* Print-only table, shows all filtered & sorted data */}
+  <table className="min-w-full table-auto border-collapse hidden print:table" id="print-table">
+    <thead>
+      <tr className="border-b bg-base-300 ">
+        {columns.map((column) => (
+          <th
+            key={column.key}
+            className="px-4 py-2 text-left font-medium text-white-700"
+          >
+            {column.label}
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {sortedData.map((row, index) => (
+        <tr key={index} className="border-b">
+          {columns.map((column) => (
+            <td key={column.key} className={`px-4 ${rowPadding}`}>
+              {column.render ? column.render(row) : row[column.key]}
+            </td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 
       {/* Pagination */}
       <div className="flex justify-between items-center mt-4">

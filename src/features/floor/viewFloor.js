@@ -117,7 +117,7 @@ const FloorManagement = () => {
 
   const columns = [
     { key: 'floorNumber', label: 'Floor Name' },
-    { key: 'totalUnits', label: 'Total Units' },
+    { key: 'noUnits', label: 'Total Units' },
     { key: 'rentedUnits', label: 'Rented Units' },
     { key: 'freeUnits', label: 'Free Units' },
     {
@@ -177,6 +177,15 @@ const FloorManagement = () => {
                 type="text"
                 value={newFloorData.floorNumber}
                 onChange={(e) => setNewFloorData({ ...newFloorData, floorNumber: e.target.value })}
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+             <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Number of Units Name</label>
+              <input
+                type="number"
+                value={newFloorData.noUnits}
+                onChange={(e) => setNewFloorData({ ...newFloorData, noUnits: e.target.value })}
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>

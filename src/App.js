@@ -44,7 +44,6 @@ function App() {
   <Routes>
     {/* Public routes */}
     {/* <Route path="/" element={<Choice />} /> */}
-    
     <Route path="/login" element={<Login />} />
     <Route path="/tenant-login" element={<TenantLogin />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -62,6 +61,7 @@ function App() {
             : <Navigate to="/login" replace />
         ) : (
           <Navigate to="/login" replace />
+          // <Choice />
         )
       }
     />
@@ -76,11 +76,13 @@ function App() {
             : <Navigate to="/login" replace />
         ) : (
           <Navigate to="/login" replace />
+          // <Choice />
         )
       }
     />
   </Routes>
 </Router>
+ 
   );
 }
 

@@ -277,7 +277,11 @@ const ComplaintsPage = () => {
 
   // Columns for the TableComponent
   const columns = [
-    // { label: 'ID', key: 'id' },
+     {
+      label: 'Tenant',
+      key: 'tenant',
+      render: (row) => row.Tenant?.fullName || 'Unknown',
+    },
     {
       label: 'Assigned Employee',
       key: 'assignedEmployeeId',

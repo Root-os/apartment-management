@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import html2pdf from 'html2pdf.js';
+import { useNavigate } from 'react-router-dom';
 
 const LawPrintView = () => {
   const [rules, setRules] = useState([]);
   const [companyInfo, setCompanyInfo] = useState(null);
   const a4Ref = useRef();
+  const navigate = useNavigate();
 
   // Color space conversion utilities
   const oklchToRgb = (l, c, h) => {
@@ -196,12 +198,25 @@ const LawPrintView = () => {
     }
   };
 
-  return (
+  return (<>
+  <div className="mt-1 ml-4 flex justify-start px-20 py-5 gap-4 print:hidden mb-1">
+        <button
+          onClick={() => navigate(-1)}
+          className="bg-gray-300 text-gray-800 px-4 rounded hover:bg-gray-400 flex items-center gap-2"
+        >
+          {/* Left Arrow SVG */}
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back
+        </button>
+      </div>
     <div className="flex flex-col items-center">
+      
       {/* A4 Content */}
       <div
         ref={a4Ref}
-        className="bg-white shadow-lg mt-10 p-10 print:p-0 relative"
+        className="bg-white shadow-lg  p-10 print:p-0 relative"
         style={{
           width: '794px',
           minHeight: '924px',
@@ -273,6 +288,7 @@ const LawPrintView = () => {
         </button>
       </div>
     </div>
+    </>
   );
 };
 

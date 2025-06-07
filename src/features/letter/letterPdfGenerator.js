@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
+import { useNavigate } from 'react-router-dom';
 
 const LetterDetailPage = () => {
   const { state } = useLocation();
@@ -9,6 +10,7 @@ const LetterDetailPage = () => {
   const [companyInfo, setCompanyInfo] = useState(null);
   const [loading, setLoading] = useState(true);
   const letterRef = useRef();
+  const navigate = useNavigate();
 
   // Color space conversion utilities (from GenerateReceiptPage)
   const oklchToRgb = (l, c, h) => {
@@ -207,8 +209,19 @@ const LetterDetailPage = () => {
 
   return (
     <>
-     
-
+        <div className="mt-1 flex justify-end gap-4 print:hidden">
+        <button
+          onClick={() => navigate(-1)}
+          className="bg-gray-300 text-gray-800 px-4 rounded hover:bg-gray-400 flex items-center gap-2"
+        >
+          {/* Left Arrow SVG */}
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back
+        </button>
+      </div>
+      
       {/* Printable area only */}
       <div
         ref={letterRef}

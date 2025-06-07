@@ -81,9 +81,7 @@ const AddFloorUnit = () => {
     setLoading(true);
     setError('');
 
-    try {
-      // Make the POST request
-      const response = await axios.post(
+    try { const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}unit`,
         data
       );
@@ -104,12 +102,17 @@ const AddFloorUnit = () => {
       setVacatedDate('');
       setFloorId('');
       setLoading(false);
-      // window.location.href='/app/view-unit';
+      window.location.href='/app/view-unit';
     } catch (err) {
       setLoading(false);
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Unable to add Unit, try again!');
+
+      if (err.response && err.response.data && err.response.data.error) {
+        setMessage(err.response.data.error);
+      } else {
+        setMessage('Unable to add Unit, try again!');
+      }
     }
   };
 

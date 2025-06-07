@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import TitleCard from '../../components/Cards/TitleCard';
+
 
 const AddBuildingLaw = () => {
   const [description, setDescription] = useState('');
   const [message, setMessage] = useState('');
-  const [status, setStatus] = useState(null); // 'success' | 'error'
+  const [status, setStatus] = useState(null); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,9 +30,8 @@ const AddBuildingLaw = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow-lg rounded-xl">
-      <h2 className="text-2xl font-semibold mb-4 text-gray-800">Add Building Rule</h2>
-
+    <>
+      
       {message && (
         <div
           className={`mb-4 p-3 rounded ${
@@ -40,7 +41,8 @@ const AddBuildingLaw = () => {
           {message}
         </div>
       )}
-
+      
+      <TitleCard title="Add Building Rule" topMargin={'mt-4'}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block text-gray-700 font-medium mb-1">Description</label>
@@ -60,7 +62,9 @@ const AddBuildingLaw = () => {
           Submit
         </button>
       </form>
-    </div>
+      </TitleCard>
+      
+    </>
   );
 };
 
