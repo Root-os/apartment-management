@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
 import { useNavigate } from 'react-router-dom';
+import { HiPrinter, HiShare, HiDownload } from "react-icons/hi";
 
 const LetterDetailPage = () => {
   const { state } = useLocation();
@@ -177,7 +178,7 @@ const LetterDetailPage = () => {
         }).catch((error) => console.error(error));
       }
 
-      const opt = {
+       const opt = {
         margin: 0,
         filename: "letter.pdf",
         image: { type: "jpeg", quality: 0.98 },
@@ -185,10 +186,55 @@ const LetterDetailPage = () => {
           scale: 2,
           letterRendering: true,
           removeContainerWhitespace: true,
-          useCORS: companyInfo?.seal?.includes("http") ? true : false,
+          useCORS: true, // Enable CORS for images
+          onclone: (clonedDoc) => {
+            // Convert oklch colors to rgb
+            const styleSheets = Array.from(
+              clonedDoc.getElementsByTagName("style")
+            );
+            styleSheets.forEach((sheet) => {
+              if (sheet.sheet && sheet.sheet.cssRules) {
+                Array.from(sheet.sheet.cssRules).forEach((rule) => {
+                  if (rule.style && rule.style.cssText) {
+                    rule.style.cssText = rule.style.cssText.replace(
+                      /oklch\(([^)]+)\)/g,
+                      (match, p1) => {
+                        const [l, c, h] = p1
+                          .split(" ")
+                          .map((val) => parseFloat(val));
+                        if (isNaN(l) || isNaN(c) || isNaN(h)) {
+                          console.warn(`Invalid oklch values: ${p1}`);
+                          return "rgb(0,0,0)"; // Fallback color
+                        }
+                        return `rgb(${oklchToRgb(l, c, h).join(",")})`;
+                      }
+                    );
+                  }
+                });
+              }
+            });
+
+            // Ensure images have absolute URLs and CORS attributes
+            const images = clonedDoc.getElementsByTagName("img");
+            Array.from(images).forEach((img) => {
+              if (img.src) {
+                img.crossOrigin = "Anonymous";
+                // Convert relative URLs to absolute if necessary
+                if (!img.src.startsWith("http")) {
+                  const absoluteUrl = new URL(img.src, window.location.origin)
+                    .href;
+                  console.log(
+                    `Converted relative URL ${img.src} to ${absoluteUrl}`
+                  );
+                  img.src = absoluteUrl;
+                }
+              }
+            });
+          },
         },
         jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
       };
+
       html2pdf().set(opt).from(element).save();
     } catch (error) {
       console.error("PDF download failed:", error);
@@ -225,7 +271,7 @@ const LetterDetailPage = () => {
       {/* Printable area only */}
       <div
         ref={letterRef}
-        className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-200 print:shadow-none print:border-none print:p-0 print:rounded-none print:block text-justify leading-7 text-gray-700"
+        className="print-area max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-lg border border-gray-200 print:shadow-none print:border-none print:p-0 print:rounded-none print:block text-justify leading-7 text-gray-700"
       >
         {/* Header */}
         <div className="text-center mb-8">
@@ -250,7 +296,7 @@ const LetterDetailPage = () => {
         {/* Subject */}
         <div className="flex space-x-2 mb-4">
           <p className="font-semibold mb-1">Subject:</p>
-          <p>{letter?.description || "No subject available."}</p>
+          <p>{letter?.LetterType?.name || "No subject available."}</p>
         </div>
 
         {/* Salutation and Body */}
@@ -282,7 +328,7 @@ const LetterDetailPage = () => {
           )}
 
           {/* Footer */}
-          <div className="text-center text-xs text-gray-500 mt-8">
+          <div className="text-center text-xs text-gray-500 mt-8 print-footer">
             <p>Developed by Abyssinia Software Technology</p>
           </div>
         </div>
@@ -292,22 +338,25 @@ const LetterDetailPage = () => {
       <div className="print:hidden">
         <div className="text-center mt-6">
           <button
-            onClick={() => window.print()}
-            className="px-6 py-2 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition duration-300"
-          >
-            Print Letter
+        onClick={() => window.print()}
+      className="px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded hover:bg-blue-700 transition duration-300"
+      title="Print Letter"
+    >
+      <HiPrinter size={20} />
           </button>
           <button
-            onClick={handleShareLetter}
-            className="px-6 py-2 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition duration-300 ml-4"
-          >
-            Share Letter
+         onClick={handleShareLetter}
+      className="px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded hover:bg-blue-700 transition duration-300 ml-2"
+      title="Share Letter"
+    >
+      <HiShare size={20} />
           </button>
           <button
-            onClick={handleDownloadPDF}
-            className="px-6 py-2 bg-gray-700 text-white text-lg font-semibold rounded-lg hover:bg-gray-800 transition duration-300 ml-4"
-          >
-            Download PDF
+          onClick={handleDownloadPDF}
+      className="px-3 py-1 bg-gray-700 text-white text-sm font-semibold rounded hover:bg-gray-800 transition duration-300 ml-2"
+      title="Download PDF"
+    >
+      <HiDownload size={20} />
           </button>
         </div>
       </div>

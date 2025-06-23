@@ -115,10 +115,9 @@ const Dashboard = () => {
     totalUnits: 'Total Units',
     availableUnits: 'Available Units',
     occupiedUnits: 'Occupied Units',
-    underMaintenanceUnits: 'Under Maintenance Units',
     totalFloors: 'Total Floors',
-    availableFloors: 'Available Floors',
-    underMaintenanceFloors: 'Under Maintenance Floors',
+    activeFloors: 'Active Floors',
+    under_constructionFloors: 'Under Construction Floors',
     totalTenants: 'Total Tenants',
     activeTenants: 'Active Tenants',
     inactiveTenants: 'Inactive Tenants',
@@ -270,13 +269,13 @@ const iconMapping = {
             >
               <div className="absolute top-3 left-3 flex items-center space-x-3">
               <div className="flex flex-wrap items-center gap-2 w-full">
-  <div className="flex-shrink-0">
-    {iconMapping[key] || <FaQuestionCircle className="text-white text-5xl" title="Unknown" />}
-  </div>
-  <h3 className="text-base sm:text-xl md:text-2xl font-semibold text-white break-words whitespace-normal">
-    {keyMapping[key] || key}
-  </h3>
-</div>
+              <div className="flex-shrink-0">
+                {iconMapping[key] || <FaQuestionCircle className="text-white text-5xl" title="Unknown" />}
+              </div>
+              <h3 className="text-base sm:text-xl md:text-2xl font-semibold text-white break-words whitespace-normal">
+                {keyMapping[key] || key}
+              </h3>
+              </div>
 
               </div>
               <div className="card-body p-8 mt-12">

@@ -143,7 +143,7 @@ const handleAuditHistoryClick = (item) => {
     { 
       key: 'itemAmount', 
       label: 'Item Amount',
-      render: (row) => Math.floor(row.itemAmount)
+      render: (row) => Math.round(row.itemAmount)
     },
     {
       key: 'expirationDate',

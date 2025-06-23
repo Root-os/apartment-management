@@ -80,7 +80,23 @@ const UnitStatusReport = () => {
       .innerRadius(radius * 0.3)
       .outerRadius(radius * 0.8);
 
-    svg
+      
+    const tooltip = d3
+      .select("body")
+      .append("div")
+      .attr("class", "d3-tooltip")
+      .style("position", "absolute")
+      .style("background", "rgba(0, 0, 0, 0.7)")
+      .style("color", "#fff")
+      .style("padding", "8px 12px")
+      .style("border-radius", "4px")
+      .style("pointer-events", "none")
+      .style("font-size", "14px")
+      .style("visibility", "hidden")
+      .style("z-index", "1000");
+
+
+      svg
       .selectAll("path")
       .data(pie(dataset))
       .enter()
@@ -89,7 +105,23 @@ const UnitStatusReport = () => {
       .attr("fill", (d) => d.data.color)
       .attr("stroke", "#fff")
       .attr("stroke-width", 2)
-      .style("filter", "drop-shadow(2px 2px 4px rgba(0,0,0,0.3))");
+      .style("filter", "drop-shadow(2px 2px 4px rgba(0,0,0,0.3))")
+    .on("mouseover touchstart", (event, d) => {
+      event.preventDefault();
+      const value = d.data.value === 0.001 ? 0 : d.data.value;
+      tooltip
+        .style("visibility", "visible")
+        .text(`${d.data.label.split(":")[0]} Units: ${value}`);
+    })
+    .on("mousemove touchmove", (event) => {
+      const touch = event.touches ? event.touches[0] : event;
+      tooltip
+        .style("top", `${touch.pageY - 40}px`)
+        .style("left", `${touch.pageX + 10}px`);
+    })
+    .on("mouseout touchend touchcancel", () => {
+      tooltip.style("visibility", "hidden");
+    });
 
     svg
       .selectAll("text")
@@ -146,6 +178,9 @@ const UnitStatusReport = () => {
         const value = d.value === 0.001 ? 0 : d.value;
         return `${d.label.split(":")[0]}: ${value}`;
       });
+      return () => {
+        d3.select(".d3-tooltip").remove();
+      };
   }, [data]);
 
   return (

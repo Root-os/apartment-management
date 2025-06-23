@@ -70,7 +70,7 @@ const ReturnReport = () => {
     { key: 'Item.itemName', label: 'Item', render: (row) => row.Item.itemName },
     { key: 'quantity', label: 'Quantity' },
     { key: 'reason', label: 'Reason' },
-    { key: 'returnDate', label: 'Return Date', render: (data) => new Date(data.returnDate).toLocaleString() },
+    { key: 'returnDate', label: 'Return Date', render: (data) => new Date(data.returnDate).toISOString().split('T')[0]},
   ];
 
   return (

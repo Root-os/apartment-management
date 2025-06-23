@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TableComponent from '../../../components/table'
 import LoadingComponent from '../../../components/loading';
+import { useNavigate } from "react-router-dom";
 
 const TenantInventoryTable = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const navigate = useNavigate();
   // Fetch data from the API
   useEffect(() => {
     const fetchData = async () => {
@@ -34,21 +35,24 @@ const TenantInventoryTable = () => {
   // Define columns for TableComponent
   const columns = [
     { label: 'Type', key: 'type' },
+    { label: 'Notes', key: 'notes' },
     {
-      label: 'Items',
-      key: 'items',
+      label: 'Actions',
+      key: 'actions',
       render: (row) => (
-        <ul>
-          {row.items.map((item, index) => (
-            <li key={index}>
-              {item.name} - {item.quantity} (Condition: {item.condition})
-            </li>
-          ))}
-        </ul>
+        <div className="flex space-x-2">
+          <button
+           onClick={() => navigate(`/app/see-my-items`)}
+            className="px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-400"
+            disabled={loading}
+          >
+           My Items
+          </button>
+         
+        
+        </div>
       ),
     },
-    // { label: 'Checked By', key: 'checkedBy' },
-    { label: 'Notes', key: 'notes' },
   ];
 
   if (loading) {

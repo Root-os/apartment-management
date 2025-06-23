@@ -49,13 +49,6 @@ const PaymentReport = () => {
       // Ensure the response is an array, otherwise set it to an empty array
       const data = Array.isArray(response.data) ? response.data : [];
       setPaymentData(data);
-
-      // If no data found, show modal
-      if (data.length === 0) {
-        setMessage("No payment data found with the given filters.");
-        setModalType("error");
-        setIsModalOpen(true);
-      }
     } catch (error) {
       const message =
         error.response?.status === 404
@@ -83,7 +76,7 @@ const PaymentReport = () => {
     {
       key: "paymentDate",
       label: "Payment Date",
-      render: (data) => new Date(data.paymentDate).toLocaleString(),
+      render: (data) => new Date(data.paymentDate).toISOString().split('T')[0],
     },
     {
       label: "Actions",
@@ -153,8 +146,9 @@ const PaymentReport = () => {
               }
             >
               <option value="">Select Status</option>
-              <option value="Paid">Paid</option>
-              <option value="Unpaid">Unpaid</option>
+              <option value="pending">Pending</option>
+              <option value="partial">Partial</option>
+              <option value="complete">Complete</option>
             </select>
           </div>
 
@@ -176,7 +170,6 @@ const PaymentReport = () => {
               }
             />
           </div>
-
           {/* End Date Picker */}
           <div>
             <label
@@ -195,7 +188,6 @@ const PaymentReport = () => {
               }
             />
           </div>
-
           {/* Filter Button at the Bottom */}
           <div className="col-span-full flex justify-end mt-4">
             <button
@@ -207,11 +199,11 @@ const PaymentReport = () => {
           </div>
         </form>
       </div>
-
       {/* Display the table or loading indicator based on the page loading state */}
       {pageLoading ? (
         <LoadingComponent />
       ) : (
+        <>
         <TableComponent
           title="Filtered Payment Report"
           data={paymentData || []} // Ensure the data is always an array
@@ -220,6 +212,12 @@ const PaymentReport = () => {
           showSearch={true}
           exportable={true}
         />
+         {paymentData && paymentData.length === 0 && (
+            <div className="text-center text-gray-500 mt-4">
+              No text is available for a given filter
+            </div>
+          )}
+        </>
       )}
 
       {/* Modal for displaying success or error message */}
@@ -267,17 +265,6 @@ const PaymentReport = () => {
               <p>
                 <strong>Vendor Address:</strong>{" "}
                 {selectedPayment.Vendor.address}
-              </p>
-              <p>
-                <strong>Contract Terms:</strong>{" "}
-                <a
-                  href={`${process.env.REACT_APP_BASE_URL}${selectedPayment?.Vendor?.contractTerms}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 underline"
-                >
-                  View Contract
-                </a>
               </p>
             </div>
             <div className="flex justify-end">

@@ -122,8 +122,22 @@ const AllOrdersPage = () => {
     { key: 'Tenant.fullName', label: 'Full Name',render:(row)=>row.Tenant?.fullName ||'N/A' },
 
     { key: 'orderDate', label: 'Order Date',render:(row) => new Date(row.orderDate).toISOString().split('T')[0] },
-    { key: 'amount', label: 'Amount' },
-    { key: 'totalprice', label: 'Total Price' },
+    { key: 'amount', label: 'Amount', 
+      render: (row) => {
+        if (row.amount) {
+          return Math.round(row.amount);
+        }
+        return 'N/A';
+      }
+     },
+    { key: 'totalprice', label: 'Total Price'
+      // render: (row) => {
+      //   if (row.totalprice) {
+      //     return Math.round(row.totalprice);
+      //   }
+      //   return 'N/A';
+      // }
+     },
     { key: 'status', label: 'Status' },
     {
       label: 'Actions',

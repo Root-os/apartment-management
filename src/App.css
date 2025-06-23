@@ -101,6 +101,7 @@
   .print-area tr {
     page-break-inside: avoid;
   }
+
    .print-area th:last-child,
   .print-area td:last-child {
     display: none !important;
@@ -116,6 +117,25 @@
   #print-table {
     margin-top: 0 !important;
     box-shadow: none !important;
+  }
+}
+@media print {
+  .print-area,
+  .print-area * {
+    visibility: visible !important;
+    color: black !important;
+    font-size: 20px !important;
+  }
+
+  /* Place this AFTER the above rule */
+  .print-area .print-footer,
+  .print-area .print-footer * {
+    color: #6b7280 !important;
+    font-size: 0.85rem !important;
+    text-align: center !important;
+    margin-top: 4rem !important;
+    visibility: visible !important;
+    display: block !important;
   }
 }
 

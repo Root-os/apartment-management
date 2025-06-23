@@ -34,9 +34,10 @@ const LowStockAlert = () => {
             {items.map((item) => (
               <li key={item.id} className="py-4">
                 <div className="text-lg font-medium">{item.itemName}</div>
-                <div className="text-sm text-gray-500 dark:text-gray-300">
-                  Amount: {item.itemAmount} {item.unit} (Min: {item.min_amount})
-                </div>
+              <div className="text-sm text-gray-500 dark:text-gray-300">
+                Amount: {Math.round(item.itemAmount)} {item.unit} (Min: {Math.round(item.min_amount)})
+              </div>
+
               </li>
             ))}
           </ul>

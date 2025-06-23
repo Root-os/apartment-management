@@ -72,7 +72,6 @@ const ItemAssignmentReport = () => {
       setIsLoading(false);
     }
   };
-
   // Define columns for the table
   const columns = [
     { key: 'itemName', label: 'Item Name' },
@@ -93,7 +92,7 @@ const ItemAssignmentReport = () => {
         {/* Filter Form */}
         <form onSubmit={handleFilterSubmit} className="grid grid-cols-4 gap-4">
           {/* Assign Type */}
-          <div>
+          {/* <div>
             <label htmlFor="assignType" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Assignment Type
             </label>
@@ -107,7 +106,7 @@ const ItemAssignmentReport = () => {
               <option value="user">User</option>
               <option value="unit">Unit</option>
             </select>
-          </div>
+          </div> */}
 
           {/* Assign Date */}
           <div>
@@ -126,7 +125,7 @@ const ItemAssignmentReport = () => {
           {/* Item ID (Dynamic dropdown populated from API) */}
           <div>
             <label htmlFor="itemId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Item Name (Optional)
+              Item Name
             </label>
             <select
               id="itemId"
@@ -160,16 +159,22 @@ const ItemAssignmentReport = () => {
       {loading ? (
         <LoadingComponent />
       ) : (
-        <TableComponent
-          title="Filtered Item Assignment Report"
-          data={itemAssignments}
-          columns={columns}
-          rowsPerPageOptions={[5, 10, 15]}
-          showSearch={true}
-          exportable={true}
-        />
+        <>
+          <TableComponent
+            title="Filtered Item Assignment Report"
+            data={itemAssignments}
+            columns={columns}
+            rowsPerPageOptions={[5, 10, 15]}
+            showSearch={true}
+            exportable={true}
+          />
+          {itemAssignments.length === 0 && (
+            <div className="text-center text-gray-500 mt-4">
+              No data is available for the selected filter.
+            </div>
+          )}
+        </>
       )}
-
       {/* Modal for displaying error message */}
       {isModalOpen && (
         <Modal

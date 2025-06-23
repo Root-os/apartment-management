@@ -31,6 +31,7 @@ const TenantList = () => {
     unitId: "",
     floorId: "",
     advance: "",
+    amount:"",
     tin: "",
     document: "",
     status: "",
@@ -92,31 +93,46 @@ const TenantList = () => {
   };
 
   // Edit modal: Set initial values when edit button is clicked
-  const handleEditClick = (tenant) => {
-    setSelectedTenant(tenant);
-    setEditData({
-      fullName: tenant.fullName,
-      phoneNumber: tenant.phoneNumber,
-      email: tenant.email,
-      nationalId: tenant.nationalId,
-      leaseStartDate: tenant.leaseStartDate,
-      leaseEndDate: tenant.leaseEndDate,
-      paymentStatus: tenant.paymentStatus,
-      additionalNotes: tenant.additionalNotes,
-      unitId:  tenant.unitId ? tenant.unitId.toString() : "",
-      floorId: tenant.floorId,
-      advance: tenant.advance,
-      tin: tenant.tin,
-      document: tenant.document,
-      status: tenant.status,
-      description: tenant.description,
-      carName: tenant.carName || null, // Populate carName if available
-      carPlate: tenant.carPlate || null, // Populate carPlate if available
-      color: tenant.color || null, // Populate color if available
+ const handleEditClick = (tenant) => {
+  setSelectedTenant(tenant);
+  setEditData({
+    fullName: tenant.fullName || '',
+    phoneNumber: tenant.phoneNumber || '',
+    email: tenant.email || '',
+    nationalId: tenant.nationalId || '',
+    leaseStartDate: tenant.leaseStartDate || '',
+    leaseEndDate: tenant.leaseEndDate || '',
+    paymentStatus: tenant.paymentStatus || '',
+    additionalNotes: tenant.additionalNotes || '',
+    unitId: tenant.unitId ? tenant.unitId.toString() : '',
+    floorId: tenant.floorId ? tenant.floorId.toString() : '',
+    advance: tenant.advance || '',
+    amount: tenant.amount || '',
+    tin: tenant.tin || '',
+    document: tenant.document || '',
+    status: tenant.status || '',
+    description: tenant.description || '',
+  });
+
+  if (tenant.floorId) {
+    fetchFreeUnits(tenant.floorId).then(() => {
+      if (tenant.unitId && tenant.Unit && tenant.Unit.id) {
+        setUnits((prevUnits) => {
+          console.log('Current units:', prevUnits); // Debug units
+          console.log('Tenant unit:', tenant.Unit); // Debug tenant.Unit
+          const unitExists = prevUnits.some(
+            (unit) => unit.id && unit.id.toString() === tenant.unitId.toString()
+          );
+          if (!unitExists) {
+            return [...prevUnits, tenant.Unit];
+          }
+          return prevUnits;
+        });
+      }
     });
-    fetchFreeUnits(tenant.floorId,tenant.unitId);
-    setIsEditModalOpen(true);
-  };
+  }
+  setIsEditModalOpen(true);
+};
 
   // Delete modal: Set selected tenant for deletion
   const handleDeleteClick = (tenant) => {
@@ -138,22 +154,58 @@ const TenantList = () => {
 
   // Submit edited data to the API
   const handleEditSubmit = async () => {
+    if (!editData.floorId) {
+      setModal({
+        isOpen: true,
+        messageType: "error",
+        message: "Please select a floor.",
+      });
+      return;
+    }
+    if (!editData.unitId) {
+      setModal({
+        isOpen: true,
+        messageType: "error",
+        message: "Please select a unit.",
+      });
+      return;
+    }
+
     try {
       setIsSaving(true);
       const formData = new FormData();
-      
-      // Ensure unitId is sent as a number if present
+
+      // Prepare data, exclude car-related fields
       const dataToSend = {
-        ...editData,
-        unitId: editData.unitId ? Number(editData.unitId) : "",
+        fullName: editData.fullName,
+        phoneNumber: editData.phoneNumber,
+        email: editData.email,
+        nationalId: editData.nationalId,
+        leaseStartDate: editData.leaseStartDate,
+        leaseEndDate: editData.leaseEndDate,
+        paymentStatus: editData.paymentStatus,
+        additionalNotes: editData.additionalNotes,
+        unitId: editData.unitId ? Number(editData.unitId) : null,
+        floorId: editData.floorId ? Number(editData.floorId) : null,
+        advance: editData.advance,
+        amount: editData.amount,
+        tin: editData.tin,
+        status: editData.status,
+        description: editData.description,
+        document: editData.document,
       };
 
-      console.log("Preparing form data for submission:", dataToSend);
+      // Append fields to FormData
       Object.keys(dataToSend).forEach((key) => {
-        formData.append(key, dataToSend[key]);
+        if (key === "document" && dataToSend[key] instanceof File) {
+          formData.append(key, dataToSend[key]);
+        } else if (dataToSend[key] !== null && dataToSend[key] !== undefined) {
+          formData.append(key, dataToSend[key]);
+        }
       });
 
-      console.log("Submitting form data:", formData);
+      console.log("Submitting form data:", [...formData.entries()]); // Debug FormData
+
       const result = await axios.put(
         `${process.env.REACT_APP_BASE_URL}tenant/${selectedTenant.id}`,
         formData,
@@ -164,16 +216,13 @@ const TenantList = () => {
         }
       );
       console.log("API response:", result.data);
-      console.log("Tenant updated successfully:", dataToSend);
 
-      // Update tenant list with new data
-      setTenants(
-        tenants.map((tenant) =>
-          tenant.id === selectedTenant.id
-            ? { ...tenant, ...editData, unitId: dataToSend.unitId }
-            : tenant
-        )
+      // Refetch tenants to ensure data is up-to-date
+      const tenantResponse = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}tenant`
       );
+      setTenants(tenantResponse.data);
+
       setIsEditModalOpen(false);
       setModal({
         isOpen: true,
@@ -181,10 +230,13 @@ const TenantList = () => {
         message: "Tenant updated successfully.",
       });
     } catch (err) {
+      console.error("Error updating tenant:", err.response?.data || err);
       setModal({
         isOpen: true,
         messageType: "error",
-        message: "An error occurred while updating the tenant data.",
+        message:
+          err.response?.data?.error ||
+          "An error occurred while updating the tenant data.",
       });
     } finally {
       setIsSaving(false);
@@ -260,12 +312,12 @@ const TenantList = () => {
               key: "phoneNumber",
             },
             {
-              label: "Advance",
-              key: "advance",
-            },
-            {
               label: "rent",
               key: "amount",
+            },
+            {
+              label: "Advance",
+              key: "advance",
             },
             {
               label: "Unit Number",
@@ -413,6 +465,34 @@ const TenantList = () => {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">
+                Rent Amount
+              </label>
+              <input
+                type="text"
+                value={editData.amount}
+                onChange={(e) =>
+                  setEditData({ ...editData, amount: e.target.value })
+                }
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">
+                Advance Payment
+              </label>
+              <input
+                type="text"
+                value={editData.advance}
+                onChange={(e) =>
+                  setEditData({ ...editData, advance: e.target.value })
+                }
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Payment Status
@@ -469,12 +549,13 @@ const TenantList = () => {
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Unit</label>
               <select
-                value={editData.unitId}
+                value={editData.unitId || ""}
                 onChange={(e) =>
                   setEditData({ ...editData, unitId: e.target.value })
                 }
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               >
+                <option value="">Select a unit</option>
                 {units.map((unit) => (
                   <option key={unit.id} value={unit.id.toString()}>
                     {unit.unitNumber}
@@ -620,6 +701,10 @@ const TenantList = () => {
               <p className="text-sm">{selectedTenant.paymentStatus}</p>
             </div>
             <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Rent Amount</label>
+              <p className="text-sm">{selectedTenant.amount || "N/A"}</p>
+            </div>
+             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Advance</label>
               <p className="text-sm">{selectedTenant.advance || "N/A"}</p>
             </div>

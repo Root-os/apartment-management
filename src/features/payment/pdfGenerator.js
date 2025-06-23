@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
 import { useNavigate } from 'react-router-dom';
+import { HiPrinter, HiShare, HiDownload } from "react-icons/hi";
 
 const GenerateReceiptPage = () => {
     const { state } = useLocation();
@@ -139,24 +140,62 @@ const GenerateReceiptPage = () => {
     const handleDownloadPDF = () => {
         try {
             const element = receiptRef.current;
-            const opt = {
-                margin: 0,
-                filename: "receipt.pdf",
-                image: { 
-                    type: "jpeg", 
-                    quality: 0.98 
-                },
-                html2canvas: { 
-                    scale: 2,
-                    letterRendering: true,
-                    removeContainerWhitespace: true
-                },
-                jsPDF: { 
-                    unit: "pt", 
-                    format: "a4", 
-                    orientation: "portrait" 
+           const opt = {
+        margin: 0,
+        filename: "payment-reciept.pdf",
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          letterRendering: true,
+          removeContainerWhitespace: true,
+          useCORS: true, // Enable CORS for images
+          onclone: (clonedDoc) => {
+            // Convert oklch colors to rgb
+            const styleSheets = Array.from(
+              clonedDoc.getElementsByTagName("style")
+            );
+            styleSheets.forEach((sheet) => {
+              if (sheet.sheet && sheet.sheet.cssRules) {
+                Array.from(sheet.sheet.cssRules).forEach((rule) => {
+                  if (rule.style && rule.style.cssText) {
+                    rule.style.cssText = rule.style.cssText.replace(
+                      /oklch\(([^)]+)\)/g,
+                      (match, p1) => {
+                        const [l, c, h] = p1
+                          .split(" ")
+                          .map((val) => parseFloat(val));
+                        if (isNaN(l) || isNaN(c) || isNaN(h)) {
+                          console.warn(`Invalid oklch values: ${p1}`);
+                          return "rgb(0,0,0)"; // Fallback color
+                        }
+                        return `rgb(${oklchToRgb(l, c, h).join(",")})`;
+                      }
+                    );
+                  }
+                });
+              }
+            });
+
+            // Ensure images have absolute URLs and CORS attributes
+            const images = clonedDoc.getElementsByTagName("img");
+            Array.from(images).forEach((img) => {
+              if (img.src) {
+                img.crossOrigin = "Anonymous";
+                // Convert relative URLs to absolute if necessary
+                if (!img.src.startsWith("http")) {
+                  const absoluteUrl = new URL(img.src, window.location.origin)
+                    .href;
+                  console.log(
+                    `Converted relative URL ${img.src} to ${absoluteUrl}`
+                  );
+                  img.src = absoluteUrl;
                 }
-            };
+              }
+            });
+          },
+        },
+        jsPDF: { unit: "pt", format: "a4", orientation: "portrait" },
+      };
             html2pdf().set(opt).from(element).save();
         } catch (error) {
             console.error('PDF download failed:', error);
@@ -254,25 +293,34 @@ const GenerateReceiptPage = () => {
                 </div>
 
                 {/* Footer */}
-                <div className="text-center text-xs text-gray-500 mb-4">
-                    <p>Developed by Abyssinia Software Technology</p>
-                </div>
+            <div className="text-center text-xs text-gray-500 mt-8 print-footer">
+                <p>Developed by Abyssinia Software Technology</p>
+            </div>
             </div>
 
             {/* Buttons */}
-            <div className="mt-6 flex justify-center gap-4 print:hidden">
+            <div className="mt-6 flex justify-center gap-1 print:hidden">
+                <button
+                    onClick={() => window.print()}
+                    className="px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded hover:bg-blue-700 transition duration-300"
+                    title="Print Letter"
+               >
+                    <HiPrinter size={20} />
+                        </button>
                 <button
                     onClick={handleShareReceipt}
-                    className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                    className="px-3 py-1 bg-blue-600 text-white text-sm font-semibold rounded hover:bg-blue-700 transition duration-300 ml-2"
+                    title="Share Letter"
                 >
-                    Share
+                    <HiShare size={20} />
                 </button>
                 <button
                     onClick={handleDownloadPDF}
-                    className="px-4 py-2 bg-gray-700 text-white text-sm rounded hover:bg-gray-800"
+                    className="px-3 py-1 bg-gray-700 text-white text-sm font-semibold rounded hover:bg-gray-800 transition duration-300 ml-2"
+                    title="Download PDF"
                 >
-                    Download PDF
-                </button>
+                    <HiDownload size={20} />
+                 </button>
             </div>
         </div>
     );

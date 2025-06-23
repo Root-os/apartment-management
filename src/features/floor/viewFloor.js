@@ -102,18 +102,17 @@ const FloorManagement = () => {
   };
 
   // Detail floor
-  const handleDetailClick = (floor) => {
-    axios.get(`${process.env.REACT_APP_BASE_URL}floor/${floor.id}`)
-      .then(response => {
-        setFloorDetails(response.data);
-        setIsDetailModalOpen(true);
-      })
-      .catch(error => {
-        console.error("Error fetching floor details:", error);
-      })
-      .finally(() => {
+const handleDetailClick = (floor) => {
+  axios.get(`${process.env.REACT_APP_BASE_URL}floor/${floor.id}`)
+    .then(response => {
+      setFloorDetails({
+        ...floor,             
+        ...response.data      
       });
-  };
+      setIsDetailModalOpen(true);
+    })
+    .catch(error => console.error("Error fetching floor details:", error));
+};
 
   const columns = [
     { key: 'floorNumber', label: 'Floor Name' },
@@ -228,50 +227,77 @@ const FloorManagement = () => {
 
       {/* Detail Modal */}
       {isDetailModalOpen && floorDetails && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-scroll">
-      <h2 className="text-xl mb-4">Free Units of the Floor</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-scroll">
+            
+            {/* Floor Summary */}
+            <h2 className="text-xl mb-2">Floor Detail</h2>
+            <p className="text-sm text-gray-700 mb-4">
+              <strong>Name:</strong> {floorDetails.floorNumber} &nbsp;|&nbsp;
+              <strong>Status:</strong>{" "}
+              <span className={`font-semibold ${
+                floorDetails.status === 'active'
+                  ? 'text-green-600'
+                  : floorDetails.status === 'inActive'
+                  ? 'text-red-600'
+                  : floorDetails.status === 'under_construction'
+                  ? 'text-yellow-600'
+                  : 'text-gray-600'
+              }`}>
+                {floorDetails.status || "Not specified"}
+              </span> &nbsp;|&nbsp;
+              <strong>Total Slots:</strong> {floorDetails.noUnits} &nbsp;|&nbsp;
+              <strong>Created:</strong> {floorDetails.totalUnits} &nbsp;|&nbsp;
+              <strong>Rented:</strong> {floorDetails.rentedUnits} &nbsp;|&nbsp;
+              <strong>Free:</strong> {
+                Array.isArray(floorDetails.freeUnits)
+                  ? floorDetails.freeUnits.length
+                  : floorDetails.freeUnits || 0
+              }
+            </p>
 
-      {/* Check if there are no free units */}
-      {floorDetails.freeUnits && floorDetails.freeUnits.length > 0 ? (
-        <div className="mb-4">
-          <ul>
-            {floorDetails.freeUnits.map(unit => (
-              <li key={unit.id}>
-                <strong className="text-blue-700">Unit Number:</strong> {unit.unitNumber}<br />
-                <strong>Size:</strong> {unit.size} sq ft<br />
-                <strong>Status:</strong> {unit.status}<br />
-                <strong>Available Equipments:</strong>
-                <ul>
-                  {JSON.parse(unit.availableEquipments).map((equipment, index) => (
-                    <li key={index}>{equipment}</li>
-                  ))}
-                </ul>
-                <strong>Problems:</strong>
-                <ul>
-                  {JSON.parse(unit.problems).map((problem, index) => (
-                    <li key={index}>{problem}</li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : (
-        // Message when no free units are available
-        <div className="text-gray-500 text-center">
-          <p>No free units available for this floor.</p>
+            {/* Free Unit Details */}
+            <h2 className="text-xl mb-4">Free Units of the Floor</h2>
+            {Array.isArray(floorDetails.freeUnits) && floorDetails.freeUnits.length > 0 ? (
+              <ul className="space-y-3">
+                {floorDetails.freeUnits.map(unit => (
+                  <li key={unit.id} className="bg-gray-100 p-3 rounded">
+                    <strong className="text-blue-700">Unit Number:</strong> {unit.unitNumber}<br />
+                    <strong>Size:</strong> {unit.size} sq ft<br />
+                    <strong>Status:</strong> {unit.status}<br />
+                    <strong>Available Equipments:</strong>
+                    <ul className="list-disc ml-5">
+                      {Array.isArray(unit.availableEquipments)
+                        ? unit.availableEquipments.map((eq, i) => <li key={i}>{eq}</li>)
+                        : JSON.parse(unit.availableEquipments || '[]').map((eq, i) => <li key={i}>{eq}</li>)
+                      }
+                    </ul>
+                    <strong>Problems:</strong>
+                    <ul className="list-disc ml-5">
+                      {Array.isArray(unit.problems)
+                        ? unit.problems.map((p, i) => <li key={i}>{p}</li>)
+                        : JSON.parse(unit.problems || '[]').map((p, i) => <li key={i}>{p}</li>)
+                      }
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="text-gray-500 text-center">
+                <p>No free units available for this floor.</p>
+              </div>
+            )}
+
+            {/* Close Button */}
+            <div className="flex justify-end mt-4">
+              <button onClick={() => setIsDetailModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
-      <div className="flex justify-between mt-4">
-        <button onClick={() => setIsDetailModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

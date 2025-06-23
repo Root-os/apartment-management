@@ -5,44 +5,50 @@ import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 
 const ChargingReport = () => {
-  const [chargingData, setChargingData] = useState([]); 
+  const [chargingData, setChargingData] = useState([]);
   const [tenants, setTenants] = useState([]);
   const [carList, setCarList] = useState([]);
   const [filterParams, setFilterParams] = useState({
     carPlate: '',
     carName: '',
     isTenant: false,
-    tenantId: '',  
+    tenantId: '',
     dateRange: '',
   });
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [messageType, setMessageType] = useState('success')
+  const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    
-      const fetchTenants = async () => {
-        try {
-          const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
-          setTenants(response.data);
-        } catch (error) {
-          console.error("Error fetching tenants:", error);
-        }
-      };
+    const fetchTenants = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
+        setTenants(response.data);
+      } catch (error) {
+        console.error('Error fetching tenants:', error);
+        setMessage('Error fetching tenants. Please try again.');
+        setMessageType('error');
+        setIsModalOpen(true);
+      }
+    };
 
     const fetchCarList = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}charging`);
-        setCarList(response.data);  
+        setCarList(response.data);
       } catch (error) {
         console.error('Error fetching car list:', error);
-      }finally {setLoading(false);}
+        setMessage('Error fetching car list. Please try again.');
+        setMessageType('error');
+        setIsModalOpen(true);
+      }
     };
 
-    fetchTenants();
-    fetchCarList();
+    Promise.all([fetchTenants(), fetchCarList()]).finally(() => setLoading(false));
   }, []);
 
   // Handle filter submit
@@ -50,142 +56,193 @@ const ChargingReport = () => {
     e.preventDefault();
     setIsLoading(true);
 
+    // Validate date range
+    if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
+      setMessage('End date must be after start date.');
+      setMessageType('error');
+      setIsModalOpen(true);
+      setIsLoading(false);
+      return;
+    }
+
+    // Format dateRange as "start,end" in ISO 8601
+    let dateRange = '';
+    if (startDate && endDate) {
+      const start = new Date(startDate).toISOString();
+      const end = new Date(new Date(endDate).setHours(23, 59, 59, 999)).toISOString();
+      dateRange = `${start},${end}`;
+    }
+
+    const params = { ...filterParams, dateRange };
+
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}charging/report`, filterParams);
-
-      // Log response data for debugging
-      console.log('API response:', response.data);
-
-      // Ensure the response is an array, otherwise set it to an empty array
+      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}charging/report`, params);
       const data = Array.isArray(response.data.data) ? response.data.data : [];
       setChargingData(data);
+     
     } catch (error) {
-      const message = error.response?.status === 404
-        ? 'No charging data found with the given filters.'
-        : 'Error filtering data. Please try again.';
-      setMessage(message);
-      setIsModalOpen(true);
+      const message =
+        error.response?.status === 404
+          ? 'No charging data found with the given filters.'
+          : 'Error filtering data. Please try again.';
+   
     } finally {
       setIsLoading(false);
     }
   };
 
-  const columns = [
-    { key: 'carPlate', label: 'Car Plate' },
-    { key: 'carName', label: 'Car Name' },
-    { key: 'chargingStartTime', label: 'Charging Start Time', render: (data) => new Date(data.chargingStartTime).toLocaleString() },
-    { key: 'status', label: 'Status' },
-    { key: 'chargingCost', label: 'Charging Cost' },
-    { Key: 'tenantId', label: 'Tenant Id', render: (data) => data.Tenant ? data.Tenant.FullName : 'Not a Tenant'}
+ const columns = [
+  { key: 'carPlate', label: 'Car Plate' },
+  { key: 'carName', label: 'Car Name' },
+  {
+    key: 'chargingStartTime',
+    label: 'Charging Start Time',
+    render: (data) => new Date(data.chargingStartTime).toLocaleString(),
+  },
+  { key: 'status', label: 'Status' },
+  { key: 'chargingCost', label: 'Charging Cost' },
+  {
+    key: 'name',
+    label: 'Name',
+    render: (data) => {
+      if (data.isTenant) {
+        return data.Tenant?.FullName || 'Unknown Tenant';
+      } else {
+        return data.driverName || 'Unknown Driver';
+      }
+    },
+  },
+];
 
-  ];
 
   return (
-    <div>
-      <div className="container mx-auto p-4">
-        {/* Filter form */}
-        <form onSubmit={handleFilterSubmit} className="grid grid-cols-4 gap-4">
-          
+    <div className="container mx-auto p-4">
+      {/* Filter form */}
+      <form onSubmit={handleFilterSubmit} className="grid grid-cols-4 gap-4">
+        <div>
+          <label htmlFor="carPlate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Car Plate
+          </label>
+          <select
+            id="carPlate"
+            className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+            value={filterParams.carPlate}
+            onChange={(e) => setFilterParams({ ...filterParams, carPlate: e.target.value })}
+          >
+            <option value="">Select Car Plate</option>
+            {carList.map((car) => (
+              <option key={car.id} value={car.carPlate}>
+                {car.carPlate}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="carName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Car Name
+          </label>
+          <select
+            id="carName"
+            className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+            value={filterParams.carName}
+            onChange={(e) => setFilterParams({ ...filterParams, carName: e.target.value })}
+          >
+            <option value="">Select Car Name</option>
+            {carList.map((car) => (
+              <option key={car.id} value={car.carName}>
+                {car.carName}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            Start Date
+          </label>
+          <input
+            type="date"
+            id="startDate"
+            className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+          />
+        </div>
+
+        <div>
+          <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            End Date
+          </label>
+          <input
+            type="date"
+            id="endDate"
+            className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+          />
+        </div>
+
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id="isTenant"
+            checked={filterParams.isTenant}
+            onChange={(e) => setFilterParams({ ...filterParams, isTenant: e.target.checked })}
+            className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+          />
+          <label htmlFor="isTenant" className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            Is Tenant?
+          </label>
+        </div>
+
+        {filterParams.isTenant && (
           <div>
-            <label htmlFor="carPlate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Car Plate</label>
+            <label htmlFor="tenantId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Tenant
+            </label>
             <select
-              id="carPlate"
+              id="tenantId"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-              value={filterParams.carPlate}
-              onChange={(e) => setFilterParams({ ...filterParams, carPlate: e.target.value })}
+              value={filterParams.tenantId}
+              onChange={(e) => setFilterParams({ ...filterParams, tenantId: e.target.value })}
             >
-              <option value="">Select Car Plate</option>
-              {carList.map((car) => (
-                <option key={car.id} value={car.carPlate}>
-                  {car.carPlate}
+              <option value="">Select Tenant</option>
+              {tenants.map((tenant) => (
+                <option key={tenant.id} value={tenant.id}>
+                  {tenant.fullName}
                 </option>
               ))}
             </select>
           </div>
+        )}
 
-          <div>
-            <label htmlFor="carName" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Car Name</label>
-            <select
-              id="carName"
-              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-              value={filterParams.carName}
-              onChange={(e) => setFilterParams({ ...filterParams, carName: e.target.value })}
-            >
-              <option value="">Select Car Name</option>
-              {carList.map((car) => (
-                <option key={car.id} value={car.carName}>
-                  {car.carName}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="chargingStartTime" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Charging Start Time</label>
-       <input
-  type="date"
-  id="chargingDate"
-  className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-  onChange={(e) => {
-    const selectedDate = new Date(e.target.value);
-    const start = new Date(Date.UTC(selectedDate.getUTCFullYear(), selectedDate.getUTCMonth(), selectedDate.getUTCDate(), 0, 0, 0)).toISOString();
-    const end = new Date(Date.UTC(selectedDate.getUTCFullYear(), selectedDate.getUTCMonth(), selectedDate.getUTCDate(), 23, 59, 59)).toISOString();
-    setFilterParams({ ...filterParams, dateRange: `${start},${end}` });
-  }}
-/>
-          </div>
-
-          {/* Tenant Checkbox */}
-          <div className="flex items-center">
-            <input
-              type="checkbox"
-              id="isTenant"
-              checked={filterParams.isTenant}
-              onChange={(e) => setFilterParams({ ...filterParams, isTenant: e.target.checked })}
-            />
-            <label htmlFor="isTenant" className="ml-2 text-sm font-medium text-gray-700 dark:text-gray-300">Is Tenant?</label>
-          </div>
-
-          {filterParams.isTenant && (
-             <div>
-             <label htmlFor="tenantId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tenant</label>
-             <select
-               id="tenantId"
-               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-               value={filterParams.tenantId}
-               onChange={(e) => setFilterParams({ ...filterParams, tenantId: e.target.value })}
-             >
-               <option value="">Select Tenant</option>
-               {tenants.map((tenant) => (
-                 <option key={tenant.id} value={tenant.id}>{tenant.fullName}</option>
-               ))}
-             </select>
-           </div>
-          )}
-          {/* Submit Button */}
-          <div className="col-span-4 flex justify-end">
-            <button
-              type="submit"
-              className="w-40 bg-blue-500 text-white p-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:text-gray-300"
-            >
-              {isLoading ? 'Processing...' : 'Filter Data'}
-            </button>
-          </div>
-        </form>
-      </div>
+        <div className="col-span-4 flex justify-end">
+          <button
+            type="submit"
+            className="w-40 bg-blue-500 text-white p-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800"
+            disabled={isLoading}
+          >
+            {isLoading ? 'Processing...' : 'Filter Data'}
+          </button>
+        </div>
+      </form>
 
       {/* Table for displaying charging report */}
-      {loading ? (<LoadingComponent/>):(
-      <TableComponent
-        title="Charging Report"
-        data={chargingData || []}  // Ensure the data is always an array
-        columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
-        showSearch={true}
-        exportable={true}
-      />
-    )}
-      {/* Modal for displaying error message */}
+      {loading ? (
+        <LoadingComponent />
+      ) : (
+        <TableComponent
+          title="Charging Report"
+          data={chargingData || []}
+          columns={columns}
+          rowsPerPageOptions={[5, 10, 15]}
+          showSearch={true}
+          exportable={true}
+        />
+      )}
+
+      {/* Modal for displaying messages */}
       {isModalOpen && (
         <Modal
           isOpen={isModalOpen}

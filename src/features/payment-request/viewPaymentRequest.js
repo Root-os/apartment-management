@@ -153,7 +153,7 @@ const PaymentRequestsPage = () => {
     {
       key: 'amount',
       label: 'Amount',
-      render: (row) => `${parseFloat(row.amount).toFixed(2)}`, // Format amount to 2 decimal places
+      render: (row) => `${Math.round(row.amount)}`, 
     },
     {
       key: 'dueDate',
@@ -162,6 +162,25 @@ const PaymentRequestsPage = () => {
     },
     { key: 'repeatedFor', label: 'Repeated For' },
     { key: 'status', label: 'Status ' },
+    {
+      key: 'receipt',
+      label: 'Receipt',
+      render: (row) =>
+        row.receipt ? (
+          <a
+            href={row.receipt}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#1d4ed8', textDecoration: 'none' }}
+            onMouseOver={(e) => (e.target.style.textDecoration = 'underline')}
+            onMouseOut={(e) => (e.target.style.textDecoration = 'none')}
+          >
+            View
+          </a>
+        ) : (
+          <span>No receipt</span>
+        ),
+    },
     {
       label: 'Actions',
       key: 'actions',
@@ -183,6 +202,7 @@ const PaymentRequestsPage = () => {
       ),
     },
   ];
+
   const handleAddClick = () => {
     window.location.href = '/app/payment-request-add';
    };
@@ -307,8 +327,6 @@ const PaymentRequestsPage = () => {
     </div>
   </div>
 )}
-
-
       {/* Delete Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
