@@ -129,6 +129,20 @@ const ViewNotification = () => {
     { key: 'body', label: 'Body' },
     { key: 'type', label: 'Type', render: (notification) => notification.type ? notification.type.name : 'N/A' },
     { key: 'receiver_type', label: 'Receiver Type' },
+    {
+      key: 'name',
+      label: 'Name',
+      render: (notification) => {
+        if (!notification.receiver) return 'N/A';
+        if (notification.receiver_type === 'staff') {
+          return `${notification.receiver.fname} ${notification.receiver.lname}`;
+        }
+        if (notification.receiver_type === 'tenant') {
+          return notification.receiver.fullName || 'N/A';
+        }
+        return 'N/A';
+      }
+    },
     { 
       key: 'isRead', 
       label: 'Status', 

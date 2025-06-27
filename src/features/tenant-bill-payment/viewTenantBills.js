@@ -99,11 +99,14 @@ const ViewBillPayment = () => {
   const columns = [
     { key: 'tenantName', label: 'Tenant Name', render: (payment) => payment.Tenant.fullName },
     { key: 'billType', label: 'Bill Type', render: (payment) => payment.BillType.typeName },
-    { key: 'amount', label: 'Amount', render: (payment) => payment.amountPaid },
+    { 
+      key: 'amountPaid', 
+      label: 'Amount Paid', 
+      render: (payment) => `ETB ${payment.amountPaid.toFixed(2)}` 
+    },
     { key: 'status', label: 'Status' },
     { key: 'startDate', label: 'Start Date', render: (payment) => payment.startDate ? new Date(payment.startDate).toISOString().split('T')[0] : 'N/A' },
     { key: 'endDate', label: 'End Date', render: (payment) => payment.endDate ? new Date(payment.endDate).toISOString().split('T')[0] : 'N/A' },
-
     {
       key: 'actions',
       label: 'Actions',
@@ -218,7 +221,7 @@ const ViewBillPayment = () => {
               >
                 <option value="due">Due</option>
                 <option value="paid">Paid</option>
-                <option value="pending">Pending</option>
+                <option value="overdue">Overdue</option>
               </select>
             </div>
 

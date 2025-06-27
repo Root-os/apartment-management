@@ -420,11 +420,14 @@ const RentCollectionPage = () => {
               <p><strong>Tenant Name:</strong> {currentRent.Tenant.fullName}</p>
               <p><strong>Phone Number:</strong> {currentRent.Tenant.phoneNumber}</p>
               <p><strong>Tenant Email:</strong> {currentRent.Tenant.email || 'No Email'}</p>
-              <p><strong>Unit Number:</strong> {currentRent.Tenant.Unit.unitNumber}</p>
+              <p><strong>Paid From:</strong> {new Date(currentRent.paymentDate).toISOString().split('T')[0]}</p>
               <p><strong>Floor Number:</strong> {currentRent.Tenant.Floor.floorNumber}</p>
+              <p><strong>Paid To:</strong> {new Date(currentRent.nextDueDate).toISOString().split('T')[0]}</p>
+              <p><strong>Unit Number:</strong> {currentRent.Tenant.Unit.unitNumber}</p>
               <p><strong>Paid Days:</strong> {currentRent.paidDays}</p>
               <p><strong>Payment Frequency:</strong> {currentRent.paymentFrequency}</p>
               <p><strong>Next Due Date:</strong> {new Date(currentRent.nextDueDate).toISOString().split('T')[0]}</p>
+              <p><strong>Payment Statuss:</strong> {currentRent.status}</p>
             </div>
             <div className="flex justify-center mt-4">
               <button onClick={closeModals} className="bg-gray-400 text-white px-4 py-2 rounded">Close</button>

@@ -123,8 +123,7 @@ const AllSendLetterPage = () => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}
-        /${selectedLetter.id}`);
+     await axios.delete(`${process.env.REACT_APP_BASE_URL}letter/${selectedLetter.id}`);
       fetchLetters();
       setIsDeleteModalOpen(false);
       setSelectedLetter(null);

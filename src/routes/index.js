@@ -7,6 +7,9 @@ const Bills = lazy(() => import("../pages/protected/Bills"));
 const ProfileSettings = lazy(() =>
   import("../pages/protected/ProfileSettings")
 );
+const TenantProfileSetting = lazy(() =>
+  import("../pages/protected/ProfileSetting/TenantProfileSetting")
+);
 //building
 const FloorAdd = lazy(() => import("../pages/protected/FloorAdd"));
 const FloorView = lazy(() => import("../pages/protected/FloorView"));
@@ -350,7 +353,9 @@ const AdminViewRequest = lazy(() =>
 const ViewTenantItems = lazy(() =>
   import("../pages/protected/ItemOutRequest/ViewTenantItems")
 );
-const SeeMyItems = lazy(() => import("../pages/protected/ItemOutRequest/SeeMyItems"))
+const SeeMyItems = lazy(() =>
+  import("../pages/protected/ItemOutRequest/SeeMyItems")
+);
 
 const token = localStorage.getItem("token");
 
@@ -373,7 +378,8 @@ const tenantRoutes = [
   { path: "/payment-request-history", component: TenantViewRequest },
   { path: "/item-out-request", component: SendOutRequest },
   { path: "/out-requests", component: ViewOutRequests },
-  { path: "/see-my-items", component: SeeMyItems},
+  { path: "/see-my-items", component: SeeMyItems },
+  { path: "/tenant-profile", component: TenantProfileSetting },
 ];
 
 const employeeRoutes = [
@@ -477,7 +483,7 @@ const adminRoutes = [
       { path: "/view-low-level-stock", component: LowLevelStock },
       { path: "/see-out-requests", component: AdminViewRequest },
       { path: "/see-tenant-items/:id", component: ViewTenantItems },
-      { path: "/see-my-items", component: SeeMyItems}
+      { path: "/see-my-items", component: SeeMyItems },
     ],
   },
   {

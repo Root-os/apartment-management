@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
-import TitleCard from '../../components/Cards/TitleCard';
+import TitleCard from "../../components/Cards/TitleCard";
 
 const LetterResponseView = () => {
   const { letterId: paramLetterId } = useParams();
@@ -74,7 +74,9 @@ const LetterResponseView = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}letter-response/${response.id}`);
+      await axios.delete(
+        `${process.env.REACT_APP_BASE_URL}letter-response/${response.id}`
+      );
       setShowDeleteConfirm(false);
       navigate(-1); // go back
     } catch (err) {
@@ -82,85 +84,100 @@ const LetterResponseView = () => {
     }
   };
 
-  if (error) return <div className="p-6 text-red-600 text-center font-semibold">{error}</div>;
-  if (!response) return <div className="p-6 text-center text-gray-500">Loading response...</div>;
-
   return (
-    <div >
-    <>
-    <TitleCard title="Letter Response" topMargin={'mt-1'}>
-      <table className="min-w-full border border-gray-300 rounded-md text-left">
-        <tbody>
-          <tr className="border-b">
-            <th className="p-3 font-medium text-gray-700 w-1/4">Letter Description</th>
-            <td className="p-3">{letterDescription}</td>
-          </tr>
-          <tr className="border-b">
-            <th className="p-3 font-medium text-gray-700">Status</th>
-            <td className="p-3">{response.status}</td>
-          </tr>
-          <tr className="border-b">
-            <th className="p-3 font-medium text-gray-700">Message</th>
-            <td className="p-3">{response.message}</td>
-          </tr>
-          {response.image && (
-            <tr className="border-b">
-              <th className="p-3 font-medium text-gray-700">Attached Image</th>
-              <td className="p-3">
-                <img
-                  src={response.image}
-                  alt="Response Attachment"
-                  className="max-w-xs max-h-96 object-contain border rounded"
-                />
-              </td>
-            </tr>
-          )}
-          <tr>
-            <th className="p-3 font-medium text-gray-700">Rsponded On</th>
-            <td className="p-3">
-              {new Intl.DateTimeFormat('en-GB', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                timeZone: 'UTC',
-                hour12: false
-              }).format(new Date(response.createdAt))}
-            </td>
-
-          </tr>
-        </tbody>
-      </table>
-
-      <div className="flex gap-4 mt-6">
-        <button
-          className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
-          onClick={() => {
-            setEditMessage(response.message);
-            setShowEdit(true);
-          }}
-        >
-          Edit
-        </button>
-        <button
-          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
-          onClick={() => setShowDeleteConfirm(true)}
-        >
-          Delete
-        </button>
+    <div className="p-6">
+      {/* Back Button - Always visible */}
+     <div className="mb-6">
+        {response && (
+          <button
+            onClick={() => navigate(-1)}
+            className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
+          >
+            ← Back
+          </button>
+        )}
       </div>
-      </TitleCard>
-     </>
-     <div>   
-        <button
-          onClick={() => navigate(-1)}
-          className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 mb-6"
-        >
-          ← Back
-        </button>
-      </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="text-red-600 text-center font-semibold">{error}</div>
+      )}
+
+      {/* Loading Indicator */}
+      {!response && !error && (
+        <div className="text-center text-gray-500">Loading response...</div>
+      )}
+
+      {/* Response Display */}
+      {response && (
+        <TitleCard title="Letter Response" topMargin={"mt-1"}>
+          <table className="min-w-full border border-gray-300 rounded-md text-left">
+            <tbody>
+              <tr className="border-b">
+                <th className="p-3 font-medium text-gray-700 w-1/4">
+                  Letter Description
+                </th>
+                <td className="p-3">{letterDescription}</td>
+              </tr>
+              <tr className="border-b">
+                <th className="p-3 font-medium text-gray-700">Status</th>
+                <td className="p-3">{response.status}</td>
+              </tr>
+              <tr className="border-b">
+                <th className="p-3 font-medium text-gray-700">Message</th>
+                <td className="p-3">{response.message}</td>
+              </tr>
+              {response.image && (
+                <tr className="border-b">
+                  <th className="p-3 font-medium text-gray-700">
+                    Attached Image
+                  </th>
+                  <td className="p-3">
+                    <img
+                      src={response.image}
+                      alt="Response Attachment"
+                      className="max-w-xs max-h-96 object-contain border rounded"
+                    />
+                  </td>
+                </tr>
+              )}
+              <tr>
+                <th className="p-3 font-medium text-gray-700">Responded On</th>
+                <td className="p-3">
+                  {new Intl.DateTimeFormat("en-GB", {
+                    year: "numeric",
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    timeZone: "UTC",
+                    hour12: false,
+                  }).format(new Date(response.createdAt))}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div className="flex gap-4 mt-6">
+            <button
+              className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600"
+              onClick={() => {
+                setEditMessage(response.message);
+                setShowEdit(true);
+              }}
+            >
+              Edit
+            </button>
+            <button
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+              onClick={() => setShowDeleteConfirm(true)}
+            >
+              Delete
+            </button>
+          </div>
+        </TitleCard>
+      )}
 
       {/* Edit Modal */}
       {showEdit && (
@@ -205,7 +222,9 @@ const LetterResponseView = () => {
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded shadow-lg p-6 w-full max-w-sm">
-            <p className="mb-4">Are you sure you want to delete this response?</p>
+            <p className="mb-4">
+              Are you sure you want to delete this response?
+            </p>
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowDeleteConfirm(false)}

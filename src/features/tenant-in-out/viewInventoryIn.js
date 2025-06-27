@@ -6,6 +6,7 @@ import LoadingComponent from "../../components/loading";
 import DeleteConfirmationModal from "../../components/editDeleteModal";
 import { useNavigate } from "react-router-dom";
 
+
 const TenantInventoryPage = () => {
   const [inventoryData, setInventoryData] = useState([]);
   const [loading, setLoading] = useState(true);

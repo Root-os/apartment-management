@@ -329,9 +329,18 @@ const TenantList = () => {
               key: "floorNumber",
               render: (row) => row.Floor?.floorNumber || "N/A",
             },
-            {
-              label: "Status",
-              key: "status",
+           {
+              label: "Remaining Days",
+              key: "remainingDays",
+              render: (row) => {
+                const today = new Date();
+                const leaseEnd = new Date(row.leaseEndDate);
+                today.setHours(0, 0, 0, 0);
+                leaseEnd.setHours(0, 0, 0, 0);
+                const diffTime = leaseEnd - today;
+                const diffDays = Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 0);
+                return `${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+              }
             },
             {
               label: "Actions",
@@ -375,6 +384,22 @@ const TenantList = () => {
                     className="bg-yellow-500 text-white py-1 px-2 rounded"
                   >
                     Car
+                  </button>
+                  <button
+                    onClick={() =>
+                      navigate(`/app/tenant-bill-add?tenantId=${row.id}`)
+                    }
+                    className="bg-gray-700 text-white py-1 px-2 rounded"
+                  >
+                    Bill
+                  </button>
+                  <button
+                    onClick={() =>
+                      navigate(`/app/add-in-out?tenantId=${row.id}`)
+                    }
+                    className="bg-pink-400 text-white py-1 px-2 rounded"
+                  >
+                    Item
                   </button>
                 </div>
               ),
@@ -704,9 +729,13 @@ const TenantList = () => {
               <label className="block text-sm font-medium mb-2">Rent Amount</label>
               <p className="text-sm">{selectedTenant.amount || "N/A"}</p>
             </div>
-             <div className="mb-4">
+            <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Advance</label>
               <p className="text-sm">{selectedTenant.advance || "N/A"}</p>
+            </div>
+             <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Aditional Note</label>
+              <p className="text-sm">{selectedTenant.additionalNotes || "N/A"}</p>
             </div>
 
             {/* Car details section */}
@@ -910,19 +939,6 @@ const TenantList = () => {
               <p className="text-sm">
                 {unitDetails.Unit.rentedDate
                   ? new Date(unitDetails.Unit.rentedDate)
-                      .toISOString()
-                      .split("T")[0]
-                  : "N/A"}
-              </p>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">
-                Vacated Date
-              </label>
-              <p className="text-sm">
-                {unitDetails.Unit.vacatedDate
-                  ? new Date(unitDetails.Unit.vacatedDate)
                       .toISOString()
                       .split("T")[0]
                   : "N/A"}

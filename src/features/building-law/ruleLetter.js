@@ -298,22 +298,29 @@ const LawPrintView = () => {
         <div
           ref={a4Ref}
           className="print-area bg-white shadow-lg  p-10 print:p-0 relative"
-          style={{
-            width: "794px",
-            minHeight: "924px",
-            color: "#222", // override
-            background: "#fff",
-          }}
+        style={{
+  maxWidth: "794px",   // Changed from fixed width to maxWidth
+  width: "100%",       // Make width fluid, so it shrinks on small screens
+  minHeight: "924px",
+  color: "#222",
+  background: "#fff",
+  margin: "0 auto",    // Center horizontally
+  boxSizing: "border-box", // Include padding in width calculation
+  paddingLeft: "1rem", // Add horizontal padding so content doesn't touch edges on small devices
+  paddingRight: "1rem",
+}}
+
         >
           {/* Optional Logo */}
           {companyInfo?.logo && (
-            <div className="absolute top-10 left-10">
-              <img
-                src={companyInfo.logo}
-                alt="Company Logo"
-                className="w-24 h-24 object-contain"
-              />
-            </div>
+           <div className="absolute top-10 left-10 sm:static sm:mb-4 sm:flex sm:justify-center">
+  <img
+    src={companyInfo.logo}
+    alt="Company Logo"
+    className="w-24 h-24 object-contain sm:w-20 sm:h-20"
+  />
+</div>
+
           )}
 
           {/* Header */}

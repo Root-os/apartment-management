@@ -20,6 +20,8 @@ const AddParking = () => {
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [carNameError, setCarNameError] = useState("");
+
 
   useEffect(() => {
     axios
@@ -91,6 +93,13 @@ const AddParking = () => {
     if (parkingSpaceId) {
       parkingData.parkingSpaceId = parkingSpaceId;
     }
+
+    if (carName.length < 3) {
+  setCarNameError("Car name must be at least 3 characters");
+  setLoading(false);
+  return;
+}
+
   
     // Log the data that will be sent to the server
     console.log("Sending parking data to server:", parkingData);
@@ -127,10 +136,9 @@ const AddParking = () => {
   };
   
   
-  
   return (
     <>
-      <TitleCard title="Add Parking Data" topMargin={'mt-4'}>
+      <TitleCard title="Add Parking Data" topMargin={'mt-1'}>
         <form onSubmit={handleSubmit} className="bg-base-100 p-6 rounded-lg shadow-md">
           {/* Tenant Checkbox */}
           <div className="mb-4">
@@ -144,8 +152,7 @@ const AddParking = () => {
               <span className="text-sm">Is Tenant?</span>
             </label>
           </div>
-
-          
+ 
           {/* Tenant Select */}
           {isTenant && (
             <div className="mb-4">
@@ -183,13 +190,24 @@ const AddParking = () => {
           {/* Car Name */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Car Name</label>
-            <input
-              type="text"
-              value={carName}
-              onChange={(e) => setCarName(e.target.value)}
-              className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              required
-            />
+              <input
+                type="text"
+                value={carName}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setCarName(value);
+                  if (value.length > 0 && value.length < 3) {
+                    setCarNameError("Car name must be at least 3 characters");
+                  } else {
+                    setCarNameError("");
+                  }
+                }}
+                className={`bg-base-100 w-full p-2 border ${carNameError ? 'border-red-500' : 'border-gray-300'} rounded`}
+                required
+              />
+              {carNameError && (
+                <p className="text-sm text-red-500 mt-1">{carNameError}</p>
+              )}
           </div>
          {!isTenant && ( <>
           {/* Driver Name */}

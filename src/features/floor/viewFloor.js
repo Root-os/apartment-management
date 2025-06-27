@@ -45,6 +45,7 @@ const FloorManagement = () => {
     setSelectedFloor(floor);
     setNewFloorData({
       floorNumber: floor.floorNumber,
+       status: floor.status || 'active', 
     });
     setIsEditModalOpen(true);
   };
@@ -188,6 +189,20 @@ const handleDetailClick = (floor) => {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Status</label>
+              <select
+                value={newFloorData.status}
+                onChange={(e) => setNewFloorData({ ...newFloorData, status: e.target.value })}
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+              >
+                <option value="active">Active</option>
+                <option value="inActive">In Active</option>
+                <option value="under_construction">Under Construction</option>
+              </select>
+            </div>
+
+
             <div className="flex justify-end space-x-2">
               <button onClick={() => setIsEditModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">
                 Cancel

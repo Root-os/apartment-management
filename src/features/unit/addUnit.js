@@ -93,7 +93,7 @@ const AddFloorUnit = () => {
       // Reset form after submission
       setUnitNumber('');
       setSize('');
-      setStatus('available');
+      setStatus('');
       setAvailableEquipments([]);
       setProblems([]);
       setNewEquipment('');
@@ -159,6 +159,7 @@ const AddFloorUnit = () => {
           >
             <option value="available">Available</option>
             <option value="occupied">Occupied</option>
+            <option value="under_maintenance">Under Maintenance</option>
           </select>
         </div>
 

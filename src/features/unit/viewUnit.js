@@ -77,28 +77,33 @@ const UnitList = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleEditSubmit = () => {
-    setBtnLoading(true);
-    axios.put(`${process.env.REACT_APP_BASE_URL}unit/${selectedUnit.id}`, newUnitData)
-      .then(() => {
-        setUnits(units.map(unit => (unit.id === selectedUnit.id ? { ...unit, ...newUnitData } : unit)));
-        setIsEditModalOpen(false);
+ const handleEditSubmit = () => {
+  setBtnLoading(true);
+  axios.put(`${process.env.REACT_APP_BASE_URL}unit/${selectedUnit.id}`, newUnitData)
+    .then(() => {
+      setUnits(units.map(unit => (unit.id === selectedUnit.id ? { ...unit, ...newUnitData } : unit)));
+      setIsEditModalOpen(false);
 
-        setModalOpen(true);
-        setMessageType('success');
-        setMessage('Unit updated successfully');
+      setModalOpen(true);
+      setMessageType('success');
+      setMessage('Unit updated successfully');
 
-        setBtnLoading(false);
-      })
-      .catch(error => {
-        setBtnLoading(false);
-        // console.error("Error updating unit:", error);
+      setBtnLoading(false);
+    })
+    .catch(error => {
+      setBtnLoading(false);
 
-        setModalOpen(true);
-        setMessageType('error');
-        setMessage('Unable to update, please try again');  
-      });
-  };
+      // Extract backend error message if available
+      let backendMessage = 'Unable to update, please try again';
+      if (error.response && error.response.data && error.response.data.message) {
+        backendMessage = error.response.data.message;
+      }
+
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage(backendMessage);
+    });
+};
 
   const handleDeleteClick = (unit) => {
     setSelectedUnit(unit);
@@ -353,6 +358,7 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
                 <option value="" disabled>Select Status</option>
                 <option value="occupied">Occupied</option>
                 <option value="available">Free</option>
+                <option value="under_maintenance">Under Maintenance</option>
               </select>
             </div>
 

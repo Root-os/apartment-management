@@ -177,6 +177,14 @@ function Header() {
             </li>
             </>
             )}
+            {role === "tenant" && (
+              <li className="justify-between">
+                <Link to={"/app/tenant-profile"}>
+                  Profile Settings
+                  <span className="badge">New</span>
+                </Link>
+              </li>
+            )}
             <div className="divider mt-0 mb-0"></div>
             <li>
               <a onClick={logoutUser}>Logout</a>

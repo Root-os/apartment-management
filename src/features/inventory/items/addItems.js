@@ -65,9 +65,13 @@ const AddItem = () => {
       setMessage('Item created successfully');
       //  window.location.href = '/app/item-view';
     } catch (error) {
+      //use backend error message if available
+      const errorData = error.response?.data;
+      let errorMessage = errorData?.message || 'An error occurred. Please try again.';  
+
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Unable to add item');
+      setMessage(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -197,19 +197,19 @@ const PurchasesPage = () => {
         <div className="flex space-x-1">
           <button
             onClick={() => handleEditClick(row)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+            className="bg-blue-500 text-white px-3 py-1 rounded-md mr-2"
           >
             Edit
           </button>
           <button
             onClick={() => handleDetailClick(row)}
-            className="bg-green-500 text-white px-4 py-2 rounded-md mr-2"
+            className="bg-green-500 text-white px-2 py-1 rounded-md mr-2"
           >
             Details
           </button>
           <button
             onClick={() => handleDeleteClick(row)}
-            className="bg-red-500 text-white px-4 py-2 rounded-md"
+            className="bg-red-500 text-white px-2 py-1 rounded-md"
           >
             Delete
           </button>

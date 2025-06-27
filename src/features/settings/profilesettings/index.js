@@ -31,7 +31,6 @@ function ProfileSettings() {
             };
             setProfile(storedProfile);
         };
-
         fetchProfileFromLocalStorage();
     }, []);
 

@@ -25,6 +25,9 @@ const WithdrawalRequests = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);  // State to hold selected request details
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [tenantDetailModalOpen, setTenantDetailModalOpen] = useState(false);
+  const [tenantDetail, setTenantDetail] = useState(null);
+
 
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success')
@@ -97,51 +100,60 @@ const WithdrawalRequests = () => {
   };
 
   const handleUpdateStatus = async () => {
-    // Validate the status and adminResponse
-    if (!status || !adminResponse) {
-      setModalOpen(true);
-      setMessageType('error');
-      setMessage('Status and Admin Response cannot be empty');
-      return;
-    }
-  
-    setIsLoading(true);
-    try {
-      // Sending the request to the backend
-      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}withdrawal-request/review`, {
+  if (!status || !adminResponse) {
+    setModalOpen(true);
+    setMessageType('error');
+    setMessage('Status and Admin Response cannot be empty');
+    return;
+  }
+
+  setIsLoading(true);
+  try {
+    const response = await axios.put(
+      `${process.env.REACT_APP_BASE_URL}withdrawal-request/review`,
+      {
         requestId: requestToUpdate.id,
         status: status,
         adminResponse: adminResponse,
-      }, {
+      },
+      {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      });
-  
-      // If the response is successful, update the request data
-      setData((prevData) => prevData.map((request) =>
+      }
+    );
+
+    setData((prevData) =>
+      prevData.map((request) =>
         request.id === requestToUpdate.id ? response.data.request : request
-      ));
-  
-      // Reset the modal state
-      setIsStatusModalOpen(false);
-      setRequestToUpdate(null);
-      setStatus('');
-      setAdminResponse('');
-  
-      // Show success message in modal
-      setModalOpen(true);
-      setMessageType('success');
-      setMessage('Updated Successfully!');
-    } catch (error) {
-      console.error('Error updating status:', error);
-      setModalOpen(true);
-      setMessageType('error');
-      setMessage('Unable to update status');
-    } finally {
-      setIsLoading(false);
+      )
+    );
+
+    setIsStatusModalOpen(false);
+    setRequestToUpdate(null);
+    setStatus('');
+    setAdminResponse('');
+
+    setModalOpen(true);
+    setMessageType('success');
+    setMessage('Updated Successfully!');
+  } catch (error) {
+    console.error('Error updating status:', error);
+
+    // Try to extract backend error message if available
+    let backendMessage = 'Unable to update status';
+    if (error.response?.data?.message) {
+      backendMessage = error.response.data.message;
     }
-  };
+
+    setModalOpen(true);
+    setMessageType('error');
+    setMessage(backendMessage);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const handleAssignClick = (request) => {
     setRequestToAssign(request);
@@ -258,6 +270,55 @@ const WithdrawalRequests = () => {
     setIsDetailsModalOpen(true);  // Open the details modal
   };
 
+const handleCheckTenant = async (tenantId) => {
+  try {
+    const response = await axios.get(
+      `${process.env.REACT_APP_BASE_URL}withdrawal-request/details/${tenantId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const tenant = response.data.tenant;
+
+    // Get latest rent by max nextDueDate
+    const latestRent = tenant.TenantRentCollections?.reduce((latest, current) => {
+      if (!latest || new Date(current.nextDueDate) > new Date(latest.nextDueDate)) {
+        return current;
+      }
+      return latest;
+    }, null);
+
+    // Get latest bill per billTypeId
+    const latestBillsMap = new Map();
+    tenant.TenantPayments?.forEach((payment) => {
+      const key = payment.BillType?.id;
+      if (!latestBillsMap.has(key)) {
+        latestBillsMap.set(key, payment);
+      } else {
+        const existing = latestBillsMap.get(key);
+        if (new Date(payment.endDate) > new Date(existing.endDate)) {
+          latestBillsMap.set(key, payment);
+        }
+      }
+    });
+
+    tenant.latestRent = latestRent;
+    tenant.latestBills = Array.from(latestBillsMap.entries());
+
+    setTenantDetail(tenant);
+    setTenantDetailModalOpen(true);
+  } catch (error) {
+    console.error("Error fetching tenant detail:", error);
+    setModalOpen(true);
+    setMessageType("error");
+    setMessage("Failed to load tenant detail.");
+  }
+};
+
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const [dropdownStates, setDropdownStates] = useState({});
@@ -294,6 +355,7 @@ useEffect(() => {
     document.removeEventListener('mousedown', handleClickOutside);
   };
 }, []);
+
   const columns = [
     { key: 'tenantId', label: 'Tenant Name', render: (row) => getTenantNameById(row.tenantId) },
     {
@@ -318,68 +380,70 @@ useEffect(() => {
       key: 'actions',
       label: 'Actions',
       render: (row) => (
-        <div className="relative dropdown-container bg-transparent">
-  <button
-    type="button"
-    className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded transition-all duration-200 flex items-center"
-    onClick={() => toggleDropdown(row.id)}
-  >
-    Actions
-    <svg
-      className="w-4 h-4 ml-2"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-    </svg>
-  </button>
-  <div
-    className={`absolute right-0 mt-2 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 transform transition-all duration-200 ${
-      dropdownStates[row.id] ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'
-    }`}
-  >
-    <div className="py-1">
+    <div className="relative dropdown-container bg-transparent">
       <button
-        onClick={() => handleStatusClick(row)}
-        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-green-300 hover:text-green-700 transition-colors duration-200"
+        type="button"
+        className="bg-blue-500 hover:bg-blue-600 text-white py-1 px-4 rounded transition-all duration-200 flex items-center"
+        onClick={() => toggleDropdown(row.id)}
       >
-        Update
+        Actions
+        <svg
+          className="w-4 h-4 ml-2"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+        </svg>
       </button>
-      <button
-        onClick={() => handleAssignClick(row)}
-        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-300 hover:text-blue-700 transition-colors duration-200"
+      <div
+        className={`absolute right-0 mt-2 w-full rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-10 transform transition-all duration-200 ${
+          dropdownStates[row.id] ? 'scale-100 opacity-100' : 'scale-95 opacity-0 pointer-events-none'
+        }`}
       >
-        Assign
-      </button>
-      <button
-        onClick={() => handleFinalizeClick(row)}
-        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-300 hover:text-purple-700 transition-colors duration-200"
-      >
-        Finalize
-      </button>
-      <button
-        onClick={() => handleDeleteClick(row)}
-        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-200 hover:text-red-700 transition-colors duration-200"
-      >
-        Delete
-      </button>
-      <button
-        onClick={() => handleDetailClick(row)}
-        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-400 hover:text-gray-700 transition-colors duration-200"
-      >
-        Details
-      </button>
+        <div className="py-1">
+          <button
+            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+            onClick={() => handleCheckTenant(row.tenantId)}
+          >
+            Check
+          </button>
+          <button
+            onClick={() => handleStatusClick(row)}
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-green-300 hover:text-green-700 transition-colors duration-200"
+          >
+            Update
+          </button>
+          <button
+            onClick={() => handleAssignClick(row)}
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-300 hover:text-blue-700 transition-colors duration-200"
+          >
+            Assign
+          </button>
+          <button
+            onClick={() => handleFinalizeClick(row)}
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-purple-300 hover:text-purple-700 transition-colors duration-200"
+          >
+            Finalize
+          </button>
+          <button
+            onClick={() => handleDeleteClick(row)}
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-200 hover:text-red-700 transition-colors duration-200"
+          >
+            Delete
+          </button>
+          <button
+            onClick={() => handleDetailClick(row)}
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-400 hover:text-gray-700 transition-colors duration-200"
+          >
+            Details
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
       ),
     }
-  
-    
-    
-    
   ];
 
   return (
@@ -509,32 +573,148 @@ useEffect(() => {
         </div>
       )}
 
-{isDetailsModalOpen && selectedRequest && (
+      {isDetailsModalOpen && selectedRequest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-base-100 p-6 rounded-lg w-96">
+            <h2 className="text-xl mb-4">Request Details</h2>
+            <div className="mb-4">
+              <p><strong>Tenant Name:</strong> {getTenantNameById(selectedRequest.tenantId)}</p>
+              <p><strong>Reason:</strong> {selectedRequest.reason}</p>
+              <p><strong>Termination Date:</strong> {new Date(selectedRequest.terminationDate).toISOString().split('T')[0]}</p>
+              <p><strong>Status:</strong> {selectedRequest.status}</p>
+              <p><strong>Admin Response:</strong> {selectedRequest.adminResponse}</p>
+              <p><strong>Tenant Feedback:</strong> {selectedRequest.tenantFeedback}</p>
+              <p><strong>Deposit Refund Status:</strong> {selectedRequest.depositRefundStatus}</p>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <button onClick={() => setIsDetailsModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+    {tenantDetailModalOpen && tenantDetail && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div className="bg-base-100 p-6 rounded-lg w-96">
-      <h2 className="text-xl mb-4">Request Details</h2>
-      <div className="mb-4">
-        <p><strong>Tenant Name:</strong> {getTenantNameById(selectedRequest.tenantId)}</p>
-        <p><strong>Reason:</strong> {selectedRequest.reason}</p>
-        <p><strong>Termination Date:</strong> {new Date(selectedRequest.terminationDate).toISOString().split('T')[0]}</p>
-        <p><strong>Status:</strong> {selectedRequest.status}</p>
-        <p><strong>Admin Response:</strong> {selectedRequest.adminResponse}</p>
-        <p><strong>Tenant Feedback:</strong> {selectedRequest.tenantFeedback}</p>
-        <p><strong>Deposit Refund Status:</strong> {selectedRequest.depositRefundStatus}</p>
+    <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-xl max-h-[90vh] overflow-y-auto">
+      <h2 className="text-2xl font-semibold mb-4">Tenant Info</h2>
+
+      <div className="space-y-2 text-sm">
+        <p><strong>Full Name:</strong> {tenantDetail.fullName}</p>
+
+        <div className="mt-2">
+          <h3 className="font-medium">Unit Info</h3>
+          <p><strong>Available Equipments:</strong> {JSON.parse(tenantDetail.Unit?.availableEquipments || "[]").join(", ")}</p>
+          <p><strong>Problems:</strong> {JSON.parse(tenantDetail.Unit?.problems || "[]").join(", ")}</p>
+        </div>
+
+        <div className="mt-2">
+          <h3 className="font-medium">Rent Summary</h3>
+          {tenantDetail.latestRent ? (
+            <>
+              <p>
+                Rent up to{" "}
+                <strong>
+                  {new Date(tenantDetail.latestRent.nextDueDate).toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </strong>{" "}
+                is <strong>paid</strong>.
+              </p>
+              {tenantDetail.WithdrawalRequests?.[0]?.terminationDate && (
+                (() => {
+                  const due = new Date(tenantDetail.latestRent.nextDueDate);
+                  const term = new Date(tenantDetail.WithdrawalRequests[0].terminationDate);
+                  const diff = Math.ceil((due - term) / (1000 * 60 * 60 * 24));
+                  if (diff > 0) {
+                    return <p>{diff} day(s) remaining.</p>;
+                  } else if (diff < 0) {
+                    return <p>{Math.abs(diff)} day(s) overdue.</p>;
+                  } else {
+                    return <p>Today is the due date.</p>;
+                  }
+                })()
+              )}
+            </>
+          ) : (
+             <p>
+              Rent has not been paid since{" "}
+              <strong>
+                {new Date(tenantDetail.leaseStartDate).toLocaleDateString(undefined, {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+              </strong>.
+            </p>
+          )}
+        </div>
+
+        <div className="mt-2">
+          <h3 className="font-medium">Bill Payment Summary</h3>
+          {[...(tenantDetail.latestBills || [])].map(([id, bill], i) => {
+            const end = new Date(bill.endDate);
+            const term = new Date(tenantDetail.WithdrawalRequests?.[0]?.terminationDate);
+            const endDateStr = end.toLocaleDateString(undefined, {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            });
+
+            const statusLower = bill.status.toLowerCase();
+            const statusReadable =
+              statusLower === "completed"
+                ? "paid"
+                : statusLower === "in progress"
+                ? "due"
+                : bill.status;
+
+            const diff = Math.ceil((end - term) / (1000 * 60 * 60 * 24));
+            let dateNote = "";
+            if (diff > 0) {
+              dateNote = `${diff} day(s) remaining.`;
+            } else if (diff < 0) {
+              dateNote = `${Math.abs(diff)} day(s) overdue.`;
+            } else {
+              dateNote = `Today is the due date.`;
+            }
+
+            return (
+              <div key={i} className="mb-2">
+                <p>
+                  The <strong>{bill.BillType?.typeName?.trim()}</strong> bill up to {endDateStr} is{" "}
+                  <strong>{statusReadable}</strong>.
+                </p>
+                <p>{dateNote}</p>
+              </div>
+            );
+          })}
+        </div>
       </div>
-      <div className="flex justify-end space-x-2">
-        <button onClick={() => setIsDetailsModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Close</button>
+
+      <div className="flex justify-end mt-4">
+        <button
+          onClick={() => {
+            setTenantDetailModalOpen(false);
+            setTenantDetail(null);
+          }}
+          className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
+        >
+          Close
+        </button>
       </div>
     </div>
   </div>
 )}
+
+
 
      <Modal 
       isOpen={modalOpen}
       onClose={()=> setModalOpen(false)}
       messageType={messageType}
       message={message}
-     
      />
      
     </div>

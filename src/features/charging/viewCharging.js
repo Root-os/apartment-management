@@ -19,6 +19,7 @@ const ChargingPage = () => {
   const [chargingEndTime, setChargingEndTime] = useState('');
   const [chargingCost, setChargingCost] = useState(null);
   const [status, setStatus] = useState('');
+  const [driverName, setDriverName ] = useState('');
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState('');
@@ -71,6 +72,7 @@ const ChargingPage = () => {
     setChargingEndTime(formatToLocalDateTime(charging.chargingEndTime));
     setChargingCost(charging.chargingCost);
     setStatus(charging.status);
+    setDriverName(charging.driverName);
     setIsTenant(charging.isTenant); // Set tenant status based on data
     setTenantId(charging.tenantId || ''); // Ensure it's either an empty string or a valid tenant ID
   
@@ -132,6 +134,7 @@ const ChargingPage = () => {
         // chargingStartTime: chargingStartTime ? new Date(chargingStartTime).toISOString() : null,
         chargingEndTime: chargingEndTime ? new Date(chargingEndTime).toISOString() : null,
         status,
+        driverName,
       };
 
       console.log('Updating Charging Data:', updatedCharging);
@@ -256,6 +259,59 @@ const ChargingPage = () => {
           <div className="bg-base-100 p-6 rounded-md w-1/3 max-h-[80vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">Edit Charging Data</h2>
             <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
+              {/* Is Tenant Checkbox */}
+<div className="mb-4">
+  <label htmlFor="isTenant" className="block text-sm font-medium text-white-700">
+    Is Tenant
+  </label>
+  <input
+    type="checkbox"
+    id="isTenant"
+    checked={isTenant}
+    onChange={(e) => setIsTenant(e.target.checked)}
+    className="mt-1 bg-base-100 block"
+  />
+</div>
+
+{/* Tenant Select - only shown when isTenant is true */}
+{isTenant && (
+  <div className="mb-4">
+    <label htmlFor="tenantId" className="block text-sm font-medium text-white-700">
+      Select Tenant
+    </label>
+    <select
+      id="tenantId"
+      value={tenantId}
+      onChange={handleTenantChange}
+      className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+    >
+      <option value="">Select a tenant</option>
+      {tenants.map((tenant) => (
+        <option key={tenant.id} value={tenant.id}>
+          {tenant.fullName}
+        </option>
+      ))}
+    </select>
+  </div>
+)}
+
+{/* Driver Name - only shown when isTenant is false */}
+{!isTenant && (
+  <div className="mb-4">
+    <label htmlFor="driverName" className="block text-sm font-medium text-white-700">
+      Driver Name
+    </label>
+    <input
+      type="text"
+      id="driverName"
+      value={driverName}
+      onChange={(e) => setDriverName(e.target.value)}
+      className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+    />
+  </div>
+)}
+
+
               <div className="mb-4">
                 <label htmlFor="carPlate" className="block text-sm font-medium text-white-700">
                   Car Plate
@@ -279,37 +335,6 @@ const ChargingPage = () => {
                   onChange={(e) => setCarName(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="isTenant" className="block text-sm font-medium text-white-700">
-                  Is Tenant
-                </label>
-                <input
-                  type="checkbox"
-                  id="isTenant"
-                  checked={isTenant}
-                  onChange={(e) => setIsTenant(e.target.checked)}
-                  className="mt-1 bg-base-100 block"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="tenantId" className="block text-sm font-medium text-white-700">
-                  Select Tenant
-                </label>
-                <select
-                  id="tenantId"
-                  value={tenantId}  // Set the selected tenant ID
-                  onChange={handleTenantChange}  // Trigger the tenant change handler
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled={!isTenant}  // Disable the field if isTenant is false
-                >
-                  <option value="">Select a tenant</option>
-                  {tenants.map((tenant) => (
-                    <option key={tenant.id} value={tenant.id}>
-                      {tenant.fullName}
-                    </option>
-                  ))}
-                </select>
               </div>
 
               <div className="mb-4">

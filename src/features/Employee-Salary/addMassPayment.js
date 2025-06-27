@@ -44,7 +44,19 @@ const MassSalaryPayment = () => {
     } catch (error) {
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Unable to Add mass salary payment!')
+      //include the backend response message if available
+      const errorData = error.response?.data;
+let errorMessage = errorData?.message || 'An error occurred. Please try again.';
+
+if (errorData?.duplicates && Array.isArray(errorData.duplicates)) {
+  const duplicatesList = errorData.duplicates.map(emp => `- ${emp}`).join('\n');
+  errorMessage += '\n' + duplicatesList;
+}
+
+
+setMessage(errorMessage);
+
+      // setMessage('Unable to Add mass salary payment!')
     } finally {
       setIsLoading(false);
     }

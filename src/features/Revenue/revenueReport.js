@@ -73,7 +73,7 @@ const ReportPage = () => {
     addSheet(report.incomes, "Income");
     addSheet(report.outcomes, "Expenses");
 
-    XLSX.writeFile(workbook, `Revenue_Report_${startDate}_to_${endDate}.xlsx`);
+    XLSX.writeFile(workbook, `Income_Statement_${startDate}_to_${endDate}.xlsx`);
   };
 
   const renderSection = (title, data, isIncome = true) => {
@@ -183,7 +183,7 @@ const ReportPage = () => {
         </button>
       </div>
       <h1 className="text-3xl font-bold text-center mb-6 print:text-2xl">
-        Revenue Report
+        Income Statement
       </h1>
 
       <div className="flex flex-wrap justify-center gap-4 items-center mb-6 print:hidden">
@@ -230,16 +230,16 @@ const ReportPage = () => {
         )}
       </div>
 
-      {report && (
-        <div className="print-area mt-4 print:text-sm print:leading-tight">
-          {renderSection("Incomes", report.incomes, true)}
-          {renderSection("Expenses", report.outcomes, false)}
+     {report && (
+      <div className="print-area mt-4 print:text-sm print:leading-tight">
+        {renderSection("Incomes", report.incomes, true)}
+        {renderSection("Expenses", report.outcomes, false)}
 
-          <div className="text-right mt-8 text-2xl font-extrabold text-green-700 print:text-black">
-            Net Profit: {formatAmount(report.netIncome)}
-          </div>
+        <div className={`text-right mt-8 text-2xl font-extrabold ${report.netIncome >= 0 ? "text-green-700" : "text-red-700"} print:text-black`}>
+          {report.netIncome >= 0 ? "Net Profit" : "Loss"}: {formatAmount(report.netIncome)}
         </div>
-      )}
+      </div>
+     )}
     </div>
   );
 };

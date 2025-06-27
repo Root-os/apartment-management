@@ -15,7 +15,6 @@ const EmployeeRegistration = () => {
     position: "",
     hireDate: "",
     shift: "day",
-    department: "IT",
     employmentType: "full-time",
     emergencyContact: "",
     address: "",
@@ -39,7 +38,6 @@ const EmployeeRegistration = () => {
       [name]: value,
     }));
   };
-
   // Submit handler for the form
   const handleSubmit = async (e) => {
     setLoading(true);
@@ -49,7 +47,6 @@ const EmployeeRegistration = () => {
       setError("Token not found in local storage.");
       return;
     }
-
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}auth/register/employee`,
@@ -75,7 +72,6 @@ const EmployeeRegistration = () => {
           position: "",
           hireDate: "",
           shift: "",
-          department: "",
           employmentType: "",
           emergencyContact: "",
           address: "",
@@ -285,22 +281,6 @@ finally {
               <option value="flexible">Flexible</option>
             </select>
           </div>
-
-          <div>
-            <label className="block text-sm font-medium text-white-700" htmlFor="department">
-              Department
-            </label>
-            <input
-              type="text"
-              id="department"
-              name="department"
-              value={employee.department}
-              onChange={handleChange}
-              required
-              className="bg-base-100 mt-1 p-2 w-full border border-gray-300 rounded-md"
-            />
-          </div>
-
           <div>
             <label className="block text-sm font-medium text-white-700" htmlFor="employmentType">
               Employment Type

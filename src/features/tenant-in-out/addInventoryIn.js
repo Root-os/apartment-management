@@ -1,33 +1,46 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Modal from '../../components/Modal';
-import TitleCard from '../../components/Cards/TitleCard';
+import Modal from "../../components/Modal";
+import TitleCard from "../../components/Cards/TitleCard";
+import { useSearchParams } from "react-router-dom";
 
 const InventoryForm = () => {
   const [tenantId, setTenantId] = useState(null);
+  const [searchParams] = useSearchParams();
+
   const [tenants, setTenants] = useState([]); // State to store all tenants
   const [type, setType] = useState("move-in");
-  const [items, setItems] = useState([{ name: "", condition: "", quantity: 1 }]);
+  const [items, setItems] = useState([
+    { name: "", condition: "", quantity: 1 },
+  ]);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [messageType, setmessageType] = useState('success');
-  const [message, setMessage] = useState('');
+  const [messageType, setmessageType] = useState("success");
+  const [message, setMessage] = useState("");
 
   // Fetch all tenants once the component is mounted
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
-        setTenants(response.data); // Assuming the API returns an array of tenants
+        const response = await axios.get(
+          `${process.env.REACT_APP_BASE_URL}tenant`
+        );
+        setTenants(response.data);
       } catch (error) {
         console.error("Error fetching tenants:", error);
       }
     };
 
+    // Get tenantId from URL
+    const tenantIdFromUrl = searchParams.get("tenantId");
+    if (tenantIdFromUrl) {
+      setTenantId(tenantIdFromUrl);
+    }
+
     fetchTenants();
-  }, []);
+  }, [searchParams]);
 
   // Handle tenant selection from the dropdown
   const handleTenantChange = (event) => {
@@ -38,7 +51,9 @@ const InventoryForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const emptyItem = items.some(item => !item.name || !item.condition || item.quantity <= 0);
+    const emptyItem = items.some(
+      (item) => !item.name || !item.condition || item.quantity <= 0
+    );
     if (emptyItem) {
       setMessage("Please fill out all fields for each item.");
       return;
@@ -47,9 +62,9 @@ const InventoryForm = () => {
       tenantId,
       type,
       items,
-      notes
+      notes,
     };
-    const token = localStorage.getItem('token'); 
+    const token = localStorage.getItem("token");
 
     if (!token) {
       setMessage("No authentication token found. Please log in.");
@@ -64,17 +79,17 @@ const InventoryForm = () => {
         payload,
         {
           headers: {
-            "Authorization": `Bearer ${token}`, 
-            "Content-Type": "application/json"
-          }
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         }
       );
 
       if (response.data.success) {
         setModalOpen(true);
-        setmessageType('success');
-        setMessage('Inventory data created successfully!');
-        window.location.href='/app/view-in-out';
+        setmessageType("success");
+        setMessage("Inventory data created successfully!");
+        window.location.href = "/app/view-in-out";
       } else {
         setMessage("Failed to create inventory data.");
       }
@@ -83,8 +98,8 @@ const InventoryForm = () => {
       setMessage("Failed to create inventory data. Please try again.");
 
       setModalOpen(true);
-      setmessageType('error');
-      setMessage('Unable to add the data!');
+      setmessageType("error");
+      setMessage("Unable to add the data!");
     } finally {
       setLoading(false);
     }
@@ -107,15 +122,18 @@ const InventoryForm = () => {
 
   return (
     <>
-      <TitleCard title={'Add In/Out data'} topMargin={'mt-1'}>
+      <TitleCard title={"Add In/Out data"} topMargin={"mt-1"}>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="tenantId" className="block text-sm font-medium">Tenant</label>
+            <label htmlFor="tenantId" className="block text-sm font-medium">
+              Tenant
+            </label>
             <select
               id="tenantId"
               className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
               value={tenantId || ""}
               onChange={handleTenantChange}
+              disabled={!!searchParams.get("tenantId")} // disables if coming from URL
             >
               <option value="">Select a Tenant</option>
               {tenants.map((tenant) => (
@@ -127,7 +145,9 @@ const InventoryForm = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="type" className="block text-sm font-medium">Type</label>
+            <label htmlFor="type" className="block text-sm font-medium">
+              Type
+            </label>
             <select
               id="type"
               className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
@@ -148,21 +168,27 @@ const InventoryForm = () => {
                   className="p-2 w-full border border-gray-300 rounded-md bg-base-100"
                   placeholder="Item Name"
                   value={item.name}
-                  onChange={(e) => handleItemChange(index, "name", e.target.value)}
+                  onChange={(e) =>
+                    handleItemChange(index, "name", e.target.value)
+                  }
                 />
                 <input
                   type="text"
                   className="p-2 w-full border border-gray-300 rounded-md bg-base-100"
                   placeholder="Condition"
                   value={item.condition}
-                  onChange={(e) => handleItemChange(index, "condition", e.target.value)}
+                  onChange={(e) =>
+                    handleItemChange(index, "condition", e.target.value)
+                  }
                 />
                 <input
                   type="number"
                   className="p-2 w-full border border-gray-300 rounded-md bg-base-100"
                   placeholder="Quantity"
                   value={item.quantity}
-                  onChange={(e) => handleItemChange(index, "quantity", e.target.value)}
+                  onChange={(e) =>
+                    handleItemChange(index, "quantity", e.target.value)
+                  }
                   min="1"
                   step="1"
                 />
@@ -185,7 +211,9 @@ const InventoryForm = () => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="notes" className="block text-sm font-medium">Notes</label>
+            <label htmlFor="notes" className="block text-sm font-medium">
+              Notes
+            </label>
             <textarea
               id="notes"
               className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
@@ -199,7 +227,7 @@ const InventoryForm = () => {
             className="bg-blue-500 text-white py-2 px-4 rounded w-full"
             disabled={loading}
           >
-            {loading ? 'Submitting...' : 'Add Data'}
+            {loading ? "Submitting..." : "Add Data"}
           </button>
         </form>
       </TitleCard>

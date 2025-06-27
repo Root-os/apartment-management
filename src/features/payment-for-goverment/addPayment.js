@@ -71,9 +71,12 @@ const AddGovBillPayment = () => {
       setDescription('');
     } catch (err) {
       setLoading(false);
-      setError('The end date must be beyond.');
+      // use backend error message if available
+      const resMessage = err.response?.data?.message || 'An error occurred. Please try again.';
+      setError(resMessage);
       setMessageType('error');
       setIsModalOpen(true);
+  
     }
   };
 
@@ -172,6 +175,7 @@ const AddGovBillPayment = () => {
                 onChange={(e) => setStatus(e.target.value)}
                 className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
+                <option value="" disabled>Select Status</option>
                 <option value="pending">Pending</option>
                 <option value="paid">Paid</option>
               </select>
@@ -185,9 +189,11 @@ const AddGovBillPayment = () => {
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
+                <option value="" disabled>Select Payment Method</option>
                 <option value="Bank Transfer">Bank Transfer</option>
                 <option value="Cash">Cash</option>
-                <option value="Mobile">Mobile</option>
+                <option value="Mobile">Mobile Banking</option>
+                <option value="telebirr">Telebirr</option>
               </select>
             </div>
           </div>
