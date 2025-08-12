@@ -633,6 +633,11 @@ const adminRoutes = [
         icon: <EyeIcon className={submenuIconClasses} />,
         name: "All Orders",
       },
+      {
+        path: "/app/all-booking",
+        icon: <EyeIcon className={submenuIconClasses} />,
+        name: "All Bookings",
+      },
     ],
   },
   {

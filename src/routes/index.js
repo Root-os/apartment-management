@@ -309,6 +309,7 @@ const tenantOrderPage = lazy(() =>
 );
 const myOrder = lazy(() => import("../pages/protected/order/myOrder"));
 const allOrders = lazy(() => import("../pages/protected/order/allOrder"));
+const BookingPage = lazy (() => import("../features/order/booking"));
 //asset
 const AssetAdd = lazy(() => import("../pages/protected/Asset/AssetAdd"));
 const AssetView = lazy(() => import("../pages/protected/Asset/AssetView"));
@@ -551,6 +552,7 @@ const adminRoutes = [
       { path: "/add-orderType", component: addOrderType },
       { path: "/view-order-types", component: orderType },
       { path: "/all-order", component: allOrders },
+      { path: "/all-booking", component: BookingPage },
     ],
   },
   {

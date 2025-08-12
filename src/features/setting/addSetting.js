@@ -252,7 +252,6 @@ const SettingForm = () => {
             />
           </div>
 
-
           <div className="flex justify-center items-center space-x-4">
             <button
               type="submit"

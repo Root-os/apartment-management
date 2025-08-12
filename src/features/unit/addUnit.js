@@ -23,6 +23,9 @@ const AddFloorUnit = () => {
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] =useState(null);
 
+  const [images, setImages] = useState([]);
+
+
   useEffect(() => {
     const fetchFloors = async () => {
       try {
@@ -68,32 +71,44 @@ const AddFloorUnit = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Create the request payload
-    const data = {
-      unitNumber,
-      size: parseFloat(size),
-      status,
-      availableEquipments, 
-      problems, 
-      floorId: parseInt(floorId),
-    };
-
     setLoading(true);
     setError('');
 
-    try { const response = await axios.post(
+    try {
+      const formData = new FormData();
+
+      formData.append('unitNumber', unitNumber);
+      formData.append('size', parseFloat(size));
+      formData.append('status', status);
+      formData.append('floorId', parseInt(floorId));
+
+      // Append arrays as JSON strings
+      formData.append('availableEquipments', JSON.stringify(availableEquipments));
+      formData.append('problems', JSON.stringify(problems));
+
+      // Append image files
+      images.forEach((image, index) => {
+        formData.append('images', image);
+      });
+
+      const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}unit`,
-        data
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
       );
 
       setModalOpen(true);
-      setMessageType('success')
-      setMessage('Unit Added Successfully')
+      setMessageType('success');
+      setMessage('Unit Added Successfully');
 
       // Reset form after submission
       setUnitNumber('');
       setSize('');
-      setStatus('');
+      setStatus('available');
       setAvailableEquipments([]);
       setProblems([]);
       setNewEquipment('');
@@ -101,8 +116,9 @@ const AddFloorUnit = () => {
       setRentedDate('');
       setVacatedDate('');
       setFloorId('');
+      setImages([]);
       setLoading(false);
-      window.location.href='/app/view-unit';
+      window.location.href = '/app/view-unit';
     } catch (err) {
       setLoading(false);
       setModalOpen(true);
@@ -115,6 +131,24 @@ const AddFloorUnit = () => {
       }
     }
   };
+
+  const handleImageChange = (e) => {
+  const selectedFiles = Array.from(e.target.files);
+
+  // Combine old and new files
+  const combinedFiles = [...images, ...selectedFiles];
+
+  // Limit total images to 10 max
+  if (combinedFiles.length > 10) {
+    setError('You can only upload up to 10 images.');
+    return;
+  }
+
+  setError('');
+  setImages(combinedFiles);
+};
+
+
 
   return (
     <>
@@ -137,7 +171,7 @@ const AddFloorUnit = () => {
 
         {/* Size */}
         <div>
-          <label className="block text-sm font-semibold mb-2">Size (in sq.ft.)</label>
+          <label className="block text-sm font-semibold mb-2">Bed Room</label>
           <input
             type="number"
             value={size}
@@ -247,6 +281,35 @@ const AddFloorUnit = () => {
               </option>
             ))}
           </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold mb-2">Upload Images</label>
+         <input
+            type="file"
+            multiple
+            onChange={handleImageChange}
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+          />
+
+          {images.length > 0 && (
+          <ul className="mt-2 flex space-x-4 overflow-x-auto">
+            {images.map((file, idx) => (
+              <li key={idx} className="flex justify-between items-center">
+                <span>{file.name}</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setImages(images.filter((_, i) => i !== idx));
+                  }}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  X
+                </button>
+              </li>
+            ))}
+          </ul>
+          )}
         </div>
 
         {/* Submit Button */}
