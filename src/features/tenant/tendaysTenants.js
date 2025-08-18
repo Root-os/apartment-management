@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import {useNavigate} from 'react-router-dom';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
@@ -8,6 +9,8 @@ const TenDaysTenant = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedTenant, setSelectedTenant] = useState(null);
+
+  const navigate = useNavigate();
 
   // Fetch tenant data from the API
   useEffect(() => {
@@ -83,7 +86,9 @@ const TenDaysTenant = () => {
             Detail
           </button>
           <button
-            onClick={() => navigateToRentAdd(row.unitId)}
+              onClick={() =>
+                      navigate(`/app/rent-collection-add?tenantId=${row.id}`)
+                    }
             className="bg-indigo-500 text-white py-1 px-3 rounded"
           >
             Rent
@@ -133,7 +138,7 @@ const TenDaysTenant = () => {
               <p><strong>National ID:</strong> {selectedTenant.nationalId}</p>
               <p><strong>Lease Start Date:</strong> {selectedTenant.leaseStartDate ? new Date(selectedTenant.leaseStartDate).toISOString().split('T')[0]: 'N/A'}</p>
               <p><strong>Lease End Date:</strong> {selectedTenant.leaseEndDate ? new Date(selectedTenant.leaseEndDate).toISOString().split('T')[0]: 'N/A'}</p>
-              {/* <p><strong>Rent Amount:</strong> {selectedTenant.rentAmount}</p> */}
+              <p><strong>Rent Amount:</strong> {selectedTenant.amount}</p>
               <p><strong>Remaining Days:</strong> {selectedTenant.remainingDays}</p>
               <p><strong>Payment Status:</strong> {selectedTenant.paymentStatus}</p>
               <p><strong>Additional Notes:</strong> {selectedTenant.additionalNotes}</p>

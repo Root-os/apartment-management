@@ -99,6 +99,7 @@ const FloorForm = () => {
             onChange={handleInputChange}
             className="bg-base-100 mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
+            <option value="">select status</option>
             <option value="active">active</option>
             <option value="inActive">inactive</option>
             <option value="under_construction">under_construction</option>
