@@ -493,6 +493,7 @@ const AddTenant = () => {
             </label>
             <input
               type="number"
+              min={0}
               value={advance}
               onChange={(e) => {
                 setAdvance(e.target.value);

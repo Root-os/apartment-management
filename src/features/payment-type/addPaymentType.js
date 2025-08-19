@@ -18,8 +18,8 @@ const PaymentTypeForm = () => {
     e.preventDefault();
 
     // Basic validation
-    if (!name || !description) {
-      setError("Both fields are required.");
+    if (!name ) {
+      setError("name is required.");
       return;
     }
 

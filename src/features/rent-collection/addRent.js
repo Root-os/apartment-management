@@ -111,6 +111,12 @@ const AddCollectedRent = () => {
           matchedTenant?.Tenant?.amount ?? matchedTenant.amount ?? "";
         setAmount(resolvedAmount);
         setLeaseEndDate(matchedTenant.leaseEndDate || "");
+
+       if (matchedTenant.leaseEndDate) {
+        const nextDay = new Date(matchedTenant.leaseEndDate);
+        nextDay.setDate(nextDay.getDate() + 1);
+        setPaymentDate(nextDay.toISOString().split("T")[0]);
+      }
       }
     }
   }, [tenants, rentCollections, tenantIdFromUrl]);
@@ -206,17 +212,26 @@ const AddCollectedRent = () => {
             <select
               id="tenantId"
               value={tenantId}
-              onChange={(e) => {
-                const selectedId = e.target.value;
-                setTenantId(selectedId);
+onChange={(e) => {
+  const selectedId = e.target.value;
+  setTenantId(selectedId);
 
-                const matched = tenants.find(
-                  (tenant) => tenant.id.toString() === selectedId
-                );
+  const matched = tenants.find(
+    (tenant) => tenant.id.toString() === selectedId
+  );
 
-                setAmount(matched?.amount || "");
-                setLeaseEndDate(matched?.leaseEndDate || "");
-              }}
+  if (matched) {
+    setAmount(matched?.amount || "");
+    setLeaseEndDate(matched?.leaseEndDate || "");
+
+    if (matched.leaseEndDate) {
+      const nextDay = new Date(matched.leaseEndDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+      setPaymentDate(nextDay.toISOString().split("T")[0]);
+    }
+  }
+}}
+
               className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               disabled={Boolean(tenantIdFromUrl)} // Disable only if tenantId came from parent
               required
@@ -288,7 +303,7 @@ const AddCollectedRent = () => {
               htmlFor="paymentDate"
               className="block text-sm font-medium text-white-700"
             >
-              Payment Date
+              Rent from Date:
             </label>
             <input
               type="date"
@@ -306,7 +321,7 @@ const AddCollectedRent = () => {
               htmlFor="nextDueDate"
               className="block text-sm font-medium text-white-700"
             >
-              Next Due Date
+              Next Due Date:
             </label>
             <input
               type="date"
