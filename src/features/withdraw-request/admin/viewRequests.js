@@ -594,119 +594,108 @@ useEffect(() => {
       )}
 
     {tenantDetailModalOpen && tenantDetail && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-xl max-h-[90vh] overflow-y-auto">
-      <h2 className="text-2xl font-semibold mb-4">Tenant Info</h2>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-xl max-h-[90vh] overflow-y-auto">
+          <h2 className="text-2xl font-semibold mb-4">Tenant Info</h2>
 
-      <div className="space-y-2 text-sm">
-        <p><strong>Full Name:</strong> {tenantDetail.fullName}</p>
+          <div className="space-y-2 text-sm">
+            <p><strong>Full Name:</strong> {tenantDetail.fullName}</p>
+            <p><strong>Requested at:</strong> </p>
 
-        <div className="mt-2">
-          <h3 className="font-medium">Unit Info</h3>
-          <p><strong>Available Equipments:</strong> {JSON.parse(tenantDetail.Unit?.availableEquipments || "[]").join(", ")}</p>
-          <p><strong>Problems:</strong> {JSON.parse(tenantDetail.Unit?.problems || "[]").join(", ")}</p>
-        </div>
+            <div className="mt-2">
+              <h3 className="font-medium">Unit Info</h3>
+              <p><strong>Available Equipments:</strong> {JSON.parse(tenantDetail.Unit?.availableEquipments || "[]").join(", ")}</p>
+              <p><strong>Problems:</strong> {JSON.parse(tenantDetail.Unit?.problems || "[]").join(", ")}</p>
+            </div>
 
-        <div className="mt-2">
-          <h3 className="font-medium">Rent Summary</h3>
-          {tenantDetail.latestRent ? (
-            <>
-              <p>
-                Rent up to{" "}
-                <strong>
-                  {new Date(tenantDetail.latestRent.nextDueDate).toLocaleDateString(undefined, {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </strong>{" "}
-                is <strong>paid</strong>.
-              </p>
-              {tenantDetail.WithdrawalRequests?.[0]?.terminationDate && (
-                (() => {
-                  const due = new Date(tenantDetail.latestRent.nextDueDate);
-                  const term = new Date(tenantDetail.WithdrawalRequests[0].terminationDate);
-                  const diff = Math.ceil((due - term) / (1000 * 60 * 60 * 24));
-                  if (diff > 0) {
-                    return <p>{diff} day(s) remaining.</p>;
-                  } else if (diff < 0) {
-                    return <p>{Math.abs(diff)} day(s) overdue.</p>;
-                  } else {
-                    return <p>Today is the due date.</p>;
-                  }
-                })()
-              )}
-            </>
-          ) : (
-             <p>
-              Rent has not been paid since{" "}
-              <strong>
-                {new Date(tenantDetail.leaseStartDate).toLocaleDateString(undefined, {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
-              </strong>.
-            </p>
-          )}
-        </div>
-
-        <div className="mt-2">
-          <h3 className="font-medium">Bill Payment Summary</h3>
-          {[...(tenantDetail.latestBills || [])].map(([id, bill], i) => {
-            const end = new Date(bill.endDate);
-            const term = new Date(tenantDetail.WithdrawalRequests?.[0]?.terminationDate);
-            const endDateStr = end.toLocaleDateString(undefined, {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-            });
-
-            const statusLower = bill.status.toLowerCase();
-            const statusReadable =
-              statusLower === "completed"
-                ? "paid"
-                : statusLower === "in progress"
-                ? "due"
-                : bill.status;
-
-            const diff = Math.ceil((end - term) / (1000 * 60 * 60 * 24));
-            let dateNote = "";
-            if (diff > 0) {
-              dateNote = `${diff} day(s) remaining.`;
-            } else if (diff < 0) {
-              dateNote = `${Math.abs(diff)} day(s) overdue.`;
-            } else {
-              dateNote = `Today is the due date.`;
-            }
-
-            return (
-              <div key={i} className="mb-2">
+            <div className="mt-2">
+              <h3 className="font-medium">Rent Summary</h3>
+              {tenantDetail.latestRent ? (
+                <>
+                  <p>
+                    Rent up to{" "}
+                    <strong>
+                      {new Date(tenantDetail.latestRent.nextDueDate).toISOString().split('T')[0]}
+                    </strong>{" "}
+                    is <strong>paid</strong>.
+                  </p>
+                  {tenantDetail.WithdrawalRequests?.[0]?.terminationDate && (
+                    (() => {
+                      const due = new Date(tenantDetail.latestRent.nextDueDate);
+                      const term = new Date(tenantDetail.WithdrawalRequests[0].terminationDate);
+                      const diff = Math.ceil((due - term) / (1000 * 60 * 60 * 24));
+                      if (diff > 0) {
+                        return <p>tenant has {diff} day(s).</p>;
+                      } else if (diff < 0) {
+                        return <p>{Math.abs(diff)} day(s) overdue or to be paid.</p>;
+                      } else {
+                        return <p>Free from dept. .No remaining</p>;
+                      }
+                    })()
+                  )}
+                </>
+              ) : (
                 <p>
-                  The <strong>{bill.BillType?.typeName?.trim()}</strong> bill up to {endDateStr} is{" "}
-                  <strong>{statusReadable}</strong>.
+                  Rent has not been paid since{" "}
+                  <strong>
+                    {new Date(tenantDetail.leaseStartDate).toISOString().split('T')[0]}
+                  </strong>.
                 </p>
-                <p>{dateNote}</p>
-              </div>
-            );
-          })}
+              )}
+            </div>
+
+            <div className="mt-2">
+              <h3 className="font-medium">Bill Payment Summary</h3>
+              {[...(tenantDetail.latestBills || [])].map(([id, bill], i) => {
+                const end = new Date(bill.endDate);
+                const term = new Date(tenantDetail.WithdrawalRequests?.[0]?.terminationDate);
+                const endDateStr = end.toISOString().split('T')[0];
+
+                const statusLower = bill.status.toLowerCase();
+                const statusReadable =
+                  statusLower === "completed"
+                    ? "paid"
+                    : statusLower === "in progress"
+                    ? "due"
+                    : bill.status;
+
+                const diff = Math.ceil((end - term) / (1000 * 60 * 60 * 24));
+                let dateNote = "";
+                if (diff > 0) {
+                  dateNote = `${diff} day(s) remaining.`;
+                } else if (diff < 0) {
+                  dateNote = `${Math.abs(diff)} day(s) to be paid.`;
+                } else {
+                  dateNote = `Free from dept. No remaining `;
+                }
+
+                return (
+                  <div key={i} className="mb-2">
+                    <p>
+                      The <strong>{bill.BillType?.typeName?.trim()}</strong> bill up to {endDateStr} is{" "}
+                      <strong>{statusReadable}</strong>.
+                    </p>
+                    <p>{dateNote}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="flex justify-end mt-4">
+            <button
+              onClick={() => {
+                setTenantDetailModalOpen(false);
+                setTenantDetail(null);
+              }}
+              className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
+            >
+              Close
+            </button>
+          </div>
         </div>
       </div>
-
-      <div className="flex justify-end mt-4">
-        <button
-          onClick={() => {
-            setTenantDetailModalOpen(false);
-            setTenantDetail(null);
-          }}
-          className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded"
-        >
-          Close
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+    )}
 
 
 

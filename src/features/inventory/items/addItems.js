@@ -34,7 +34,7 @@ const AddItem = () => {
     setMessage('');
     setError('');
 
-    if (!itemName || !expirationDate || !itemAmount || !itemCategoryId || !itemDetails || !minAmount) {
+    if (!itemName || !itemAmount || !itemCategoryId  || !minAmount) {
       setError('All fields are required.');
       return;
     }
@@ -102,7 +102,7 @@ const AddItem = () => {
               value={expirationDate}
               onChange={(e) => setExpirationDate(e.target.value)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
-              required
+              
             />
           </div>
 
@@ -168,7 +168,6 @@ const AddItem = () => {
               onChange={(e) => setItemDetails(e.target.value)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
               placeholder="Enter item details"
-              required
             ></textarea>
           </div>
 

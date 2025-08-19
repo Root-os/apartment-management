@@ -271,7 +271,7 @@ const handleDetailClick = (unit) => {
       accessor: "unitNumber",
     },
     {
-      Header: "Size (sq.m)",
+      Header: "Bed Room",
       accessor: "size",
     },
     {
@@ -367,7 +367,7 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Size (sq.m)</label>
+              <label className="block text-sm font-medium mb-2">Bed Room</label>
               <input
                 type="number"
                 value={newUnitData.size}
@@ -551,7 +551,7 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
             <h3 className="text-xl font-bold mb-2 text-blue-700">{unitDetails.unitNumber}</h3>
             
             <p><strong>Floor Number:</strong> {unitDetails.Floor?.floorNumber || "N/A"}</p>
-            <p><strong>Size:</strong> {unitDetails.size} sq ft</p>
+            <p><strong>Bed Room:</strong> {unitDetails.size} sq ft</p>
             <p><strong>Status:</strong> {unitDetails.status}</p>
 
             <div className="mt-3">

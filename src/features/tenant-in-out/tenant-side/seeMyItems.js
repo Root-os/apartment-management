@@ -42,7 +42,7 @@ const MyTenantItems = () => {
     {
       label: 'Registered At',
       key: 'createdAt',
-      render: (row) => new Date(row.createdAt).toLocaleDateString(),
+      render: (row) => new Date(row.createdAt).toISOString().split('T')[0],
     },
     { label: 'Status', key: 'status'},
   ];

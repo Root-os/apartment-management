@@ -23,8 +23,8 @@ const AddItemType = () => {
     setError('');
     
     // Check if both fields are filled
-    if (!categoryName || !description) {
-      setError('Both fields are required');
+    if (!categoryName) {
+      setError('type name is required');
       return;
     }
 
@@ -32,7 +32,7 @@ const AddItemType = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}item-types`, {
+      await axios.post(`${process.env.REACT_APP_BASE_URL}item-types`, {
         categoryName,
         description
       });
@@ -65,7 +65,7 @@ const AddItemType = () => {
             value={categoryName}
             onChange={(e) => setCategoryName(e.target.value)}
             className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
-            // placeholder="Enter type name"
+            placeholder="Enter type name"
             required
           />
         </div>
@@ -77,8 +77,7 @@ const AddItemType = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
-            // placeholder="Enter description"
-            required
+            placeholder="Enter description"
           ></textarea>
         </div>
 

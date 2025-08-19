@@ -207,11 +207,7 @@ const GenerateReceiptPage = () => {
     if (!payment) return <p className="text-center text-lg text-gray-700">No payment data available.</p>;
 
     const vendor = payment.Vendor;
-    const paymentDate = new Date(payment.paymentDate).toLocaleDateString("en-US", {
-        year: "numeric", 
-        month: "2-digit", 
-        day: "2-digit",
-    });
+    const paymentDate = new Date(payment.paymentDate).toISOString().split('T')[0];
 
     return (
         <div className="print-area max-w-3xl mx-auto my-6 print:max-w-full print:shadow-none print:border-none print:p-0">
