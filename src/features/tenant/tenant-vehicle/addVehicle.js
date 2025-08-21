@@ -76,7 +76,7 @@ const AddVehicleForm = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Car Plate */}
           <div>
-            <label htmlFor="carPlate" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="carPlate" className="block text-sm font-medium">
               Car Plate
             </label>
             <input
@@ -86,14 +86,14 @@ const AddVehicleForm = () => {
               placeholder="Car Plate"
               value={formData.carPlate}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="bg-base-100 w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
           </div>
 
           {/* Car Name */}
           <div>
-            <label htmlFor="carName" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="carName" className="block text-sm font-medium">
               Car Name
             </label>
             <input
@@ -103,14 +103,14 @@ const AddVehicleForm = () => {
               placeholder="Car Name"
               value={formData.carName}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="bg-base-100 w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
           </div>
 
           {/* Color */}
           <div>
-            <label htmlFor="color" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="color" className="block text-sm font-medium ">
               Color
             </label>
             <input
@@ -120,7 +120,7 @@ const AddVehicleForm = () => {
               placeholder="Color"
               value={formData.color}
               onChange={handleChange}
-              className="w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+              className="bg-base-100 w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
           </div>

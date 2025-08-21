@@ -12,7 +12,7 @@ const ItemsPage = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false); // Added for details modal
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [itemName, setItemName] = useState('');
   const [expirationDate, setExpirationDate] = useState('');
   const [itemAmount, setItemAmount] = useState('');
@@ -148,7 +148,10 @@ const handleAuditHistoryClick = (item) => {
     {
       key: 'expirationDate',
       label: 'Expiration Date',
-      render: (row) => new Date(row.expirationDate).toISOString().split('T')[0],
+      render: (row) =>
+        row.expirationDate
+          ? new Date(row.expirationDate).toISOString().split('T')[0]
+          : 'N/A'
     },
     { key: 'unit', label: 'Unit' },
     {
@@ -295,7 +298,6 @@ const handleAuditHistoryClick = (item) => {
                   value={itemDetails}
                   onChange={(e) => setItemDetails(e.target.value)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg"
-                  required
                 />
               </div>
               <div className="mb-4">
@@ -351,7 +353,10 @@ const handleAuditHistoryClick = (item) => {
                 <span className="font-medium">Minimum Amount:</span> {selectedItem.min_amount}
               </div>
               <div>
-                <span className="font-medium">Expiration Date:</span> {new Date(selectedItem.expirationDate).toISOString().split('T')[0]}
+               <span className="font-medium">Expiration Date:</span>{" "}
+                {selectedItem.expirationDate
+                  ? new Date(selectedItem.expirationDate).toISOString().split('T')[0]
+                  : 'N/A'}
               </div>
               <div>
                 <span className="font-medium">Details:</span> {selectedItem.itemDetails}

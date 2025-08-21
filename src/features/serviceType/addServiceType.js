@@ -17,20 +17,13 @@ const AddServiceType = () => {
   // Handle the form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Reset messages before submitting
     setMessage('');
     setError('');
-    
-    // Check if both fields are filled
-    if (!name || !description) {
+    if (!name ) {
       setError('Both fields are required');
       return;
     }
-
-    // Set loading state to true when sending the request
     setLoading(true);
-
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}service-type`, {
         name,
@@ -77,7 +70,6 @@ const AddServiceType = () => {
             onChange={(e) => setDescription(e.target.value)}
             className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
             // placeholder="Enter description"
-            required
           ></textarea>
         </div>
 

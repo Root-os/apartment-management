@@ -21,8 +21,8 @@ const FloorManagement = () => {
     rentedUnits: '',
     freeUnits: ''
   });
-  const [loading, setLoading] = useState(true);  // Loading state for page and actions
-  const [buttonLoading, setButtonLoading] = useState(false);  // Button loading state
+  const [loading, setLoading] = useState(true);  
+  const [buttonLoading, setButtonLoading] = useState(false);  
 
   const navigate = useNavigate();
 
@@ -36,7 +36,7 @@ const FloorManagement = () => {
         console.error("Error fetching floors:", error);
       })
       .finally(() => {
-        setLoading(false); // Set loading to false once fetch is complete
+        setLoading(false); 
       });
   }, []);
 
@@ -242,12 +242,11 @@ const handleDetailClick = (floor) => {
 
       {/* Detail Modal */}
       {isDetailModalOpen && floorDetails && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-scroll">
-            
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-auto p-4">
+          <div className="bg-base-100 p-6 rounded-lg max-w-4xl max-h-[80vh] overflow-y-scroll">
             {/* Floor Summary */}
             <h2 className="text-xl mb-2">Floor Detail</h2>
-            <p className="text-sm text-gray-700 mb-4">
+            <p className="text-sm  mb-4">
               <strong>Name:</strong> {floorDetails.floorNumber} &nbsp;|&nbsp;
               <strong>Status:</strong>{" "}
               <span className={`font-semibold ${
@@ -276,7 +275,7 @@ const handleDetailClick = (floor) => {
             {Array.isArray(floorDetails.freeUnits) && floorDetails.freeUnits.length > 0 ? (
               <ul className="space-y-3">
                 {floorDetails.freeUnits.map(unit => (
-                  <li key={unit.id} className="bg-gray-100 p-3 rounded">
+                  <li key={unit.id} className="bg-base-100 p-3 rounded">
                     <strong className="text-blue-700">Unit Number:</strong> {unit.unitNumber}<br />
                     <strong>Size:</strong> {unit.size} sq ft<br />
                     <strong>Status:</strong> {unit.status}<br />

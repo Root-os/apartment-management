@@ -53,7 +53,7 @@ const AddPurchaseForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!vendorId || !itemId || !amount || !price || !description || !expirationDate || !date || !itemCategoryId )  {
+    if (!vendorId || !itemId || !amount || !price || !description || !date || !itemCategoryId )  {
       setError('Please fill in all fields');
       return;
     }
@@ -210,6 +210,7 @@ const AddPurchaseForm = () => {
                 value={date} 
                 onChange={(e) => setDate(e.target.value)} 
                 className="p-2 border rounded bg-base-100"
+                required
               />
             </div>
 

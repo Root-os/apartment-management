@@ -270,7 +270,7 @@ const AssetAuditPage = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white-700 mb-1">Asset Type</label>
+                <label className="block text-sm font-medium text-white-700 mb-1">Asset </label>
                 <select
                   value={formData.asset_type_id}
                   onChange={(e) => setFormData({...formData, asset_type_id: e.target.value})}
@@ -286,7 +286,7 @@ const AssetAuditPage = () => {
                 </select>
               </div>
 
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-white-700 mb-1">Asset Name</label>
                 <input
                   type="text"
@@ -295,7 +295,7 @@ const AssetAuditPage = () => {
                   className="w-full bg-base-100 p-2 border rounded"
                   disabled={isItemAudit}
                 />
-              </div>
+              </div> */}
 
               <div>
                 <label className="block text-sm font-medium text-white-700 mb-1">Date</label>
@@ -407,7 +407,6 @@ const AssetAuditPage = () => {
             <div className="space-y-2">
               <p><strong>Item Name:</strong> {selectedAudit.Item ? selectedAudit.Item.itemName : 'N/A'}</p>
               <p><strong>Asset Type:</strong> {selectedAudit.AssetType ? selectedAudit.AssetType.name : 'N/A'}</p>
-              <p><strong>Asset Name:</strong> {selectedAudit.asset_name || 'N/A'}</p>
               <p><strong>Date:</strong> {selectedAudit.date ? new Date(selectedAudit.date).toISOString().split('T')[0]: 'N/A'}</p>
               <p><strong>Existing Amount:</strong> {selectedAudit.existing_amount || 0}</p>
               <p><strong>Damaged Amount:</strong> {selectedAudit.damaged_amount || 0}</p>
@@ -417,7 +416,7 @@ const AssetAuditPage = () => {
             <div className="mt-4 flex justify-end">
               <button
                 onClick={() => setDetailModalOpen(false)}
-                className="px-4 py-2 bg-gray-300 rounded"
+                className="px-4 py-2 bg-gray-300  rounded"
               >
                 Close
               </button>

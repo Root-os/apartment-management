@@ -93,7 +93,6 @@ const handleSubmit = async (e) => {
             onChange={(e) => setDescription(e.target.value)}
             className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
             // placeholder="Enter description"
-            required
           ></textarea>
         </div>
 

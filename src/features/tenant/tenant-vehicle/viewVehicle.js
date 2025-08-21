@@ -112,9 +112,9 @@ const TenantVehicles = () => {
         <p>No vehicles found for this tenant.</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white border border-gray-300 shadow-md">
+          <table className="min-w-full bg-base-100 border border-gray-300 shadow-md">
             <thead>
-              <tr className="bg-gray-100 text-left">
+              <tr className="bg-base-100 text-left">
                 <th className="py-2 px-4 border-b">Car Plate</th>
                 <th className="py-2 px-4 border-b">Car Name</th>
                 <th className="py-2 px-4 border-b">Color</th>
@@ -154,7 +154,7 @@ const TenantVehicles = () => {
 
       {modalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 rounded shadow-lg w-full max-w-md">
+          <div className="bg-base-100 p-6 rounded shadow-lg w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">Edit Vehicle</h2>
 
             <div className="mb-4">
@@ -164,7 +164,7 @@ const TenantVehicles = () => {
                 name="carPlate"
                 value={formData.carPlate}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded"
+                className="w-full px-3 py-2 border rounded bg-base-100"
               />
             </div>
 
@@ -175,7 +175,7 @@ const TenantVehicles = () => {
                 name="carName"
                 value={formData.carName}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded"
+                className="w-full px-3 py-2 border rounded bg-base-100"
               />
             </div>
 
@@ -186,7 +186,7 @@ const TenantVehicles = () => {
                 name="color"
                 value={formData.color}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border rounded"
+                className="w-full px-3 py-2 border rounded bg-base-100"
               />
             </div>
 

@@ -11,11 +11,11 @@ const AddParking = () => {
   const [tenantId, setTenantId] = useState("");
   const [timeIn, setTimeIn] = useState("");
   const [timeOut, setTimeOut] = useState("");
-  const [isTenant, setIsTenant] = useState(true); // Default to tenant
+  const [isTenant, setIsTenant] = useState(true); 
   const [parkingSpaceId, setParkingSpaceId] = useState(""); 
-  const [status, setStatus] = useState("onparking"); // Default status "onparking"
+  const [status, setStatus] = useState(""); 
   const [tenants, setTenants] = useState([]);
-  const [tenantCar, setTenantCar] = useState(null); // For tenant's car details
+  const [tenantCar, setTenantCar] = useState(null); 
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
@@ -265,10 +265,10 @@ const AddParking = () => {
               onChange={handleStatusChange}
               className="bg-base-100 w-full p-2 border border-gray-300 rounded"
             >
+              <option value="">select status</option>
               <option value="onparking">On Parking</option>
-              <option value="offparking">Off Parking</option>
-              <option value="reserved">Reserved</option>
-              <option value="vacant">Vacant</option>
+              <option value="completed">Completed</option>
+              <option value="ready to out">Ready to out</option>
             </select>
           </div>
 

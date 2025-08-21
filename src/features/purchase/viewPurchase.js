@@ -8,11 +8,11 @@ import LoadingComponent from '../../components/loading';
 const PurchasesPage = () => {
   const [data, setData] = useState([]);
   const [items, setItems] = useState([]);
-  const [itemCategories, setItemCategories] = useState([]); // To store item categories
-  const [vendors, setVendors] = useState([]); // Added vendor state
+  const [itemCategories, setItemCategories] = useState([]); 
+  const [vendors, setVendors] = useState([]); 
   const [selectedPurchase, setSelectedPurchase] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // State for detail modal
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); 
 
   // Form state variables
   const [vendorId, setVendorId] = useState('');
@@ -26,7 +26,6 @@ const PurchasesPage = () => {
   const [itemCategoryId, setItemCategoryId] = useState('');
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
-
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
@@ -40,6 +39,7 @@ const PurchasesPage = () => {
       })
       .catch((error) => {
         console.error('Error fetching purchases:', error);
+        
       });
 
     axios
@@ -236,136 +236,135 @@ const PurchasesPage = () => {
           onAdd={handleAddClick}
         />
       )}
-
       {/* Edit Modal */}
       {isEditModalOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
-    <div className="bg-base-100 p-6 rounded-md w-11/12 sm:w-1/3 max-h-[80vh] overflow-y-auto">
-      <h2 className="text-2xl font-bold mb-4">Edit Purchase</h2>
-      <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
-        <div className="mb-4">
-          <label htmlFor="vendorId" className="block text-sm font-medium text-white-700">Vendor</label>
-          <select
-            id="vendorId"
-            value={vendorId}
-            onChange={(e) => setVendorId(e.target.value)}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          >
-            <option value="">Select Vendor</option>
-            {vendors.map((vendor) => (
-              <option key={vendor.id} value={vendor.id}>
-                {vendor.fname} {vendor.lname}
-              </option>
-            ))}
-          </select>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
+          <div className="bg-base-100 p-6 rounded-md w-11/12 sm:w-1/3 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">Edit Purchase</h2>
+            <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
+              <div className="mb-4">
+                <label htmlFor="vendorId" className="block text-sm font-medium text-white-700">Vendor</label>
+                <select
+                  id="vendorId"
+                  value={vendorId}
+                  onChange={(e) => setVendorId(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="">Select Vendor</option>
+                  {vendors.map((vendor) => (
+                    <option key={vendor.id} value={vendor.id}>
+                      {vendor.fname} {vendor.lname}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-4">
+                <label htmlFor="amount" className="block text-sm font-medium text-white-700">Amount</label>
+                <input
+                  type="number"
+                  id="amount"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="1"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="price" className="block text-sm font-medium text-white-700">Price</label>
+                <input
+                  type="number"
+                  id="price"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="description" className="block text-sm font-medium text-white-700">Description</label>
+                <input
+                  type="text"
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="date" className="block text-sm font-medium text-white-700">Purchase Date</label>
+                <input
+                  type="date"
+                  id="date"
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="expirationDate" className="block text-sm font-medium text-white-700">Expiration Date</label>
+                <input
+                  type="date"
+                  id="expirationDate"
+                  value={expirationDate}
+                  onChange={(e) => setExpirationDate(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="itemId" className="block text-sm font-medium text-white-700">Item</label>
+                <select
+                  id="itemId"
+                  value={itemId}
+                  onChange={(e) => setItemId(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="">Select Item</option>
+                  {items.map((item) => (
+                    <option key={item.id} value={item.id}>{item.itemName}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-4">
+                <label htmlFor="itemCategoryId" className="block text-sm font-medium text-white-700">Category</label>
+                <select
+                  id="itemCategoryId"
+                  value={itemCategoryId}
+                  onChange={(e) => setItemCategoryId(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                >
+                  <option value="">Select Category</option>
+                  {itemCategories.map((category) => (
+                    <option key={category.id} value={category.id}>{category.typeName || category.categoryName}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                  disabled={loading}
+                >
+                  {loading ? 'Saving...' : 'Save'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="bg-gray-400 text-white px-4 py-2 rounded-md"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-        <div className="mb-4">
-          <label htmlFor="amount" className="block text-sm font-medium text-white-700">Amount</label>
-          <input
-            type="number"
-            id="amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            min="1"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="price" className="block text-sm font-medium text-white-700">Price</label>
-          <input
-            type="number"
-            id="price"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            min="0"
-            step="0.01"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="description" className="block text-sm font-medium text-white-700">Description</label>
-          <input
-            type="text"
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="date" className="block text-sm font-medium text-white-700">Purchase Date</label>
-          <input
-            type="date"
-            id="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="expirationDate" className="block text-sm font-medium text-white-700">Expiration Date</label>
-          <input
-            type="date"
-            id="expirationDate"
-            value={expirationDate}
-            onChange={(e) => setExpirationDate(e.target.value)}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        <div className="mb-4">
-          <label htmlFor="itemId" className="block text-sm font-medium text-white-700">Item</label>
-          <select
-            id="itemId"
-            value={itemId}
-            onChange={(e) => setItemId(e.target.value)}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          >
-            <option value="">Select Item</option>
-            {items.map((item) => (
-              <option key={item.id} value={item.id}>{item.itemName}</option>
-            ))}
-          </select>
-        </div>
-        <div className="mb-4">
-          <label htmlFor="itemCategoryId" className="block text-sm font-medium text-white-700">Category</label>
-          <select
-            id="itemCategoryId"
-            value={itemCategoryId}
-            onChange={(e) => setItemCategoryId(e.target.value)}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            required
-          >
-            <option value="">Select Category</option>
-            {itemCategories.map((category) => (
-              <option key={category.id} value={category.id}>{category.typeName || category.categoryName}</option>
-            ))}
-          </select>
-        </div>
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-            disabled={loading}
-          >
-            {loading ? 'Saving...' : 'Save'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsEditModalOpen(false)}
-            className="bg-gray-400 text-white px-4 py-2 rounded-md"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
+      )}
       {/* Detail Modal */}
       {isDetailModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
@@ -379,7 +378,7 @@ const PurchasesPage = () => {
             <p><strong>Single Price:</strong> {selectedPurchase?.price}</p>
             <p><strong>Total Price:</strong> {selectedPurchase?.totalPrice}</p>
             <p><strong>Description:</strong> {selectedPurchase?.description}</p>
-            <p><strong>Expiration Date:</strong> {new Date(selectedPurchase?.expirationDate).toISOString().split('T')[0]}</p>
+            <p><strong>Expiration Date:</strong> {selectedPurchase.expirationDate ? new Date(selectedPurchase?.expirationDate).toISOString().split('T')[0]: 'N/A'}</p>
             <p><strong>Purchase Date:</strong> {new Date(selectedPurchase?.date).toISOString().split('T')[0]}</p>
             {/* Add any other details you wish to show */}
             <div className="flex justify-end mt-4">

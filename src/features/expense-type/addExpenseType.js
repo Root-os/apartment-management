@@ -20,12 +20,10 @@ const AddExpense = () => {
     e.preventDefault(); 
 
     // Simple validation
-    if (!name || !description) {
-      setError('Both name and description are required.');
+    if (!name) {
+      setError(' name is required.');
       return;
     }
-
-    
     setError(null); 
     setSuccessMessage(null); 
 
@@ -75,7 +73,6 @@ const AddExpense = () => {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             className=" w-full p-2 border border-gray-300 rounded bg-base-100"
-            required
           />
         </div>
 

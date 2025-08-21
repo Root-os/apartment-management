@@ -71,7 +71,7 @@ const BuildingRulesPage = () => {
           placeholder="Search rules..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="border px-4 py-2 rounded w-1/3"
+          className="border px-4 py-2 rounded w-1/3 bg-base-100"
         />
         <button
           onClick={() => navigate('/app/law-letter')}
@@ -82,11 +82,11 @@ const BuildingRulesPage = () => {
       </div>
 
       <table className="table-auto w-full border-collapse border border-gray-300 text-left">
-        <thead className="bg-gray-100">
+        <thead className="bg-base-100">
           <tr>
             <th className="px-4 py-2 border">#</th>
             <th className="px-4 py-2 border">Description</th>
-            <th className="px-4 py-2 border">Actions</th>
+            <th className="px-2 py-2 border">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -95,7 +95,7 @@ const BuildingRulesPage = () => {
               <td className="px-4 py-2 border">{index + 1 + (currentPage - 1) * rowsPerPage}</td>
               <td className="px-4 py-2 border">{rule.description}</td>
           <td className="px-4 py-2 border">
-            <div className="flex items-center justify-end space-x-2">
+            <div className="flex items-center justify-start space-x-2">
                 <button
                 onClick={() => setEditRule(rule)}
                 className="bg-blue-500 text-white px-2 py-1 text-sm rounded"
@@ -116,11 +116,10 @@ const BuildingRulesPage = () => {
       </table>
 
       {/* Pagination Controls */}
-      <div className="flex justify-between items-center mt-4">
-        <div>
-          :
+      <div className="flex justify-between items-center mt-4 ">
+        <div >
           <select
-            className="ml-2 border rounded px-2 py-1"
+            className="ml-2 border rounded px-2 py-1 "
             value={rowsPerPage}
             onChange={(e) => setRowsPerPage(Number(e.target.value))}
           >
@@ -151,7 +150,7 @@ const BuildingRulesPage = () => {
       {/* Edit Modal */}
       {editRule && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white rounded shadow-lg p-6 w-1/3">
+          <div className="bg-base-100 rounded shadow-lg p-6 w-1/3">
             <h2 className="text-lg font-semibold mb-4">Edit Rule</h2>
             <textarea
               className="w-full border rounded p-2 mb-4"
@@ -174,7 +173,7 @@ const BuildingRulesPage = () => {
       {/* Delete Modal */}
       {deleteRule && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white rounded shadow-lg p-6 w-1/3">
+          <div className="bg-base-100 rounded shadow-lg p-6 w-1/3">
             <h2 className="text-lg font-semibold mb-4">Delete Rule</h2>
             <p>Are you sure you want to delete this rule?</p>
             <div className="flex justify-end mt-4 space-x-2">

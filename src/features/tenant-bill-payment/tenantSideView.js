@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import TableComponent from "../../components/table";
 import Modal from "../../components/Modal";
+import Loading from "../../components/loading";
 
 const TenantPaymentHistory = () => {
   const [payments, setPayments] = useState([]);
@@ -51,11 +52,11 @@ const TenantPaymentHistory = () => {
       label: "End Date",
       render: (p) => p.endDate ? new Date(p.endDate).toISOString().split("T")[0] : "N/A",
     },
-    {
-      key: "paymentDate",
-      label: "Payment Date",
-      render: (p) => p.paymentDate ? new Date(p.paymentDate).toISOString().split("T")[0] : "N/A",
-    },
+    // {
+    //   key: "paymentDate",
+    //   label: "Payment Date",
+    //   render: (p) => p.paymentDate ? new Date(p.paymentDate).toISOString().split("T")[0] : "N/A",
+    // },
     { key: "paymentMethod", label: "Payment Method" },
     { key: "status", label: "Status" },
   ];
@@ -64,7 +65,7 @@ const TenantPaymentHistory = () => {
     <div className="p-4">
 
       {isLoading ? (
-        <p>Loading payment history...</p>
+        <Loading/>
       ) : (
         <TableComponent
           title="Payment Records"

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import Loading from '../../components/loading';
 
 const TenantRentPage = () => {
   const [tenantInfo, setTenantInfo] = useState(null);
@@ -40,20 +41,20 @@ const TenantRentPage = () => {
 
   const columns = [
     {
-      key: 'paymentDate',
+      key: 'Rent From Date',
       label: 'Payment Date',
       render: (row) => new Date(row.paymentDate).toISOString().split('T')[0],
+    },
+    {
+      key: 'nextDueDate',
+      label: 'Next Due Date',
+      render: (row) => new Date(row.nextDueDate).toISOString().split('T')[0],
     },
     { key: 'paidDays', label: 'Paid Days' },
     {
       key: 'amountPaid',
       label: 'Amount Paid',
       render: (row) => `${Math.ceil(row.amountPaid)} ETB`,
-    },
-    {
-      key: 'nextDueDate',
-      label: 'Next Due Date',
-      render: (row) => new Date(row.nextDueDate).toISOString().split('T')[0],
     },
     { key: 'status', label: 'Status' },
     { key: 'paymentMethod', label: 'Method' },
@@ -62,7 +63,7 @@ const TenantRentPage = () => {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       {loading ? (
-        <p className="text-center mt-10">Loading...</p>
+      <Loading/>
       ) : (
         <>
           <TableComponent

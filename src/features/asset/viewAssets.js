@@ -176,7 +176,7 @@ const AssetPage = () => {
                   </button>
                   <button
                     onClick={() => handleViewAuditClick(row.id)}
-                    className="bg-purple-500 text-white px-2 py-1 rounded"
+                    className="bg-green-500 text-white px-2 py-1 rounded"
                   >
                     View Audit
                   </button>

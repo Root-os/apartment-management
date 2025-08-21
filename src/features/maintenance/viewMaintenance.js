@@ -169,11 +169,13 @@ const openEditModal = (record) => {
       );
       setMaintenanceData(updatedData);
       closeModal();
+      setIsModalOpen(false)
   
       setModalOpen(true);
       setMessageType('success');
       setMessage('Maintenance data updated successfully!');
     } catch (err) {
+      closeModal();
       setModalOpen(true);
       setMessageType('error');
       setMessage('Unable to edit Maintenance data');
