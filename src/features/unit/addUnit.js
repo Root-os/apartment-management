@@ -171,7 +171,7 @@ const AddFloorUnit = () => {
 
         {/* Size */}
         <div>
-          <label className="block text-sm font-semibold mb-2">Bed Room</label>
+          <label className="block text-sm font-semibold mb-2">Size (m²)</label>
           <input
             type="number"
             value={size}
