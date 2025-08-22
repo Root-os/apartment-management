@@ -23,7 +23,6 @@ const HistoryModal = ({ isOpen, onClose, tenantInfo, paymentHistory }) => {
                   <th className="py-2 px-4 border-b dark:border-gray-700">Payment Date</th>
                   <th className="py-2 px-4 border-b dark:border-gray-700">Paid Days</th>
                   <th className="py-2 px-4 border-b dark:border-gray-700">Payment Method</th>
-                  <th className="py-2 px-4 border-b dark:border-gray-700">Payment Frequency</th>
                   <th className="py-2 px-4 border-b dark:border-gray-700">Next Due Date</th>
                   <th className="py-2 px-4 border-b dark:border-gray-700">Status</th>
                 </tr>
@@ -35,7 +34,6 @@ const HistoryModal = ({ isOpen, onClose, tenantInfo, paymentHistory }) => {
                     <td className="py-2 px-4 border-b dark:border-gray-700">{new Date(payment.paymentDate).toISOString().split('T')[0]}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-700">{payment.paidDays}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-700">{payment.paymentMethod}</td>
-                    <td className="py-2 px-4 border-b dark:border-gray-700">{payment.paymentFrequency}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-700">{new Date(payment.nextDueDate).toISOString().split('T')[0]}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-700">{payment.status}</td>
                   </tr>

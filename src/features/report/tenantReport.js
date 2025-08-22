@@ -270,8 +270,8 @@ const TenantReport = () => {
               <p><strong>Additional Notes:</strong> {currentTenant.additionalNotes}</p>
               <p><strong>Advance:</strong> {currentTenant.advance}</p>
               <p><strong>TIN:</strong> {currentTenant.tin}</p>
-              <p><strong>Car Plate:</strong> {currentTenant.carPlate}</p>
-              <p><strong>Car Name:</strong> {currentTenant.carName}</p>
+              <p><strong>Car Plate:</strong> {currentTenant.TenantVehicles?.[0]?.carPlate}</p>
+              <p><strong>Car Name:</strong> {currentTenant.TenantVehicles?.[0]?.carName}</p>
               <p><strong>Status:</strong> {currentTenant.status}</p>
               <p><strong>Unit Number:</strong> {currentTenant.Unit?.unitNumber}</p>
               <p><strong>Floor Number:</strong> {currentTenant.Floor?.floorNumber}</p>

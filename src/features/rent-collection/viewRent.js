@@ -362,10 +362,10 @@ const RentCollectionPage = () => {
                 >
                   <option value="Cash">Cash</option>
                   <option value="Bank">Bank</option>
-                  <option value="Mobile">Mobile</option>
+                  <option value="Mobile Banking">Mobile</option>
                 </select>
               </div>
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">Payment Frequency</label>
                 <select
                   value={currentRent?.paymentFrequency || ''}
@@ -376,7 +376,7 @@ const RentCollectionPage = () => {
                   <option value="Quarterly">Quarterly</option>
                   <option value="Yearly">Yearly</option>
                 </select>
-              </div>
+              </div> */}
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">Status</label>
                 <select
@@ -389,7 +389,7 @@ const RentCollectionPage = () => {
                   <option value="Overdue">Overdue</option>
                 </select>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-end space-x-2">
                 <button type="button" onClick={closeModals} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
                 <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
               </div>
@@ -401,7 +401,7 @@ const RentCollectionPage = () => {
       {/* Delete Confirmation Modal */}
       {deleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white p-6 rounded-lg w-full max-w-lg mx-4">
+          <div className="bg-base-100 p-6 rounded-lg w-full max-w-lg mx-4">
             <h2 className="text-xl mb-4">Are you sure you want to delete this rent collection?</h2>
             <div className="flex justify-end space-x-1">
               <button onClick={closeModals} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
@@ -414,7 +414,7 @@ const RentCollectionPage = () => {
       {/* Detail Modal */}
       {detailsModalOpen && currentRent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 px-4">
-          <div className="bg-white p-6 rounded-lg w-full max-w-2xl mx-4">
+          <div className="bg-base-100 p-6 rounded-lg w-full max-w-2xl mx-4">
             <h2 className="text-xl mb-4">Details for {currentRent.Tenant.fullName}</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <p><strong>Tenant Name:</strong> {currentRent.Tenant.fullName}</p>
@@ -425,7 +425,6 @@ const RentCollectionPage = () => {
               <p><strong>Paid To:</strong> {new Date(currentRent.nextDueDate).toISOString().split('T')[0]}</p>
               <p><strong>Unit Number:</strong> {currentRent.Tenant.Unit.unitNumber}</p>
               <p><strong>Paid Days:</strong> {currentRent.paidDays}</p>
-              <p><strong>Payment Frequency:</strong> {currentRent.paymentFrequency}</p>
               <p><strong>Next Due Date:</strong> {new Date(currentRent.nextDueDate).toISOString().split('T')[0]}</p>
               <p><strong>Payment Statuss:</strong> {currentRent.status}</p>
             </div>
