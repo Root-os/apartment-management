@@ -51,7 +51,7 @@ const AddBuildingLaw = () => {
             rows="3"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Enter the rule description..."
+            placeholder="Enter the rule..."
           />
         </div>
 
