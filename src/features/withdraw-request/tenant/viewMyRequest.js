@@ -121,19 +121,25 @@ const ViewMyRequest = () => {
     { label: 'Deposit Refund Status', key: 'depositRefundStatus' },
     { label: 'Tenant Feedback', key: 'tenantFeedback' },
     {
-      key: 'actions',
-      label: 'Actions',
-      render: (row) => (
-        <div className="flex space-x-1">
-          <button
-            onClick={() => handleFeedbackClick(row)}
-            className="bg-blue-500 text-white py-1 px-4 rounded mr-2"
-          >
-            Feedback
-          </button>
-        </div>
-      ),
-    }
+  key: 'actions',
+  label: 'Actions',
+  render: (row) => (
+    <div className="flex space-x-1">
+      <button
+        onClick={() => handleFeedbackClick(row)}
+        className={`py-1 px-4 rounded mr-2 ${
+          row.tenantFeedback
+            ? 'bg-gray-400 cursor-not-allowed text-white'
+            : 'bg-blue-500 text-white hover:bg-blue-600'
+        }`}
+        disabled={!!row.tenantFeedback}
+      >
+        Feedback
+      </button>
+    </div>
+  ),
+}
+
   ];
 
   const handleAddClick = () => {

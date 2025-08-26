@@ -22,11 +22,9 @@ const PaymentTypeForm = () => {
       setError("name is required.");
       return;
     }
-
     setLoading(true);
     setMessage("");
     setError("");
-
     try {
       await axios.post(
         `${process.env.REACT_APP_BASE_URL}payment-types`,
@@ -40,7 +38,6 @@ const PaymentTypeForm = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage("Payment type added successfully!");
-
       setName("");
       setDescription("");
     } catch (err) {

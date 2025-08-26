@@ -73,7 +73,15 @@ const RevokePermissionsPage = () => {
       .map((perm) => perm.id.toString());
 
     setAssignedPermissionIds(assigned);
-    setSelectedPermissionIds([]); // clear selection when role changes
+    setSelectedPermissionIds([]); 
+    
+      const selectedRole = roles.find((r) => r.id.toString() === selectedRoleId);
+  const assignedPermNames = fullPermissions
+    .filter((perm) => assigned.includes(perm.id.toString()))
+    .map((perm) => perm.name);
+
+  console.log(`Selected Role: ${selectedRole?.name}`, assignedPermNames);
+    
   }, [selectedRoleId, fullPermissions]);
 
   const togglePermission = (id) => {

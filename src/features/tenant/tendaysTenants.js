@@ -185,10 +185,10 @@ const TenDaysTenant = () => {
                 <strong>TIN:</strong> {selectedTenant.tin}
               </p>
               <p>
-                <strong>Car Plate:</strong> {selectedTenant.carPlate}
+                <strong>Car Plate:</strong> {selectedTenant.TenantVehicles?.[0]?.carPlate}
               </p>
               <p>
-                <strong>Car Name:</strong> {selectedTenant.carName}
+                <strong>Car Name:</strong> {selectedTenant.TenantVehicles?.[0]?.carName}
               </p>
               <p>
                 <strong>Status:</strong> {selectedTenant.status}

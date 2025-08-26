@@ -244,7 +244,7 @@ const AddCollectedRent = () => {
             </select>
           </div>
           {tenantId && (
-            <div className="mb-4 p-3 rounded-lg text-gray-800 shadow flex space-x-6">
+            <div className="mb-4 p-3 rounded-lg text-white-800 shadow flex space-x-6">
               {leaseEndDate && (
                 <div>
                   Lease End Date:{" "}

@@ -144,11 +144,6 @@ const tenantRoutes = [
     ],
   },
   {
-    path: "/app/law-letter",
-    icon: <EyeIcon className={submenuIconClasses} />,
-    name: "Building Law ",
-  },
-  {
     path: "",
     icon: <WalletIcon className={`${iconClasses} inline`} />,
     name: "Payment History",
@@ -177,7 +172,7 @@ const tenantRoutes = [
       },
     ],
   },
-    {
+  {
     path: "",
     icon: <ArrowUpTrayIcon className={`${iconClasses} inline`} />,
     name: "Item Out Request",
@@ -194,6 +189,12 @@ const tenantRoutes = [
       },
     ],
   },
+    {
+    path: "/app/law-letter",
+    icon: <EyeIcon className={submenuIconClasses} />,
+    name: "Building Law ",
+  },
+
 ];
 
 const employeeRoutes = [
@@ -400,7 +401,7 @@ const adminRoutes = [
   {
     path: "",
     icon: <WalletIcon className={`${iconClasses} inline`} />,
-    name: "Finance ",
+    name: "Finance",
     submenu: [
       {
         path: "/app/add-bill-type",
@@ -502,7 +503,7 @@ const adminRoutes = [
   {
     path: "",
     icon: <CubeIcon className={`${iconClasses} inline`} />,
-    name: "Inventory ",
+    name: "Inventory",
     submenu: [
       {
         path: "/app/item-type-add",
