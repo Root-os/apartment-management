@@ -145,14 +145,14 @@ const handleAuditHistoryClick = (item) => {
       label: 'Item Amount',
       render: (row) => Math.round(row.itemAmount)
     },
-    {
-      key: 'expirationDate',
-      label: 'Expiration Date',
-      render: (row) =>
-        row.expirationDate
-          ? new Date(row.expirationDate).toISOString().split('T')[0]
-          : 'N/A'
-    },
+    // {
+    //   key: 'expirationDate',
+    //   label: 'Expiration Date',
+    //   render: (row) =>
+    //     row.expirationDate
+    //       ? new Date(row.expirationDate).toISOString().split('T')[0]
+    //       : 'N/A'
+    // },
     { key: 'unit', label: 'Unit' },
     {
       label: 'Actions',
@@ -263,11 +263,8 @@ const handleAuditHistoryClick = (item) => {
                     <option value="Kilogram">Kilogram (kg)</option>
                     <option value="Gram">Gram (g)</option>
                     <option value="Liter">Liter (L)</option>
-                    <option value="Milliliter">Milliliter (ml)</option>
                     <option value="Meter">Meter (m)</option>
-                    <option value="Centimeter">Centimeter (cm)</option>
                     <option value="Box">Box</option>
-                    <option value="Pallet">Pallet</option>
                     <option value="Pack">Pack</option>
               </select>
               </div>

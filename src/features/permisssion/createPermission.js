@@ -71,7 +71,7 @@ const AddPermissionPage = () => {
           className="bg-base-100 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">Select a permission</option>
-          <option value="Building">Finance</option>
+          <option value="Building">Building</option>
           <option value="Tenant">Tenant</option>
           <option value="Employee">Employee</option>
           <option value="Finance">Finance</option>

@@ -401,7 +401,7 @@ const adminRoutes = [
   {
     path: "",
     icon: <WalletIcon className={`${iconClasses} inline`} />,
-    name: "Finance ",
+    name: "Finance",
     submenu: [
       {
         path: "/app/add-bill-type",
@@ -503,7 +503,7 @@ const adminRoutes = [
   {
     path: "",
     icon: <CubeIcon className={`${iconClasses} inline`} />,
-    name: "Inventory ",
+    name: "Inventory",
     submenu: [
       {
         path: "/app/item-type-add",

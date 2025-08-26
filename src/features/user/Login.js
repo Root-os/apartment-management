@@ -70,7 +70,7 @@ function Login() {
   return (
     <div
       className="min-h-screen flex justify-center items-center "
-      style={{ backgroundImage: 'url(/gara.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}
+      style={{ backgroundImage: 'url(/capital.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}
     >
       <div className="card mx-auto w-full max-w-xl shadow-xl">
         <div className="  rounded-xl">

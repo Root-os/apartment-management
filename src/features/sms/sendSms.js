@@ -80,7 +80,7 @@ const SendNotificationPage = () => {
 
   return (
     <>
-      <TitleCard title="Send Notification" topMargin="mt-1">
+      <TitleCard title="Send SMS" topMargin="mt-1">
 
       {feedback.message && (
         <div

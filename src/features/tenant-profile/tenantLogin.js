@@ -52,7 +52,7 @@ const TenantLoginPage = () => {
     <div
       className="min-h-screen flex items-center justify-center relative"
       style={{
-        backgroundImage: 'url(/bg.jpg)',
+        backgroundImage: 'url(/capital.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}

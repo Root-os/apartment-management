@@ -4,6 +4,7 @@ import axios from "axios";
 import html2pdf from "html2pdf.js";
 import { useNavigate } from 'react-router-dom';
 import { HiPrinter, HiShare, HiDownload } from "react-icons/hi";
+import Loading from '../../components/loading';
 
 const LetterDetailPage = () => {
   const { state } = useLocation();
@@ -243,7 +244,7 @@ const LetterDetailPage = () => {
   };
 
   if (loading) {
-    return <p className="text-center text-lg text-gray-700 print:hidden">Loading company information...</p>;
+    <Loading/>
   }
 
   if (!letter) {

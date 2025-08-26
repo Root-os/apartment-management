@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import TitleCard from '../../components/Cards/TitleCard';
+import Loading from '../../components/loading';
 
 const LetterResponseAdminSide = () => {
   const { letterId } = useParams();
@@ -44,7 +45,7 @@ const LetterResponseAdminSide = () => {
   };
 
   if (error) return <div className="p-6 text-red-600 text-center font-semibold">{error}</div>;
-  if (!response) return <div className="p-6 text-center text-gray-500">Loading response...</div>;
+  if (!response) return <Loading/>
 
   const letterDescription = response?.Letter?.description || "N/A";
 
