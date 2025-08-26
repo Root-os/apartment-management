@@ -23,8 +23,8 @@ const handleSubmit = async (e) => {
     setError('');
   
     // Check if both fields are filled
-    if (!name || !description) {
-      setError('Both fields are required');
+    if (!name ) {
+      setError('name is required');
       return;
     }
   
