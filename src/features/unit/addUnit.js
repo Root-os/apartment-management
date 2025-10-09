@@ -24,6 +24,8 @@ const AddFloorUnit = () => {
   const [message, setMessage] =useState(null);
 
   const [images, setImages] = useState([]);
+  const [price, setPrice] = useState(null);
+  const [rent, setRent] = useState(null);
 
 
   useEffect(() => {
@@ -38,6 +40,15 @@ const AddFloorUnit = () => {
 
     fetchFloors();
   }, []);
+
+  useEffect(() => {
+    if (size && price) {
+      setRent(parseFloat(size) * parseFloat(price));
+    } else {
+      setRent('');
+    }
+  }, [size, price]);
+
 
   // Add new equipment
   const handleAddEquipment = () => {
@@ -91,6 +102,9 @@ const AddFloorUnit = () => {
         formData.append('images', image);
       });
 
+      formData.append('pricePerSquare', parseFloat(price));
+      formData.append('rentAmount', parseFloat(rent));
+
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}unit`,
         formData,
@@ -117,6 +131,8 @@ const AddFloorUnit = () => {
       setVacatedDate('');
       setFloorId('');
       setImages([]);
+      setPrice('');
+      setRent('');
       setLoading(false);
       window.location.href = '/app/view-unit';
     } catch (err) {
@@ -176,6 +192,31 @@ const AddFloorUnit = () => {
             type="number"
             value={size}
             onChange={(e) => setSize(e.target.value)}
+            required
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+             min="1"                
+             step="1"
+          />
+        </div>
+
+        <div>
+          <label>Price per square</label>
+          <input 
+            type='number'
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            required
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+             min="1"                
+             step="1"
+          />
+        </div>
+        <div>
+          <label>Rent Amount</label>
+          <input
+            type='number'
+            value={rent}
+            readOnly
             required
             className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
              min="1"                
