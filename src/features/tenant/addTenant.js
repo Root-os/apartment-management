@@ -72,6 +72,18 @@ const AddTenant = () => {
     }
   };
 
+  const fetchUnitDetails = async (unitId) => {
+  try {
+    const response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit/${unitId}`);
+    const rent = response.data?.rentAmount || '';
+    setAmount(rent);
+  } catch (err) {
+    console.error('Failed to fetch unit details:', err);
+    setErrors((prev) => ({ ...prev, api: 'Failed to fetch unit rent.' }));
+  }
+};
+
+
   // Validation functions for each field
   const validateFullName = (value) => {
     const nameRegex = /^[A-Za-z\s]{2,30}$/;
@@ -391,10 +403,18 @@ const AddTenant = () => {
             </label>
             <select
               value={unitId}
-              onChange={(e) => {
-                setUnitId(e.target.value);
-                setErrors((prev) => ({ ...prev, unitId: validateUnitId(e.target.value) }));
-              }}
+onChange={(e) => {
+  const selectedUnitId = e.target.value;
+  setUnitId(selectedUnitId);
+  setErrors((prev) => ({ ...prev, unitId: validateUnitId(selectedUnitId) }));
+
+  if (selectedUnitId) {
+    fetchUnitDetails(selectedUnitId); // ← auto-fetch rent
+  } else {
+    setAmount(''); // clear if nothing selected
+  }
+}}
+
               className={`bg-base-100 w-full p-3 border rounded-md ${
                 errors.unitId ? 'border-red-500' : 'border-gray-300'
               }`}
@@ -407,6 +427,24 @@ const AddTenant = () => {
               ))}
             </select>
             {errors.unitId && <p className="text-red-500 text-sm mt-1">{errors.unitId}</p>}
+          </div>
+
+          {/* Amount */}
+          <div>
+          <label className="block text-sm font-semibold mb-2">
+              Rent <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              value={amount}
+              min="o"
+              step="1"
+              readOnly
+              className={`bg-base-100 w-full p-3 border rounded-md ${
+                errors.amount ? 'border-red-500' : 'border-gray-300'
+              }`}
+            />
+            {errors.amount && <p className="text-red-500 text-sm mt-1">{errors.amount}</p>}
           </div>
 
           {/* Lease Start Date */}
@@ -452,29 +490,7 @@ const AddTenant = () => {
             {errors.leaseEndDate && <p className="text-red-500 text-sm mt-1">{errors.leaseEndDate}</p>}
           </div>
 
-          {/* Amount */}
-          <div>
-          <label className="block text-sm font-semibold mb-2">
-              Rent <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="number"
-              value={amount}
-              min="o"
-              step="1"
-              onChange={(e) => {
-                setAmount(e.target.value);
-                setErrors((prev) => ({
-                  ...prev,
-                  amount: validateAmount(e.target.value, amount),
-                }));
-              }}
-              className={`bg-base-100 w-full p-3 border rounded-md ${
-                errors.amount ? 'border-red-500' : 'border-gray-300'
-              }`}
-            />
-            {errors.amount && <p className="text-red-500 text-sm mt-1">{errors.amount}</p>}
-          </div>
+
 
           {/* Additional Notes */}
           <div>

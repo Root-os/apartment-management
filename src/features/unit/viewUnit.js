@@ -24,7 +24,7 @@ const UnitList = () => {
   const [selectedStatus, setSelectedStatus] = useState([]);
   const [filteredUnits, setFilteredUnits] = useState([]);
 
-  const [newUnitData, setNewUnitData] = useState({
+const [newUnitData, setNewUnitData] = useState({
     unitNumber: '',
     size: '',
     status: '',
@@ -33,8 +33,11 @@ const UnitList = () => {
     rentedDate: '',
     vacatedDate: '',
     floorId: '',
-    images: []
-  });
+    images: [],
+    pricePerSquare: '',
+    rentAmount: ''
+});
+
   const [newEquipment, setNewEquipment] = useState("");
   const [newProblem, setNewProblem] = useState("");
 
@@ -63,17 +66,31 @@ const UnitList = () => {
     fetchFloorData();
   }, []);
 
+  useEffect(() => {
+    const size = parseFloat(newUnitData.size) || 0;
+    const price = parseFloat(newUnitData.pricePerSquare) || 0;
+    const rent = size * price;
+
+    setNewUnitData(prev => ({
+        ...prev,
+        rentAmount: rent.toFixed(2) // 2 decimals
+    }));
+}, [newUnitData.size, newUnitData.pricePerSquare]);
+
+
   const handleEditClick = (unit) => {
     setSelectedUnit(unit);
-    setNewUnitData({
-      unitNumber: unit.unitNumber,
-      size: unit.size,
-      status: unit.status,
-      availableEquipments: Array.isArray(unit.availableEquipments) ? unit.availableEquipments : JSON.parse(unit.availableEquipments),
-      problems: Array.isArray(unit.problems) ? unit.problems : JSON.parse(unit.problems),
-      floorId: unit.floorId,
-      images: unit.images || []
-    });
+setNewUnitData({
+    unitNumber: unit.unitNumber,
+    size: unit.size,
+    status: unit.status,
+    availableEquipments: Array.isArray(unit.availableEquipments) ? unit.availableEquipments : JSON.parse(unit.availableEquipments),
+    problems: Array.isArray(unit.problems) ? unit.problems : JSON.parse(unit.problems),
+    floorId: unit.floorId,
+    images: unit.images || [],
+    pricePerSquare: unit.pricePerSquare || '',
+    rentAmount: unit.rentAmount || ''
+});
     setIsEditModalOpen(true);
   };
 
@@ -275,6 +292,10 @@ const handleDetailClick = (unit) => {
       accessor: "size",
     },
     {
+      Header: "Rent",
+      accessor: "rentAmount"
+    },
+    {
       Header: "Status",
       accessor: "status",
     },
@@ -366,17 +387,40 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Size (m²)</label>
-              <input
-                type="number"
-                value={newUnitData.size}
-                onChange={(e) => setNewUnitData({ ...newUnitData, size: e.target.value })}
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-                 min="1"                
-                 step="1"
-              />
-            </div>
+<div className="mb-4">
+  <label className="block text-sm font-medium mb-2">Size (m²)</label>
+  <input
+    type="number"
+    value={newUnitData.size}
+    onChange={(e) => setNewUnitData({ ...newUnitData, size: e.target.value })}
+    className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+    min="1"
+    step="1"
+  />
+</div>
+
+<div className="mb-4">
+  <label className="block text-sm font-medium mb-2">Price per (m²)</label>
+  <input
+    type="number"
+    value={newUnitData.pricePerSquare}
+    onChange={(e) => setNewUnitData({ ...newUnitData, pricePerSquare: e.target.value })}
+    className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+    min="0"
+    step="0.01"
+  />
+</div>
+
+<div className="mb-4">
+  <label className="block text-sm font-medium mb-2">Rent Amount</label>
+  <input
+    type="number"
+    value={newUnitData.rentAmount}
+    readOnly
+    className="bg-gray-100 w-full p-2 border border-gray-300 rounded"
+  />
+</div>
+
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Status</label>
               <select
@@ -543,66 +587,74 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
       )}
 
       {/* Detail Modal */}
-      {isDetailModalOpen && unitDetails && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-auto p-4">
-          <div className="bg-base-100 p-6 rounded-lg max-w-4xl max-h-[90vh] overflow-y-auto w-full">
-            <h2 className="text-2xl font-semibold mb-6">Unit Details</h2>
+{isDetailModalOpen && unitDetails && (() => {
+  const equipments = Array.isArray(unitDetails.availableEquipments)
+      ? unitDetails.availableEquipments
+      : JSON.parse(unitDetails.availableEquipments || "[]");
 
-            <h3 className="text-xl font-bold mb-2 text-blue-700">{unitDetails.unitNumber}</h3>
-            
-            <p><strong>Floor Number:</strong> {unitDetails.Floor?.floorNumber || "N/A"}</p>
-            <p><strong>Size (m²):</strong> {unitDetails.size} sq ft</p>
-            <p><strong>Status:</strong> {unitDetails.status}</p>
+  const problems = Array.isArray(unitDetails.problems)
+      ? unitDetails.problems
+      : JSON.parse(unitDetails.problems || "[]");
 
-            <div className="mt-3">
-              <strong>Available Equipments:</strong>
-              <ul className="list-disc list-inside ml-4">
-                {(unitDetails.availableEquipments ? JSON.parse(unitDetails.availableEquipments) : []).map((eq, i) => (
-                  <li key={i}>{eq}</li>
-                ))}
-              </ul>
-            </div>
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-auto p-4">
+      <div className="bg-base-100 p-6 rounded-lg max-w-4xl max-h-[90vh] overflow-y-auto w-full">
+        <h2 className="text-2xl font-semibold mb-6">Unit Details</h2>
 
-            <div className="mt-3">
-              <strong>Problems:</strong>
-              <ul className="list-disc list-inside ml-4">
-                {(unitDetails.problems ? JSON.parse(unitDetails.problems) : []).map((prob, i) => (
-                  <li key={i}>{prob}</li>
-                ))}
-              </ul>
-            </div>
+        <h3 className="text-xl font-bold mb-2 text-blue-700">{unitDetails.unitNumber}</h3>
+        <p><strong>Floor Number:</strong> {unitDetails.Floor?.floorNumber || "N/A"}</p>
+        <p><strong>Size (m²):</strong> {unitDetails.size} sq ft</p>
+        <p><strong>Price per (m²):</strong>{unitDetails.pricePerSquare} ETB</p>
+        <p><strong>Rent Amount:</strong>{unitDetails.rentAmount} ETB</p>
+        <p><strong>Status:</strong> {unitDetails.status}</p>
 
-            {unitDetails.images && unitDetails.images.length > 0 && (
-              <div className="mt-4">
-                <strong>Images:</strong>
-                <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  {unitDetails.images.map((imgUrl, idx) => {
-                    const cleanUrl = imgUrl.replace(/\\/g, '/');
-                    return (
-                      <img
-                        key={idx}
-                        src={cleanUrl}
-                        alt={`Unit ${unitDetails.unitNumber} Image ${idx + 1}`}
-                        className="w-full h-24 object-cover rounded shadow-md border"
-                        loading="lazy"
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+        <div className="mt-3">
+          <strong>Available Equipments:</strong>
+          <ul className="list-disc list-inside ml-4">
+            {equipments.map((eq, i) => <li key={i}>{eq}</li>)}
+          </ul>
+        </div>
 
-            <div className="mt-6 text-right">
-              <button
-                onClick={() => setIsDetailModalOpen(false)}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 rounded-md transition"
-              >
-                Close
-              </button>
+        <div className="mt-3">
+          <strong>Problems:</strong>
+          <ul className="list-disc list-inside ml-4">
+            {problems.map((prob, i) => <li key={i}>{prob}</li>)}
+          </ul>
+        </div>
+
+        {unitDetails.images && unitDetails.images.length > 0 && (
+          <div className="mt-4">
+            <strong>Images:</strong>
+            <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+              {unitDetails.images.map((imgUrl, idx) => {
+                const cleanUrl = imgUrl.replace(/\\/g, '/');
+                return (
+                  <img
+                    key={idx}
+                    src={cleanUrl}
+                    alt={`Unit ${unitDetails.unitNumber} Image ${idx + 1}`}
+                    className="w-full h-24 object-cover rounded shadow-md border"
+                    loading="lazy"
+                  />
+                );
+              })}
             </div>
           </div>
+        )}
+
+        <div className="mt-6 text-right">
+          <button
+            onClick={() => setIsDetailModalOpen(false)}
+            className="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 rounded-md transition"
+          >
+            Close
+          </button>
         </div>
-      )}
+      </div>
+    </div>
+  );
+})()}
+
 
       <Modal
         isOpen={modalOpen}

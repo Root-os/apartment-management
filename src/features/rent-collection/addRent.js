@@ -26,6 +26,9 @@ const AddCollectedRent = () => {
   const [paidDays, setPaidDays] = useState("");
   const [leaseEndDate, setLeaseEndDate] = useState("");
   const [calculatedAmount, setCalculatedAmount] = useState("");
+  const [punishmentAmount, setPunishmentAmount] = useState("");
+  const [isPaid, setIsPaid] = useState(false);
+
 
 
   const calculatePaidDays = (startDate, endDate) => {
@@ -121,6 +124,28 @@ const AddCollectedRent = () => {
     }
   }, [tenants, rentCollections, tenantIdFromUrl]);
 
+  const fetchPunishmentByTenant = async (tenantId) => {
+  try {
+    const res = await axios.get(
+      `${process.env.REACT_APP_BASE_URL}punishments/${tenantId}`
+    );
+
+    if (res.data && Array.isArray(res.data) && res.data.length > 0) {
+      const latestPunishment = res.data[0];
+      setPunishmentAmount(latestPunishment.amount || "");
+      setIsPaid(latestPunishment.status === "paid");
+    } else {
+      setPunishmentAmount("");
+      setIsPaid(false);
+    }
+  } catch (error) {
+    console.error("Failed to fetch punishment info:", error);
+    setPunishmentAmount("");
+    setIsPaid(false);
+  }
+};
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -212,7 +237,7 @@ const AddCollectedRent = () => {
             <select
               id="tenantId"
               value={tenantId}
-                onChange={(e) => {
+                onChange={async (e) => {
                   const selectedId = e.target.value;
                   setTenantId(selectedId);
 
@@ -229,6 +254,8 @@ const AddCollectedRent = () => {
                       nextDay.setDate(nextDay.getDate() + 1);
                       setPaymentDate(nextDay.toISOString().split("T")[0]);
                     }
+
+                     await fetchPunishmentByTenant(selectedId);
                   }
                 }}
               className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -257,6 +284,14 @@ const AddCollectedRent = () => {
                 <div>
                   Monthly Rent:{" "}
                   <span className="font-semibold">ETB {amount}</span>
+                </div>
+              )}
+              {punishmentAmount && (
+                <div>
+                  Punishment:{" "}
+                  <span className="font-semibold text-red-500">
+                    ETB {punishmentAmount}
+                  </span>
                 </div>
               )}
             </div>
@@ -331,6 +366,38 @@ const AddCollectedRent = () => {
               required
             />
           </div>
+
+          {/* Punishment Info */}
+          {punishmentAmount && (
+            <div className="flex space-x-4 items-end">
+              <div>
+                <label className="block text-sm font-medium text-white-700">
+                  Punishment Amount
+                </label>
+                <input
+                  type="number"
+                  id="punishment"
+                  value={punishmentAmount}
+                  onChange={(e) => setPunishmentAmount(e.target.value)}
+                  readOnly
+                  className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg text-gray-400 cursor-not-allowed"
+                />
+              </div>
+
+              <div className="flex items-center space-x-2 mt-6">
+                <input
+                  type="checkbox"
+                  id="isPaid"
+                  checked={isPaid}
+                  onChange={(e) => setIsPaid(e.target.checked)}
+                  className="w-5 h-5 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <label htmlFor="isPaid" className="text-sm font-medium text-white-700">
+                  Punishment Paid
+                </label>
+              </div>
+            </div>
+          )}
 
           {/* Payment Method Dropdown */}
           <div>
