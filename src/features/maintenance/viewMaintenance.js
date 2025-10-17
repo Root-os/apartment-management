@@ -122,8 +122,6 @@ const openEditModal = (record) => {
 
   setIsModalOpen(true);
 };
-
-
   const closeModal = () => {
     setIsModalOpen(false);
     setEditingRecord(null);
@@ -150,15 +148,17 @@ const openEditModal = (record) => {
   
     // Dynamically build the payload based on whether isItem is true or false
     const payload = {
-      date: formData.date,
-      description: formData.description,
-      cost: parseFloat(formData.cost),
-      unitId: parseInt(formData.unitId),
-      isItem: formData.isItem,
-      ...(formData.isItem && { itemId: parseInt(formData.itemId) }), // Include itemId if isItem is true
-      ...(formData.isItem === false && { name: formData.name }) // Include name if isItem is false
+    date: formData.date,
+    description: formData.description,
+    cost: parseFloat(formData.cost),
+    isItem: formData.isItem,
+    ...(formData.isItem && { itemId: parseInt(formData.itemId) }),
+    ...(formData.isItem === false && { 
+      name: formData.name,
+      unitId: parseInt(formData.unitId) 
+    })
     };
-  
+
     try {
       const response = await axios.put(
         `${process.env.REACT_APP_BASE_URL}maintenance/${editingRecord.id}`,
@@ -272,57 +272,43 @@ const openEditModal = (record) => {
         onAdd={handleAddClick}
       />
     )}
+
       {/* Edit Modal */}
       {isModalOpen && (
         <div className="modal modal-open">
           <div className="modal-box">
             <h3 className="text-xl font-semibold">Edit Maintenance Record</h3>
             <form onSubmit={handleSubmit} className="mt-4">
-
-            {/* <div className="mb-4">
-              <label htmlFor="isItem" className="block text-sm">Is Item?</label>
-              <input
-                type="checkbox"
-                id="isItem"
-                name="isItem"
-                checked={formData.isItem}
-                onChange={handleInputChange}
-                className="checkbox"
-              />
-            </div> */}
-
-          {formData.isItem ? (
-            <div className="mb-4">
-              <label htmlFor="itemId" className="block text-sm">Item</label>
-              <select
-                id="itemId"
-                name="itemId"
-                value={formData.itemId}
-                onChange={handleInputChange}
-                className="select select-bordered w-full"
-              >
-                {items.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.itemName}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ) : (
-            <div className="mb-4">
-              <label htmlFor="name" className="block text-sm">Name</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name || ''}
-                onChange={handleInputChange}
-                className="input input-bordered w-full"
-              />
-            </div>
-          )}
-
-
+              {formData.isItem ? (
+                <div className="mb-4">
+                  <label htmlFor="itemId" className="block text-sm">Item</label>
+                  <select
+                    id="itemId"
+                    name="itemId"
+                    value={formData.itemId}
+                    onChange={handleInputChange}
+                    className="select select-bordered w-full"
+                  >
+                    {items.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.itemName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                <div className="mb-4">
+                  <label htmlFor="name" className="block text-sm">Name</label>
+                  <input
+                    type="text"
+                    id="name"
+                    name="name"
+                    value={formData.name || ''}
+                    onChange={handleInputChange}
+                    className="input input-bordered w-full"
+                  />
+                </div>
+              )}
               <div className="mb-4">
                 <label htmlFor="date" className="block text-sm">Date</label>
                 <input
@@ -356,26 +342,9 @@ const openEditModal = (record) => {
                   className="input input-bordered w-full"
                   required
                   min="0"
-                  step="0.01"
+                  step="1"
                 />
               </div>
-              {/* <div className="mb-4">
-                <label htmlFor="itemId" className="block text-sm">Item</label>
-                <select
-                  id="itemId"
-                  name="itemId"
-                  value={formData.itemId}
-                  onChange={handleInputChange}
-                  className="select select-bordered w-full"
-                  required
-                >
-                  {items.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.itemName}
-                    </option>
-                  ))}
-                </select>
-              </div> */}
               {!formData.isItem && (
               <div className="mb-4">
                 <label htmlFor="unitId" className="block text-sm">Unit</label>
@@ -408,6 +377,7 @@ const openEditModal = (record) => {
           </div>
         </div>
       )}
+
       {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal
         isOpen={isDeleteModalOpen}

@@ -135,7 +135,7 @@ const TenDaysTenant = () => {
       {/* Details Modal */}
       {selectedTenant && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center mt-12">
-          <div className="bg-white dark:bg-gray-700 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
+          <div className="bg-base-100 dark:bg-gray-700 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl mb-4">
               Details for {selectedTenant.fullName}
             </h2>

@@ -289,13 +289,14 @@ const PaymentAdd = () => {
               <option value="" disabled>
                 Select Payment Method
               </option>
-              <option value="cash">Cash</option>
-              <option value="credit">Credit</option>
-              <option value="bank transfer">Bank Transfer</option>
-              <option value="other">Other</option>
+            <option value="">Select</option>
+            <option value="cash">Cash</option>
+            <option value="bank transfer">Bank Transfer</option>
+            <option value="tellebirr">Tellebirr</option>
+            <option value="mobile banking">Mobile Banking</option>
+            <option value="others">Other</option>
             </select>
           </div>
-
           <div className="mb-4">
             <label
               htmlFor="status"

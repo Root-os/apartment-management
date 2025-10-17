@@ -90,7 +90,7 @@ const PurchaseReport = () => {
     { key: 'price', label: 'Price' },
     { key: 'totalPrice', label: 'Total Price' },
     { key: 'date', label: 'Purchase Date', render: (data) => new Date(data.date).toISOString().split('T')[0]},
-    { key: 'expirationDate', label: 'Expiration Date', render: (data) => new Date(data.expirationDate).toISOString().split('T')[0]},
+    { key: 'expirationDate', label: 'Expiration Date', render: (data) => new Date(data.expirationDate).toISOString().split('T')[0] || "N/A"},
   ];
   
 
@@ -101,7 +101,7 @@ const PurchaseReport = () => {
         <form onSubmit={handleFilterSubmit} className="grid grid-cols-4 gap-4">
           {/* Start Date */}
           <div>
-            <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label>
+            <label htmlFor="startDate" className="block text-sm font-medium text-white-600 dark:text-gray-300">Start Date</label>
             <input
               type="date"
               id="startDate"
@@ -113,7 +113,7 @@ const PurchaseReport = () => {
 
           {/* End Date */}
           <div>
-            <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">End Date</label>
+            <label htmlFor="endDate" className="block text-sm font-medium text-white-600 dark:text-gray-300">End Date</label>
             <input
               type="date"
               id="endDate"
@@ -125,7 +125,7 @@ const PurchaseReport = () => {
 
           {/* Item Type */}
           <div>
-            <label htmlFor="itemCategoryId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Item Type</label>
+            <label htmlFor="itemCategoryId" className="block text-sm font-medium text-white-600 dark:text-gray-300">Item Type</label>
             <select
               id="itemCategoryId"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
@@ -141,7 +141,7 @@ const PurchaseReport = () => {
 
           {/* Vendor Filter */}
           <div>
-            <label htmlFor="vendorId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Vendor</label>
+            <label htmlFor="vendorId" className="block text-sm font-medium text-white-600 dark:text-gray-300">Vendor</label>
             <select
               id="vendorId"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"

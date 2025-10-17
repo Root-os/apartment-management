@@ -85,7 +85,7 @@ const TenantBillReport = () => {
       <div>
         <form onSubmit={handleFilterSubmit} className="grid grid-cols-4 gap-4">
           <div>
-            <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label>
+            <label htmlFor="startDate" className="block text-sm font-medium text-white-600 dark:text-gray-300">Start Date</label>
             <input
               type="date"
               id="startDate"
@@ -95,7 +95,7 @@ const TenantBillReport = () => {
             />
           </div>
           <div>
-            <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">End Date</label>
+            <label htmlFor="endDate" className="block text-sm font-medium text-white-600 dark:text-gray-300">End Date</label>
             <input
               type="date"
               id="endDate"
@@ -105,7 +105,7 @@ const TenantBillReport = () => {
             />
           </div>
           <div>
-            <label htmlFor="tenantId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Tenant</label>
+            <label htmlFor="tenantId" className="block text-sm font-medium text-white-600 dark:text-gray-300">Tenant</label>
             <select
               id="tenantId"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
@@ -119,7 +119,7 @@ const TenantBillReport = () => {
             </select>
           </div>
           <div>
-            <label htmlFor="billPaymentTypeId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Bill Type</label>
+            <label htmlFor="billPaymentTypeId" className="block text-sm font-medium text-white-600 dark:text-gray-300">Bill Type</label>
             <select
               id="billPaymentTypeId"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"

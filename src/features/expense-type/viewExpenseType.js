@@ -181,7 +181,6 @@ const ExpensePage = () => {
                   value={expenseDescription}
                   onChange={(e) => setExpenseDescription(e.target.value)}
                   className="w-full bg-base-100 p-2 border border-gray-300 rounded-md"
-                  required
                 ></textarea>
               </div>
               <div className="flex justify-end space-x-2">

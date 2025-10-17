@@ -125,7 +125,7 @@ const MaintenanceReport = () => {
               htmlFor="startDate"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300"
             >
-              Start Date
+              Maintenance Date
             </label>
             <input
               type="date"

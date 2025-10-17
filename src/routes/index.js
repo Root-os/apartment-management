@@ -418,12 +418,14 @@ const adminRoutes = [
     ],
   },
   {
-    name: "finance",
+    name: "Finance",
     routes: [
       { path: "/add-bill-type", component: BillPaymentAdd },
       { path: "/view-bill-type", component: BillPaymentView },
       { path: "/add-payment-for-goverment", component: GovBillPaymentAdd },
       { path: "/view-payment-for-goverment", component: GovBillPaymentPage },
+      { path: "/tenant-bill-add", component: TenantBillAdd },
+      { path: "/tenant-bill-view", component: TenantBillView },
       { path: "/expense-add", component: ExpenseAdd },
       { path: "/expense-view", component: ExpenseView },
       { path: "/expense-type-add", component: ExpenseTypeAdd },
@@ -444,8 +446,6 @@ const adminRoutes = [
     routes: [
       { path: "/tenant-add", component: TenantAdd },
       { path: "/tenant-view", component: TenantView },
-      { path: "/tenant-bill-add", component: TenantBillAdd },
-      { path: "/tenant-bill-view", component: TenantBillView },
       { path: "/ten-days-tenant", component: TenDays },
       { path: "/tenant-filter", component: TenantFilter },
       { path: "/complain-from-tenant", component: ComplainFromTenant },
@@ -484,11 +484,11 @@ const adminRoutes = [
       { path: "/view-low-level-stock", component: LowLevelStock },
       { path: "/see-out-requests", component: AdminViewRequest },
       { path: "/see-tenant-items/:id", component: ViewTenantItems },
-      { path: "/see-my-items", component: SeeMyItems },
+      { path: "/navigate-audit-history", component: NavigateAuditHistory },
     ],
   },
   {
-    name: "item-assignment",
+    name: "Item Assignments",
     routes: [
       { path: "/add-item-assignments", component: ItemAssignmentAdd },
       { path: "/view-item-assignments", component: ItemAssignmentView },
@@ -547,7 +547,7 @@ const adminRoutes = [
     ],
   },
   {
-    name: "orders",
+    name: "Order",
     routes: [
       { path: "/add-orderType", component: addOrderType },
       { path: "/view-order-types", component: orderType },
@@ -556,7 +556,7 @@ const adminRoutes = [
     ],
   },
   {
-    name: "assets",
+    name: "Asset",
     routes: [
       { path: "/add-asset", component: AssetAdd },
       { path: "/view-asset", component: AssetView },
@@ -594,35 +594,35 @@ let routes = [];
 if (token) {
   try {
     const decoded = jwtDecode(token);
-
     const role = decoded.role;
     const permissions = decoded.permissions || [];
 
     if (role === "admin") {
-      routes = adminRoutes;
+      // all pages
+      routes = adminRoutes.flatMap(m => m.routes || []);
     } else if (role === "tenant") {
-      routes = tenantRoutes;
+      routes = tenantRoutes.flatMap(m => m.routes || []);
     } else {
+      // start with employee base routes
       routes = [...employeeRoutes];
-
-      const permittedModules = [];
 
       for (const module of adminRoutes) {
         if (!module.name) continue;
 
-        const hasPermission = permissions.some((perm) =>
+        const hasPermission = permissions.some(perm =>
           perm.toLowerCase().includes(module.name.toLowerCase())
         );
-        if (hasPermission) {
-          permittedModules.push(module);
+
+        if (hasPermission && module.routes && module.routes.length > 0) {
+          // ✅ add all routes (including hidden ones) for React Router
+          routes = [...routes, ...module.routes];
         }
       }
-
-      routes = [...routes, ...permittedModules];
     }
   } catch (error) {
     console.error("Token decode failed", error);
   }
 }
+
 
 export default routes;

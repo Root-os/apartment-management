@@ -23,54 +23,6 @@ const SalaryPayments = () => {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [filterLoading, setFilterLoading] = useState(false);
-
-
-  const columns = [
-    { 
-      label: 'Employee Name', 
-      key: 'employeeName',
-      render: (row) =>
-        row.User ? `${row.User.fname} ${row.User.lname}` : 'N/A',
-    },
-    { label: 'Salary', key: 'amount', render: (row) => row.amount != null ? Math.round(row.amount) : 'N/A',  },
-    { label: 'Income Tax', key: 'incomeTax', render: (row) => row.incomeTax != null ? Math.round(row.incomeTax) : 'N/A',  },
-    { label: 'pension Contribution', key: 'pensionContribution', render: (row) => row.pensionContribution != null ? Math.round(row.pensionContribution) : 'N/A',  },
-    { label: 'Allowance', key: 'allowance', render: (row) => row.allowance != null ? Math.round(row.allowance) : 'N/A',  },
-    { label: 'Net Salary', key: 'netSalary', render: (row) => row.netSalary != null ? Math.round(row.netSalary) : 'N/A',  },
-    {
-      label: 'Bank Account',
-      key: 'bankAccount',
-      render: (row) =>
-        row.User?.EmployeeDetail?.bankAccount || 'N/A',
-    },
-
-    {
-      label: 'Actions',
-      key: 'actions',
-      render: (row) => (
-        <div className='flex space-x-2'>
-          <button
-            onClick={() => handleEdit(row)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => handleDeleteConfirmation(row)}
-            className="bg-red-500 text-white px-4 py-2 rounded-md"
-          >
-            Delete
-          </button>
-          <button
-            onClick={() => handleDetail(row)}
-           className="bg-gray-400 text-white py-1 px-2 rounded"
-          >
-            Details
-          </button>
-        </div>
-      ),
-    },
-  ];
   
   useEffect(() => {
     setLoading(true);
@@ -93,43 +45,49 @@ const SalaryPayments = () => {
   }, []);
 
   const handleFilterByDate = async () => {
-  setFilterLoading(true);
-  setError(null);
-  try {
-    const token = localStorage.getItem('token');
-    const response = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}salary-payments/filterByDateRange`,
-      {
-        fromDate,
-        toDate,
-      },
-      {
-        headers: { Authorization: `Bearer ${token}` },
+    setFilterLoading(true);
+    setError(null);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}salary-payments/filterByDateRange`,
+        {
+          fromDate,
+          toDate,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.data.data && response.data.data.length > 0) {
+        setSalaryData(response.data.data);
+      } else {
+        setSalaryData([]); // empty array
+        setError("No data found for the selected date range.");
       }
-    );
-    setSalaryData(response.data.data);
-  } catch (err) {
-    setError('Failed to filter salary payments by date.');
-  } finally {
-    setFilterLoading(false);
-  }
-};
+    } catch (err) {
+      setError("Failed to filter salary payments by date.");
+    } finally {
+      setFilterLoading(false);
+    }
+  };
 
-const handleResetFilter = () => {
-  setFromDate('');
-  setToDate('');
-  setError(null);
-  // Re-fetch all data (or you could save original data on first load)
-  setLoading(true);
-  axios
-    .get(`${process.env.REACT_APP_BASE_URL}salary-payments/all`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    })
-    .then((res) => setSalaryData(res.data.data))
-    .catch(() => setError('Failed to load salary payments.'))
-    .finally(() => setLoading(false));
-};
 
+  const handleResetFilter = () => {
+    setFromDate('');
+    setToDate('');
+    setError(null);
+    // Re-fetch all data (or you could save original data on first load)
+    setLoading(true);
+    axios
+      .get(`${process.env.REACT_APP_BASE_URL}salary-payments/all`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      })
+      .then((res) => setSalaryData(res.data.data))
+      .catch(() => setError('Failed to load salary payments.'))
+      .finally(() => setLoading(false));
+  };
 
   const handleEdit = (salary) => {
     setSelectedSalary(salary);
@@ -226,6 +184,53 @@ const handleResetFilter = () => {
     setSelectedSalaryDetail(null);
   };
 
+    const columns = [
+    { 
+      label: 'Employee Name', 
+      key: 'employeeName',
+      render: (row) =>
+        row.User ? `${row.User.fname} ${row.User.lname}` : 'N/A',
+    },
+    { label: 'Salary', key: 'amount', render: (row) => row.amount != null ? Math.round(row.amount) : 'N/A',  },
+    { label: 'Income Tax', key: 'incomeTax', render: (row) => row.incomeTax != null ? Math.round(row.incomeTax) : 'N/A',  },
+    { label: 'pension Contribution', key: 'pensionContribution', render: (row) => row.pensionContribution != null ? Math.round(row.pensionContribution) : 'N/A',  },
+    { label: 'Allowance', key: 'allowance', render: (row) => row.allowance != null ? Math.round(row.allowance) : 'N/A',  },
+    { label: 'Net Salary', key: 'netSalary', render: (row) => row.netSalary != null ? Math.round(row.netSalary) : 'N/A',  },
+    // {
+    //   label: 'Bank Account',
+    //   key: 'bankAccount',
+    //   render: (row) =>
+    //     row.User?.EmployeeDetail?.bankAccount || 'N/A',
+    // },
+
+    {
+      label: 'Actions',
+      key: 'actions',
+      render: (row) => (
+        <div className='flex space-x-2'>
+          <button
+            onClick={() => handleEdit(row)}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => handleDeleteConfirmation(row)}
+            className="bg-red-500 text-white px-4 py-2 rounded-md"
+          >
+            Delete
+          </button>
+          <button
+            onClick={() => handleDetail(row)}
+           className="bg-gray-400 text-white py-1 px-2 rounded"
+          >
+            Details
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <>
     <div className="mb-4 flex space-x-4 items-end">
@@ -238,30 +243,30 @@ const handleResetFilter = () => {
           className="border rounded px-3 py-2"
         />
       </div>
-    <div>
-    <label className="block mb-1 font-medium">To Date</label>
-    <input
-      type="date"
-      value={toDate}
-      onChange={(e) => setToDate(e.target.value)}
-      className="border rounded px-3 py-2"
-    />
-  </div>
-  <button
-    onClick={handleFilterByDate}
-    disabled={!fromDate || !toDate || filterLoading}
-    className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-  >
-    {filterLoading ? 'Filtering...' : 'Filter'}
-  </button>
-  <button
-    onClick={handleResetFilter}
-    disabled={filterLoading}
-    className="bg-gray-600 text-white px-4 py-2 rounded"
-  >
-    Reset
-  </button>
-</div>
+      <div>
+      <label className="block mb-1 font-medium">To Date</label>
+      <input
+        type="date"
+        value={toDate}
+        onChange={(e) => setToDate(e.target.value)}
+        className="border rounded px-3 py-2"
+      />
+      </div>
+      <button
+        onClick={handleFilterByDate}
+        disabled={!fromDate || !toDate || filterLoading}
+        className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+      >
+        {filterLoading ? 'Filtering...' : 'Filter'}
+      </button>
+      <button
+        onClick={handleResetFilter}
+        disabled={filterLoading}
+        className="bg-gray-600 text-white px-4 py-2 rounded"
+      >
+        Reset
+      </button>
+    </div>
 
         {loading ? (
         <LoadingComponent/>
@@ -334,11 +339,12 @@ const handleResetFilter = () => {
             <h2 className="text-2xl font-bold mb-4">Salary Payment Details</h2>
             <div className="mb-4">
             <p><strong>Employee Name:</strong> {selectedSalaryDetail.User ? `${selectedSalaryDetail.User.fname} ${selectedSalaryDetail.User.lname}` : 'N/A'}</p>
+              <p><strong>Banc Acct:</strong>{selectedSalaryDetail?.bankAccount || "N/A"}</p>
               <p><strong>Amount:</strong> {selectedSalaryDetail.amount}</p>
               <p><strong>Payment From Date:</strong> {new Date(selectedSalaryDetail.paymentFromDate).toISOString().split('T')[0]}</p>
               <p><strong>Payment To Date:</strong> {new Date(selectedSalaryDetail.paymentToDate).toISOString().split('T')[0]}</p>
               <p><strong>Payment Method:</strong> {selectedSalaryDetail.paymentMethod}</p>
-              <p><strong>Status:</strong> {selectedSalaryDetail.status}</p>
+              <p><strong>Status:</strong> {selectedSalaryDetail?.status || "N/A"}</p>
               <p><strong>Pension Contribution:</strong> {selectedSalaryDetail.pensionContribution}</p>
               <p><strong>Income Tax:</strong> {selectedSalaryDetail.incomeTax}</p>
               <p><strong>Net Salary:</strong> {selectedSalaryDetail.netSalary}</p>

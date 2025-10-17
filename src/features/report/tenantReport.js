@@ -119,7 +119,7 @@ const TenantReport = () => {
 
           {/* Lease Start Date From */}
           <div>
-            <label htmlFor="leaseStartDateFrom" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Lease Start Date From</label>
+            <label htmlFor="leaseStartDateFrom" className="block text-sm font-medium text-white-600 dark:text-gray-300">Lease Start Date From</label>
             <input
               type="date"
               id="leaseStartDateFrom"
@@ -131,7 +131,7 @@ const TenantReport = () => {
 
           {/* Lease Start Date To */}
           <div>
-            <label htmlFor="leaseStartDateTo" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Lease Start Date To</label>
+            <label htmlFor="leaseStartDateTo" className="block text-sm font-medium text-white-600 dark:text-gray-300">Lease Start Date To</label>
             <input
               type="date"
               id="leaseStartDateTo"
@@ -143,7 +143,7 @@ const TenantReport = () => {
 
           {/* Lease End Date From */}
           <div>
-            <label htmlFor="leaseEndDateFrom" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Lease End Date From</label>
+            <label htmlFor="leaseEndDateFrom" className="block text-sm font-medium text-white-600 dark:text-gray-300">Lease End Date From</label>
             <input
               type="date"
               id="leaseEndDateFrom"
@@ -155,7 +155,7 @@ const TenantReport = () => {
 
           {/* Lease End Date To */}
           <div>
-            <label htmlFor="leaseEndDateTo" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Lease End Date To</label>
+            <label htmlFor="leaseEndDateTo" className="block text-sm font-medium text-white-600 dark:text-gray-300">Lease End Date To</label>
             <input
               type="date"
               id="leaseEndDateTo"
@@ -167,7 +167,7 @@ const TenantReport = () => {
 
           {/* Status */}
           <div>
-            <label htmlFor="status" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Status</label>
+            <label htmlFor="status" className="block text-sm font-medium text-white-600 dark:text-gray-300">Status</label>
             <select
               id="status"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
@@ -182,7 +182,7 @@ const TenantReport = () => {
 
           {/* Unit */}
           <div>
-            <label htmlFor="unitId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Unit</label>
+            <label htmlFor="unitId" className="block text-sm font-medium text-white-600 dark:text-gray-300">Unit</label>
             <select
               id="unitId"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
@@ -198,7 +198,7 @@ const TenantReport = () => {
 
           {/* Floor */}
           <div>
-            <label htmlFor="floorId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Floor</label>
+            <label htmlFor="floorId" className="block text-sm font-medium text-white-600 dark:text-gray-300">Floor</label>
             <select
               id="floorId"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"

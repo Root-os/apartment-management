@@ -17,7 +17,7 @@ const ComplaintsPage = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/users`, {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/employee`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

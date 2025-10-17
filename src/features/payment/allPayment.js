@@ -16,6 +16,7 @@ const AllPaymentsPage = () => {
   const [paymentMethod, setPaymentMethod] = useState("");
   const [status, setStatus] = useState("");
   const [paymentDate, setPaymentDate] = useState("");
+  const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
   const [messageType, setMessageType] = useState("success");
   const [message, setMessage] = useState("");
@@ -45,20 +46,6 @@ const AllPaymentsPage = () => {
       });
   }, []);
 
-  // Handle edit button click
-  const handleEditClick = (payment) => {
-    setSelectedPayment(payment);
-    setVendorId(payment.vendorId);
-    setPrice(payment.price);
-    setPaymentMethod(payment.paymentMethod);
-    setStatus(payment.status);
-
-    const formattedPaymentDate = new Date(payment.paymentDate).toISOString().split('T')[0];
-    setPaymentDate(formattedPaymentDate)
-
-    setIsEditModalOpen(true);
-  };
-  
   // Handle delete button click
   const handleDeleteClick = (payment) => {
     setSelectedPayment(payment);
@@ -73,46 +60,56 @@ const AllPaymentsPage = () => {
   const handleGenerateReceipt = (payment) => {
     navigate("/app/payment-receipt", { state: { payment } });
   };
+
+    // Handle edit button click
+  const handleEditClick = (payment) => {
+    setSelectedPayment(payment);
+    setVendorId(payment.vendorId);
+    setPrice(payment.price);
+    setPaymentMethod(payment.paymentMethod);
+    setStatus(payment.status);
+    setDescription(payment.description || "");
+
+    const formattedPaymentDate = new Date(payment.paymentDate).toISOString().split('T')[0];
+    setPaymentDate(formattedPaymentDate)
+    setIsEditModalOpen(true);
+  };
   
   // Handle edit request
   const handleEdit = async () => {
     setLoading(true);
     try {
       const updatedPayment = {
-        vendorId,
-        price,
+        vendorId: Number(vendorId),
+        price: Number(price),
         paymentMethod,
         status,
         paymentDate,
+        description,
       };
-  
+
       const response = await axios.put(
         `${process.env.REACT_APP_BASE_URL}payments/${selectedPayment.id}`,
         updatedPayment
       );
-  
-      // Get the updated vendor information
-      const updatedVendor = vendors.find(vendor => vendor.id === vendorId);
-  
-      // Update the payments list in the state
+
+      const updatedVendor = vendors.find(vendor => vendor.id === Number(vendorId));
+      const updatedPaymentFromServer = response.data.payment;
+
       const updatedData = payments.map((payment) =>
         payment.id === selectedPayment.id
           ? {
               ...payment,
-              price: response.data.price,
-              paymentMethod: response.data.paymentMethod,
-              status: response.data.status,
-              paymentDate: response.data.paymentDate,
-              Vendor: updatedVendor, // Ensure vendor data is updated
+              ...updatedPaymentFromServer,
+              Vendor: updatedVendor,
             }
           : payment
       );
-  
+
       setPayments(updatedData);
-  
       setIsEditModalOpen(false);
       setSelectedPayment(null);
-  
+
       setMessageType("success");
       setMessage("Payment updated successfully");
     } catch (error) {
@@ -185,11 +182,11 @@ const AllPaymentsPage = () => {
             Detail
           </button>
           <button
-  onClick={() => handleGenerateReceipt(row)} // Pass the entire payment object
-  className="bg-indigo-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
->
-  Receipt
-</button>
+            onClick={() => handleGenerateReceipt(row)} // Pass the entire payment object
+            className="bg-indigo-500 text-white px-2 py-1 rounded-md w-full md:w-auto min-w-[80px] text-center"
+          >
+            Receipt
+          </button>
         </div>
       ),
     },
@@ -215,8 +212,8 @@ const AllPaymentsPage = () => {
 
       {/* Edit Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-base-100 p-6 rounded-md w-1/3 mt-12">
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto p-4">
+    <div className="bg-base-100 p-6 rounded-md w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">Edit Payment</h2>
             <form
               onSubmit={(e) => {
@@ -281,9 +278,10 @@ const AllPaymentsPage = () => {
                     Select Payment Method
                   </option>
                   <option value="cash">Cash</option>
-                  <option value="credit">Credit</option>
                   <option value="bank transfer">Bank Transfer</option>
-                  <option value="other">Other</option>
+                  <option value="tellebirr">Tellebirr</option>
+                  <option value="mobile banking">Mobile Banking</option>
+                  <option value="others">Other</option>
                 </select>
               </div>
               <div className="mb-4">
@@ -322,6 +320,20 @@ const AllPaymentsPage = () => {
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              <div className="mb-4">
+                <label htmlFor="description" className="block text-sm font-medium text-white-700">
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                />
+              </div>
+
+
               <div className="flex justify-end">
                 <button
                   type="submit"

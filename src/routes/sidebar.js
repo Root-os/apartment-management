@@ -934,38 +934,33 @@ let routes = [];
 if (token) {
   try {
     const decoded = jwtDecode(token);
-
     const role = decoded.role;
     const permissions = decoded.permissions || [];
 
     if (role === "admin") {
-      routes = adminRoutes;
+      routes = adminRoutes; // full sidebar
     } else if (role === "tenant") {
       routes = tenantRoutes;
     } else {
       routes = [...employeeRoutes];
 
-      // Add specific modules from adminRoutes based on permissions
-      const permittedModules = [];
-
       for (const module of adminRoutes) {
         if (!module.name) continue;
 
-        // If permission includes the module name (case-insensitive match)
-        const hasPermission = permissions.some((perm) =>
+        const hasPermission = permissions.some(perm =>
           perm.toLowerCase().includes(module.name.toLowerCase())
         );
 
         if (hasPermission) {
-          permittedModules.push(module);
+          // ✅ add module to sidebar
+          routes.push(module);
         }
       }
-
-      routes = [...routes, ...permittedModules];
     }
   } catch (error) {
     console.error("Token decode failed", error);
   }
 }
+
 
 export default routes;

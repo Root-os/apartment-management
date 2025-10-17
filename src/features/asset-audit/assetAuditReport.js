@@ -95,14 +95,14 @@ const AssetAuditReport = () => {
   return (
     <div className="p-6 bg-base-100 rounded-lg shadow-md w-full">
       <div className="flex justify-end items-center mb-4">
-        <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-6">
+        <div className="bg-base-100 p-4 rounded-xl shadow-sm border border-gray-200 mb-6">
   {/* <h2 className="text-lg font-semibold mb-4 text-gray-800">Filter Audit Reports</h2> */}
 
   {/* Horizontal Fields Row */}
   <div className="flex flex-wrap gap-4">
     {/* Status */}
     <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-600">Status</label>
+      <label className="text-sm font-medium text-white-600">Status</label>
       <select
         value={status}
         onChange={(e) => setStatus(e.target.value)}
@@ -117,7 +117,7 @@ const AssetAuditReport = () => {
 
     {/* Item */}
     <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-600">Item</label>
+      <label className="text-sm font-medium text-white-600">Item</label>
       <select
         value={itemId}
         onChange={(e) => setItemId(e.target.value)}
@@ -132,7 +132,7 @@ const AssetAuditReport = () => {
 
     {/* Asset Type */}
     <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-600">Asset Type</label>
+      <label className="text-sm font-medium text-white-600">Asset Type</label>
       <select
         value={assetTypeId}
         onChange={(e) => setAssetTypeId(e.target.value)}
@@ -147,7 +147,7 @@ const AssetAuditReport = () => {
 
       {/* Audit Date */}
     <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-600">Audit Date</label>
+      <label className="text-sm font-medium text-white-600">Audit Date</label>
       <input
         type="date"
         value={date}
@@ -158,7 +158,7 @@ const AssetAuditReport = () => {
 
     {/* Start Date */}
     <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-600">Audited Date From</label>
+      <label className="text-sm font-medium text-white-600">Audited Date From</label>
       <input
         type="date"
         value={startDate}
@@ -169,7 +169,7 @@ const AssetAuditReport = () => {
 
     {/* End Date */}
     <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-600">Audited Date To</label>
+      <label className="text-sm font-medium text-white-600">Audited Date To</label>
       <input
         type="date"
         value={endDate}
