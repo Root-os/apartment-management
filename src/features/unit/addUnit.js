@@ -195,7 +195,7 @@ const AddFloorUnit = () => {
             required
             className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
              min="1"                
-             step="1"
+             step="0.01"
           />
         </div>
 
@@ -208,7 +208,7 @@ const AddFloorUnit = () => {
             required
             className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
              min="1"                
-             step="1"
+             step="0.01"
           />
         </div>
         <div>
@@ -220,7 +220,7 @@ const AddFloorUnit = () => {
             required
             className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
              min="1"                
-             step="1"
+             step="0.01"
           />
         </div>
 

@@ -104,7 +104,11 @@ const RentCollectionPage = () => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      const updatedRent = { ...currentRent };
+      const updatedRent = {
+        ...currentRent,
+        // punishment: parseFloat(currentRent.punishment) || 0,
+        isPaid: !!currentRent.isPaid, // ensure boolean
+      };
       await axios.put(`${process.env.REACT_APP_BASE_URL}rent-collection/${currentRent.id}`, updatedRent);
       fetchRentData(); 
       closeModals();
@@ -390,6 +394,33 @@ const RentCollectionPage = () => {
                   <option value="Overdue">Overdue</option>
                 </select>
               </div>
+              {/* Punishment */}
+              {/* <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">Punishment</label>
+                <input
+                  type="number"
+                  value={currentRent?.punishment || 0}
+                  onChange={(e) =>
+                    setCurrentRent({ ...currentRent, punishment: parseFloat(e.target.value) })
+                  }
+                  className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+                />
+              </div> */}
+
+              {/* Is Paid */}
+              <div className="mb-4 flex items-center">
+                <input
+                  type="checkbox"
+                  id="isPaid"
+                  checked={currentRent?.isPaid || false}
+                  onChange={(e) =>
+                    setCurrentRent({ ...currentRent, isPaid: e.target.checked })
+                  }
+                  className="mr-2"
+                />
+                <label htmlFor="isPaid" className="text-sm font-medium">Is Paid</label>
+              </div>
+
               <div className="flex justify-end space-x-2">
                 <button type="button" onClick={closeModals} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
                 <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
@@ -428,6 +459,9 @@ const RentCollectionPage = () => {
               <p><strong>Paid Days:</strong> {currentRent.paidDays}</p>
               <p><strong>Next Due Date:</strong> {new Date(currentRent.nextDueDate).toISOString().split('T')[0]}</p>
               <p><strong>Payment Statuss:</strong> {currentRent.status}</p>
+              <p><strong>Punishment:</strong> {currentRent.punishment}</p>
+              <p><strong>Is Paid:</strong> {currentRent.isPaid ? 'Yes' : 'No'}</p>
+
             </div>
             <div className="flex justify-center mt-4">
               <button onClick={closeModals} className="bg-gray-400 text-white px-4 py-2 rounded">Close</button>

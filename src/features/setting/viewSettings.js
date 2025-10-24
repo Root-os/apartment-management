@@ -17,6 +17,7 @@ const CurrencySettingsPage = () => {
     postOfficeAddress: '',
     chargingCost: '',
     parkingCost: '',
+    punishmentPercentage: '',
     logo: null,
     seal: null, 
     qrImage: null,
@@ -56,6 +57,7 @@ const CurrencySettingsPage = () => {
       postOfficeAddress: setting.postOfficeAddress,
       chargingCost: setting.chargingCost || '',
       parkingCost: setting.parkingCost || '', 
+      punishmentPercentage: setting.punishmentPercentage || '',
       logo: null, 
       seal: null, 
       qrImage: null,
@@ -87,8 +89,9 @@ const handleImageChange = (e, field) => {
     formDataToSubmit.append('email', formData.email);
     formDataToSubmit.append('phoneNumber', formData.phoneNumber);
     formDataToSubmit.append('postOfficeAddress', formData.postOfficeAddress);
-    formDataToSubmit.append('chargingCost', formData.chargingCost); // Add chargingCost
-    formDataToSubmit.append('parkingCost', formData.parkingCost); // Add parkingCost
+    formDataToSubmit.append('chargingCost', formData.chargingCost); 
+    formDataToSubmit.append('parkingCost', formData.parkingCost); 
+    formDataToSubmit.append('punishmentPercentage', formData.punishmentPercentage);
   
     // Append the files (logo and seal) if selected
     if (formData.logo) {
@@ -117,15 +120,16 @@ const handleImageChange = (e, field) => {
           item.id === selectedSetting.id
             ? {
                 ...item,
-                buildingName: formData.buildingName,  // Update the text fields
+                buildingName: formData.buildingName, 
                 buildingAddress: formData.buildingAddress,
                 email: formData.email,
                 phoneNumber: formData.phoneNumber,
                 postOfficeAddress: formData.postOfficeAddress,
-                chargingCost: formData.chargingCost,  // Update charging cost
-                parkingCost: formData.parkingCost,  // Update parking cost
-                logos: formData.logo ? URL.createObjectURL(formData.logo) : item.logos,  // Update the logos if changed
-                seal: formData.seal ? URL.createObjectURL(formData.seal) : item.seal,  // Update the seal if changed
+                chargingCost: formData.chargingCost,  
+                parkingCost: formData.parkingCost,  
+                punshmentPercentage: formData.punishmentPercentage,
+                logos: formData.logo ? URL.createObjectURL(formData.logo) : item.logos,  
+                seal: formData.seal ? URL.createObjectURL(formData.seal) : item.seal,  
               }
             : item
         );
@@ -198,6 +202,7 @@ const handleImageChange = (e, field) => {
       label: 'Parking Cost',
       render: (setting) => setting.parkingCost || 'N/A', // Render parking cost
     },
+    { key: 'punishmentPercentage', label: 'Punishment(%)', formatter: value => `${value}%` },
     {
       key: 'logos',
       label: 'Logo',
@@ -374,6 +379,17 @@ const handleImageChange = (e, field) => {
             value={formData.parkingCost}
             onChange={(e) =>
               setFormData({ ...formData, parkingCost: e.target.value })
+            }
+            className="w-full bg-base-100 p-2 border rounded"
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-white-700 mb-1">Punishment (%)</label>
+          <input
+            type="text"
+            value={formData.punishmentPercentage}
+            onChange={(e) =>
+              setFormData({ ...formData, punishmentPercentage: e.target.value })
             }
             className="w-full bg-base-100 p-2 border rounded"
           />

@@ -170,6 +170,9 @@ const AddCollectedRent = () => {
       paymentMethod,
       nextDueDate,
       status,
+      punishment: punishmentAmount || "0",
+      isPaid: isPaid, 
+
     };
 
     try {

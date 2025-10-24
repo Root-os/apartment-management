@@ -587,73 +587,73 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
       )}
 
       {/* Detail Modal */}
-{isDetailModalOpen && unitDetails && (() => {
-  const equipments = Array.isArray(unitDetails.availableEquipments)
-      ? unitDetails.availableEquipments
-      : JSON.parse(unitDetails.availableEquipments || "[]");
+      {isDetailModalOpen && unitDetails && (() => {
+        const equipments = Array.isArray(unitDetails.availableEquipments)
+            ? unitDetails.availableEquipments
+            : JSON.parse(unitDetails.availableEquipments || "[]");
 
-  const problems = Array.isArray(unitDetails.problems)
-      ? unitDetails.problems
-      : JSON.parse(unitDetails.problems || "[]");
+        const problems = Array.isArray(unitDetails.problems)
+            ? unitDetails.problems
+            : JSON.parse(unitDetails.problems || "[]");
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-auto p-4">
-      <div className="bg-base-100 p-6 rounded-lg max-w-4xl max-h-[90vh] overflow-y-auto w-full">
-        <h2 className="text-2xl font-semibold mb-6">Unit Details</h2>
+        return (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-auto p-4">
+            <div className="bg-base-100 p-6 rounded-lg max-w-4xl max-h-[90vh] overflow-y-auto w-full">
+              <h2 className="text-2xl font-semibold mb-6">Unit Details</h2>
 
-        <h3 className="text-xl font-bold mb-2 text-blue-700">{unitDetails.unitNumber}</h3>
-        <p><strong>Floor Number:</strong> {unitDetails.Floor?.floorNumber || "N/A"}</p>
-        <p><strong>Size (m²):</strong> {unitDetails.size} sq ft</p>
-        <p><strong>Price per (m²):</strong>{unitDetails.pricePerSquare} ETB</p>
-        <p><strong>Rent Amount:</strong>{unitDetails.rentAmount} ETB</p>
-        <p><strong>Status:</strong> {unitDetails.status}</p>
+              <h3 className="text-xl font-bold mb-2 text-blue-700">{unitDetails.unitNumber}</h3>
+              <p><strong>Floor Number:</strong> {unitDetails.Floor?.floorNumber || "N/A"}</p>
+              <p><strong>Size (m²):</strong> {unitDetails.size} sq ft</p>
+              <p><strong>Price per (m²):</strong>{unitDetails.pricePerSquare} ETB</p>
+              <p><strong>Rent Amount:</strong>{unitDetails.rentAmount} ETB</p>
+              <p><strong>Status:</strong> {unitDetails.status}</p>
+              
+              <div className="mt-3">
+                <strong>Available Equipments:</strong>
+                <ul className="list-disc list-inside ml-4">
+                  {equipments.map((eq, i) => <li key={i}>{eq}</li>)}
+                </ul>
+              </div>
 
-        <div className="mt-3">
-          <strong>Available Equipments:</strong>
-          <ul className="list-disc list-inside ml-4">
-            {equipments.map((eq, i) => <li key={i}>{eq}</li>)}
-          </ul>
-        </div>
+              <div className="mt-3">
+                <strong>Problems:</strong>
+                <ul className="list-disc list-inside ml-4">
+                  {problems.map((prob, i) => <li key={i}>{prob}</li>)}
+                </ul>
+              </div>
 
-        <div className="mt-3">
-          <strong>Problems:</strong>
-          <ul className="list-disc list-inside ml-4">
-            {problems.map((prob, i) => <li key={i}>{prob}</li>)}
-          </ul>
-        </div>
+              {unitDetails.images && unitDetails.images.length > 0 && (
+                <div className="mt-4">
+                  <strong>Images:</strong>
+                  <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {unitDetails.images.map((imgUrl, idx) => {
+                      const cleanUrl = imgUrl.replace(/\\/g, '/');
+                      return (
+                        <img
+                          key={idx}
+                          src={cleanUrl}
+                          alt={`Unit ${unitDetails.unitNumber} Image ${idx + 1}`}
+                          className="w-full h-24 object-cover rounded shadow-md border"
+                          loading="lazy"
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
-        {unitDetails.images && unitDetails.images.length > 0 && (
-          <div className="mt-4">
-            <strong>Images:</strong>
-            <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-              {unitDetails.images.map((imgUrl, idx) => {
-                const cleanUrl = imgUrl.replace(/\\/g, '/');
-                return (
-                  <img
-                    key={idx}
-                    src={cleanUrl}
-                    alt={`Unit ${unitDetails.unitNumber} Image ${idx + 1}`}
-                    className="w-full h-24 object-cover rounded shadow-md border"
-                    loading="lazy"
-                  />
-                );
-              })}
+              <div className="mt-6 text-right">
+                <button
+                  onClick={() => setIsDetailModalOpen(false)}
+                  className="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 rounded-md transition"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
-        )}
-
-        <div className="mt-6 text-right">
-          <button
-            onClick={() => setIsDetailModalOpen(false)}
-            className="bg-gray-600 hover:bg-gray-700 text-white px-5 py-2 rounded-md transition"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-})()}
+        );
+      })()}
 
 
       <Modal
