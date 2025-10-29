@@ -6,6 +6,10 @@ import LoadingComponent from "../../components/loading";
 import { useNavigate } from "react-router-dom";
 import { CalendarContext } from '../../context/calendarContext';
 
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  return new Date(dateString).toISOString().split('T')[0];
+};
 
 const TenantList = () => {
   const [tenants, setTenants] = useState([]);
@@ -30,6 +34,7 @@ const TenantList = () => {
     nationalId: "",
     leaseStartDate: "",
     leaseEndDate: "",
+    contractEndDate: "", 
     paymentStatus: "",
     additionalNotes: "",
     unitId: "",
@@ -104,8 +109,9 @@ const TenantList = () => {
     phoneNumber: tenant.phoneNumber || '',
     email: tenant.email || '',
     nationalId: tenant.nationalId || '',
-    leaseStartDate: tenant.leaseStartDate || '',
-    leaseEndDate: tenant.leaseEndDate || '',
+    leaseStartDate: formatDate(tenant.leaseStartDate),
+    leaseEndDate: formatDate(tenant.leaseEndDate),
+   contractEndDate: formatDate(tenant.contractEndDate),
     paymentStatus: tenant.paymentStatus || '',
     additionalNotes: tenant.additionalNotes || '',
     unitId: tenant.unitId ? tenant.unitId.toString() : '',
@@ -187,6 +193,7 @@ const TenantList = () => {
         nationalId: editData.nationalId,
         leaseStartDate: editData.leaseStartDate,
         leaseEndDate: editData.leaseEndDate,
+        contractEndDate: editData.contractEndDate,
         paymentStatus: editData.paymentStatus,
         additionalNotes: editData.additionalNotes,
         unitId: editData.unitId ? Number(editData.unitId) : null,
@@ -334,7 +341,7 @@ const TenantList = () => {
               render: (row) => row.Floor?.floorNumber || "N/A",
             },
            {
-              label: "Remaining Days",
+              label: "Rent Remaining Days",
               key: "remainingDays",
               render: (row) => {
                 const today = new Date();
@@ -342,6 +349,19 @@ const TenantList = () => {
                 today.setHours(0, 0, 0, 0);
                 leaseEnd.setHours(0, 0, 0, 0);
                 const diffTime = leaseEnd - today;
+                const diffDays = Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 0);
+                return `${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+              }
+            },
+           {
+              label: "Contract Remaining Days",
+              key: "contractRemainingDays",
+              render: (row) => {
+                const today = new Date();
+                const contractEnd = new Date(row.contractEndDate);
+                today.setHours(0, 0, 0, 0);
+                contractEnd.setHours(0, 0, 0, 0);
+                const diffTime = contractEnd - today;
                 const diffDays = Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 0);
                 return `${diffDays} day${diffDays !== 1 ? 's' : ''}`;
               }
@@ -494,7 +514,21 @@ const TenantList = () => {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">
+                Contract End Date
+              </label>
+              <input
+                type="date"
+                value={editData.contractEndDate}
+                onChange={(e) =>
+                  setEditData({ ...editData, contractEndDate: e.target.value })
+                }
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Rent Amount
@@ -716,6 +750,16 @@ const TenantList = () => {
               <p className="text-sm">
                 {selectedTenant.leaseEndDate
                   ? formatDateForDisplay(selectedTenant.leaseEndDate)
+                  : "N/A"}
+              </p>
+            </div>
+                        <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">
+                Contract End Date
+              </label>
+              <p className="text-sm">
+                {selectedTenant.contractEndDate
+                  ? formatDateForDisplay(selectedTenant.contractEndDate)
                   : "N/A"}
               </p>
             </div>

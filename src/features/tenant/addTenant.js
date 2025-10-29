@@ -17,6 +17,7 @@ const AddTenant = () => {
   const [floorId, setFloorId] = useState('');
   const [unitId, setUnitId] = useState('');
   const [leaseStartDate, setLeaseStartDate] = useState('');
+  const [contractEndDate, setContractEndDate] = useState('');
   const [leaseEndDate, setLeaseEndDate] = useState('');
   const [amount, setAmount] = useState('');
   const [additionalNotes, setAdditionalNotes] = useState('');
@@ -40,6 +41,7 @@ const AddTenant = () => {
     unitId: '',
     leaseStartDate: '',
     leaseEndDate: '',
+    contractEndDate: '',
     amount: '',
     advance: '',
     carName: '',
@@ -75,7 +77,7 @@ const AddTenant = () => {
   const fetchUnitDetails = async (unitId) => {
   try {
     const response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit/${unitId}`);
-    const rent = response.data?.rentAmount || '';
+    const rent = response.data?.taxedRentAmount || '';
     setAmount(rent);
   } catch (err) {
     console.error('Failed to fetch unit details:', err);
@@ -140,6 +142,18 @@ const AddTenant = () => {
     return '';
   };
 
+  const validateContractEndDate = (value, leaseStartDate, leaseEndDate) => {
+  if (!value) return 'Contract End Date is required.';
+  if (leaseStartDate && new Date(value) <= new Date(leaseStartDate)) {
+    return 'Contract End Date must be after Lease Start Date.';
+  }
+  if (leaseEndDate && new Date(value) <= new Date(leaseEndDate)) {
+    return 'Contract End Date must be after Lease End Date.';
+  }
+  return '';
+};
+
+
   const validateAmount = (value) => {
     if (!value) return 'Payment Status is required.';
     return '';
@@ -183,6 +197,7 @@ const AddTenant = () => {
       unitId: validateUnitId(unitId),
       leaseStartDate: validateLeaseStartDate(leaseStartDate),
       leaseEndDate: validateLeaseEndDate(leaseEndDate, leaseStartDate),
+      contractEndDate: validateContractEndDate(contractEndDate, leaseStartDate, leaseEndDate),
       amount: validateAmount(amount),
       advance: validateAdvance(advance),
       carName: validateCarName(carName, hasCar),
@@ -202,6 +217,7 @@ const AddTenant = () => {
       newErrors.floorId,
       newErrors.unitId,
       newErrors.leaseStartDate,
+      newErrors.contractEndDate,
       newErrors.amount,
       newErrors.advance,
       ...(hasCar ? [newErrors.carName, newErrors.carPlate, newErrors.color] : []),
@@ -229,6 +245,7 @@ const AddTenant = () => {
     formData.append('floorId', floorId);
     formData.append('unitId', unitId);
     formData.append('leaseStartDate', leaseStartDate);
+    formData.append('contractEndDate', contractEndDate,)
     formData.append('amount', amount);
     formData.append('advance', advance);
 
@@ -256,6 +273,7 @@ const AddTenant = () => {
       setFloorId('');
       setUnitId('');
       setLeaseStartDate('');
+      setContractEndDate('');
       setLeaseEndDate('');
       setAmount('');
       setAdditionalNotes('');
@@ -288,7 +306,7 @@ const AddTenant = () => {
           {/* Full Name */}
           <div>
             <label className="block text-sm font-semibold mb-2">
-              Full Name <span className="text-red-500">*</span>
+              Full Name  <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -488,6 +506,29 @@ const AddTenant = () => {
               }`}
             />
             {errors.leaseEndDate && <p className="text-red-500 text-sm mt-1">{errors.leaseEndDate}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold mb-2">
+              Contract End Date <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="date"
+              min={leaseStartDate}
+              value={contractEndDate}
+              onChange={(e) => {
+                const value = e.target.value;
+                setContractEndDate(value);
+                setErrors((prev) => ({
+                  ...prev,
+                  contractEndDate: validateContractEndDate(value, leaseStartDate, leaseEndDate),
+                }));
+              }}
+              className={`bg-base-100 w-full p-3 border rounded-md ${
+                errors.contractEndDate ? 'border-red-500' : 'border-gray-300'
+              }`}
+            />
+            {errors.contractEndDate && <p className="text-red-500 text-sm mt-1">{errors.contractEndDate}</p>}
           </div>
 
 

@@ -23,7 +23,7 @@ const AddAssetAuditPage = () => {
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
 
-const { isGregorian  } = useContext(CalendarContext);
+
 
 
 
@@ -48,6 +48,8 @@ const { isGregorian  } = useContext(CalendarContext);
       setMessage('Please select either Asset or Item');
       return;
     }
+
+     console.log("Submitting date:", date);
 
     const payload = {};
     if (selectedItemId) payload.item_id = selectedItemId;

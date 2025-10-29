@@ -20,6 +20,8 @@ const Login = lazy(() => import("./pages/Login"));
 const TenantLogin = lazy(() => import("./pages/TenantLogin"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const Register = lazy(() => import("./pages/Register"));
+const TestDatePickerPage = lazy(() => import("./components/Common/datePicker"));
+
 
 initializeApp();
 
@@ -55,6 +57,9 @@ function App() {
           <Route path="/tenant-login" element={<TenantLogin />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/register" element={<Register />} />
+          {/* Test route for SmartDateInput */}
+<Route path="/test-date-picker" element={<TestDatePickerPage />} />
+
 
           {/* Protected route */}
           <Route
