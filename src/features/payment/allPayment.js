@@ -3,6 +3,7 @@ import axios from "axios";
 import TableComponent from "../../components/table";
 import GenerateReceipt from "./pdfGenerator";
 import { useNavigate } from "react-router-dom";
+import DisplayDate from "../../components/Common/displayDate";
 
 const AllPaymentsPage = () => {
   const [payments, setPayments] = useState([]);
@@ -61,7 +62,7 @@ const AllPaymentsPage = () => {
     navigate("/app/payment-receipt", { state: { payment } });
   };
 
-    // Handle edit button click
+  // Handle edit button click
   const handleEditClick = (payment) => {
     setSelectedPayment(payment);
     setVendorId(payment.vendorId);
@@ -70,11 +71,13 @@ const AllPaymentsPage = () => {
     setStatus(payment.status);
     setDescription(payment.description || "");
 
-    const formattedPaymentDate = new Date(payment.paymentDate).toISOString().split('T')[0];
-    setPaymentDate(formattedPaymentDate)
+    const formattedPaymentDate = new Date(payment.paymentDate)
+      .toISOString()
+      .split("T")[0];
+    setPaymentDate(formattedPaymentDate);
     setIsEditModalOpen(true);
   };
-  
+
   // Handle edit request
   const handleEdit = async () => {
     setLoading(true);
@@ -93,7 +96,9 @@ const AllPaymentsPage = () => {
         updatedPayment
       );
 
-      const updatedVendor = vendors.find(vendor => vendor.id === Number(vendorId));
+      const updatedVendor = vendors.find(
+        (vendor) => vendor.id === Number(vendorId)
+      );
       const updatedPaymentFromServer = response.data.payment;
 
       const updatedData = payments.map((payment) =>
@@ -156,7 +161,7 @@ const AllPaymentsPage = () => {
     {
       key: "paymentDate",
       label: "Payment Date",
-      render: (row) => new Date(row.paymentDate).toISOString().split('T')[0],
+      isDate: true,
     },
     {
       label: "Actions",
@@ -192,13 +197,13 @@ const AllPaymentsPage = () => {
     },
   ];
   const handleAddClick = () => {
-    window.location.href = '/app/add-payment';
-   };
+    window.location.href = "/app/add-payment";
+  };
 
   return (
     <div className="container mx-auto p-6">
       <TableComponent
-        title="Payment made for Vendors "//Vendors Payment
+        title="Payment made for Vendors " //Vendors Payment
         data={payments}
         columns={columns}
         exportable={true}
@@ -206,14 +211,14 @@ const AllPaymentsPage = () => {
         onAdd={handleAddClick}
       />
 
-   {selectedVendorPayments.length > 0 && (
+      {selectedVendorPayments.length > 0 && (
         <GenerateReceipt payments={selectedVendorPayments} />
       )}
 
       {/* Edit Modal */}
       {isEditModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto p-4">
-    <div className="bg-base-100 p-6 rounded-md w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-auto p-4">
+          <div className="bg-base-100 p-6 rounded-md w-full max-w-md max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">Edit Payment</h2>
             <form
               onSubmit={(e) => {
@@ -321,7 +326,10 @@ const AllPaymentsPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="description" className="block text-sm font-medium text-white-700">
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-white-700"
+                >
                   Description
                 </label>
                 <textarea
@@ -332,7 +340,6 @@ const AllPaymentsPage = () => {
                   rows={3}
                 />
               </div>
-
 
               <div className="flex justify-end">
                 <button
@@ -410,7 +417,7 @@ const AllPaymentsPage = () => {
               </p>
               <p>
                 <strong>Payment Date:</strong>{" "}
-                {new Date(selectedPayment.paymentDate).toLocaleString()}
+                <DisplayDate date={selectedPayment.paymentDate} />
               </p>
               <p>
                 <strong>Vendor Phone:</strong> {selectedPayment.Vendor.phone}

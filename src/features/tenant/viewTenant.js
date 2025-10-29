@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import TableComponent from "../../components/table";
 import Modal from "../../components/Modal";
 import LoadingComponent from "../../components/loading";
 import { useNavigate } from "react-router-dom";
+import { CalendarContext } from '../../context/calendarContext';
+
 
 const TenantList = () => {
   const [tenants, setTenants] = useState([]);
@@ -16,6 +18,8 @@ const TenantList = () => {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [unitDetails, setUnitDetails] = useState(null);
   const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
+
+   const {  formatDateForDisplay } = useContext(CalendarContext);
 
   const navigate = useNavigate();
 
@@ -701,9 +705,7 @@ const TenantList = () => {
               </label>
               <p className="text-sm">
                 {selectedTenant.leaseStartDate
-                  ? new Date(selectedTenant.leaseStartDate)
-                      .toISOString()
-                      .split("T")[0]
+                  ? formatDateForDisplay(selectedTenant.leaseStartDate)
                   : "N/A"}
               </p>
             </div>
@@ -713,9 +715,7 @@ const TenantList = () => {
               </label>
               <p className="text-sm">
                 {selectedTenant.leaseEndDate
-                  ? new Date(selectedTenant.leaseEndDate)
-                      .toISOString()
-                      .split("T")[0]
+                  ? formatDateForDisplay(selectedTenant.leaseEndDate)
                   : "N/A"}
               </p>
             </div>

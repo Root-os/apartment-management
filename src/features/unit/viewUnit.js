@@ -35,7 +35,8 @@ const [newUnitData, setNewUnitData] = useState({
     floorId: '',
     images: [],
     pricePerSquare: '',
-    rentAmount: ''
+    rentAmount: '',
+    taxedRentAmount: '',
 });
 
   const [newEquipment, setNewEquipment] = useState("");
@@ -70,89 +71,91 @@ const [newUnitData, setNewUnitData] = useState({
     const size = parseFloat(newUnitData.size) || 0;
     const price = parseFloat(newUnitData.pricePerSquare) || 0;
     const rent = size * price;
-
+    const taxedRent = rent * 1.15; 
     setNewUnitData(prev => ({
         ...prev,
-        rentAmount: rent.toFixed(2) // 2 decimals
+        rentAmount: rent.toFixed(2),
+        taxedRentAmount: taxedRent.toFixed(2)
     }));
-}, [newUnitData.size, newUnitData.pricePerSquare]);
+  }, [newUnitData.size, newUnitData.pricePerSquare]);
 
 
-  const handleEditClick = (unit) => {
-    setSelectedUnit(unit);
-setNewUnitData({
-    unitNumber: unit.unitNumber,
-    size: unit.size,
-    status: unit.status,
-    availableEquipments: Array.isArray(unit.availableEquipments) ? unit.availableEquipments : JSON.parse(unit.availableEquipments),
-    problems: Array.isArray(unit.problems) ? unit.problems : JSON.parse(unit.problems),
-    floorId: unit.floorId,
-    images: unit.images || [],
-    pricePerSquare: unit.pricePerSquare || '',
-    rentAmount: unit.rentAmount || ''
-});
-    setIsEditModalOpen(true);
-  };
+    const handleEditClick = (unit) => {
+      setSelectedUnit(unit);
+      setNewUnitData({
+          unitNumber: unit.unitNumber,
+          size: unit.size,
+          status: unit.status,
+          availableEquipments: Array.isArray(unit.availableEquipments) ? unit.availableEquipments : JSON.parse(unit.availableEquipments),
+          problems: Array.isArray(unit.problems) ? unit.problems : JSON.parse(unit.problems),
+          floorId: unit.floorId,
+          images: unit.images || [],
+          pricePerSquare: unit.pricePerSquare || '',
+          rentAmount: unit.rentAmount || '',
+          taxedRentAmount: unit.taxedRentAmount || '',
+      });
+      setIsEditModalOpen(true);
+    };
 
-const handleEditSubmit = () => {
-  setBtnLoading(true);
+  const handleEditSubmit = () => {
+    setBtnLoading(true);
 
-  const formData = new FormData();
+    const formData = new FormData();
 
-  // Append all simple fields except images
-  for (const key in newUnitData) {
-    if (key !== 'images') {
-      const value = newUnitData[key];
+    // Append all simple fields except images
+    for (const key in newUnitData) {
+      if (key !== 'images') {
+        const value = newUnitData[key];
 
-      // For arrays like availableEquipments or problems, stringify before appending
-      if (Array.isArray(value)) {
-        formData.append(key, JSON.stringify(value));
-      } else {
-        formData.append(key, value);
+        // For arrays like availableEquipments or problems, stringify before appending
+        if (Array.isArray(value)) {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value);
+        }
       }
     }
-  }
 
-  // Append images separately
-  (newUnitData.images || []).forEach((img, idx) => {
-    if (typeof img === 'string') {
-      // Existing image URL or path, append as string
-      formData.append(`images[${idx}]`, img);
-    } else {
-      // New file object
-      formData.append('images', img);
-    }
-  });
+    // Append images separately
+    (newUnitData.images || []).forEach((img, idx) => {
+      if (typeof img === 'string') {
+        // Existing image URL or path, append as string
+        formData.append(`images[${idx}]`, img);
+      } else {
+        // New file object
+        formData.append('images', img);
+      }
+    });
 
-  axios.put(`${process.env.REACT_APP_BASE_URL}unit/${selectedUnit.id}`, formData, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-      // Let axios/browser set Content-Type for multipart/form-data
-    },
-  })
-  .then(() => {
-    setUnits(units.map(unit => unit.id === selectedUnit.id ? { ...unit, ...newUnitData } : unit));
-    setIsEditModalOpen(false);
+    axios.put(`${process.env.REACT_APP_BASE_URL}unit/${selectedUnit.id}`, formData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        // Let axios/browser set Content-Type for multipart/form-data
+      },
+    })
+    .then(() => {
+      setUnits(units.map(unit => unit.id === selectedUnit.id ? { ...unit, ...newUnitData } : unit));
+      setIsEditModalOpen(false);
 
-    setModalOpen(true);
-    setMessageType('success');
-    setMessage('Unit updated successfully');
-  })
-  .catch(error => {
-    // Extract backend error message if available
-    let backendMessage = 'Unable to update, please try again';
-    if (error.response?.data?.message) {
-      backendMessage = error.response.data.message;
-    }
+      setModalOpen(true);
+      setMessageType('success');
+      setMessage('Unit updated successfully');
+    })
+    .catch(error => {
+      // Extract backend error message if available
+      let backendMessage = 'Unable to update, please try again';
+      if (error.response?.data?.message) {
+        backendMessage = error.response.data.message;
+      }
 
-    setModalOpen(true);
-    setMessageType('error');
-    setMessage(backendMessage);
-  })
-  .finally(() => {
-    setBtnLoading(false);
-  });
-};
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage(backendMessage);
+    })
+    .finally(() => {
+      setBtnLoading(false);
+    });
+  };
 
 
   const handleDeleteClick = (unit) => {
@@ -387,39 +390,39 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
-<div className="mb-4">
-  <label className="block text-sm font-medium mb-2">Size (m²)</label>
-  <input
-    type="number"
-    value={newUnitData.size}
-    onChange={(e) => setNewUnitData({ ...newUnitData, size: e.target.value })}
-    className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-    min="1"
-    step="1"
-  />
-</div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Size (m²)</label>
+              <input
+                type="number"
+                value={newUnitData.size}
+                onChange={(e) => setNewUnitData({ ...newUnitData, size: e.target.value })}
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+                min="1"
+                step="1"
+              />
+            </div>
 
-<div className="mb-4">
-  <label className="block text-sm font-medium mb-2">Price per (m²)</label>
-  <input
-    type="number"
-    value={newUnitData.pricePerSquare}
-    onChange={(e) => setNewUnitData({ ...newUnitData, pricePerSquare: e.target.value })}
-    className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-    min="0"
-    step="0.01"
-  />
-</div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Price per (m²)</label>
+              <input
+                type="number"
+                value={newUnitData.pricePerSquare}
+                onChange={(e) => setNewUnitData({ ...newUnitData, pricePerSquare: e.target.value })}
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+                min="0"
+                step="0.01"
+              />
+            </div>
 
-<div className="mb-4">
-  <label className="block text-sm font-medium mb-2">Rent Amount</label>
-  <input
-    type="number"
-    value={newUnitData.rentAmount}
-    readOnly
-    className="bg-gray-100 w-full p-2 border border-gray-300 rounded"
-  />
-</div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Taxed Rent (15%)</label>
+              <input
+                type="number"
+                value={newUnitData.taxedRentAmount}
+                readOnly
+                className="bg-gray-100 w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
 
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Status</label>
@@ -606,6 +609,7 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
               <p><strong>Size (m²):</strong> {unitDetails.size} sq ft</p>
               <p><strong>Price per (m²):</strong>{unitDetails.pricePerSquare} ETB</p>
               <p><strong>Rent Amount:</strong>{unitDetails.rentAmount} ETB</p>
+              <p><strong>Taxed Rent (vat):</strong>{unitDetails.taxedRentAmount} ETB</p>
               <p><strong>Status:</strong> {unitDetails.status}</p>
               
               <div className="mt-3">

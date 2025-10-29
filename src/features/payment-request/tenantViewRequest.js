@@ -96,7 +96,7 @@ const TenantPaymentRequestsPage = () => {
     {
       key: 'dueDate',
       label: 'Due Date',
-      render: (row) => new Date(row.dueDate).toISOString().split('T')[0],
+      isDate: true,
     },
     { key: 'repeatedFor', label: 'Repeated For' },
     { key: 'status', label: 'Status' },

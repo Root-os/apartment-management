@@ -403,17 +403,17 @@ const AddTenant = () => {
             </label>
             <select
               value={unitId}
-onChange={(e) => {
-  const selectedUnitId = e.target.value;
-  setUnitId(selectedUnitId);
-  setErrors((prev) => ({ ...prev, unitId: validateUnitId(selectedUnitId) }));
+            onChange={(e) => {
+              const selectedUnitId = e.target.value;
+              setUnitId(selectedUnitId);
+              setErrors((prev) => ({ ...prev, unitId: validateUnitId(selectedUnitId) }));
 
-  if (selectedUnitId) {
-    fetchUnitDetails(selectedUnitId); // ← auto-fetch rent
-  } else {
-    setAmount(''); // clear if nothing selected
-  }
-}}
+              if (selectedUnitId) {
+                fetchUnitDetails(selectedUnitId); // ← auto-fetch rent
+              } else {
+                setAmount(''); // clear if nothing selected
+              }
+            }}
 
               className={`bg-base-100 w-full p-3 border rounded-md ${
                 errors.unitId ? 'border-red-500' : 'border-gray-300'

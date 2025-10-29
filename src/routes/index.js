@@ -187,6 +187,10 @@ const ViewWithdrawRequests = lazy(() =>
 // Setting
 const SettingAdd = lazy(() => import("../pages/protected/SettingAdd"));
 const SettingView = lazy(() => import("../pages/protected/SettingView"));
+
+const CalendarToggle = lazy(() =>
+  import("../pages/protected/setting/CalendarToggle")
+);
 // Purchase
 const PurchaseAdd = lazy(() => import("../pages/protected/PurchaseAdd"));
 const PurchaseView = lazy(() => import("../pages/protected/PurchaseView"));
@@ -577,6 +581,7 @@ const adminRoutes = [
     routes: [
       { path: "/add-setting", component: SettingAdd },
       { path: "/view-settings", component: SettingView },
+      { path: "/calendar-settings", component: CalendarToggle },
       { path: "/All-User", component: ALlUser },
       { path: "/add-role", component: RoleAdd },
       { path: "/view-role", component: RoleView },

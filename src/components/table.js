@@ -1,15 +1,16 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useContext } from 'react';
 import { FaPlus, FaSortUp, FaSortDown, FaDownload, FaSearch, FaThList, FaChevronLeft, FaChevronRight, FaPrint } from 'react-icons/fa';
 import { CSVLink } from 'react-csv';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { CalendarContext } from '../context/calendarContext';
 
 const TableComponent = ({ 
   title, 
   data, 
   columns, 
   rowsPerPageOptions = [5, 10, 15], 
-  showSearch = true, 
+  showSearch = true,
   exportable = true, 
   onAdd,
   customHeader,
@@ -19,7 +20,11 @@ const TableComponent = ({
   const [sortConfig, setSortConfig] = useState({ key: columns[0]?.key, direction: 'asc' });
   const [rowsPerPage, setRowsPerPage] = useState(rowsPerPageOptions[0]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [density, setDensity] = useState('comfortable'); // New state for row density
+  const [density, setDensity] = useState('comfortable'); 
+  const { isGregorian, formatDateForDisplay } = useContext(CalendarContext);
+
+  console.log(`🧭 Table "${title}" using calendar:`, isGregorian ? "Gregorian" : "Ethiopian");
+
 
   const handleSort = (key) => {
     let direction = 'asc';
@@ -164,17 +169,36 @@ const TableComponent = ({
         ))}
       </tr>
     </thead>
-    <tbody>
-      {paginatedData.map((row, index) => (
-        <tr key={index} className="border-b">
-          {columns.map((column) => (
-            <td key={column.key} className={`px-4 ${rowPadding}`}>
-              {column.render ? column.render(row) : row[column.key]}
-            </td>
-          ))}
-        </tr>
-      ))}
-    </tbody>
+<tbody>
+  {paginatedData.map((row, index) => (
+    <tr key={index} className="border-b">
+      {columns.map((column) => {
+        let cellValue = row[column.key];
+
+        // ✅ Auto-format date fields (unless custom render is provided)
+        if (!column.render && typeof cellValue === 'string') {
+          const lowerKey = column.key.toLowerCase();
+          if (
+            lowerKey.includes('date') ||
+            lowerKey.endsWith('at') ||
+            lowerKey.startsWith('date')
+          ) {
+           console.log(`📅 Formatting field "${column.key}" with value:`, cellValue);
+          cellValue = formatDateForDisplay(cellValue);
+          console.log(`🗓️ Formatted (${isGregorian ? "Gregorian" : "Ethiopian"}):`, cellValue);
+          }
+        }
+
+        return (
+          <td key={column.key} className={`px-4 ${rowPadding}`}>
+            {column.render ? column.render(row) : cellValue}
+          </td>
+        );
+      })}
+    </tr>
+  ))}
+</tbody>
+
   </table>
    {/* Print-only table, shows all filtered & sorted data */}
   <table className="min-w-full table-auto border-collapse hidden print:table" id="print-table">

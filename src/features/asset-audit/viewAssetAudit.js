@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
 import Modal from '../../components/Modal';
+import DisplayDate from '../../components/Common/displayDate';
 
 const AssetAuditPage = () => {
   const [data, setData] = useState([]);
@@ -199,8 +200,7 @@ const AssetAuditPage = () => {
   {
     label: 'Audit Date',
     key: 'date',
-    render: (row) =>
-      row.date ? new Date(row.date).toISOString().split('T')[0] : 'N/A',
+    isDate: true
   },
   {
     label: 'Actions',
@@ -407,7 +407,7 @@ const AssetAuditPage = () => {
             <div className="space-y-2">
               <p><strong>Item Name:</strong> {selectedAudit.Item ? selectedAudit.Item.itemName : 'N/A'}</p>
               <p><strong>Asset Type:</strong> {selectedAudit.AssetType ? selectedAudit.AssetType.name : 'N/A'}</p>
-              <p><strong>Date:</strong> {selectedAudit.date ? new Date(selectedAudit.date).toISOString().split('T')[0]: 'N/A'}</p>
+              <p><strong>Date:</strong> <DisplayDate date={selectedAudit.date}/></p>
               <p><strong>Existing Amount:</strong> {selectedAudit.existing_amount || 0}</p>
               <p><strong>Damaged Amount:</strong> {selectedAudit.damaged_amount || 0}</p>
               <p><strong>Lost Amount:</strong> {selectedAudit.lost_amount || 0}</p>

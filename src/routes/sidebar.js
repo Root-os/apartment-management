@@ -920,6 +920,11 @@ const adminRoutes = [
         icon: <EyeIcon className={submenuIconClasses} />,
         name: "Revoke Permissions",
       },
+      {
+        path: "/app/calendar-settings",
+        icon: <CogIcon className={submenuIconClasses} />,
+        name: "Calendar Settings",
+      }
       // {
       //   path: '/app/register-user',
       //   icon: <PlusIcon className={submenuIconClasses}/>,

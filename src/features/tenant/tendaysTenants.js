@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import TableComponent from "../../components/table";
 import LoadingComponent from "../../components/loading";
+import DisplayDate from "../../components/Common/displayDate";
 
 const TenDaysTenant = () => {
   const [tenants, setTenants] = useState([]);
@@ -151,19 +152,11 @@ const TenDaysTenant = () => {
               </p>
               <p>
                 <strong>Lease Start Date:</strong>{" "}
-                {selectedTenant.leaseStartDate
-                  ? new Date(selectedTenant.leaseStartDate)
-                      .toISOString()
-                      .split("T")[0]
-                  : "N/A"}
+                <DisplayDate date={selectedTenant.leaseStartDate} />
               </p>
               <p>
                 <strong>Lease End Date:</strong>{" "}
-                {selectedTenant.leaseEndDate
-                  ? new Date(selectedTenant.leaseEndDate)
-                      .toISOString()
-                      .split("T")[0]
-                  : "N/A"}
+                <DisplayDate date={selectedTenant.leaseEndDate} />
               </p>
               <p>
                 <strong>Rent Amount:</strong> {selectedTenant.amount}
@@ -185,10 +178,12 @@ const TenDaysTenant = () => {
                 <strong>TIN:</strong> {selectedTenant.tin}
               </p>
               <p>
-                <strong>Car Plate:</strong> {selectedTenant.TenantVehicles?.[0]?.carPlate}
+                <strong>Car Plate:</strong>{" "}
+                {selectedTenant.TenantVehicles?.[0]?.carPlate}
               </p>
               <p>
-                <strong>Car Name:</strong> {selectedTenant.TenantVehicles?.[0]?.carName}
+                <strong>Car Name:</strong>{" "}
+                {selectedTenant.TenantVehicles?.[0]?.carName}
               </p>
               <p>
                 <strong>Status:</strong> {selectedTenant.status}

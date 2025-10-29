@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
 import Modal from '../../components/Modal';
+import { CalendarContext } from '../../context/calendarContext';
+
+
+
 
 const GovBillPaymentPage = () => {
   const [billPayments, setBillPayments] = useState([]);
@@ -28,6 +32,11 @@ const GovBillPaymentPage = () => {
   const [filterStatus, setFilterStatus] = useState('');
   const [selectedDetail, setSelectedDetail] = useState(null); 
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+
+ const {  formatDateForDisplay } = useContext(CalendarContext);
+
+
+
 
   useEffect(() => {
     const fetchBillPayments = async () => {
@@ -154,8 +163,18 @@ const handleDetailClick = (payment) => {
   const columns = [
     { key: 'billType', label: 'Bill Type', render: (payment) => payment.BillType?.typeName },
     { key: 'amount', label: 'Amount' },
-    { key: 'startDate', label: 'Start Date', render: (payment) => new Date(payment.startDate).toISOString().split('T')[0]},
-    { key: 'endDate', label: 'End Date', render: (payment) => new Date(payment.endDate).toISOString().split('T')[0]},
+    {
+      key: 'startDate',
+      label: 'Start Date',
+      render: (payment) => payment.startDate ? formatDateForDisplay(payment.startDate) : '-'
+
+    },
+    {
+      key: 'endDate',
+      label: 'End Date',
+      render: (payment) => formatDateForDisplay(payment.endDate)
+    },
+
     { key: 'status', label: 'Status' },
     { key: 'paymentMethod', label: 'Payment Method' },
     // { 
@@ -363,8 +382,8 @@ const handleDetailClick = (payment) => {
               <div>
                 <p><strong>Bill Type:</strong> {selectedDetail.BillType?.typeName}</p>
                 <p><strong>Amount:</strong> {selectedDetail.amount}</p>
-                <p><strong>Start Date:</strong> {new Date(selectedDetail.startDate).toISOString().split('T')[0]}</p>
-                <p><strong>End Date:</strong> {new Date(selectedDetail.endDate).toISOString().split('T')[0]}</p>
+                <p><strong>Start Date:</strong> {formatDateForDisplay(selectedDetail.startDate)}</p>
+                <p><strong>End Date:</strong> {formatDateForDisplay(selectedDetail.endDate)}</p>
                 <p><strong>Status:</strong> {selectedDetail.status}</p>
                 <p><strong>Payment Method:</strong> {selectedDetail.paymentMethod}</p>
                 <p><strong>Description:</strong> {selectedDetail.description}</p>

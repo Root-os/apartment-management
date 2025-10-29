@@ -26,6 +26,7 @@ const AddFloorUnit = () => {
   const [images, setImages] = useState([]);
   const [price, setPrice] = useState(null);
   const [rent, setRent] = useState(null);
+  const [taxedRent, setTaxedRent] = useState(null);
 
 
   useEffect(() => {
@@ -41,13 +42,18 @@ const AddFloorUnit = () => {
     fetchFloors();
   }, []);
 
-  useEffect(() => {
-    if (size && price) {
-      setRent(parseFloat(size) * parseFloat(price));
-    } else {
-      setRent('');
-    }
-  }, [size, price]);
+useEffect(() => {
+  if (size && price) {
+    const calculatedRent = parseFloat(size) * parseFloat(price);
+    setRent(calculatedRent);
+    setTaxedRent(parseFloat((calculatedRent * 1.15).toFixed(2))); // taxedRent = rent + 15%
+  } else {
+    setRent('');
+    setTaxedRent('');
+  }
+}, [size, price]);
+
+
 
 
   // Add new equipment
@@ -104,6 +110,8 @@ const AddFloorUnit = () => {
 
       formData.append('pricePerSquare', parseFloat(price));
       formData.append('rentAmount', parseFloat(rent));
+      formData.append('taxedRentAmount', parseFloat(taxedRent));
+    
 
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}unit`,
@@ -133,6 +141,7 @@ const AddFloorUnit = () => {
       setImages([]);
       setPrice('');
       setRent('');
+      setTaxedRent('');
       setLoading(false);
       window.location.href = '/app/view-unit';
     } catch (err) {
@@ -211,18 +220,28 @@ const AddFloorUnit = () => {
              step="0.01"
           />
         </div>
-        <div>
-          <label>Rent Amount</label>
-          <input
-            type='number'
-            value={rent}
-            readOnly
-            required
-            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-             min="1"                
-             step="0.01"
-          />
-        </div>
+<div>
+  <label>Rent Amount</label>
+  <input
+    type="number"
+    value={rent || ''}
+    readOnly
+    className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+    step="0.01"
+  />
+</div>
+
+<div>
+  <label>Taxed Rent (15%)</label>
+  <input
+    type="number"
+    value={taxedRent || ''}
+    readOnly
+    className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+    step="0.01"
+  />
+</div>
+
 
         {/* Status */}
         <div>

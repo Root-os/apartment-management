@@ -4,6 +4,7 @@ import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 
+
 const ExpensePage = () => {
   const [expenses, setExpenses] = useState([]);
   const [columns, setColumns] = useState([]);
@@ -38,7 +39,7 @@ const ExpensePage = () => {
 
       setColumns([
         { label: 'Amount', key: 'amount' },
-        { label: 'Date', key: 'date' },
+        { label: 'Date', key: 'date', isDate: true },
         { label: 'Description', key: 'description' },
         { label: 'Expense Type', key: 'expenseType' },
         {
