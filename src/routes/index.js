@@ -606,7 +606,9 @@ if (token) {
       // all pages
       routes = adminRoutes.flatMap(m => m.routes || []);
     } else if (role === "tenant") {
-      routes = tenantRoutes.flatMap(m => m.routes || []);
+      routes = Array.isArray(tenantRoutes[0]?.routes)
+    ? tenantRoutes.flatMap(m => m.routes)
+    : tenantRoutes;
     } else {
       // start with employee base routes
       routes = [...employeeRoutes];

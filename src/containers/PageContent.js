@@ -25,10 +25,16 @@ function PageContent(){
 
     // Flatten the routes array (in case of admin grouped routes)
     const flattenRoutes = (routes) => {
+        console.log("All routes in flatten map:", routes.map(r => r.path));
+
+
         return routes.flatMap(route => route.routes ? route.routes : [route]);
+
     };
 
     const allRoutes = flattenRoutes(routes);
+    console.log("All routes:", allRoutes.map(r => r.path));
+
 
     return (
         <div className="drawer-content flex flex-col">

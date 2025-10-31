@@ -40,13 +40,19 @@ const EmployeeRegistration = () => {
       [name]: value,
     }));
   };
-    const handleDateChange = (e) => {
-    const { name, value } = e.target;
-    setEmployee((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
+  //   const handleDateChange = (e) => {
+  //   const { name, value } = e.target;
+  //   setEmployee((prevState) => ({
+  //     ...prevState,
+  //     [name]: value,
+  //   }));
+  // };
+  const handleDateChange = (fieldName) => (dateValue) => {
+  setEmployee((prevState) => ({
+    ...prevState,
+    [fieldName]: dateValue
+  }));
+};
   // Submit handler for the form
   const handleSubmit = async (e) => {
     setLoading(true);
@@ -217,7 +223,6 @@ finally {
               value={employee.salary}
               onChange={handleChange}
               min="0"
-              step="1"
               required
               className="bg-base-100 mt-1 p-2 w-full border border-gray-300 rounded-md"
             />
@@ -246,7 +251,7 @@ finally {
               id="hireDate"
               name="hireDate"
               value={employee.hireDate}
-              onChange={handleDateChange}
+              onChange={handleDateChange('hireDate')}
               required
               className="bg-base-100 mt-1 p-2 w-full border border-gray-300 rounded-md"
             />

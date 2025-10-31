@@ -41,7 +41,7 @@ const TenantRentPage = () => {
 
   const columns = [
     {
-      key: 'Rent From Date',
+      key: 'paymentDate',
       label: 'Payment Date',
       isDate: true,
     },

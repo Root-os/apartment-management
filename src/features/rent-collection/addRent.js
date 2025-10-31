@@ -109,6 +109,10 @@ const AddCollectedRent = () => {
   // Calculate paidDays
   useEffect(() => {
     if (paymentDate && nextDueDate) {
+    // console.log("📅 Calculating paid days:");
+    // console.log("Payment Date:", paymentDate);
+    // console.log("Next Due Date:", nextDueDate);
+
       const start = new Date(paymentDate);
       const end = new Date(nextDueDate);
       const diffTime = Math.abs(end - start);
@@ -153,45 +157,53 @@ const AddCollectedRent = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
 
-    if (!tenantId || !paymentDate || !nextDueDate || !amountPaid) {
-      setError("Please fill in all required fields.");
-      return;
-    }
+  // DEBUG: Check what dates are being processed
+  // console.log("📅 Before submission:");
+  // console.log("Payment Date (UI):", paymentDate);
+  // console.log("Next Due Date (UI):", nextDueDate);
+  // console.log("Is Gregorian mode:", isGregorian);
 
-    setLoading(true);
+  if (!tenantId || !paymentDate || !nextDueDate || !amountPaid) {
+    setError("Please fill in all required fields.");
+    return;
+  }
 
-    // Always convert to Gregorian before sending
-    const payload = {
-      tenantId: parseInt(tenantId),
-      paymentDate: convertToGregorian(paymentDate),
-      nextDueDate: convertToGregorian(nextDueDate),
-      paymentMethod,
-      status,
-      punishment: punishmentAmount || "0",
-      isPaid,
-    };
+  setLoading(true);
 
-    try {
-      await axios.post(`${process.env.REACT_APP_BASE_URL}rent-collection`, payload);
-      setMessageType("success");
-      setMessage("Rent collected successfully!");
-      setModalOpen(true);
-      setTenantId("");
-      setMonthsCount("");
-      setDaysCount("");
-      setPaymentDate("");
-      setNextDueDate("");
-      setAmountPaid("");
-    } catch (err) {
-      setError(err.response?.data?.error || "Failed to submit rent.");
-    } finally {
-      setLoading(false);
-    }
+  // SmartDateInput already gives Gregorian dates, so use them directly
+  const payload = {
+    tenantId: parseInt(tenantId),
+    paymentDate: paymentDate, // ✅ Already Gregorian from SmartDateInput
+    nextDueDate: nextDueDate, // ✅ Already Gregorian from SmartDateInput
+    paymentMethod,
+    status,
+    punishment: punishmentAmount || "0",
+    isPaid,
   };
+
+  console.log("📅 Final payload:", payload);
+
+  try {
+    await axios.post(`${process.env.REACT_APP_BASE_URL}rent-collection`, payload);
+    setMessageType("success");
+    setMessage("Rent collected successfully!");
+    setModalOpen(true);
+    setTenantId("");
+    setMonthsCount("");
+    setDaysCount("");
+    setPaymentDate("");
+    setNextDueDate("");
+    setAmountPaid("");
+  } catch (err) {
+    setError(err.response?.data?.error || "Failed to submit rent.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <>

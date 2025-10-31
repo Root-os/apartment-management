@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import TableComponent from '../../../components/table'
+import TableComponent from '../../../components/table';
+
 
 const MySalaryPayments = () => {
   const [salaryData, setSalaryData] = useState([]);
@@ -35,13 +36,7 @@ const MySalaryPayments = () => {
     { label: 'Net Salary', key: 'netSalary' },
     { label: 'Income Tax', key: 'incomeTax' },
     { label: 'Payment From Date', key: 'paymentFromDate', 
-      render: (row) => {
-        if (row.paymentFromDate) {
-          const date = new Date(row.paymentFromDate);
-          return date.toISOString().split('T')[0]; 
-        }
-        return 'N/A';
-      }
+        isDate: true
     },
     { label: 'Payment To Date', key: 'paymentToDate',
        isDate: true

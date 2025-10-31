@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../../components/Cards/TitleCard'
 import Modal from '../../../components/Modal';
+import SmartDateInput from '../../../components/Common/smartDatePicker';
 
 const WithdrawalRequestForm = () => {
   const [tenants, setTenants] = useState([]);
@@ -72,12 +73,11 @@ const WithdrawalRequestForm = () => {
         {/* Termination Date */}
         <div className="mb-4">
           <label htmlFor="terminationDate" className="block text-sm font-semibold mb-2">Termination Date</label>
-          <input
-            type="date"
+          <SmartDateInput
             id="terminationDate"
             name="terminationDate"
             value={terminationDate}
-            onChange={(e) => setTerminationDate(e.target.value)}
+            onChange={(date) => setTerminationDate(date)}
             className="bg-base-100 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             required
           />

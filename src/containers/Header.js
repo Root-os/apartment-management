@@ -172,9 +172,9 @@ function Header() {
                 <span className="badge">New</span>
               </Link>
             </li>
-            <li>
+            {/* <li>
               <Link to={"/app/settings-billing"}>Bill History</Link>
-            </li>
+            </li> */}
             </>
             )}
             {role === "tenant" && (

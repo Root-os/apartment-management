@@ -45,12 +45,12 @@ const TenantPaymentHistory = () => {
     {
       key: "startDate",
       label: "Start Date",
-      render: (p) => p.startDate ? new Date(p.startDate).toISOString().split("T")[0] : "N/A",
+      isDate: true
     },
     {
       key: "endDate",
       label: "End Date",
-      render: (p) => p.endDate ? new Date(p.endDate).toISOString().split("T")[0] : "N/A",
+      isDate: true
     },
     // {
     //   key: "paymentDate",

@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 import { isDate } from 'date-fns';
+import { CalendarContext } from '../../context/calendarContext';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 const MyOrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -21,7 +23,8 @@ const MyOrdersPage = () => {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
-  const token=localStorage.getItem('token')
+  const token=localStorage.getItem('token') 
+  const {formatDateForDisplay} = useContext(  CalendarContext);
 
   useEffect(() => {
     axios
@@ -189,11 +192,10 @@ return (
           <label htmlFor="orderDate" className="block text-sm font-medium text-white-700">
             Order Date
           </label>
-          <input
-            type="date"
+          <SmartDateInput
             id="orderDate"
             value={orderDate.split('T')[0]}
-            onChange={(e) => setOrderDate(e.target.value)}
+            onChange={(gcDate) => setOrderDate(gcDate)}
             className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
@@ -264,7 +266,7 @@ return (
       <h2 className="text-2xl font-bold mb-4">Order Details</h2>
       {selectedOrder && (
         <>
-          <p><strong>Order Date:</strong> {new Date(selectedOrder.orderDate).toISOString().split('T')[0]}</p>
+          <p><strong>Order Date:</strong> {formatDateForDisplay(selectedOrder.orderDate)}</p>
           <p><strong>Amount:</strong> {selectedOrder.amount}</p>
           <p><strong>Total Price:</strong> {selectedOrder.totalprice}</p>
           <p><strong>Status:</strong> {selectedOrder.status}</p>
