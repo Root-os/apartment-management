@@ -3,6 +3,7 @@ import axios from "axios";
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 const ExpenseReport = () => {
   const [expenseData, setExpenseData] = useState([]); // Unused here, but kept for consistency
@@ -58,7 +59,7 @@ const ExpenseReport = () => {
   const columns = [
     { key: 'expenseType.name', label: 'Expense Type', render: (expense) => expense.expenseType.name },
     { key: 'amount', label: 'Amount' },
-    { key: 'date', label: 'Date', render: (expense) => new Date(expense.date).toISOString().split('T')[0] },
+    { key: 'date', label: 'Date', isDate: true },
     { key: 'description', label: 'Description' },
   ];
 
@@ -70,24 +71,22 @@ const ExpenseReport = () => {
           {/* Start Date */}
           <div>
             <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label>
-            <input
-              type="date"
+            <SmartDateInput
               id="startDate"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.startDate}
-              onChange={(e) => setFilterParams({ ...filterParams, startDate: e.target.value })}
+              onChange={(date) => setFilterParams({ ...filterParams, startDate: date })}
             />
           </div>
 
           {/* End Date */}
           <div>
             <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">End Date</label>
-            <input
-              type="date"
+            <SmartDateInput
               id="endDate"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.endDate}
-              onChange={(e) => setFilterParams({ ...filterParams, endDate: e.target.value })}
+              onChange={(date) => setFilterParams({ ...filterParams, endDate: date })}
             />
           </div>
 

@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import TableComponent from "../../../components/table";
 import Modal from "../../../components/Modal";
 import LoadingComponent from "../../../components/loading";
+import SmartDateInput from "../../../components/Common/smartDatePicker";
+import { CalendarContext } from '../../../context/calendarContext';
 
 const WithdrawalRequests = () => {
   const [data, setData] = useState([]);
@@ -31,6 +33,8 @@ const WithdrawalRequests = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState("success");
   const [message, setMessage] = useState("");
+
+   const {  formatDateForDisplay } = useContext(CalendarContext);
 
   const token = localStorage.getItem("token");
 
@@ -412,7 +416,7 @@ const WithdrawalRequests = () => {
       key: "terminationDate",
       label: "Termination Date",
       render: (row) =>
-        new Date(row.terminationDate).toISOString().split("T")[0],
+        formatDateForDisplay(row.terminationDate) ,
     },
     { key: "status", label: "Status" },
     { key: "adminResponse", label: "Admin Response" },
@@ -690,9 +694,7 @@ const WithdrawalRequests = () => {
               <p>
                 <strong>Termination Date:</strong>{" "}
                 {
-                  new Date(selectedRequest.terminationDate)
-                    .toISOString()
-                    .split("T")[0]
+                  formatDateForDisplay(selectedRequest.terminationDate)
                 }
               </p>
               <p>
@@ -757,9 +759,7 @@ const WithdrawalRequests = () => {
                       Rent up to{" "}
                       <strong>
                         {
-                          new Date(tenantDetail.latestRent.nextDueDate)
-                            .toISOString()
-                            .split("T")[0]
+                          formatDateForDisplay(tenantDetail.latestRent.nextDueDate)
                         }
                       </strong>{" "}
                       is <strong>paid</strong>.
@@ -793,9 +793,7 @@ const WithdrawalRequests = () => {
                     Rent has not been paid since{" "}
                     <strong>
                       {
-                        new Date(tenantDetail.leaseStartDate)
-                          .toISOString()
-                          .split("T")[0]
+                       formatDateForDisplay(tenantDetail.leaseStartDate)
                       }
                     </strong>
                     .

@@ -3,6 +3,8 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import SmartDateInput from '../../components/Common/smartDatePicker';
+import { isDate } from 'date-fns';
 
 const ItemAssignmentReport = () => {
   const [itemAssignments, setItemAssignments] = useState([]); // Store item assignments data
@@ -79,7 +81,7 @@ const ItemAssignmentReport = () => {
     {
       key: 'assignDate',
       label: 'Assignment Date',
-      render: (data) => new Date(data.assignDate).toISOString().split('T')[0],
+      isDate: true,
     },
     { key: 'assignType', label: 'Assignment Type' },
   ];
@@ -113,12 +115,11 @@ const ItemAssignmentReport = () => {
             <label htmlFor="assignDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Assign Date
             </label>
-            <input
-              type="date"
+            <SmartDateInput
               id="assignDate"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.assignDate}
-              onChange={(e) => setFilterParams({ ...filterParams, assignDate: e.target.value })}
+              onChange={(date) => setFilterParams({ ...filterParams, assignDate: date})}
             />
           </div>
 

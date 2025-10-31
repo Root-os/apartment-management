@@ -44,13 +44,7 @@ const MySalaryPayments = () => {
       }
     },
     { label: 'Payment To Date', key: 'paymentToDate',
-      render: (row) => {
-        if (row.paymentToDate) {
-          const date = new Date(row.paymentToDate);
-          return date.toISOString().split('T')[0]; 
-        }
-        return 'N/A';
-      }
+       isDate: true
      },
     { label: 'Pension Contribution', key: 'pensionContribution' },
   ];

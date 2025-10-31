@@ -3,6 +3,7 @@ import axios from "axios";
 import TableComponent from "../../components/table";
 import Modal from "../../components/Modal";
 import LoadingComponent from "../../components/loading";
+import SmartDateInput from "../../components/Common/smartDatePicker";
 
 const MaintenanceReport = () => {
   const [maintenanceData, setMaintenanceData] = useState([]); // Store maintenance data
@@ -104,7 +105,7 @@ const MaintenanceReport = () => {
   {
     key: "maintenanceDate",
     label: "Maintenance Date",
-    render: (data) => new Date(data.date).toISOString().split('T')[0],
+    isDate: true,
   },
   // { key: "status", label: "Status" },
   { key: "cost", label: "Maintenance Cost" },
@@ -127,13 +128,12 @@ const MaintenanceReport = () => {
             >
               Maintenance Date
             </label>
-            <input
-              type="date"
+            <SmartDateInput
               id="startDate"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.startDate}
-              onChange={(e) =>
-                setFilterParams({ ...filterParams, startDate: e.target.value })
+              onChange={(date) =>
+                setFilterParams({ ...filterParams, startDate: date })
               }
             />
           </div>

@@ -4,6 +4,7 @@ import TableComponent from '../../components/table';
 import DeleteConfirmationModal from '../../components/editDeleteModal';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 const MaintenancePage = () => {
   const [maintenanceData, setMaintenanceData] = useState([]);
@@ -142,6 +143,13 @@ const openEditModal = (record) => {
     }));
   };
 
+  const handleDateChange = (fieldName) => (dateValue) => {
+  setFormData((prevState) => ({
+    ...prevState,
+    [fieldName]: dateValue
+  }));
+};
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -212,19 +220,13 @@ const openEditModal = (record) => {
     {
       label: 'Cost',
       key: 'cost',
-      style: { width: '100px' },  // Minimized column size for 'Cost'
+      style: { width: '100px' },  
     },
     {
       label: 'Maintenance Date',
       key: 'date',
-      render: (row) => {
-        if (row.date) {
-          const date = new Date(row.date);
-          return date.toISOString().split('T')[0];
-        }
-        return 'N/A';
-      },
-      style: { width: '150px' },  // Minimized column size for 'Date'
+      isDate: true,
+      style: { width: '150px' },  
     },
     {
       label: 'Actions',
@@ -311,12 +313,11 @@ const openEditModal = (record) => {
               )}
               <div className="mb-4">
                 <label htmlFor="date" className="block text-sm">Date</label>
-                <input
-                  type="date"
+                <SmartDateInput
                   id="date"
                   name="date"
                   value={formData.date}
-                  onChange={handleInputChange}
+                  onChange={handleDateChange('date')}
                   className="input input-bordered w-full"
                 />
               </div>

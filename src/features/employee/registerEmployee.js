@@ -2,6 +2,8 @@ import React, {useEffect, useState } from "react";
 import axios from "axios";
 import TitleCard from "../../components/Cards/TitleCard";
 import Modal from '../../components/Modal';
+import SmartDateInput from "../../components/Common/smartDatePicker";
+import {CalendarContext} from '../../context/calendarContext';
 
 const EmployeeRegistration = () => {
   const [roles, setRoles] = useState([]);
@@ -32,6 +34,13 @@ const EmployeeRegistration = () => {
 
   // Handle input changes
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    setEmployee((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+    const handleDateChange = (e) => {
     const { name, value } = e.target;
     setEmployee((prevState) => ({
       ...prevState,
@@ -233,12 +242,11 @@ finally {
             <label className="block text-sm font-medium text-white-700" htmlFor="hireDate">
               Hire Date
             </label>
-            <input
-              type="date"
+            <SmartDateInput
               id="hireDate"
               name="hireDate"
               value={employee.hireDate}
-              onChange={handleChange}
+              onChange={handleDateChange}
               required
               className="bg-base-100 mt-1 p-2 w-full border border-gray-300 rounded-md"
             />

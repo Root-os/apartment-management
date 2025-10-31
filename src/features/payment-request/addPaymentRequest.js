@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 const AddPaymentRequest = () => {
   const [formData, setFormData] = useState({
@@ -44,6 +45,12 @@ const AddPaymentRequest = () => {
       [name]: value,
     }));
   };
+const handleDateChange = (name) => (value) => {
+  setFormData((prevData) => ({
+    ...prevData,
+    [name]: value,
+  }));
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -77,6 +84,7 @@ const AddPaymentRequest = () => {
       dueDate: formData.dueDate, // Ensure this is a valid date string
       repeatedFor: formData.repeatedFor,
     };
+      console.log('Final data being sent:', requestData);
 
     // Send POST request
     try {
@@ -208,11 +216,10 @@ const AddPaymentRequest = () => {
           {/* Due Date */}
           <div>
             <label className="block text-sm font-medium mb-1">Due Date</label>
-            <input
-              type="date"
+            <SmartDateInput
               name="dueDate"
               value={formData.dueDate}
-              onChange={handleInputChange}
+              onChange={handleDateChange("dueDate")}
               className="w-full bg-base-100 p-2 border rounded-md"
             />
             {errors.dueDate && <p className="text-red-500">{errors.dueDate}</p>}

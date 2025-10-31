@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TableComponent from "../../components/table"; // adjust path if needed
 import Modal from "../../components/Modal"; // Assuming you have a Modal component
+import { isDate } from "date-fns";
 
 const BookingPage = () => {
   const [bookings, setBookings] = useState([]);
@@ -86,12 +87,12 @@ const BookingPage = () => {
     {
       key: "startDate",
       label: "Start Date",
-      render: (row) => new Date(row.startDate).toISOString().split('T')[0],
+      isDate: true
     },
     {
       key: "endDate",
       label: "End Date",
-      render: (row) => new Date(row.endDate).toISOString().split('T')[0],
+      isDate: true
     },
     {
       label: "Actions",

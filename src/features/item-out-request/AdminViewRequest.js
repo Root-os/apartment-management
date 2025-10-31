@@ -64,7 +64,7 @@ const ItemOutRequests = () => {
     {
       label: 'Requested At',
       key: 'createdAt',
-      render: row => new Date(row.createdAt).toISOString().split('T')[0]
+      isDate: true,
     },
     {
       label: 'Actions',

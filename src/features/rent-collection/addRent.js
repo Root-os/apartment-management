@@ -1,12 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import TitleCard from "../../components/Cards/TitleCard";
 import Modal from "../../components/Modal";
 import { useSearchParams } from "react-router-dom";
+import SmartDateInput from "../../components/Common/smartDatePicker";
+import { CalendarContext } from "../../context/calendarContext";
 
 const AddCollectedRent = () => {
   const [searchParams] = useSearchParams();
   const tenantIdFromUrl = searchParams.get("tenantId");
+
+  const {
+    isGregorian,
+    convertToGregorian,
+    formatDateForDisplay
+  } = useContext(CalendarContext);
 
   const [tenantId, setTenantId] = useState("");
   const [paymentDate, setPaymentDate] = useState("");
@@ -15,14 +23,13 @@ const AddCollectedRent = () => {
   const [daysCount, setDaysCount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("Cash");
   const [status, setStatus] = useState("Paid");
-  const [amount, setAmount] = useState(""); // Monthly rent
-  const [amountPaid, setAmountPaid] = useState(""); // Calculated rent
+  const [amount, setAmount] = useState("");
+  const [amountPaid, setAmountPaid] = useState("");
   const [paidDays, setPaidDays] = useState("");
   const [leaseStartDate, setLeaseStartDate] = useState("");
   const [leaseEndDate, setLeaseEndDate] = useState("");
   const [punishmentAmount, setPunishmentAmount] = useState("");
   const [isPaid, setIsPaid] = useState(false);
-
   const [tenants, setTenants] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -46,18 +53,22 @@ const AddCollectedRent = () => {
   // Fetch punishment info
   const fetchPunishmentByTenant = async (tenantId) => {
     try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}punishments/${tenantId}`
-      );
+      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}punishments/${tenantId}`);
       if (Array.isArray(res.data) && res.data.length > 0) {
-        const latest = res.data[0];
-        setPunishmentAmount(latest.amount || "");
-        setIsPaid(latest.status === "paid");
+        const latestUnpaid = res.data.find((p) => p.status !== "paid");
+        if (latestUnpaid) {
+          setPunishmentAmount(latestUnpaid.amount || "");
+          setIsPaid(false);
+        } else {
+          setPunishmentAmount("");
+          setIsPaid(true);
+        }
       } else {
         setPunishmentAmount("");
         setIsPaid(false);
       }
-    } catch {
+    } catch (error) {
+      console.error("Error fetching punishment:", error);
       setPunishmentAmount("");
       setIsPaid(false);
     }
@@ -77,14 +88,14 @@ const AddCollectedRent = () => {
           ? new Date(tenant.leaseEndDate)
           : new Date(tenant.leaseStartDate);
         start.setDate(start.getDate() + 1);
-        setPaymentDate(start.toISOString().split("T")[0]);
-
+        const iso = start.toISOString().split("T")[0];
+        setPaymentDate(iso);
         fetchPunishmentByTenant(tenantIdFromUrl);
       }
     }
   }, [tenants, tenantIdFromUrl]);
 
-  // Auto-calculate nextDueDate from months + days
+  // Auto-calculate nextDueDate
   useEffect(() => {
     if (paymentDate && (monthsCount || daysCount)) {
       const start = new Date(paymentDate);
@@ -95,7 +106,7 @@ const AddCollectedRent = () => {
     }
   }, [paymentDate, monthsCount, daysCount]);
 
-  // Calculate paidDays from paymentDate → nextDueDate
+  // Calculate paidDays
   useEffect(() => {
     if (paymentDate && nextDueDate) {
       const start = new Date(paymentDate);
@@ -152,15 +163,16 @@ const AddCollectedRent = () => {
     }
 
     setLoading(true);
+
+    // Always convert to Gregorian before sending
     const payload = {
       tenantId: parseInt(tenantId),
-      paymentDate,
-      nextDueDate,
+      paymentDate: convertToGregorian(paymentDate),
+      nextDueDate: convertToGregorian(nextDueDate),
       paymentMethod,
       status,
       punishment: punishmentAmount || "0",
       isPaid,
-      
     };
 
     try {
@@ -168,8 +180,6 @@ const AddCollectedRent = () => {
       setMessageType("success");
       setMessage("Rent collected successfully!");
       setModalOpen(true);
-
-      // Reset form
       setTenantId("");
       setMonthsCount("");
       setDaysCount("");
@@ -221,7 +231,7 @@ const AddCollectedRent = () => {
                 <div>
                   Lease End:{" "}
                   <span className="font-medium">
-                    {new Date(leaseEndDate).toISOString().split("T")[0]}
+                    {formatDateForDisplay(leaseEndDate)}
                   </span>
                 </div>
               )}
@@ -233,7 +243,9 @@ const AddCollectedRent = () => {
               {punishmentAmount && (
                 <div>
                   Punishment:{" "}
-                  <span className="font-semibold text-red-500">ETB {punishmentAmount}</span>
+                  <span className="font-semibold text-red-500">
+                    ETB {punishmentAmount}
+                  </span>
                 </div>
               )}
             </div>
@@ -273,11 +285,9 @@ const AddCollectedRent = () => {
               <label className="block text-sm font-medium text-white-700">
                 Rent From
               </label>
-              <input
-                type="date"
+              <SmartDateInput
                 value={paymentDate}
-                onChange={(e) => setPaymentDate(e.target.value)}
-                className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg"
+                onChange={setPaymentDate}
                 required
               />
             </div>
@@ -285,11 +295,9 @@ const AddCollectedRent = () => {
               <label className="block text-sm font-medium text-white-700">
                 Rent To
               </label>
-              <input
-                type="date"
+              <SmartDateInput
                 value={nextDueDate}
-                onChange={(e) => setNextDueDate(e.target.value)}
-                className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg"
+                onChange={setNextDueDate}
                 required
               />
             </div>

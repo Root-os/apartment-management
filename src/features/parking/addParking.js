@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
+import SmartDateInput from '../../components/Common/smartDatePicker';
+import { CalendarContext} from '../../context/calendarContext';
 
 const AddParking = () => {
   const [carPlate, setCarPlate] = useState("");
@@ -21,6 +23,8 @@ const AddParking = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [carNameError, setCarNameError] = useState("");
+
+  const { formatDateForDisplay } = useContext(CalendarContext);
 
 
   useEffect(() => {
@@ -233,16 +237,33 @@ const AddParking = () => {
           </div>
          </> )}
           {/* Time In */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">Time In</label>
-            <input
-              type="datetime-local"
-              value={timeIn}
-              onChange={(e) => setTimeIn(e.target.value)}
-              className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              required
-            />
-          </div>
+<div className="mb-4">
+  <label className="block text-sm font-medium mb-2">Time In Date</label>
+  <SmartDateInput
+    value={timeIn.split('T')[0]} // Extract date part from datetime string
+    onChange={(gcDate) => {
+      // Combine the new date with existing time
+      const timePart = timeIn.split('T')[1] || '00:00';
+      setTimeIn(`${gcDate}T${timePart}`);
+    }}
+    className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+    required
+  />
+</div>
+
+<div className="mb-4">
+  <label className="block text-sm font-medium mb-2">Time In (Hour & Minute)</label>
+  <input
+    type="time"
+    value={timeIn.split('T')[1] || ''}
+    onChange={(e) => {
+      // Combine existing date with new time
+      const datePart = timeIn.split('T')[0] || new Date().toISOString().split('T')[0];
+      setTimeIn(`${datePart}T${e.target.value}`);
+    }}
+    className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+  />
+</div>
 
           {/* Parking Space */}
           <div className="mb-4">

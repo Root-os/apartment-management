@@ -4,6 +4,7 @@ import TableComponent from "../../components/table";
 import GenerateReceipt from "./pdfGenerator";
 import { useNavigate } from "react-router-dom";
 import DisplayDate from "../../components/Common/displayDate";
+import SmartDateInput from "../../components/Common/smartDatePicker";
 
 const AllPaymentsPage = () => {
   const [payments, setPayments] = useState([]);
@@ -317,11 +318,10 @@ const AllPaymentsPage = () => {
                 >
                   Payment Date
                 </label>
-                <input
-                  type="date"
+                <SmartDateInput
                   id="paymentDate"
                   value={paymentDate}
-                  onChange={(e) => setPaymentDate(e.target.value)}
+                  onChange={(gcDate) => setPaymentDate(gcDate)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>

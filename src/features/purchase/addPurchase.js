@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 const AddPurchaseForm = () => {
   // States for form fields
@@ -194,10 +195,9 @@ const AddPurchaseForm = () => {
             {/* Expiration Date */}
             <div className="flex flex-col">
               <label className="font-semibold">Expiration Date</label>
-              <input 
-                type="date" 
+              <SmartDateInput 
                 value={expirationDate} 
-                onChange={(e) => setExpirationDate(e.target.value)} 
+                onChange={(date) => setExpirationDate(date)} 
                 className="p-2 border rounded bg-base-100"
               />
             </div>
@@ -205,10 +205,9 @@ const AddPurchaseForm = () => {
             {/* Date */}
             <div className="flex flex-col">
               <label className="font-semibold">Purchased Date</label>
-              <input 
-                type="date" 
+              <SmartDateInput 
                 value={date} 
-                onChange={(e) => setDate(e.target.value)} 
+                onChange={(date) => setDate(date)} 
                 className="p-2 border rounded bg-base-100"
                 required
               />

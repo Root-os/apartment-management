@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import SmartDateInput from "../../components/Common/smartDatePicker";
+import { CalendarContext } from '../../context/calendarContext';
 
 const TenantReport = () => {
   const [units, setUnits] = useState([]);
@@ -25,6 +27,8 @@ const TenantReport = () => {
     unitId: "",
     floorId: ""
   });
+
+   const {  formatDateForDisplay } = useContext(CalendarContext);
 
   // Fetch units and floors
   useEffect(() => {
@@ -81,8 +85,8 @@ const TenantReport = () => {
     { key: 'unitNumber', label: 'Unit Number', render: (data) => data.Unit?.unitNumber },
     { key: 'floorNumber', label: 'Floor Number', render: (data) => data.Floor?.floorNumber },
     // { key: 'paymentStatus', label: 'Payment Status', render: (data) => data.paymentStatus },
-    { key: 'leaseStartDate', label: 'Lease Start Date', render: (data) => data.leaseStartDate ? new Date(data.leaseStartDate).toISOString().split('T')[0] : 'N/A' },
-    { key: 'leaseEndDate', label: 'Lease End Date', render: (data) => data.leaseEndDate ? new Date(data.leaseEndDate).toISOString().split('T')[0]: 'N/A' },
+    { key: 'leaseStartDate', label: 'Lease Start Date', render: (data) => data.leaseStartDate ? formatDateForDisplay(data.leaseStartDate) : '-' },
+    { key: 'leaseEndDate', label: 'Lease End Date', render: (data) => data.leaseEndDate ? formatDateForDisplay(data.leaseEndDate): '-' },
     { key: 'status', label: 'Status', render: (data) => data.status },
     {
       key: 'actions',
@@ -120,48 +124,44 @@ const TenantReport = () => {
           {/* Lease Start Date From */}
           <div>
             <label htmlFor="leaseStartDateFrom" className="block text-sm font-medium text-white-600 dark:text-gray-300">Lease Start Date From</label>
-            <input
-              type="date"
+            <SmartDateInput
               id="leaseStartDateFrom"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.leaseStartDateFrom}
-              onChange={(e) => setFilterParams({ ...filterParams, leaseStartDateFrom: e.target.value })}
+              onChange={(date) => setFilterParams({ ...filterParams, leaseStartDateFrom: date })}
             />
           </div>
 
           {/* Lease Start Date To */}
           <div>
             <label htmlFor="leaseStartDateTo" className="block text-sm font-medium text-white-600 dark:text-gray-300">Lease Start Date To</label>
-            <input
-              type="date"
+            <SmartDateInput
               id="leaseStartDateTo"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.leaseStartDateTo}
-              onChange={(e) => setFilterParams({ ...filterParams, leaseStartDateTo: e.target.value })}
+              onChange={(date) => setFilterParams({ ...filterParams, leaseStartDateTo: date })}
             />
           </div>
 
           {/* Lease End Date From */}
           <div>
             <label htmlFor="leaseEndDateFrom" className="block text-sm font-medium text-white-600 dark:text-gray-300">Lease End Date From</label>
-            <input
-              type="date"
+            <SmartDateInput
               id="leaseEndDateFrom"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.leaseEndDateFrom}
-              onChange={(e) => setFilterParams({ ...filterParams, leaseEndDateFrom: e.target.value })}
+              onChange={(date) => setFilterParams({ ...filterParams, leaseEndDateFrom: date })}
             />
           </div>
 
           {/* Lease End Date To */}
           <div>
             <label htmlFor="leaseEndDateTo" className="block text-sm font-medium text-white-600 dark:text-gray-300">Lease End Date To</label>
-            <input
-              type="date"
+            <SmartDateInput
               id="leaseEndDateTo"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.leaseEndDateTo}
-              onChange={(e) => setFilterParams({ ...filterParams, leaseEndDateTo: e.target.value })}
+              onChange={(date) => setFilterParams({ ...filterParams, leaseEndDateTo: date})}
             />
           </div>
 
@@ -265,8 +265,8 @@ const TenantReport = () => {
               <p><strong>Phone Number:</strong> {currentTenant.phoneNumber}</p>
               <p><strong>Email:</strong> {currentTenant.email || 'N/A'}</p>
               <p><strong>National ID:</strong> {currentTenant.nationalId}</p>
-              <p><strong>Lease Start Date:</strong> {currentTenant.leaseStartDate ? new Date(currentTenant.leaseStartDate).toISOString().split('T')[0]:'N/A'}</p>
-              <p><strong>Lease End Date:</strong> {currentTenant.leaseEndDate ? new Date(currentTenant.leaseEndDate).toISOString().split('T')[0]: 'N/A'}</p>
+              <p><strong>Lease Start Date:</strong> {currentTenant.leaseStartDate ? formatDateForDisplay(currentTenant.leaseStartDate):'-'}</p>
+              <p><strong>Lease End Date:</strong> {currentTenant.leaseEndDate ? formatDateForDisplay(currentTenant.leaseEndDate) : '-'}</p>
               <p><strong>Additional Notes:</strong> {currentTenant.additionalNotes}</p>
               <p><strong>Advance:</strong> {currentTenant.advance}</p>
               <p><strong>TIN:</strong> {currentTenant.tin}</p>

@@ -4,6 +4,7 @@ import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
 import Modal from '../../components/Modal';
 import { CalendarContext } from '../../context/calendarContext';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 
 
@@ -284,19 +285,17 @@ const handleDetailClick = (payment) => {
               </div>
               <div className="mb-4">
                 <label className="block text-white-700 font-medium mb-2">Start Date</label>
-                <input
-                  type="date"
+                <SmartDateInput
                   value={editData.startDate}
-                  onChange={(e) => setEditData({ ...editData, startDate: e.target.value })}
+                  onChange={(gcDate) => setEditData({ ...editData, startDate: gcDate })}
                   className="w-full p-2 border border-gray-300 rounded bg-base-100"
                 />
               </div>
               <div className="mb-4">
                 <label className="block text-white-700 font-medium mb-2">End Date</label>
-                <input
-                  type="date"
+                <SmartDateInput
                   value={editData.endDate}
-                  onChange={(e) => setEditData({ ...editData, endDate: e.target.value })}
+                  onChange={(gcDate) => setEditData({ ...editData, endDate: gcDate })}
                   className="w-full p-2 border border-gray-300 rounded bg-base-100"
                 />
               </div>

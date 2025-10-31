@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 const AssetAuditReport = () => {
   const [date, setDate] = useState('');
@@ -87,8 +88,7 @@ const AssetAuditReport = () => {
     {
       label: 'Date',
       key: 'date',
-      render: (row) =>
-        row.date ? new Date(row.date).toISOString().split('T')[0] : 'N/A',
+      isDate: true
     },
   ];
 
@@ -148,10 +148,9 @@ const AssetAuditReport = () => {
       {/* Audit Date */}
     <div className="flex flex-col">
       <label className="text-sm font-medium text-white-600">Audit Date</label>
-      <input
-        type="date"
+      <SmartDateInput
         value={date}
-        onChange={(e) => setDate(e.target.value)}
+        onChange={(date) => setDate(date)}
         className="w-40 rounded-xl border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
       />
     </div>
@@ -159,10 +158,9 @@ const AssetAuditReport = () => {
     {/* Start Date */}
     <div className="flex flex-col">
       <label className="text-sm font-medium text-white-600">Audited Date From</label>
-      <input
-        type="date"
+      <SmartDateInput
         value={startDate}
-        onChange={(e) => setStartDate(e.target.value)}
+        onChange={(date) => setStartDate(date)}
         className="w-40 rounded-xl border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
       />
     </div>
@@ -170,10 +168,9 @@ const AssetAuditReport = () => {
     {/* End Date */}
     <div className="flex flex-col">
       <label className="text-sm font-medium text-white-600">Audited Date To</label>
-      <input
-        type="date"
+      <SmartDateInput
         value={endDate}
-        onChange={(e) => setEndDate(e.target.value)}
+        onChange={(date) => setEndDate(date)}
         className="w-40 rounded-xl border-gray-300 shadow-sm focus:ring focus:ring-blue-200"
       />
     </div>

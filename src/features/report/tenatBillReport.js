@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import SmartDateInput from "../../components/Common/smartDatePicker";
+import { CalendarContext } from '../../context/calendarContext';
 
 const TenantBillReport = () => {
   const [tenants, setTenants] = useState([]);
@@ -19,6 +21,7 @@ const TenantBillReport = () => {
     billPaymentTypeId: "",
     tenantId: "",
   });
+   const {  formatDateForDisplay } = useContext(CalendarContext);
 
   useEffect(() => {
     const fetchTenants = async () => {
@@ -75,8 +78,8 @@ const TenantBillReport = () => {
     { key: 'tenantName', label: 'Tenant Name', render: (payment) => payment?.Tenant?.fullName || 'N/A' },
     { key: 'billTypeName', label: 'Bill Type', render: (payment) => payment?.BillType?.typeName || 'N/A' },
     { key: 'amountPaid', label: 'Amount Paid', render: (payment) => payment?.amountPaid ?? 'N/A' },
-    { key: 'startDate', label: 'Start Date', render: (payment) => (payment?.startDate ? new Date(payment.startDate).toISOString().split('T')[0]: 'N/A') },
-    { key: 'endDate', label: 'End Date', render: (payment) => (payment?.endDate ? new Date(payment.endDate).toISOString().split('T')[0]: 'N/A') },
+    { key: 'startDate', label: 'Start Date', render: (payment) => payment.startDate ? formatDateForDisplay(payment.startDate) : '-'},
+    { key: 'endDate', label: 'End Date', render: (payment) => formatDateForDisplay(payment.endDate)},
     { key: 'status', label: 'Status', render: (payment) => payment?.status || 'N/A' },
   ];
 
@@ -86,22 +89,21 @@ const TenantBillReport = () => {
         <form onSubmit={handleFilterSubmit} className="grid grid-cols-4 gap-4">
           <div>
             <label htmlFor="startDate" className="block text-sm font-medium text-white-600 dark:text-gray-300">Start Date</label>
-            <input
-              type="date"
+            <SmartDateInput
               id="startDate"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.startDate}
-              onChange={(e) => setFilterParams({ ...filterParams, startDate: e.target.value })}
+              onChange={(date) => setFilterParams({ ...filterParams, startDate: date })}
             />
+            
           </div>
           <div>
             <label htmlFor="endDate" className="block text-sm font-medium text-white-600 dark:text-gray-300">End Date</label>
-            <input
-              type="date"
+            <SmartDateInput
               id="endDate"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.endDate}
-              onChange={(e) => setFilterParams({ ...filterParams, endDate: e.target.value })}
+              onChange={(date) => setFilterParams({ ...filterParams, endDate: date})}
             />
           </div>
           <div>

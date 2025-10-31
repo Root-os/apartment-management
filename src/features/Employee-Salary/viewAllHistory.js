@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import DeleteConfirmationModal from '../../components/editDeleteModal';
 import LoadingComponent from '../../components/loading';
+import SmartDateInput from '../../components/Common/smartDatePicker';
+import { CalendarContext } from '../../context/calendarContext';
 
 const SalaryPayments = () => {
   const [salaryData, setSalaryData] = useState([]);
@@ -23,6 +25,8 @@ const SalaryPayments = () => {
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [filterLoading, setFilterLoading] = useState(false);
+
+  const { formatDateForDisplay } = React.useContext(CalendarContext);
   
   useEffect(() => {
     setLoading(true);
@@ -236,19 +240,17 @@ const SalaryPayments = () => {
     <div className="mb-4 flex space-x-4 items-end">
       <div>
         <label className="block mb-1 font-medium">From Date</label>
-        <input
-          type="date"
+        <SmartDateInput
           value={fromDate}
-          onChange={(e) => setFromDate(e.target.value)}
+          onChange={(date) => setFromDate(date)}
           className="border rounded px-3 py-2"
         />
       </div>
       <div>
       <label className="block mb-1 font-medium">To Date</label>
-      <input
-        type="date"
+      <SmartDateInput
         value={toDate}
-        onChange={(e) => setToDate(e.target.value)}
+        onChange={(date) => setToDate(date)}
         className="border rounded px-3 py-2"
       />
       </div>
@@ -341,8 +343,8 @@ const SalaryPayments = () => {
             <p><strong>Employee Name:</strong> {selectedSalaryDetail.User ? `${selectedSalaryDetail.User.fname} ${selectedSalaryDetail.User.lname}` : 'N/A'}</p>
               <p><strong>Banc Acct:</strong>{selectedSalaryDetail?.bankAccount || "N/A"}</p>
               <p><strong>Amount:</strong> {selectedSalaryDetail.amount}</p>
-              <p><strong>Payment From Date:</strong> {new Date(selectedSalaryDetail.paymentFromDate).toISOString().split('T')[0]}</p>
-              <p><strong>Payment To Date:</strong> {new Date(selectedSalaryDetail.paymentToDate).toISOString().split('T')[0]}</p>
+              <p><strong>Payment From Date:</strong> {formatDateForDisplay(selectedSalaryDetail.paymentFromDate)}</p>
+              <p><strong>Payment To Date:</strong> {formatDateForDisplay(selectedSalaryDetail.paymentToDate)}</p>
               <p><strong>Payment Method:</strong> {selectedSalaryDetail.paymentMethod}</p>
               <p><strong>Status:</strong> {selectedSalaryDetail?.status || "N/A"}</p>
               <p><strong>Pension Contribution:</strong> {selectedSalaryDetail.pensionContribution}</p>

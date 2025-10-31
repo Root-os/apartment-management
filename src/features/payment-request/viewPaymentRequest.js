@@ -3,6 +3,8 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import SmartDateInput from '../../components/Common/smartDatePicker';
+
 
 const PaymentRequestsPage = () => {
   const [paymentRequests, setPaymentRequests] = useState([]);
@@ -279,11 +281,10 @@ const PaymentRequestsPage = () => {
           <label htmlFor="dueDate" className="block text-sm font-medium text-white-700">
             Due Date
           </label>
-          <input
-            type="date"
+          <SmartDateInput
             id="dueDate"
             value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
+            onChange={(gcDate) => setDueDate(gcDate)}
             className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>

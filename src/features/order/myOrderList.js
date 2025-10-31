@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import { isDate } from 'date-fns';
 
 const MyOrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -133,7 +134,7 @@ const MyOrdersPage = () => {
 
   const columns = [
     { key: 'OrderType.name', label: 'Order Name', render: (row) => row.OrderType?.name || 'N/A' },
-    { key: 'orderDate', label: 'Order Date',render:(row)=>new Date(row.orderDate).toISOString().split('T')[0]},
+    { key: 'orderDate', label: 'Order Date', isDate: true },
     { key: 'amount', label: 'Amount',
       render: (row) => row.amount ? Math.round(row.amount) : 'N/A'
      },

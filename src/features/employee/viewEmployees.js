@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import TableComponent from "../../components/table";
 import LoadingComponent from "../../components/loading";
 import Modal from "../../components/Modal"; // Modal to display success/error messages
+import { CalendarContext } from "../../context/calendarContext";
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
@@ -35,6 +36,8 @@ const EmployeeList = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
+
+  const {formatDateForDisplay} = useContext(CalendarContext);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -259,7 +262,7 @@ const EmployeeList = () => {
             <p><strong>Role:</strong> {selectedEmployee.Role?.name || 'N/A'}</p>
             <p><strong>Work Shift:</strong> {selectedEmployee.EmployeeDetail?.shift || 'N/A'}</p>
             <p><strong>Address:</strong> {selectedEmployee.EmployeeDetail?.address || 'N/A'}</p>
-            <p><strong>Hire Date:</strong> {new Date(selectedEmployee.EmployeeDetail?.hireDate).toISOString().split('T')[0]}</p>
+            <p><strong>Hire Date:</strong> {formatDateForDisplay(selectedEmployee.EmployeeDetail?.hireDate) ?? '-'}</p>
             <p><strong>Employment Type:</strong>{selectedEmployee.EmployeeDetail?.employeementType || 'N/A'}</p>
             <p><strong>Bank Account:</strong>{selectedEmployee.EmployeeDetail?.bankAccount || 'N/A'}</p>
             <p><strong>Emergency Contact</strong>{selectedEmployee.EmployeeDetail?.emergencyContact || 'N/A'}</p>

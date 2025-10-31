@@ -5,6 +5,7 @@ import Modal from "../../components/Modal";
 import LoadingComponent from "../../components/loading";
 import { useNavigate } from "react-router-dom";
 import { CalendarContext } from '../../context/calendarContext';
+import SmartDateInput from "../../components/Common/smartDatePicker";
 
 const formatDate = (dateString) => {
   if (!dateString) return '';
@@ -24,6 +25,7 @@ const TenantList = () => {
   const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
 
    const {  formatDateForDisplay } = useContext(CalendarContext);
+   const { isGregorian } = useContext(CalendarContext);
 
   const navigate = useNavigate();
 
@@ -281,10 +283,6 @@ const TenantList = () => {
     setModal({ isOpen: false, messageType: "", message: "" });
   };
 
-  // Live validation for additional notes (min length 10 characters)
-  //  const validateAdditionalNotes = () => {
-  //   return editData.additionalNotes && editData.additionalNotes.length >= 10;
-  // };
 
   const handleAddClick = () => {
     window.location.href = "/app/tenant-add";
@@ -492,26 +490,21 @@ const TenantList = () => {
               <label className="block text-sm font-medium mb-2">
                 Lease Start Date
               </label>
-              <input
-                type="date"
+              <SmartDateInput
                 value={editData.leaseStartDate}
-                onChange={(e) =>
-                  setEditData({ ...editData, leaseStartDate: e.target.value })
-                }
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+                onChange={(gcDate) => setEditData({ ...editData, leaseStartDate: gcDate })}
               />
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Lease End Date
               </label>
-              <input
-                type="date"
+              <SmartDateInput
+                id="editLeaseEndDate"
                 value={editData.leaseEndDate}
-                onChange={(e) =>
-                  setEditData({ ...editData, leaseEndDate: e.target.value })
+                onChange={(gcDateString) =>
+                  setEditData({ ...editData, leaseEndDate: gcDateString })
                 }
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
 
@@ -519,13 +512,13 @@ const TenantList = () => {
               <label className="block text-sm font-medium mb-2">
                 Contract End Date
               </label>
-              <input
-                type="date"
+              <SmartDateInput
+                id="editContractEndDate"
                 value={editData.contractEndDate}
-                onChange={(e) =>
-                  setEditData({ ...editData, contractEndDate: e.target.value })
+                min={editData.leaseStartDate} 
+                onChange={(gcDateString) =>
+                  setEditData({ ...editData, contractEndDate: gcDateString })
                 }
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
 

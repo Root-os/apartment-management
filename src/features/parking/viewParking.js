@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table'; 
 import Modal from '../../components/Modal'; 
 import LoadingComponent from '../../components/loading';
+import { CalendarContext } from '../../context/calendarContext';
+import SmartDateInput from '../../components/Common/smartDatePicker';
+
 
 // Utility function to format ISO date strings into human-readable format
 const formatDate = (isoDateString) => {
@@ -55,6 +58,22 @@ const ParkingPage = () => {
 
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedParkingDetails, setSelectedParkingDetails] = useState(null);
+
+  const { formatDateForDisplay } = React.useContext(CalendarContext);
+
+  const formatDateTimeForDisplay = (isoString) => {
+  if (!isoString) return 'N/A';
+  
+  try {
+    const date = new Date(isoString);
+    const datePart = formatDateForDisplay(isoString.split('T')[0]);
+    const timePart = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    
+    return `${datePart} ${timePart}`;
+  } catch (error) {
+    return 'Invalid Date';
+  }
+};
 
 
   // Fetch the parking data from the API
@@ -357,30 +376,54 @@ const ParkingPage = () => {
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
-              <div className="mb-4">
-                <label htmlFor="timeIn" className="block text-sm font-medium text-white-700">Time In</label>
-                <input
-                  type="text"
-                  id="timeIn"
-                  value={formatDate(timeIn)} // Display human-readable format
-                  disabled // Prevent editing
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <input
-                  type="hidden"
-                  value={timeIn} // Preserve original ISO format for submission
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="timeOut" className="block text-sm font-medium text-white-700">Time Out</label>
-                <input
-                  type="datetime-local"
-                  id="timeOut"
-                  value={formatForDateTimeLocal(timeOut)} // Convert to datetime-local format
-                  onChange={(e) => setTimeOut(new Date(e.target.value).toISOString())} // Convert back to ISO format
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+<div className="mb-4">
+  <label htmlFor="timeIn" className="block text-sm font-medium text-white-700">
+    Time In
+  </label>
+  <input
+    type="text"
+    id="timeIn"
+    value={formatDateTimeForDisplay(timeIn)} // Use the new formatting function
+    disabled
+    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+  <input
+    type="hidden"
+    value={timeIn} // Preserve original ISO format for submission
+  />
+</div>
+  <div className="mb-4">
+  <label htmlFor="timeOutDate" className="block text-sm font-medium text-white-700">
+    Time Out Date
+  </label>
+  <SmartDateInput
+    id="timeOutDate"
+    value={timeOut.split('T')[0]} // Extract date part
+    onChange={(gcDate) => {
+      // Combine new date with existing time
+      const timePart = timeOut.split('T')[1] || '00:00';
+      setTimeOut(`${gcDate}T${timePart}`);
+    }}
+    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+</div>
+
+<div className="mb-4">
+  <label htmlFor="timeOutTime" className="block text-sm font-medium text-white-700">
+    Time Out (Hour & Minute)
+  </label>
+  <input
+    type="time"
+    id="timeOutTime"
+    value={timeOut.split('T')[1] || ''}
+    onChange={(e) => {
+      // Combine existing date with new time
+      const datePart = timeOut.split('T')[0] || new Date().toISOString().split('T')[0];
+      setTimeOut(`${datePart}T${e.target.value}`);
+    }}
+    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+</div>
                
               <div className="mb-4">
                 <label htmlFor="status" className="block text-sm font-medium text-white-700">
@@ -441,8 +484,8 @@ const ParkingPage = () => {
         <p><strong>Car Name:</strong> {selectedParkingDetails.carName}</p>
         <p><strong>Driver Name:</strong> {selectedParkingDetails.driverName}</p>
         <p><strong>Driver Phone:</strong> {selectedParkingDetails.driverPhone}</p>
-        <p><strong>Time In:</strong> {formatDate(selectedParkingDetails.timeIn)}</p>
-        <p><strong>Time Out:</strong> {formatDate(selectedParkingDetails.timeOut)}</p>
+<p><strong>Time In:</strong> {formatDateTimeForDisplay(selectedParkingDetails.timeIn)}</p>
+<p><strong>Time Out:</strong> {formatDateTimeForDisplay(selectedParkingDetails.timeOut)}</p>
         <p><strong>Price:</strong> {selectedParkingDetails.price}</p>
         <p><strong>Status:</strong> {selectedParkingDetails.status}</p>
         <p><strong>Is Tenant:</strong> {selectedParkingDetails.isTenant ? 'Yes' : 'No'}</p>

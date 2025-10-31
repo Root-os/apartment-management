@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 
 const SalaryPaymentForm = () => {
@@ -122,11 +123,10 @@ const SalaryPaymentForm = () => {
         {/* Payment From Date */}
         <div>
           <label htmlFor="paymentFromDate" className="block text-sm font-medium text-white-700">Payment From Date</label>
-          <input
-            type="date"
+          <SmartDateInput
             id="paymentFromDate"
             value={paymentFromDate}
-            onChange={(e) => setPaymentFromDate(e.target.value)}
+            onChange={(date) => setPaymentFromDate(date)}
             className="mt-1 block bg-base-100 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
           />
@@ -135,11 +135,10 @@ const SalaryPaymentForm = () => {
         {/* Payment To Date */}
         <div>
           <label htmlFor="paymentToDate" className="block text-sm font-medium text-white-700">Payment To Date</label>
-          <input
-            type="date"
+          <SmartDateInput
             id="paymentToDate"
             value={paymentToDate}
-            onChange={(e) => setPaymentToDate(e.target.value)}
+            onChange={(date) => setPaymentToDate(date)}
             className="mt-1 bg-base-100 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             required
           />

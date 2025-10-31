@@ -121,7 +121,7 @@ const AllOrdersPage = () => {
     { key: 'OrderType.name', label: 'Order Type',render:(row)=>row.OrderType?.name ||'N/A' },
     { key: 'Tenant.fullName', label: 'Full Name',render:(row)=>row.Tenant?.fullName ||'N/A' },
 
-    { key: 'orderDate', label: 'Order Date',render:(row) => new Date(row.orderDate).toISOString().split('T')[0] },
+    { key: 'orderDate', label: 'Order Date',isDate: true},
     { key: 'amount', label: 'Amount', 
       render: (row) => {
         if (row.amount) {

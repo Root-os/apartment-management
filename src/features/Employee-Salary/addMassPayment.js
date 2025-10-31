@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 const MassSalaryPayment = () => {
   const [paymentMethod, setPaymentMethod] = useState('');
@@ -88,11 +89,10 @@ setMessage(errorMessage);
           <label htmlFor="paymentFromDate" className="block text-sm font-medium text-white-700">
             Payment From Date
           </label>
-          <input
-            type="date"
+          <SmartDateInput
             id="paymentFromDate"
             value={paymentFromDate}
-            onChange={(e) => setPaymentFromDate(e.target.value)}
+            onChange={(date) => setPaymentFromDate(date)}
              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             required
           />
@@ -103,11 +103,10 @@ setMessage(errorMessage);
           <label htmlFor="paymentToDate" className="block text-sm font-medium text-white-700">
             Payment To Date
           </label>
-          <input
-            type="date"
+          <SmartDateInput
             id="paymentToDate"
             value={paymentToDate}
-            onChange={(e) => setPaymentToDate(e.target.value)}
+            onChange={(date) => setPaymentToDate(date)}
             className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             required
           />

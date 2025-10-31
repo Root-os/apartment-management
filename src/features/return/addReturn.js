@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 const AddReturn = () => {
   // State variables for form inputs
@@ -180,11 +181,10 @@ const AddReturn = () => {
             <label htmlFor="returnDate" className="block text-sm font-medium text-white-700">
               Return Date
             </label>
-            <input
-              type="date"
+            <SmartDateInput
               id="returnDate"
               value={returnDate}
-              onChange={(e) => setReturnDate(e.target.value)}
+              onChange={(date) => setReturnDate(date)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
               required
             />

@@ -4,6 +4,7 @@ import TableComponent from '../../components/table';
 import DeleteConfirmationModal from '../../components/editDeleteModal';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 const ItemAssignmentsPage = () => {
   const [itemAssignments, setItemAssignments] = useState([]);
@@ -166,6 +167,12 @@ const ItemAssignmentsPage = () => {
       [name]: value, 
     }));
   };
+const handleDateChange = (fieldName) => (dateValue) => {
+  setFormData((prevState) => ({
+    ...prevState,
+    [fieldName]: dateValue,
+  }));
+};
 
   const columns = [
     {
@@ -182,13 +189,7 @@ const ItemAssignmentsPage = () => {
     { label: 'Description', key: 'description' },
     { label: 'Amount', key: 'amount', render : (row) => Math.floor(row.amount) },
     { label: 'Assign Date', key: 'assignDate',
-        render: (row) => {
-            if (row.assignDate) {
-              const date = new Date(row.assignDate);
-              return date.toISOString().split('T')[0]; 
-            }
-            return 'N/A'; 
-          }
+      isDate: true
     },
     {
         label: 'Actions',
@@ -301,12 +302,11 @@ const ItemAssignmentsPage = () => {
                 <label htmlFor="assignDate" className="block text-sm font-medium text-white-700">
                   Assign Date
                 </label>
-                <input
-                  type="date"
+                <SmartDateInput
                   id="assignDate"
                   name="assignDate"
                   value={formData.assignDate}
-                  onChange={handleChange}
+                  onChange={handleDateChange("assignDate")}
                   className="w-full mt-1 p-2 border rounded-md bg-base-100"
                 />
               </div>

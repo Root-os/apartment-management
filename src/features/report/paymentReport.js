@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import TableComponent from "../../components/table";
 import Modal from "../../components/Modal"; 
 import LoadingComponent from '../../components/loading';
+import SmartDateInput from "../../components/Common/smartDatePicker";
+import { CalendarContext } from '../../context/calendarContext';
 
 const PaymentReport = () => {
   const [paymentData, setPaymentData] = useState([]);
@@ -19,6 +21,8 @@ const PaymentReport = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState("error"); 
   const [pageLoading, setPageLoading] = useState(true); // For page loading indicator
+
+  const { formatDateForDisplay } = useContext(CalendarContext);
 
   useEffect(() => {
     // Fetch vendors initially
@@ -76,7 +80,7 @@ const PaymentReport = () => {
     {
       key: "paymentDate",
       label: "Payment Date",
-      render: (data) => new Date(data.paymentDate).toISOString().split('T')[0],
+      isDate: true,
     },
     {
       label: "Actions",
@@ -160,13 +164,12 @@ const PaymentReport = () => {
             >
               Start Date
             </label>
-            <input
-              type="date"
+            <SmartDateInput
               id="startDate"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.startDate}
-              onChange={(e) =>
-                setFilterParams({ ...filterParams, startDate: e.target.value })
+              onChange={(date) =>
+                setFilterParams({ ...filterParams, startDate: date})
               }
             />
           </div>
@@ -178,13 +181,12 @@ const PaymentReport = () => {
             >
               End Date
             </label>
-            <input
-              type="date"
+            <SmartDateInput
               id="endDate"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.endDate}
-              onChange={(e) =>
-                setFilterParams({ ...filterParams, endDate: e.target.value })
+              onChange={(date) =>
+                setFilterParams({ ...filterParams, endDate: date })
               }
             />
           </div>
@@ -254,7 +256,7 @@ const PaymentReport = () => {
               </p>
               <p>
                 <strong>Payment Date:</strong>{" "}
-                {new Date(selectedPayment.paymentDate).toLocaleString()}
+                {formatDateForDisplay(selectedPayment.paymentDate)}
               </p>
               <p>
                 <strong>Vendor Phone:</strong> {selectedPayment.Vendor.phone}

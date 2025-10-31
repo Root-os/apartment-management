@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import { useNavigate } from 'react-router-dom';
+import SmartDateInput from "../../components/Common/smartDatePicker";
+import { CalendarContext } from '../../context/calendarContext';
 
 const ReportPage = () => {
   const [startDate, setStartDate] = useState("");
@@ -9,6 +11,8 @@ const ReportPage = () => {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const { formatDateForDisplay } = useContext(CalendarContext);
 
   const fetchReport = async () => {
     if (!startDate || !endDate) {
@@ -142,12 +146,12 @@ const ReportPage = () => {
                     <tr key={idx} className="border-b">
                       {sortedColumns.map((col) => (
                         <td key={col} className="p-2">
-                          {col === "date"
-                            ? new Date(rec[col]).toISOString().split("T")[0]
-                            : typeof rec[col] === "number" ||
-                              /^\d+(\.\d+)?$/.test(rec[col])
-                            ? formatAmount(rec[col])
-                            : rec[col] ?? "-"}
+{col === "date"
+  ? formatDateForDisplay(rec[col]) // 
+  : typeof rec[col] === "number" ||
+    /^\d+(\.\d+)?$/.test(rec[col])
+  ? formatAmount(rec[col])
+  : rec[col] ?? "-"}
                         </td>
                       ))}
                     </tr>
@@ -189,20 +193,18 @@ const ReportPage = () => {
       <div className="flex flex-wrap justify-center gap-4 items-center mb-6 print:hidden">
         <div>
           <label className="mr-2 font-medium">Start Date:</label>
-          <input
-            type="date"
+          <SmartDateInput
             className="border p-2 rounded"
             value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            onChange={(date) => setStartDate(date)}
           />
         </div>
         <div>
           <label className="mr-2 font-medium">End Date:</label>
-          <input
-            type="date"
+          <SmartDateInput
             className="border p-2 rounded"
             value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
+            onChange={(date) => setEndDate(date)}
           />
         </div>
         <button

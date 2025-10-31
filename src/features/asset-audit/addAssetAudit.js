@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
-import { CalendarContext } from "../../context/calendarContext";
 import SmartDateInput from "../../components/Common/smartDatePicker";
 
 const AddAssetAuditPage = () => {
@@ -187,19 +186,21 @@ const AddAssetAuditPage = () => {
             </>
           )}
 
- <div>
+   <div className="relative">
   <label htmlFor="date" className="block text-sm font-medium text-white-700">
     Audited Date
   </label>
 
-<SmartDateInput
-  id="date"
-  value={date}
-  onChange={(gcDateString) => setDate(gcDateString)}
-  className="..." 
-  required
-/>
+  <SmartDateInput
+    id="date"
+    value={date}
+    onChange={setDate}
+    className="mt-1 w-full bg-base-100 border border-gray-300 rounded-lg p-2 shadow-sm focus:ring-2 focus:ring-blue-500"
+    required
+  />
 </div>
+
+
 
           <div>
             <label htmlFor="existing_amount" className="block text-sm font-medium text-white-700">Existing Amount</label>

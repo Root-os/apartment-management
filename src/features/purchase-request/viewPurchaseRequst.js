@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table'; 
 import DeleteConfirmationModal from '../../components/editDeleteModal';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import SmartDateInput from '../../components/Common/smartDatePicker';
+import { CalendarContext } from '../../context/calendarContext';
 
 const PurchasesRequestPage = () => {
   const role = localStorage.getItem('role');
@@ -41,6 +43,8 @@ const PurchasesRequestPage = () => {
     vendorId: '', // Changed from vendorName to vendorId
     vendorPhone: ''
   }); 
+
+  const { formatDateForDisplay} = useContext(CalendarContext);
 
   useEffect(() => {
   const fetchData = async () => {
@@ -367,10 +371,9 @@ const PurchasesRequestPage = () => {
 
               <div className="mb-4">
                 <label className="block text-sm font-medium">Request Date</label>
-                <input
-                  type="date"
+                <SmartDateInput
                   value={editFormData.requestDate}
-                  onChange={(e) => setEditFormData({ ...editFormData, requestDate: e.target.value })}
+                  onChange={(gcDate) => setEditFormData({ ...editFormData, requestDate: gcDate })}
                   className="mt-1 bg-base-100 w-full px-4 py-2 border rounded-md"
                 />
               </div>
@@ -439,7 +442,7 @@ const PurchasesRequestPage = () => {
             <p><strong>Vendor Name:</strong> {vendors.find(v => v.id === selectedDetailRequest.vendorId)?.fname || selectedDetailRequest.vendorName || 'N/A'}</p>
             <p><strong>Vendor Phone:</strong> {selectedDetailRequest.vendorPhone}</p>
             <p><strong>Amount:</strong> {selectedDetailRequest.amount}</p>
-            <p><strong>Request Date:</strong> {new Date(selectedDetailRequest.requestDate).toISOString().split('T')[0]}</p>
+            <p><strong>Request Date:</strong> {formatDateForDisplay(selectedDetailRequest.requestDate)}</p>
             <p><strong>Status:</strong> {selectedDetailRequest.status}</p>
             <p><strong>Reason:</strong> {selectedDetailRequest.reason}</p>
             <button

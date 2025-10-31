@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 const AddGovBillPayment = () => {
   // States for form inputs
@@ -131,11 +132,10 @@ const AddGovBillPayment = () => {
           <div className="flex space-x-4">
             <div className="w-full">
               <label htmlFor="startDate" className=" dark:text-gray-300 block text-sm font-medium text-white-700">Start Date</label>
-              <input
-                type="date"
+              <SmartDateInput
                 id="startDate"
                 value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                onChange={(date) => setStartDate(date)}
                 className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
@@ -143,11 +143,10 @@ const AddGovBillPayment = () => {
 
             <div className="w-full">
               <label htmlFor="endDate" className="dark:text-gray-300 block text-sm font-medium text-white-700">End Date</label>
-              <input
-                type="date"
+              <SmartDateInput
                 id="endDate"
                 value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                onChange={(date) => setEndDate(date)}
                 className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />

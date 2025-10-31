@@ -3,6 +3,7 @@ import axios from "axios";
 import TableComponent from "../../components/table";
 import Modal from "../../components/Modal";
 import DisplayDate from "../../components/Common/displayDate";
+import SmartDateInput from "../../components/Common/smartDatePicker";
 
 const ViewBillPayment = () => {
   const [payments, setPayments] = useState([]);
@@ -222,13 +223,12 @@ const ViewBillPayment = () => {
               <label className="block text-sm font-medium mb-2">
                 Start Date
               </label>
-              <input
-                type="date"
+              <SmartDateInput
                 value={newPaymentData.startDate}
-                onChange={(e) =>
+                onChange={(gcDate) =>
                   setNewPaymentData({
                     ...newPaymentData,
-                    startDate: e.target.value,
+                    startDate: gcDate,
                   })
                 }
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
@@ -237,13 +237,12 @@ const ViewBillPayment = () => {
 
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">End Date</label>
-              <input
-                type="date"
+              <SmartDateInput
                 value={newPaymentData.endDate}
-                onChange={(e) =>
+                onChange={(gcDate) =>
                   setNewPaymentData({
                     ...newPaymentData,
-                    endDate: e.target.value,
+                    endDate: gcDate,
                   })
                 }
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
@@ -254,13 +253,12 @@ const ViewBillPayment = () => {
               <label className="block text-sm font-medium mb-2">
                 Payment Date
               </label>
-              <input
-                type="date"
+              <SmartDateInput
                 value={newPaymentData.paymentDate}
-                onChange={(e) =>
+                onChange={(gcDate) =>
                   setNewPaymentData({
                     ...newPaymentData,
-                    paymentDate: e.target.value,
+                    paymentDate: gcDate,
                   })
                 }
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
@@ -356,7 +354,7 @@ const ViewBillPayment = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <p>
                 <strong>Tenant Name:</strong>{" "}
-                {selectedPayment.Tenant?.fullName || "N/A"}
+                {selectedPayment?.Tenant?.fullName || "N/A"}
               </p>
               <p>
                 <strong>Unit Number:</strong>{" "}

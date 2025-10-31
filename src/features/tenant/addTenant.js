@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
+import SmartDateInput from "../../components/Common/smartDatePicker";
 
 const AddTenant = () => {
   // State variables for form fields
@@ -75,15 +76,15 @@ const AddTenant = () => {
   };
 
   const fetchUnitDetails = async (unitId) => {
-  try {
-    const response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit/${unitId}`);
-    const rent = response.data?.taxedRentAmount || '';
-    setAmount(rent);
-  } catch (err) {
-    console.error('Failed to fetch unit details:', err);
-    setErrors((prev) => ({ ...prev, api: 'Failed to fetch unit rent.' }));
-  }
-};
+    try {
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit/${unitId}`);
+      const rent = response.data?.taxedRentAmount || '';
+      setAmount(rent);
+    } catch (err) {
+      console.error('Failed to fetch unit details:', err);
+      setErrors((prev) => ({ ...prev, api: 'Failed to fetch unit rent.' }));
+    }
+  };
 
 
   // Validation functions for each field
@@ -466,24 +467,17 @@ const AddTenant = () => {
           </div>
 
           {/* Lease Start Date */}
-          <div>
+          <div >
             <label className="block text-sm font-semibold mb-2">
               Lease Start Date <span className="text-red-500">*</span>
             </label>
-            <input
-              type="date"
+            <SmartDateInput
+              id="leaseStartDate"
               value={leaseStartDate}
-              onChange={(e) => {
-                setLeaseStartDate(e.target.value);
-                setErrors((prev) => ({
-                  ...prev,
-                  leaseStartDate: validateLeaseStartDate(e.target.value),
-                  leaseEndDate: validateLeaseEndDate(leaseEndDate, e.target.value),
-                }));
+              onChange={(gcDateString) => {
+                console.log("Selected Lease Start Date:", gcDateString);
+                setLeaseStartDate(gcDateString);
               }}
-              className={`bg-base-100 w-full p-3 border rounded-md ${
-                errors.leaseStartDate ? 'border-red-500' : 'border-gray-300'
-              }`}
             />
             {errors.leaseStartDate && <p className="text-red-500 text-sm mt-1">{errors.leaseStartDate}</p>}
           </div>
@@ -491,19 +485,13 @@ const AddTenant = () => {
           {/* Lease End Date */}
           <div>
             <label className="block text-sm font-semibold mb-2">Lease End Date</label>
-            <input
-              type="date"
+            <SmartDateInput
+              id="leaseEndDate"
               value={leaseEndDate}
-              onChange={(e) => {
-                setLeaseEndDate(e.target.value);
-                setErrors((prev) => ({
-                  ...prev,
-                  leaseEndDate: validateLeaseEndDate(e.target.value, leaseStartDate),
-                }));
+              onChange={(gcDateString) => {
+                console.log("Selected Lease Start Date:", gcDateString);
+                setLeaseEndDate(gcDateString);
               }}
-              className={`bg-base-100 w-full p-3 border rounded-md ${
-                errors.leaseEndDate ? 'border-red-500' : 'border-gray-300'
-              }`}
             />
             {errors.leaseEndDate && <p className="text-red-500 text-sm mt-1">{errors.leaseEndDate}</p>}
           </div>
@@ -512,26 +500,17 @@ const AddTenant = () => {
             <label className="block text-sm font-semibold mb-2">
               Contract End Date <span className="text-red-500">*</span>
             </label>
-            <input
-              type="date"
-              min={leaseStartDate}
+            <SmartDateInput
+              id="contractEndDate"
               value={contractEndDate}
-              onChange={(e) => {
-                const value = e.target.value;
-                setContractEndDate(value);
-                setErrors((prev) => ({
-                  ...prev,
-                  contractEndDate: validateContractEndDate(value, leaseStartDate, leaseEndDate),
-                }));
+              min={leaseStartDate}
+              onChange={(gcDateString) => {
+                console.log("Selected Lease Start Date:", gcDateString);
+                setContractEndDate(gcDateString);
               }}
-              className={`bg-base-100 w-full p-3 border rounded-md ${
-                errors.contractEndDate ? 'border-red-500' : 'border-gray-300'
-              }`}
             />
             {errors.contractEndDate && <p className="text-red-500 text-sm mt-1">{errors.contractEndDate}</p>}
           </div>
-
-
 
           {/* Additional Notes */}
           <div>

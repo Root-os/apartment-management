@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 Modal.setAppElement('#root'); 
 
@@ -67,11 +68,10 @@ const CreateOrder = ({ isOpen, onClose, orderTypeId }) => {
             <label htmlFor="orderDate" className="block text-sm font-medium text-gray-700">
               Order Date
             </label>
-            <input
-              type="date"
+            <SmartDateInput
               id="orderDate"
               value={orderDate}
-              onChange={(e) => setOrderDate(e.target.value)}
+              onChange={(date) => setOrderDate(date)}
               className="mt-1 bg-white block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />

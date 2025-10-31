@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import DeleteConfirmationModal from '../../components/editDeleteModal';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import { CalendarContext } from '../../context/calendarContext';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 const PurchasesPage = () => {
   const [data, setData] = useState([]);
@@ -30,6 +32,8 @@ const PurchasesPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [modalMessage, setModalMessage] = useState('');
+
+ const { formatDateForDisplay} = useContext(CalendarContext);
 
   useEffect(() => {
     axios
@@ -295,26 +299,29 @@ const PurchasesPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="date" className="block text-sm font-medium text-white-700">Purchase Date</label>
-                <input
-                  type="date"
-                  id="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="expirationDate" className="block text-sm font-medium text-white-700">Expiration Date</label>
-                <input
-                  type="date"
-                  id="expirationDate"
-                  value={expirationDate}
-                  onChange={(e) => setExpirationDate(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+  <label htmlFor="date" className="block text-sm font-medium text-white-700">
+    Purchase Date
+  </label>
+  <SmartDateInput
+    id="date"
+    value={date}
+    onChange={(gcDate) => setDate(gcDate)}
+    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+    required
+  />
+</div>
+
+<div className="mb-4">
+  <label htmlFor="expirationDate" className="block text-sm font-medium text-white-700">
+    Expiration Date
+  </label>
+  <SmartDateInput
+    id="expirationDate"
+    value={expirationDate}
+    onChange={(gcDate) => setExpirationDate(gcDate)}
+    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+</div>
               <div className="mb-4">
                 <label htmlFor="itemId" className="block text-sm font-medium text-white-700">Item</label>
                 <select
@@ -378,8 +385,8 @@ const PurchasesPage = () => {
             <p><strong>Single Price:</strong> {selectedPurchase?.price}</p>
             <p><strong>Total Price:</strong> {selectedPurchase?.totalPrice}</p>
             <p><strong>Description:</strong> {selectedPurchase?.description}</p>
-            <p><strong>Expiration Date:</strong> {selectedPurchase.expirationDate ? new Date(selectedPurchase?.expirationDate).toISOString().split('T')[0]: 'N/A'}</p>
-            <p><strong>Purchase Date:</strong> {new Date(selectedPurchase?.date).toISOString().split('T')[0]}</p>
+            <p><strong>Expiration Date:</strong> {selectedPurchase.expirationDate ? formatDateForDisplay(selectedPurchase?.expirationDate): 'N/A'}</p>
+            <p><strong>Purchase Date:</strong> {formatDateForDisplay(selectedPurchase?.date)}</p>
             {/* Add any other details you wish to show */}
             <div className="flex justify-end mt-4">
               <button

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../../components/Cards/TitleCard';
 import Modal from '../../../components/Modal';
+import SmartDateInput from '../../../components/Common/smartDatePicker';
 
 const AddItem = () => {
   const [itemName, setItemName] = useState('');
@@ -96,11 +97,10 @@ const AddItem = () => {
 
           <div className="mb-4">
             <label htmlFor="expirationDate" className="block text-sm font-medium text-white-700">Expiration Date</label>
-            <input
-              type="date"
+            <SmartDateInput
               id="expirationDate"
               value={expirationDate}
-              onChange={(e) => setExpirationDate(e.target.value)}
+              onChange={(date) => setExpirationDate(date)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
               
             />

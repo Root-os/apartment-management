@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import SmartDateInput from '../../components/Common/smartDatePicker';
+import { CalendarContext } from '../../context/calendarContext';
+
 
 const ChargingReport = () => {
   const [chargingData, setChargingData] = useState([]);
@@ -22,6 +25,28 @@ const ChargingReport = () => {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState(true);
+
+const { formatDateForDisplay } = useContext(CalendarContext);
+
+// Format function for table display
+const formatDateTimeForTable = (isoString) => {
+  if (!isoString) return 'N/A';
+  
+  try {
+    const date = new Date(isoString);
+    const datePart = formatDateForDisplay(isoString.split('T')[0]);
+    const timePart = date.toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true 
+    });
+    
+    return `${datePart} ${timePart}`;
+  } catch (error) {
+    return 'Invalid Date';
+  }
+};
+
 
   useEffect(() => {
     const fetchTenants = async () => {
@@ -97,7 +122,7 @@ const ChargingReport = () => {
   {
     key: 'chargingStartTime',
     label: 'Charging Start Time',
-    render: (data) => new Date(data.chargingStartTime).toLocaleString(),
+    render: (data) => formatDateTimeForTable(data.chargingStartTime),
   },
   { key: 'status', label: 'Status' },
   { key: 'chargingCost', label: 'Charging Cost' },
@@ -161,12 +186,11 @@ const ChargingReport = () => {
           <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Start Date
           </label>
-          <input
-            type="date"
+          <SmartDateInput
             id="startDate"
             className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
             value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
+            onChange={(date) => setStartDate(date)}
           />
         </div>
 
@@ -174,12 +198,11 @@ const ChargingReport = () => {
           <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
             End Date
           </label>
-          <input
-            type="date"
+          <SmartDateInput
             id="endDate"
             className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
             value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
+            onChange={(date) => setEndDate(date)}
           />
         </div>
 

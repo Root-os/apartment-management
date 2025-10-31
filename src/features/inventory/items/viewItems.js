@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import TableComponent from '../../../components/table';
 import Modal from '../../../components/Modal';
 import LoadingComponent from '../../../components/loading';
 import { useNavigate } from 'react-router-dom';
+import SmartDateInput from '../../../components/Common/smartDatePicker';
+import { CalendarContext } from '../../../context/calendarContext';
 
 const ItemsPage = () => {
   const navigate = useNavigate();
@@ -27,6 +29,8 @@ const ItemsPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
+
+  const { formatDateForDisplay} = useContext(CalendarContext);
 
   useEffect(() => {
     // Fetching items
@@ -223,11 +227,10 @@ const handleAuditHistoryClick = (item) => {
                 <label htmlFor="expirationDate" className="block text-sm font-medium text-white-700">
                   Expiration Date
                 </label>
-                <input
-                  type="date"
+                <SmartDateInput
                   id="expirationDate"
                   value={expirationDate}
-                  onChange={(e) => setExpirationDate(e.target.value)}
+                  onChange={(date) => setExpirationDate(date)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg"
                   required
                 />
@@ -352,7 +355,7 @@ const handleAuditHistoryClick = (item) => {
               <div>
                <span className="font-medium">Expiration Date:</span>{" "}
                 {selectedItem.expirationDate
-                  ? new Date(selectedItem.expirationDate).toISOString().split('T')[0]
+                  ? formatDateForDisplay(selectedItem.expirationDate)
                   : 'N/A'}
               </div>
               <div>

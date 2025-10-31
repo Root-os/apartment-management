@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import SmartDateInput from '../../components/Common/smartDatePicker';
+import { CalendarContext } from '../../context/calendarContext';
 
 const ChargingPage = () => {
   const [chargingData, setChargingData] = useState([]);
@@ -29,6 +31,26 @@ const ChargingPage = () => {
 
   const chargingApiUrl = `${process.env.REACT_APP_BASE_URL}charging`;
   const tenantApiUrl = `${process.env.REACT_APP_BASE_URL}tenant`;
+
+  const { formatDateForDisplay } = useContext(CalendarContext);
+
+    const formatDateTimeForDisplay = (isoString) => {
+    if (!isoString) return 'N/A';
+    
+    try {
+      const date = new Date(isoString);
+      const datePart = formatDateForDisplay(isoString.split('T')[0]);
+      const timePart = date.toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: true 
+      });
+      
+      return `${datePart} ${timePart}`;
+    } catch (error) {
+      return 'Invalid Date';
+    }
+  };
 
   useEffect(() => {
     const fetchChargingData = async () => {
@@ -260,56 +282,56 @@ const ChargingPage = () => {
             <h2 className="text-2xl font-bold mb-4">Edit Charging Data</h2>
             <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
               {/* Is Tenant Checkbox */}
-<div className="mb-4">
-  <label htmlFor="isTenant" className="block text-sm font-medium text-white-700">
-    Is Tenant
-  </label>
-  <input
-    type="checkbox"
-    id="isTenant"
-    checked={isTenant}
-    onChange={(e) => setIsTenant(e.target.checked)}
-    className="mt-1 bg-base-100 block"
-  />
-</div>
+              <div className="mb-4">
+                <label htmlFor="isTenant" className="block text-sm font-medium text-white-700">
+                  Is Tenant
+                </label>
+                <input
+                  type="checkbox"
+                  id="isTenant"
+                  checked={isTenant}
+                  onChange={(e) => setIsTenant(e.target.checked)}
+                  className="mt-1 bg-base-100 block"
+                />
+              </div>
 
-{/* Tenant Select - only shown when isTenant is true */}
-{isTenant && (
-  <div className="mb-4">
-    <label htmlFor="tenantId" className="block text-sm font-medium text-white-700">
-      Select Tenant
-    </label>
-    <select
-      id="tenantId"
-      value={tenantId}
-      onChange={handleTenantChange}
-      className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-    >
-      <option value="">Select a tenant</option>
-      {tenants.map((tenant) => (
-        <option key={tenant.id} value={tenant.id}>
-          {tenant.fullName}
-        </option>
-      ))}
-    </select>
-  </div>
-)}
+              {/* Tenant Select - only shown when isTenant is true */}
+              {isTenant && (
+                <div className="mb-4">
+                  <label htmlFor="tenantId" className="block text-sm font-medium text-white-700">
+                    Select Tenant
+                  </label>
+                  <select
+                    id="tenantId"
+                    value={tenantId}
+                    onChange={handleTenantChange}
+                    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Select a tenant</option>
+                    {tenants.map((tenant) => (
+                      <option key={tenant.id} value={tenant.id}>
+                        {tenant.fullName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
-{/* Driver Name - only shown when isTenant is false */}
-{!isTenant && (
-  <div className="mb-4">
-    <label htmlFor="driverName" className="block text-sm font-medium text-white-700">
-      Driver Name
-    </label>
-    <input
-      type="text"
-      id="driverName"
-      value={driverName}
-      onChange={(e) => setDriverName(e.target.value)}
-      className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-    />
-  </div>
-)}
+              {/* Driver Name - only shown when isTenant is false */}
+              {!isTenant && (
+                <div className="mb-4">
+                  <label htmlFor="driverName" className="block text-sm font-medium text-white-700">
+                    Driver Name
+                  </label>
+                  <input
+                    type="text"
+                    id="driverName"
+                    value={driverName}
+                    onChange={(e) => setDriverName(e.target.value)}
+                    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              )}
 
 
               <div className="mb-4">
@@ -337,31 +359,55 @@ const ChargingPage = () => {
                 />
               </div>
 
-              <div className="mb-4">
-                <label htmlFor="chargingStartTime" className="block text-sm font-medium text-white-700">
-                  Charging Start Time
-                </label>
-                <input
-                  type="datetime-local"
-                  id="chargingStartTime"
-                  value={chargingStartTime}
-                  onChange={(e) => setChargingStartTime(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  readOnly
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="chargingEndTime" className="block text-sm font-medium text-white-700">
-                  Charging End Time
-                </label>
-                <input
-                  type="datetime-local"
-                  id="chargingEndTime"
-                  value={chargingEndTime}
-                  onChange={(e) => setChargingEndTime(e.target.value)}
-                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
+              {/* Charging Start Time (Read-only) */}
+<div className="mb-4">
+  <label htmlFor="chargingStartTime" className="block text-sm font-medium text-white-700">
+    Charging Start Time
+  </label>
+  <input
+    type="text"
+    id="chargingStartTime"
+    value={formatDateTimeForDisplay(chargingStartTime)}
+    readOnly
+    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+  <input
+    type="hidden"
+    value={chargingStartTime}
+  />
+</div>
+
+{/* Charging End Time (Editable) */}
+<div className="mb-4">
+  <label htmlFor="chargingEndDate" className="block text-sm font-medium text-white-700">
+    Charging End Date
+  </label>
+  <SmartDateInput
+    id="chargingEndDate"
+    value={chargingEndTime.split('T')[0]}
+    onChange={(gcDate) => {
+      const timePart = chargingEndTime.split('T')[1] || '00:00';
+      setChargingEndTime(`${gcDate}T${timePart}`);
+    }}
+    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+</div>
+
+<div className="mb-4">
+  <label htmlFor="chargingEndTimeInput" className="block text-sm font-medium text-white-700">
+    Charging End Time (Hour & Minute)
+  </label>
+  <input
+    type="time"
+    id="chargingEndTimeInput"
+    value={chargingEndTime.split('T')[1] || ''}
+    onChange={(e) => {
+      const datePart = chargingEndTime.split('T')[0] || new Date().toISOString().split('T')[0];
+      setChargingEndTime(`${datePart}T${e.target.value}`);
+    }}
+    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+</div>
               <div className="mb-4">
                 <label htmlFor="status" className="block text-sm font-medium text-white-700">
                   Status
@@ -424,18 +470,14 @@ const ChargingPage = () => {
                 <strong>Tenant Name:</strong>{' '}
                 {tenants.find((tenant) => tenant.id === selectedCharging.tenantId)?.fullName || 'N/A'}
               </p>
-              <p>
-                <strong>Charging Start Time:</strong>{' '}
-                {selectedCharging.chargingStartTime
-                  ? new Date(selectedCharging.chargingStartTime).toLocaleString()
-                  : 'N/A'}
-              </p>
-              <p>
-                <strong>Charging End Time:</strong>{' '}
-                {selectedCharging.chargingEndTime
-                  ? new Date(selectedCharging.chargingEndTime).toLocaleString()
-                  : 'N/A'}
-              </p>
+ <p>
+  <strong>Charging Start Time:</strong>{' '}
+  {formatDateTimeForDisplay(selectedCharging.chargingStartTime)}
+</p>
+<p>
+  <strong>Charging End Time:</strong>{' '}
+  {formatDateTimeForDisplay(selectedCharging.chargingEndTime)}
+</p>
               <p>
                 <strong>Charging Cost:</strong>{' '}
                 {selectedCharging.chargingCost != null ? selectedCharging.chargingCost : 'N/A'}

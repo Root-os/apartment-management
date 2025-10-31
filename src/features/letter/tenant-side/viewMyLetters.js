@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import TableComponent from "../../../components/table";
 import Modal from "../../../components/Modal";
 import { useNavigate } from "react-router-dom";
+import { CalendarContext } from '../../../context/calendarContext';
 
 const TenantLettersPage = () => {
   const [letters, setLetters] = useState([]);
@@ -12,6 +13,8 @@ const TenantLettersPage = () => {
   const [messageType, setMessageType] = useState("success");
   const [message, setMessage] = useState("");
   const navigate = useNavigate();
+
+  const { formatDateForDisplay } = useContext(CalendarContext);
 
   const handleRespondClick = (letter) => {
   if (letter.hasResponse) {
@@ -75,7 +78,7 @@ const TenantLettersPage = () => {
   const columns = [
     { key: "LetterType.name", label: "Letter Type", render: (row) => row.LetterType?.name },
     { key: "description", label: "Description" },
-    { key: "formattedDate", label: "Date" },
+    { key: "formattedDate", label: "Date", isDate: true },
     {
       label: "Actions",
       key: "actions",
@@ -112,7 +115,7 @@ const TenantLettersPage = () => {
           <div className="bg-base-100 p-6 rounded-md w-full max-w-lg max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">Letter Details</h2>
             <p><strong>Type:</strong> {selectedLetter.LetterType?.name}</p>
-            <p><strong>Date:</strong> {selectedLetter.formattedDate}</p>
+           <p><strong>Date:</strong> {formatDateForDisplay(selectedLetter.date) || 'N/A'}</p>
             <p><strong>Description:</strong> {selectedLetter.description}</p>
             <p><strong>Status:</strong> {selectedLetter.status}</p>
             <div className="flex justify-end mt-4">

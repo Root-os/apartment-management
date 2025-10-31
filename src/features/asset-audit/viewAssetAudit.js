@@ -4,6 +4,7 @@ import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
 import Modal from '../../components/Modal';
 import DisplayDate from '../../components/Common/displayDate';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 const AssetAuditPage = () => {
   const [data, setData] = useState([]);
@@ -299,10 +300,9 @@ const AssetAuditPage = () => {
 
               <div>
                 <label className="block text-sm font-medium text-white-700 mb-1">Date</label>
-                <input
-                  type="date"
+                <SmartDateInput
                   value={formData.date}
-                  onChange={(e) => setFormData({...formData, date: e.target.value})}
+                  onChange={(gcDate) => setFormData({...formData, date: gcDate})}
                   className="w-full bg-base-100 p-2 border rounded"
                 />
               </div>

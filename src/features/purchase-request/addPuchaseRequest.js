@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from '../../components/Modal';
 import TitleCard from '../../components/Cards/TitleCard';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 const PurchaseRequestForm = () => {
   const [items, setItems] = useState([]);
@@ -40,6 +41,12 @@ const PurchaseRequestForm = () => {
       [name]: value,
     }));
   };
+const handleDateChange = (fieldName) => (dateValue) => {
+  setFormData((prevState) => ({
+    ...prevState,
+    [fieldName]: dateValue,
+  }));
+};
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -218,11 +225,10 @@ const PurchaseRequestForm = () => {
 
           <div>
             <label className="block font-medium mb-1">Request Date</label>
-            <input
-              type="date"
+            <SmartDateInput
               name="requestDate"
               value={formData.requestDate}
-              onChange={handleChange}
+              onChange={handleDateChange("requestDate")}
               required
               className="w-full p-2 border rounded-md bg-base-100 shadow-sm"
             />

@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import TableComponent from "../../components/table";
 import Modal from "../../components/Modal";
 import { useNavigate } from "react-router-dom";
 import { MoreHorizontal } from "lucide-react";
 import { ChevronDown } from "lucide-react";
+import { CalendarContext } from '../../context/calendarContext';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 
 
@@ -27,6 +29,7 @@ const AllSendLetterPage = () => {
   const navigate = useNavigate();
 
   const [openDropdownId, setOpenDropdownId] = useState(null);
+  const { formatDateForDisplay } = useContext(CalendarContext);
 
   useEffect(() => {
   const handleClick = () => setOpenDropdownId(null);
@@ -259,11 +262,10 @@ const AllSendLetterPage = () => {
                 <label htmlFor="letterDate" className="block text-sm font-medium text-white-700">
                   Date
                 </label>
-                <input
-                  type="date"
+                <SmartDateInput
                   id="letterDate"
                   value={letterDate}
-                  onChange={(e) => setLetterDate(e.target.value)}
+                  onChange={(gcDate) => setLetterDate(gcDate)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -331,7 +333,7 @@ const AllSendLetterPage = () => {
               <p><strong>Letter Type:</strong> {selectedLetter.LetterType.name}</p>
               <p><strong>Tenant:</strong> {selectedLetter.Tenant.fullName}</p>
               <p><strong>Description:</strong> {selectedLetter.description}</p>
-              <p><strong>Date:</strong> {selectedLetter.Date ? new Date(selectedLetter.Date).toISOString().split('T')[0]: "N/A"}</p>
+              <p><strong>Date:</strong> {selectedLetter.Date ? formatDateForDisplay(selectedLetter.Date) : '-'}</p>
               <p><strong>Status:</strong> {selectedLetter.status}</p>
               <p><strong>Tenant Phone:</strong> {selectedLetter.Tenant.phoneNumber}</p>
               <p><strong>Tenant Email:</strong> {selectedLetter.Tenant.email}</p>

@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
 import { useNavigate } from 'react-router-dom';
 import { HiPrinter, HiShare, HiDownload } from "react-icons/hi";
+import { CalendarContext } from '../../context/calendarContext';
 
 const GenerateReceiptPage = () => {
     const { state } = useLocation();
@@ -12,6 +13,8 @@ const GenerateReceiptPage = () => {
     const [loading, setLoading] = useState(true);
     const receiptRef = useRef();
     const navigate = useNavigate();
+
+    const {  formatDateForDisplay } = useContext(CalendarContext);
 
     // Color space conversion utilities
     const oklchToRgb = (l, c, h) => {
@@ -245,7 +248,9 @@ const GenerateReceiptPage = () => {
                 {/* Payment Info */}
                 <div className="flex justify-end px-6 mt-4 mb-2 text-sm text-right text-gray-600">
                     <p><span className="font-bold">Receipt No:</span> 00{payment.id}</p>
-                    <p><span className="font-bold">Payment Date:</span> {paymentDate}</p>
+                     <p>
+                        <span className="font-bold">Payment Date:</span> {formatDateForDisplay(payment.paymentDate) || 'N/A'}
+                    </p>
                 </div>
 
                 {/* Vendor Info */}

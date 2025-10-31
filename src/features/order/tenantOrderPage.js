@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
 import Modal from '../../components/Modal'; 
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 const TenantOrderPage = () => {
   const [orderTypes, setOrderTypes] = useState([]);
@@ -121,11 +122,10 @@ const TenantOrderPage = () => {
                 <label htmlFor="orderDate" className="block text-sm font-medium text-white-700">
                   Order Date
                 </label>
-                <input
-                  type="date"
+                <SmartDateInput
                   id="orderDate"
                   value={orderDate}
-                  onChange={(e) => setOrderDate(e.target.value)}
+                  onChange={(gcDate) => setOrderDate(gcDate)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />

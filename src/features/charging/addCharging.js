@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , useContext} from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
+import SmartDateInput from '../../components/Common/smartDatePicker';
+import { CalendarContext } from '../../context/calendarContext';
 
 const AddChargingData = () => {
   const [carPlate, setCarPlate] = useState('');
@@ -16,6 +18,8 @@ const AddChargingData = () => {
   const [tenantCar, setTenantCar] = useState(null); 
   const [messageType, setMessageType] = useState('success');
   const [modalOpen, setModalOpen] = useState(false);
+
+    const { isGregorian } = useContext(CalendarContext);
 
   useEffect(() => {
     const fetchTenants = async () => {
@@ -164,17 +168,36 @@ const AddChargingData = () => {
             />
           </div>
 
-          <div className="flex flex-col">
-            <label htmlFor="chargingStartTime" className="font-medium">Charging Start Time</label>
-            <input
-              type="datetime-local"
-              id="chargingStartTime"
-              value={chargingStartTime}
-              onChange={(e) => setChargingStartTime(e.target.value)}
-              className="bg-base-100 px-4 py-2 border rounded-md"
-              required
-            />
-          </div>
+<div className="flex flex-col">
+  <label htmlFor="chargingStartDate" className="font-medium">Charging Start Date</label>
+  <SmartDateInput
+    id="chargingStartDate"
+    value={chargingStartTime.split('T')[0]} // Extract date part
+    onChange={(gcDate) => {
+      // Combine new date with existing time
+      const timePart = chargingStartTime.split('T')[1] || '00:00';
+      setChargingStartTime(`${gcDate}T${timePart}`);
+    }}
+    className="bg-base-100 px-4 py-2 border rounded-md"
+    required
+  />
+</div>
+
+<div className="flex flex-col">
+  <label htmlFor="chargingStartTimeInput" className="font-medium">Charging Start Time (Hour & Minute)</label>
+  <input
+    type="time"
+    id="chargingStartTimeInput"
+    value={chargingStartTime.split('T')[1] || ''}
+    onChange={(e) => {
+      // Combine existing date with new time
+      const datePart = chargingStartTime.split('T')[0] || new Date().toISOString().split('T')[0];
+      setChargingStartTime(`${datePart}T${e.target.value}`);
+    }}
+    className="bg-base-100 px-4 py-2 border rounded-md"
+    required
+  />
+</div>
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"

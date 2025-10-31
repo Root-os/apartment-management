@@ -2,6 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
+import SmartDateInput from '../../components/Common/smartDatePicker';
+import { is } from 'date-fns/locale';
+import { isDate } from 'date-fns';
 
 const PurchaseReport = () => {
   const [itemCategorys, setItemTypes] = useState([]);
@@ -89,8 +92,8 @@ const PurchaseReport = () => {
     { key: 'description', label: 'Description' },
     { key: 'price', label: 'Price' },
     { key: 'totalPrice', label: 'Total Price' },
-    { key: 'date', label: 'Purchase Date', render: (data) => new Date(data.date).toISOString().split('T')[0]},
-    { key: 'expirationDate', label: 'Expiration Date', render: (data) => new Date(data.expirationDate).toISOString().split('T')[0] || "N/A"},
+    { key: 'date', label: 'Purchase Date', isDate: true },
+    { key: 'expirationDate', label: 'Expiration Date', isDate: true},
   ];
   
 
@@ -102,24 +105,22 @@ const PurchaseReport = () => {
           {/* Start Date */}
           <div>
             <label htmlFor="startDate" className="block text-sm font-medium text-white-600 dark:text-gray-300">Start Date</label>
-            <input
-              type="date"
+            <SmartDateInput
               id="startDate"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.startDate}
-              onChange={(e) => setFilterParams({ ...filterParams, startDate: e.target.value })}
+              onChange={(date) => setFilterParams({ ...filterParams, startDate: date })}
             />
           </div>
 
           {/* End Date */}
           <div>
             <label htmlFor="endDate" className="block text-sm font-medium text-white-600 dark:text-gray-300">End Date</label>
-            <input
-              type="date"
+            <SmartDateInput
               id="endDate"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.endDate}
-              onChange={(e) => setFilterParams({ ...filterParams, endDate: e.target.value })}
+              onChange={(date) => setFilterParams({ ...filterParams, endDate: date })}
             />
           </div>
 

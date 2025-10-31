@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import HistoryModal from './HistoryModal';
+import SmartDateInput from "../../components/Common/smartDatePicker";
+import { CalendarContext } from '../../context/calendarContext';
 
 const RentCollectionPage = () => {
   const [rentData, setRentData] = useState([]);
@@ -32,6 +34,8 @@ const RentCollectionPage = () => {
     paymentFrequency: '',
     status: ''
   });
+
+   const {  formatDateForDisplay } = useContext(CalendarContext);
 
   // Fetch Rent Collection Data
   const fetchRentData = async () => {
@@ -175,16 +179,22 @@ const RentCollectionPage = () => {
      
     }
   };
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFilterParams({ ...filterParams, [name]: value });
-  };
+// For regular inputs
+const handleInputChange = (e) => {
+  const { name, value } = e.target;
+  setFilterParams({ ...filterParams, [name]: value });
+};
+
+// For SmartDateInput components
+const handleDateChange = (name) => (value) => {
+  setFilterParams({ ...filterParams, [name]: value });
+};
 
   const columns = [
     { key: 'tenantName', label: 'Tenant Name', render: (rent) => rent.Tenant.fullName },
     // { key: 'amountPaid', label: 'Amount Paid' },
-    { key: 'paymentDate', label: 'paid from', render: (rent) => new Date(rent.paymentDate).toISOString().split('T')[0] },
-    { key: 'nextDueDate', label: 'paid to', render: (rent) => new Date(rent.nextDueDate).toISOString().split('T')[0]},
+    { key: 'paymentDate', label: 'paid from', render: (rent) => formatDateForDisplay(rent.paymentDate) },
+    { key: 'nextDueDate', label: 'paid to', render: (rent) => formatDateForDisplay(rent.nextDueDate)},
     { key: 'status', label: 'Payment status'},
     { key: 'paidDays', label: 'paid days' },
     { key: 'amountPaid', label: 'Amount Paid', render: (data) => Math.ceil(data.amountPaid) },
@@ -227,45 +237,41 @@ const RentCollectionPage = () => {
       <form onSubmit={handleFilterSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
         <div>
           <label htmlFor="paymentDateFrom" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Date From</label>
-          <input
-            type="date"
+          <SmartDateInput
             id="paymentDateFrom"
             name="paymentDateFrom"
             value={filterParams.paymentDateFrom}
-            onChange={handleInputChange}
+            onChange={handleDateChange}
             className="mt-1 block w-full p-2 border border-gray-300 rounded"
           />
         </div>
         <div>
           <label htmlFor="paymentDateTo" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Date To</label>
-          <input
-            type="date"
+          <SmartDateInput
             id="paymentDateTo"
             name="paymentDateTo"
             value={filterParams.paymentDateTo}
-            onChange={handleInputChange}
+            onChange={handleDateChange}
             className="mt-1 block w-full p-2 border border-gray-300 rounded"
           />
         </div>
         <div>
           <label htmlFor="nextDueDateFrom" className="dark:text-gray-300 block text-sm font-medium text-gray-700">Next Due Date From</label>
-          <input
-            type="date"
+          <SmartDateInput
             id="nextDueDateFrom"
             name="nextDueDateFrom"
             value={filterParams.nextDueDateFrom}
-            onChange={handleInputChange}
+            onChange={handleDateChange}
             className="mt-1 block w-full p-2 border border-gray-300 rounded"
           />
         </div>
         <div>
           <label htmlFor="nextDueDateTo" className="dark:text-gray-300 block text-sm font-medium text-gray-700">Next Due Date To</label>
-          <input
-            type="date"
+          <SmartDateInput
             id="nextDueDateTo"
             name="nextDueDateTo"
             value={filterParams.nextDueDateTo}
-            onChange={handleInputChange}
+            onChange={handleDateChange}
             className="mt-1 block w-full p-2 border border-gray-300 rounded"
           />
         </div>
@@ -452,12 +458,12 @@ const RentCollectionPage = () => {
               <p><strong>Tenant Name:</strong> {currentRent.Tenant.fullName}</p>
               <p><strong>Phone Number:</strong> {currentRent.Tenant.phoneNumber}</p>
               <p><strong>Tenant Email:</strong> {currentRent.Tenant.email || 'No Email'}</p>
-              <p><strong>Paid From:</strong> {new Date(currentRent.paymentDate).toISOString().split('T')[0]}</p>
+              <p><strong>Paid From:</strong> {formatDateForDisplay(currentRent.paymentDate)}</p>
               <p><strong>Floor Number:</strong> {currentRent.Tenant.Floor.floorNumber}</p>
-              <p><strong>Paid To:</strong> {new Date(currentRent.nextDueDate).toISOString().split('T')[0]}</p>
+              <p><strong>Paid To:</strong> {formatDateForDisplay(currentRent.nextDueDate)}</p>
               <p><strong>Unit Number:</strong> {currentRent.Tenant.Unit.unitNumber}</p>
               <p><strong>Paid Days:</strong> {currentRent.paidDays}</p>
-              <p><strong>Next Due Date:</strong> {new Date(currentRent.nextDueDate).toISOString().split('T')[0]}</p>
+              <p><strong>Next Due Date:</strong> {formatDateForDisplay(currentRent.nextDueDate)}</p>
               <p><strong>Payment Statuss:</strong> {currentRent.status}</p>
               <p><strong>Punishment:</strong> {currentRent.punishment}</p>
               <p><strong>Is Paid:</strong> {currentRent.isPaid ? 'Yes' : 'No'}</p>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
-
+import SmartDateInput from '../../components/Common/smartDatePicker';
 const AddExpense = () => {
   const [amount, setAmount] = useState('');
   const [date, setDate] = useState('');
@@ -89,10 +89,9 @@ const AddExpense = () => {
           {/* Date */}
           <div>
             <label className="block text-sm font-semibold mb-2">Expense Date</label>
-            <input
-              type="date"
+            <SmartDateInput
               value={date}
-              onChange={(e) => setDate(e.target.value)}
+              onChange={(date) => setDate(date)}
               required
               className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
             />

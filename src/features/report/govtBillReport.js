@@ -3,6 +3,8 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import SmartDateInput from '../../components/Common/smartDatePicker';
+import { isDate } from 'date-fns';
 
 const GovtBillReport = () => {
   const [billPayments, setBillPayments] = useState([]);
@@ -68,8 +70,8 @@ const GovtBillReport = () => {
   const columns = [
     { key: 'billType', label: 'Bill Type', render: (data) => data.BillType?.typeName || 'N/A' },
     { key: 'amount', label: 'Amount' },
-    { key: 'startDate', label: 'Start Date', render: (data) => new Date(data.startDate).toISOString().split('T')[0] },
-    { key: 'endDate', label: 'End Date', render: (data) => new Date(data.endDate).toISOString().split('T')[0] },
+    { key: 'startDate', label: 'Start Date', isDate: true },
+    { key: 'endDate', label: 'End Date', isDate },
     { key: 'status', label: 'Status' },
     { key: 'paymentMethod', label: 'Payment Method' },
     { key: 'description', label: 'Description' }
@@ -83,24 +85,22 @@ const GovtBillReport = () => {
           {/* Start Date */}
           <div>
             <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Date</label>
-            <input
-              type="date"
+            <SmartDateInput
               id="startDate"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.startDate}
-              onChange={(e) => setFilterParams({ ...filterParams, startDate: e.target.value })}
+              onChange={(date) => setFilterParams({ ...filterParams, startDate: date})}
             />
           </div>
 
           {/* End Date */}
           <div>
             <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300">End Date</label>
-            <input
-              type="date"
+            <SmartDateInput
               id="endDate"
               className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
               value={filterParams.endDate}
-              onChange={(e) => setFilterParams({ ...filterParams, endDate: e.target.value })}
+              onChange={(date) => setFilterParams({ ...filterParams, endDate: date })}
             />
           </div>
 

@@ -43,12 +43,12 @@ const TenantRentPage = () => {
     {
       key: 'Rent From Date',
       label: 'Payment Date',
-      render: (row) => new Date(row.paymentDate).toISOString().split('T')[0],
+      isDate: true,
     },
     {
       key: 'nextDueDate',
       label: 'Next Due Date',
-      render: (row) => new Date(row.nextDueDate).toISOString().split('T')[0],
+      isDate: true,
     },
     { key: 'paidDays', label: 'Paid Days' },
     {

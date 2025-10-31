@@ -3,6 +3,7 @@ import axios from "axios";
 import TitleCard from "../../components/Cards/TitleCard";
 import Modal from "../../components/Modal";
 import * as Yup from "yup";
+import SmartDateInput from "../../components/Common/smartDatePicker";
 
 const PaymentAdd = () => {
   const [vendorId, setVendorId] = useState("");
@@ -327,11 +328,10 @@ const PaymentAdd = () => {
             >
               Payment Date
             </label>
-            <input
-              type="date"
+            <SmartDateInput
               id="paymentDate"
               value={paymentDate}
-              onChange={(e) => setPaymentDate(e.target.value)}
+              onChange={(date) => setPaymentDate(date)}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
               required
             />

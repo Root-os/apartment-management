@@ -3,6 +3,7 @@ import axios from "axios";
 import Modal from "../../components/Modal";
 import TitleCard from "../../components/Cards/TitleCard";
 import { useSearchParams } from "react-router-dom";
+import SmartDateInput from "../../components/Common/smartDatePicker";
 
 const AddBillPayment = () => {
   const [tenantId, setTenantId] = useState("");
@@ -251,12 +252,11 @@ const AddBillPayment = () => {
             >
               Start Date
             </label>
-            <input
-              type="date"
+            <SmartDateInput
               id="startDate"
               className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
               value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              onChange={(date) => setStartDate(date)}
               required
             />
           </div>
@@ -268,12 +268,11 @@ const AddBillPayment = () => {
             >
               End Date
             </label>
-            <input
-              type="date"
+            <SmartDateInput
               id="endDate"
               className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
               value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
+              onChange={(date) => setEndDate(date)}
               required
             />
           </div>

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from '../../components/Modal';
 import TitleCard from '../../components/Cards/TitleCard';
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 const ItemAssignmentForm = () => {
   const [items, setItems] = useState([]);
@@ -74,6 +75,13 @@ const ItemAssignmentForm = () => {
       [name]: value,
     }));
   };
+
+const handleDateChange = (fieldName) => (dateValue) => {
+  setFormData((prevState) => ({
+    ...prevState,
+    [fieldName]: dateValue,
+  }));
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -170,11 +178,10 @@ const ItemAssignmentForm = () => {
 
           <div className="mb-4">
             <label className="block text-sm font-medium text-white-700">Assign Date</label>
-            <input
-              type="date"
+            <SmartDateInput
               name="assignDate"
               value={formData.assignDate}
-              onChange={handleChange}
+              onChange={handleDateChange('assignDate')}
               className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
               required
             />

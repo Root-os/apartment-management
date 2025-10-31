@@ -3,7 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
-
+import SmartDateInput from '../../components/Common/smartDatePicker';
 
 const ExpensePage = () => {
   const [expenses, setExpenses] = useState([]);
@@ -208,11 +208,10 @@ const ExpensePage = () => {
                 <label htmlFor="date" className="block text-sm font-medium text-white-700">
                   Expense Date
                 </label>
-                <input
-                  type="date"
+                <SmartDateInput
                   id="date"
                   value={date}
-                  onChange={(e) => setDate(e.target.value)}
+                  onChange={(gcDate) => setDate(gcDate)}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
