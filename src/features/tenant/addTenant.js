@@ -86,7 +86,7 @@ const AddTenant = () => {
       const response = await axios.get(
         `${process.env.REACT_APP_BASE_URL}unit/${unitId}`
       );
-      const rent = response.data?.taxedRentAmount || "";
+      const rent = response.data?.rentAmount || "";
       setAmount(rent);
     } catch (err) {
       console.error("Failed to fetch unit details:", err);
@@ -155,7 +155,7 @@ const AddTenant = () => {
   };
 
   const validateContractEndDate = (value, leaseStartDate, leaseEndDate) => {
-    if (!value) return "Contract End Date is required.";
+    // if (!value) return "Contract End Date is required.";
     if (leaseStartDate && new Date(value) <= new Date(leaseStartDate)) {
       return "Contract End Date must be after Lease Start Date.";
     }

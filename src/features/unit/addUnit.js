@@ -107,10 +107,8 @@ useEffect(() => {
       images.forEach((image, index) => {
         formData.append('images', image);
       });
-
-      formData.append('pricePerSquare', parseFloat(price));
       formData.append('rentAmount', parseFloat(rent));
-      formData.append('taxedRentAmount', parseFloat(taxedRent));
+   
 
       console.log("Sending payload:");
 for (let pair of formData.entries()) {
@@ -201,7 +199,7 @@ for (let pair of formData.entries()) {
 
         {/* Size */}
         <div>
-          <label className="block text-sm font-semibold mb-2">Size (m²)</label>
+          <label className="block text-sm font-semibold mb-2">Beed Room</label>
           <input
             type="number"
             value={size}
@@ -213,30 +211,31 @@ for (let pair of formData.entries()) {
           />
         </div>
 
-        <div>
+        {/* <div>
           <label>Price per square</label>
           <input 
             type='number'
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            required
             className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
              min="1"                
              step="0.01"
           />
-        </div>
+        </div> */}
 <div>
   <label>Rent Amount</label>
   <input
     type="number"
     value={rent || ''}
-    readOnly
+    onChange={(e) => setRent(parseFloat(e.target.value) || '')}
     className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
     step="0.01"
+    min="0"
+    required
   />
 </div>
 
-<div>
+{/* <div>
   <label>Taxed Rent (15%)</label>
   <input
     type="number"
@@ -245,7 +244,7 @@ for (let pair of formData.entries()) {
     className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
     step="0.01"
   />
-</div>
+</div> */}
 
 
         {/* Status */}
