@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import TableComponent from '../../components/table';
-import LoadingComponent from '../../components/loading';
-import Modal from '../../components/Modal';  // Modal component for success/error messages
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import TableComponent from "../../components/table";
+import LoadingComponent from "../../components/loading";
+import Modal from "../../components/Modal"; // Modal component for success/error messages
 
 const CurrencySettingsPage = () => {
   const [data, setData] = useState([]);
@@ -10,31 +10,31 @@ const CurrencySettingsPage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedSetting, setSelectedSetting] = useState(null);
   const [formData, setFormData] = useState({
-    buildingName: '',
-    buildingAddress: '',
-    email: '',
-    phoneNumber: '',
-    postOfficeAddress: '',
-    chargingCost: '',
-    parkingCost: '',
-    punishmentPercentage: '',
+    buildingName: "",
+    buildingAddress: "",
+    email: "",
+    phoneNumber: "",
+    postOfficeAddress: "",
+    chargingCost: "",
+    parkingCost: "",
+    punishmentPercentage: "",
     logo: null,
-    seal: null, 
+    seal: null,
     qrImage: null,
     qrImagePreview: null,
   });
   const [buttonLoading, setButtonLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [messageType, setMessageType] = useState('success');
-  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState("success");
+  const [message, setMessage] = useState("");
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // State for delete confirmation modal
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     axios
       .get(`${process.env.REACT_APP_BASE_URL}setting`, {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       })
       .then((response) => {
@@ -42,7 +42,7 @@ const CurrencySettingsPage = () => {
         setLoading(false);
       })
       .catch((error) => {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
         setLoading(false);
       });
   }, []);
@@ -55,53 +55,55 @@ const CurrencySettingsPage = () => {
       email: setting.email,
       phoneNumber: setting.phoneNumber,
       postOfficeAddress: setting.postOfficeAddress,
-      chargingCost: setting.chargingCost || '',
-      parkingCost: setting.parkingCost || '', 
-      punishmentPercentage: setting.punishmentPercentage || '',
-      logo: null, 
-      seal: null, 
+      chargingCost: setting.chargingCost || "",
+      parkingCost: setting.parkingCost || "",
+      punishmentPercentage: setting.punishmentPercentage || "",
+      logo: null,
+      seal: null,
       qrImage: null,
       qrImagePreview: setting.qrImage || null,
     });
     setIsEditModalOpen(true);
   };
 
-const handleImageChange = (e, field) => {
-  const file = e.target.files[0];
-  if (file) {
-    setFormData((prevData) => ({
-      ...prevData,
-      [field]: file,
-      [`${field}Preview`]: URL.createObjectURL(file),
-    }));
-  }
-};
-
+  const handleImageChange = (e, field) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prevData) => ({
+        ...prevData,
+        [field]: file,
+        [`${field}Preview`]: URL.createObjectURL(file),
+      }));
+    }
+  };
 
   const handleEditSubmit = () => {
     setButtonLoading(true);
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
     const formDataToSubmit = new FormData();
-    
+
     // Append the text fields
-    formDataToSubmit.append('buildingName', formData.buildingName);
-    formDataToSubmit.append('buildingAddress', formData.buildingAddress);
-    formDataToSubmit.append('email', formData.email);
-    formDataToSubmit.append('phoneNumber', formData.phoneNumber);
-    formDataToSubmit.append('postOfficeAddress', formData.postOfficeAddress);
-    formDataToSubmit.append('chargingCost', formData.chargingCost); 
-    formDataToSubmit.append('parkingCost', formData.parkingCost); 
-    formDataToSubmit.append('punishmentPercentage', formData.punishmentPercentage);
-  
+    formDataToSubmit.append("buildingName", formData.buildingName);
+    formDataToSubmit.append("buildingAddress", formData.buildingAddress);
+    formDataToSubmit.append("email", formData.email);
+    formDataToSubmit.append("phoneNumber", formData.phoneNumber);
+    formDataToSubmit.append("postOfficeAddress", formData.postOfficeAddress);
+    formDataToSubmit.append("chargingCost", formData.chargingCost);
+    formDataToSubmit.append("parkingCost", formData.parkingCost);
+    formDataToSubmit.append(
+      "punishmentPercentage",
+      formData.punishmentPercentage
+    );
+
     // Append the files (logo and seal) if selected
     if (formData.logo) {
-      formDataToSubmit.append('logos', formData.logo);
+      formDataToSubmit.append("logos", formData.logo);
     }
     if (formData.seal) {
-      formDataToSubmit.append('seal', formData.seal);
+      formDataToSubmit.append("seal", formData.seal);
     }
     if (formData.qrImage) {
-      formDataToSubmit.append('qrImage', formData.qrImage);
+      formDataToSubmit.append("qrImage", formData.qrImage);
     }
     axios
       .put(
@@ -109,8 +111,8 @@ const handleImageChange = (e, field) => {
         formDataToSubmit,
         {
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
           },
         }
       )
@@ -120,34 +122,38 @@ const handleImageChange = (e, field) => {
           item.id === selectedSetting.id
             ? {
                 ...item,
-                buildingName: formData.buildingName, 
+                buildingName: formData.buildingName,
                 buildingAddress: formData.buildingAddress,
                 email: formData.email,
                 phoneNumber: formData.phoneNumber,
                 postOfficeAddress: formData.postOfficeAddress,
-                chargingCost: formData.chargingCost,  
-                parkingCost: formData.parkingCost,  
+                chargingCost: formData.chargingCost,
+                parkingCost: formData.parkingCost,
                 punshmentPercentage: formData.punishmentPercentage,
-                logos: formData.logo ? URL.createObjectURL(formData.logo) : item.logos,  
-                seal: formData.seal ? URL.createObjectURL(formData.seal) : item.seal,  
+                logos: formData.logo
+                  ? URL.createObjectURL(formData.logo)
+                  : item.logos,
+                seal: formData.seal
+                  ? URL.createObjectURL(formData.seal)
+                  : item.seal,
               }
             : item
         );
-    
+
         setData(updatedData); // Update the table with the new data
         setIsEditModalOpen(false); // Close the edit modal
         setModalOpen(true); // Open the success modal
-        setMessageType('success');
-        setMessage('Setting updated successfully!');
+        setMessageType("success");
+        setMessage("Setting updated successfully!");
       })
       .catch((error) => {
-        console.error('Error updating setting:', error);
+        console.error("Error updating setting:", error);
         setModalOpen(true);
-        setMessageType('error');
-        setMessage('Unable to update setting.');
+        setMessageType("error");
+        setMessage("Unable to update setting.");
       })
       .finally(() => {
-        setButtonLoading(false); 
+        setButtonLoading(false);
       });
   };
 
@@ -160,26 +166,29 @@ const handleImageChange = (e, field) => {
   // Confirm Delete Action
   const handleDeleteConfirm = () => {
     setButtonLoading(true);
-    const token = localStorage.getItem('token');
-    
+    const token = localStorage.getItem("token");
+
     axios
-      .delete(`${process.env.REACT_APP_BASE_URL}setting/${selectedSetting.id}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      })
+      .delete(
+        `${process.env.REACT_APP_BASE_URL}setting/${selectedSetting.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
       .then(() => {
         setData(data.filter((item) => item.id !== selectedSetting.id));
         setIsDeleteModalOpen(false); // Close delete modal
         setModalOpen(true);
-        setMessageType('success');
-        setMessage('Setting deleted successfully!');
+        setMessageType("success");
+        setMessage("Setting deleted successfully!");
       })
       .catch((error) => {
-        console.error('Error deleting setting:', error);
+        console.error("Error deleting setting:", error);
         setModalOpen(true);
-        setMessageType('error');
-        setMessage('Unable to delete setting.');
+        setMessageType("error");
+        setMessage("Unable to delete setting.");
       })
       .finally(() => {
         setButtonLoading(false);
@@ -187,87 +196,100 @@ const handleImageChange = (e, field) => {
   };
 
   const columns = [
-    { key: 'buildingName', label: 'Building Name' },
-    { key: 'buildingAddress', label: 'Building Address' },
-    { key: 'email', label: 'Email' },
-    { key: 'phoneNumber', label: 'Phone Number' },
-    { key: 'postOfficeAddress', label: 'Post Office Address' },
+    { key: "buildingName", label: "Building Name" },
+    { key: "buildingAddress", label: "Building Address" },
+    { key: "email", label: "Email" },
+    { key: "phoneNumber", label: "Phone Number" },
+    { key: "postOfficeAddress", label: "Post Office Address" },
     {
-      key: 'chargingCost',
-      label: 'Charging Cost',
-      render: (setting) => setting.chargingCost || 'N/A', // Render charging cost
+      key: "chargingCost",
+      label: "Charging Cost",
+      render: (setting) => setting.chargingCost || "N/A", // Render charging cost
     },
     {
-      key: 'parkingCost',
-      label: 'Parking Cost',
-      render: (setting) => setting.parkingCost || 'N/A', // Render parking cost
+      key: "parkingCost",
+      label: "Parking Cost",
+      render: (setting) => setting.parkingCost || "N/A", // Render parking cost
     },
-    { key: 'punishmentPercentage', label: 'Punishment(%)', formatter: value => `${value}%` },
     {
-      key: 'logos',
-      label: 'Logo',
+      key: "punishmentPercentage",
+      label: "Punishment(%)",
+      formatter: (value) => `${value}%`,
+    },
+    {
+      key: "logos",
+      label: "Logo",
       render: (setting) => {
-        // Access the logos property inside the setting object
-        const logoUrl = setting?.logos || 'https://placehold.co/50x50';
-        console.log("Logo Image URL: ", logoUrl);  // Debugging line
-    
+        let logoUrl = setting?.logos;
+        if (
+          !logoUrl ||
+          !(logoUrl.startsWith("http://") || logoUrl.startsWith("https://"))
+        ) {
+          logoUrl = "https://placehold.co/50x50";
+        }
         return (
           <img
             src={logoUrl}
             alt="Logo"
-            style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+            style={{ width: "50px", height: "50px", objectFit: "cover" }}
             onError={(e) => {
-              console.error('Failed to load logo:', logoUrl);
-              e.target.src = 'https://placehold.co/50x50'; // Fallback image
+              e.target.src = "https://placehold.co/50x50";
             }}
           />
         );
       },
     },
     {
-      key: 'seal',
-      label: 'Seal',
+      key: "seal",
+      label: "Seal",
       render: (setting) => {
-        // Access the seal property inside the setting object
-        const sealUrl = setting?.seal || 'https://placehold.co/50x50';
-        console.log("Seal Image URL: ", sealUrl);  // Debugging line
-    
+        let sealUrl = setting?.seal;
+        if (
+          !sealUrl ||
+          !(sealUrl.startsWith("http://") || sealUrl.startsWith("https://"))
+        ) {
+          sealUrl = "https://placehold.co/50x50";
+        }
         return (
           <img
             src={sealUrl}
             alt="Seal"
-            style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+            style={{ width: "50px", height: "50px", objectFit: "cover" }}
             onError={(e) => {
-              console.error('Failed to load seal:', sealUrl);
-              e.target.src = 'https://placehold.co/50x50'; // Fallback image
+              e.target.src = "https://placehold.co/50x50";
             }}
           />
         );
       },
     },
     {
-      key: 'qrImage',
-      label: 'QR Image',
+      key: "qrImage",
+      label: "QR Image",
       render: (setting) => {
-        const qrUrl = setting?.qrImage || 'https://placehold.co/50x50';
+        let qrUrl = setting?.qrImage;
+        if (
+          !qrUrl ||
+          !(qrUrl.startsWith("http://") || qrUrl.startsWith("https://"))
+        ) {
+          qrUrl = "https://placehold.co/50x50";
+        }
         return (
           <img
             src={qrUrl}
             alt="QR Code"
-            style={{ width: '50px', height: '50px', objectFit: 'cover' }}
+            style={{ width: "50px", height: "50px", objectFit: "cover" }}
             onError={(e) => {
-              console.error('Failed to load QR image:', qrUrl);
-              e.target.src = 'https://placehold.co/50x50';
+              e.target.src = "https://placehold.co/50x50";
             }}
           />
         );
       },
     },
     {
-      key: 'actions',
-      label: 'Actions',
+      key: "actions",
+      label: "Actions",
       render: (setting) => (
-        <div className='flex justify-end space-x-2'>
+        <div className="flex justify-end space-x-2">
           <button
             onClick={() => handleEditClick(setting)}
             className="px-2 py-1 bg-blue-500 text-white rounded"
@@ -289,11 +311,7 @@ const handleImageChange = (e, field) => {
 
   return (
     <div>
-      <TableComponent 
-        title="Settings" 
-        data={data} 
-        columns={columns} 
-      />
+      <TableComponent title="Settings" data={data} columns={columns} />
 
       {/* Edit Modal */}
       {isEditModalOpen && (
@@ -302,7 +320,9 @@ const handleImageChange = (e, field) => {
             <h2 className="text-xl font-bold mb-4">Edit Settings</h2>
             <div className="space-y-4 overflow-y-auto flex-1">
               <div>
-                <label className="block text-sm font-medium text-white-700 mb-1">Building Name</label>
+                <label className="block text-sm font-medium text-white-700 mb-1">
+                  Building Name
+                </label>
                 <input
                   type="text"
                   value={formData.buildingName}
@@ -314,29 +334,40 @@ const handleImageChange = (e, field) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white-700 mb-1">Building Address</label>
+                <label className="block text-sm font-medium text-white-700 mb-1">
+                  Building Address
+                </label>
                 <input
                   type="text"
                   value={formData.buildingAddress}
                   onChange={(e) =>
-                    setFormData({ ...formData, buildingAddress: e.target.value })
+                    setFormData({
+                      ...formData,
+                      buildingAddress: e.target.value,
+                    })
                   }
                   className="w-full bg-base-100 p-2 border rounded"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white-700 mb-1">Email</label>
+                <label className="block text-sm font-medium text-white-700 mb-1">
+                  Email
+                </label>
                 <input
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                   className="w-full bg-base-100 p-2 border rounded"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white-700 mb-1">Phone Number</label>
+                <label className="block text-sm font-medium text-white-700 mb-1">
+                  Phone Number
+                </label>
                 <input
                   type="text"
                   value={formData.phoneNumber}
@@ -348,87 +379,110 @@ const handleImageChange = (e, field) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-white-700 mb-1">Post Office Address</label>
+                <label className="block text-sm font-medium text-white-700 mb-1">
+                  Post Office Address
+                </label>
                 <input
                   type="text"
                   value={formData.postOfficeAddress}
                   onChange={(e) =>
-                    setFormData({ ...formData, postOfficeAddress: e.target.value })
+                    setFormData({
+                      ...formData,
+                      postOfficeAddress: e.target.value,
+                    })
                   }
                   className="w-full bg-base-100 p-2 border rounded"
                 />
               </div>
 
               <div>
-          <label className="block text-sm font-medium text-white-700 mb-1">Charging Cost</label>
-          <input
-            type="text"
-            value={formData.chargingCost}
-            onChange={(e) =>
-              setFormData({ ...formData, chargingCost: e.target.value })
-            }
-            className="w-full bg-base-100 p-2 border rounded"
-          />
-        </div>
+                <label className="block text-sm font-medium text-white-700 mb-1">
+                  Charging Cost
+                </label>
+                <input
+                  type="text"
+                  value={formData.chargingCost}
+                  onChange={(e) =>
+                    setFormData({ ...formData, chargingCost: e.target.value })
+                  }
+                  className="w-full bg-base-100 p-2 border rounded"
+                />
+              </div>
 
-        {/* New field for Parking Cost */}
-        <div>
-          <label className="block text-sm font-medium text-white-700 mb-1">Parking Cost</label>
-          <input
-            type="text"
-            value={formData.parkingCost}
-            onChange={(e) =>
-              setFormData({ ...formData, parkingCost: e.target.value })
-            }
-            className="w-full bg-base-100 p-2 border rounded"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-white-700 mb-1">Punishment (%)</label>
-          <input
-            type="text"
-            value={formData.punishmentPercentage}
-            onChange={(e) =>
-              setFormData({ ...formData, punishmentPercentage: e.target.value })
-            }
-            className="w-full bg-base-100 p-2 border rounded"
-          />
-        </div>
+              {/* New field for Parking Cost */}
+              <div>
+                <label className="block text-sm font-medium text-white-700 mb-1">
+                  Parking Cost
+                </label>
+                <input
+                  type="text"
+                  value={formData.parkingCost}
+                  onChange={(e) =>
+                    setFormData({ ...formData, parkingCost: e.target.value })
+                  }
+                  className="w-full bg-base-100 p-2 border rounded"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white-700 mb-1">
+                  Punishment (%)
+                </label>
+                <input
+                  type="text"
+                  value={formData.punishmentPercentage}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      punishmentPercentage: e.target.value,
+                    })
+                  }
+                  className="w-full bg-base-100 p-2 border rounded"
+                />
+              </div>
 
               {/* File Upload for Logo */}
               <div>
-                <label className="block text-sm font-medium text-white-700 mb-1">Logo</label>
+                <label className="block text-sm font-medium text-white-700 mb-1">
+                  Logo
+                </label>
                 <input
                   type="file"
-                  onChange={(e) => handleImageChange(e, 'logo')}
+                  onChange={(e) => handleImageChange(e, "logo")}
                   className="w-full p-2 border rounded"
                 />
                 {formData.logo && (
-                  <p className="mt-2 text-sm text-white-600">Logo selected: {formData.logo.name}</p>
+                  <p className="mt-2 text-sm text-white-600">
+                    Logo selected: {formData.logo.name}
+                  </p>
                 )}
               </div>
 
               {/* File Upload for Seal */}
               <div>
-                <label className="block text-sm font-medium white-gray-700 mb-1">Seal</label>
+                <label className="block text-sm font-medium white-gray-700 mb-1">
+                  Seal
+                </label>
                 <input
                   type="file"
-                  onChange={(e) => handleImageChange(e, 'seal')}
+                  onChange={(e) => handleImageChange(e, "seal")}
                   className="w-full p-2 border rounded"
                 />
                 {formData.seal && (
-                  <p className="mt-2 text-sm text-white-600">Seal selected: {formData.seal.name}</p>
+                  <p className="mt-2 text-sm text-white-600">
+                    Seal selected: {formData.seal.name}
+                  </p>
                 )}
               </div>
               {/* File Upload for QR Image */}
               <div>
-                <label className="block text-sm font-medium text-white-700 mb-1">QR Image</label>
+                <label className="block text-sm font-medium text-white-700 mb-1">
+                  QR Image
+                </label>
                 <input
                   type="file"
-                  onChange={(e) => handleImageChange(e, 'qrImage')}
+                  onChange={(e) => handleImageChange(e, "qrImage")}
                   className="w-full p-2 border rounded"
                 />
-               
               </div>
             </div>
             <div className="mt-4 flex justify-end gap-2 shrink-0">
@@ -443,7 +497,7 @@ const handleImageChange = (e, field) => {
                 className="px-4 py-2 bg-blue-500 text-white rounded"
                 disabled={buttonLoading}
               >
-                {buttonLoading ? 'Saving...' : 'Save'}
+                {buttonLoading ? "Saving..." : "Save"}
               </button>
             </div>
           </div>
@@ -454,7 +508,9 @@ const handleImageChange = (e, field) => {
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 p-6 rounded-lg w-98">
-            <h2 className="text-lg font-bold mb-4">Are you sure you want to delete this setting?</h2>
+            <h2 className="text-lg font-bold mb-4">
+              Are you sure you want to delete this setting?
+            </h2>
             <div className="flex justify-end space-x-2">
               <button
                 onClick={() => setIsDeleteModalOpen(false)} // Close the delete confirmation modal
@@ -467,7 +523,7 @@ const handleImageChange = (e, field) => {
                 className="px-4 py-2 bg-red-500 text-white rounded"
                 disabled={buttonLoading}
               >
-                {buttonLoading ? 'Deleting...' : 'Delete'}
+                {buttonLoading ? "Deleting..." : "Delete"}
               </button>
             </div>
           </div>

@@ -111,6 +111,11 @@ useEffect(() => {
       formData.append('pricePerSquare', parseFloat(price));
       formData.append('rentAmount', parseFloat(rent));
       formData.append('taxedRentAmount', parseFloat(taxedRent));
+
+      console.log("Sending payload:");
+for (let pair of formData.entries()) {
+  console.log(pair[0] + ": ", pair[1]);
+}
     
 
       const response = await axios.post(
