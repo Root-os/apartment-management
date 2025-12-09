@@ -95,32 +95,66 @@ const AddCollectedRent = () => {
     }
   }, [tenants, tenantIdFromUrl]);
 
+  // Helper function to add months with proper date handling
+  const addMonths = (date, months) => {
+    const result = new Date(date);
+    const dayOfMonth = result.getDate();
+    result.setMonth(result.getMonth() + months);
+    
+    // Handle month overflow (e.g., Jan 31 + 1 month)
+    if (result.getDate() !== dayOfMonth) {
+      result.setDate(0); // Set to last day of previous month
+    }
+    
+    return result;
+  };
+
   // Auto-calculate nextDueDate
   useEffect(() => {
     if (paymentDate && (monthsCount || daysCount)) {
-      const start = new Date(paymentDate);
-      const result = new Date(start);
-      if (monthsCount) result.setMonth(result.getMonth() + parseInt(monthsCount));
-      if (daysCount) result.setDate(result.getDate() + parseInt(daysCount));
+      let result = new Date(paymentDate);
+      
+      // Add months first (if any)
+      if (monthsCount) {
+        result = addMonths(result, parseInt(monthsCount));
+      }
+      
+      // Then add days (if any)
+      if (daysCount) {
+        result.setDate(result.getDate() + parseInt(daysCount));
+      }
+      
       setNextDueDate(result.toISOString().split("T")[0]);
     }
   }, [paymentDate, monthsCount, daysCount]);
 
   // Calculate paidDays
-  useEffect(() => {
+  useEffect(() => { 
     if (paymentDate && nextDueDate) {
-    // console.log("📅 Calculating paid days:");
-    // console.log("Payment Date:", paymentDate);
-    // console.log("Next Due Date:", nextDueDate);
-
-      const start = new Date(paymentDate);
-      const end = new Date(nextDueDate);
-      const diffTime = Math.abs(end - start);
-      setPaidDays(Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+      if (monthsCount) {
+        // When monthsCount is provided, use 30 days per month
+        const totalMonths = parseInt(monthsCount) || 0;
+        const additionalDays = parseInt(daysCount) || 0;
+        const calculatedDays = (totalMonths * 30) + additionalDays;
+        // console.log('Calculating with 30-day months:', { totalMonths, additionalDays, calculatedDays });
+        setPaidDays(calculatedDays);
+      } else if (daysCount) {
+        // When only daysCount is provided
+        // console.log('Using only daysCount:', daysCount);
+        setPaidDays(parseInt(daysCount));
+      } else {
+        // Fallback to calendar days
+        const start = new Date(paymentDate);
+        const end = new Date(nextDueDate);
+        const diffTime = Math.abs(end - start);
+        const calendarDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        // console.log('Falling back to calendar days:', { start, end, diffTime, calendarDays });
+        setPaidDays(calendarDays);
+      }
     } else {
       setPaidDays("");
     }
-  }, [paymentDate, nextDueDate]);
+  }, [paymentDate, nextDueDate, monthsCount, daysCount]);
 
   // Calculate amountPaid
   useEffect(() => {
@@ -140,7 +174,6 @@ const AddCollectedRent = () => {
   const handleTenantSelect = async (e) => {
     const id = e.target.value;
     setTenantId(id);
-
     const tenant = tenants.find((t) => t.id.toString() === id);
     if (tenant) {
       setAmount(tenant.amount || "");
@@ -171,21 +204,20 @@ const handleSubmit = async (e) => {
     setError("Please fill in all required fields.");
     return;
   }
-
   setLoading(true);
 
   // SmartDateInput already gives Gregorian dates, so use them directly
   const payload = {
     tenantId: parseInt(tenantId),
-    paymentDate: paymentDate, // ✅ Already Gregorian from SmartDateInput
-    nextDueDate: nextDueDate, // ✅ Already Gregorian from SmartDateInput
+    paymentDate: new Date(paymentDate).toISOString().split('T')[0],
+    nextDueDate: new Date(nextDueDate).toISOString().split('T')[0],
     paymentMethod,
     status,
     punishment: punishmentAmount || "0",
     isPaid,
   };
 
-  console.log("📅 Final payload:", payload);
+  // console.log("📅 Final payload:", payload);
 
   try {
     await axios.post(`${process.env.REACT_APP_BASE_URL}rent-collection`, payload);

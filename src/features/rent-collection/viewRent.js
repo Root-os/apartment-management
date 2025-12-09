@@ -193,8 +193,16 @@ const handleDateChange = (name) => (value) => {
   const columns = [
     { key: 'tenantName', label: 'Tenant Name', render: (rent) => rent.Tenant.fullName },
     // { key: 'amountPaid', label: 'Amount Paid' },
-    { key: 'paymentDate', label: 'paid from', render: (rent) => formatDateForDisplay(rent.paymentDate) },
-    { key: 'nextDueDate', label: 'paid to', render: (rent) => formatDateForDisplay(rent.nextDueDate)},
+    { 
+      key: 'paymentDate', 
+      label: 'paid from', 
+      render: (rent) => new Date(rent.paymentDate).toISOString().split('T')[0] 
+    },
+    { 
+      key: 'nextDueDate', 
+      label: 'paid to', 
+      render: (rent) => new Date(rent.nextDueDate).toISOString().split('T')[0] 
+    },
     { key: 'status', label: 'Payment status'},
     { key: 'paidDays', label: 'paid days' },
     { key: 'amountPaid', label: 'Amount Paid', render: (data) => Math.ceil(data.amountPaid) },

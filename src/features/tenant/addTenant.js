@@ -53,19 +53,26 @@ const AddTenant = () => {
   });
 
   // Fetch floor data for dropdown
-  useEffect(() => {
-    const fetchFloors = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}floor`
-        );
-        setFloors(response.data);
-      } catch (err) {
-        setErrors((prev) => ({ ...prev, api: "Failed to fetch floor data." }));
-      }
-    };
-    fetchFloors();
-  }, []);
+useEffect(() => {
+  const fetchFloors = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}floor`
+      );
+
+      const activeFloors = response.data.filter(
+        (floor) => floor.status === "active"
+      );
+
+      setFloors(activeFloors);
+    } catch (err) {
+      setErrors((prev) => ({ ...prev, api: "Failed to fetch floor data." }));
+    }
+  };
+
+  fetchFloors();
+}, []);
+
 
   // Fetch freeUnits when floor is selected
   const fetchFreeUnits = async (id) => {

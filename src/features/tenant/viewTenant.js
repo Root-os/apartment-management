@@ -104,47 +104,33 @@ const TenantList = () => {
   };
 
   // Edit modal: Set initial values when edit button is clicked
- const handleEditClick = (tenant) => {
-  setSelectedTenant(tenant);
-  setEditData({
-    fullName: tenant.fullName || '',
-    phoneNumber: tenant.phoneNumber || '',
-    email: tenant.email || '',
-    nationalId: tenant.nationalId || '',
-    leaseStartDate: formatDate(tenant.leaseStartDate),
-    leaseEndDate: formatDate(tenant.leaseEndDate),
-   contractEndDate: formatDate(tenant.contractEndDate),
-    paymentStatus: tenant.paymentStatus || '',
-    additionalNotes: tenant.additionalNotes || '',
-    unitId: tenant.unitId ? tenant.unitId.toString() : '',
-    floorId: tenant.floorId ? tenant.floorId.toString() : '',
-    advance: tenant.advance || '',
-    amount: tenant.amount || '',
-    tin: tenant.tin || '',
-    document: tenant.document || '',
-    status: tenant.status || '',
-    description: tenant.description || '',
-  });
-
-  if (tenant.floorId) {
-    fetchFreeUnits(tenant.floorId).then(() => {
-      if (tenant.unitId && tenant.Unit && tenant.Unit.id) {
-        setUnits((prevUnits) => {
-          console.log('Current units:', prevUnits); // Debug units
-          console.log('Tenant unit:', tenant.Unit); // Debug tenant.Unit
-          const unitExists = prevUnits.some(
-            (unit) => unit.id && unit.id.toString() === tenant.unitId.toString()
-          );
-          if (!unitExists) {
-            return [...prevUnits, tenant.Unit];
-          }
-          return prevUnits;
-        });
-      }
+  const handleEditClick = (tenant) => {
+    setSelectedTenant(tenant);
+    setEditData({
+      fullName: tenant.fullName,
+      phoneNumber: tenant.phoneNumber,
+      email: tenant.email,
+      nationalId: tenant.nationalId,
+      leaseStartDate: tenant.leaseStartDate,
+      leaseEndDate: tenant.leaseEndDate,
+      contractEndDate: tenant.contractEndDate,
+      additionalNotes: tenant.additionalNotes || "",
+      unitId: tenant.unitId || "",
+      floorId: tenant.floorId || "",
+      advance: tenant.advance || "",
+      amount: tenant.amount || "",
+      tin: tenant.tin || "",
+      document: tenant.document || "",
+      status: tenant.status || "active",
     });
-  }
-  setIsEditModalOpen(true);
-};
+
+    // Fetch units for the current floor if floorId exists
+    if (tenant.floorId) {
+      fetchFreeUnits(tenant.floorId);
+    }
+
+    setIsEditModalOpen(true);
+  };
 
   // Delete modal: Set selected tenant for deletion
   const handleDeleteClick = (tenant) => {
@@ -164,97 +150,81 @@ const TenantList = () => {
     }
   };
 
-  // Submit edited data to the API
-  const handleEditSubmit = async () => {
-    if (!editData.floorId) {
+
+// Handle form submit
+const handleEditSubmit = async () => {
+  try {
+    // Basic validation
+    if (!editData.fullName || !editData.phoneNumber) {
       setModal({
         isOpen: true,
         messageType: "error",
-        message: "Please select a floor.",
-      });
-      return;
-    }
-    if (!editData.unitId) {
-      setModal({
-        isOpen: true,
-        messageType: "error",
-        message: "Please select a unit.",
+        message: "Please fill in all required fields",
       });
       return;
     }
 
-    try {
-      setIsSaving(true);
-      const formData = new FormData();
+    setIsSaving(true);
 
-      // Prepare data, exclude car-related fields
-      const dataToSend = {
-        fullName: editData.fullName,
-        phoneNumber: editData.phoneNumber,
-        email: editData.email,
-        nationalId: editData.nationalId,
-        leaseStartDate: editData.leaseStartDate,
-        leaseEndDate: editData.leaseEndDate,
-        contractEndDate: editData.contractEndDate,
-        paymentStatus: editData.paymentStatus,
-        additionalNotes: editData.additionalNotes,
-        unitId: editData.unitId ? Number(editData.unitId) : null,
-        floorId: editData.floorId ? Number(editData.floorId) : null,
-        advance: editData.advance,
-        amount: editData.amount,
-        tin: editData.tin,
-        status: editData.status,
-        description: editData.description,
-        document: editData.document,
-      };
+    // Normalize status to lowercase
+    const normalizedData = {
+      ...editData,
+      status: editData.status?.toLowerCase() || "active",
+    };
 
-      // Append fields to FormData
-      Object.keys(dataToSend).forEach((key) => {
-        if (key === "document" && dataToSend[key] instanceof File) {
-          formData.append(key, dataToSend[key]);
-        } else if (dataToSend[key] !== null && dataToSend[key] !== undefined) {
-          formData.append(key, dataToSend[key]);
-        }
-      });
+    const formData = new FormData();
 
-      console.log("Submitting form data:", [...formData.entries()]); // Debug FormData
+    // Append all fields to formData
+    Object.keys(normalizedData).forEach(key => {
+      if (key === 'document' && normalizedData[key] instanceof File) {
+        formData.append(key, normalizedData[key]);
+      } else if (normalizedData[key] !== null && normalizedData[key] !== undefined) {
+        formData.append(key, normalizedData[key]);
+      }
+    });
 
-      const result = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}tenant/${selectedTenant.id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log("API response:", result.data);
-
-      // Refetch tenants to ensure data is up-to-date
-      const tenantResponse = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}tenant`
-      );
-      setTenants(tenantResponse.data);
-
-      setIsEditModalOpen(false);
-      setModal({
-        isOpen: true,
-        messageType: "success",
-        message: "Tenant updated successfully.",
-      });
-    } catch (err) {
-      console.error("Error updating tenant:", err.response?.data || err);
-      setModal({
-        isOpen: true,
-        messageType: "error",
-        message:
-          err.response?.data?.error ||
-          "An error occurred while updating the tenant data.",
-      });
-    } finally {
-      setIsSaving(false);
+    // Add unitId and floorId as numbers if they exist
+    if (editData.unitId) {
+      formData.append('unitId', Number(editData.unitId));
     }
-  };
+    if (editData.floorId) {
+      formData.append('floorId', Number(editData.floorId));
+    }
+
+    const response = await axios.put(
+      `${process.env.REACT_APP_BASE_URL}tenant/${selectedTenant.id}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    // Update the tenants list
+    const updatedTenants = tenants.map(tenant =>
+      tenant.id === selectedTenant.id ? response.data : tenant
+    );
+    setTenants(updatedTenants);
+
+    setIsEditModalOpen(false);
+    setModal({
+      isOpen: true,
+      messageType: "success",
+      message: "Tenant updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating tenant:", error);
+    setModal({
+      isOpen: true,
+      messageType: "error",
+      message: error.response?.data?.message || "Failed to update tenant",
+    });
+  } finally {
+    setIsSaving(false);
+  }
+};
+
 
   // Submit delete request to the API
   const handleDeleteSubmit = async () => {
@@ -338,32 +308,52 @@ const TenantList = () => {
               key: "floorNumber",
               render: (row) => row.Floor?.floorNumber || "N/A",
             },
-           {
-              label: "Rent Remaining Days",
-              key: "remainingDays",
-              render: (row) => {
-                const today = new Date();
-                const leaseEnd = new Date(row.leaseEndDate);
-                today.setHours(0, 0, 0, 0);
-                leaseEnd.setHours(0, 0, 0, 0);
-                const diffTime = leaseEnd - today;
-                const diffDays = Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 0);
-                return `${diffDays} day${diffDays !== 1 ? 's' : ''}`;
-              }
-            },
-           {
-              label: "Contract Remaining Days",
-              key: "contractRemainingDays",
-              render: (row) => {
-                const today = new Date();
-                const contractEnd = new Date(row.contractEndDate);
-                today.setHours(0, 0, 0, 0);
-                contractEnd.setHours(0, 0, 0, 0);
-                const diffTime = contractEnd - today;
-                const diffDays = Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 0);
-                return `${diffDays} day${diffDays !== 1 ? 's' : ''}`;
-              }
-            },
+{
+  label: "Rent Remaining Days",
+  key: "remainingDays",
+  render: (row) => {
+    if (!row.leaseEndDate) {
+      return 'Not specified';
+    }
+    const today = new Date();
+    const leaseEnd = new Date(row.leaseEndDate);
+    if (isNaN(leaseEnd.getTime())) {
+      return 'Invalid date';
+    }
+    today.setHours(0, 0, 0, 0);
+    leaseEnd.setHours(0, 0, 0, 0);
+    const diffTime = leaseEnd - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const isPast = diffDays < 0;
+    const daysText = Math.abs(diffDays) === 1 ? 'day' : 'days';
+    return isPast 
+      ? `${Math.abs(diffDays)} ${daysText} passed`
+      : `${diffDays} ${daysText} remaining`;
+  }
+},
+{
+  label: "Contract Remaining Days",
+  key: "contractRemainingDays",
+  render: (row) => {
+    if (!row.contractEndDate) {
+      return 'Not specified';
+    }
+    const today = new Date();
+    const contractEnd = new Date(row.contractEndDate);
+    if (isNaN(contractEnd.getTime())) {
+      return 'Invalid date';
+    }
+    today.setHours(0, 0, 0, 0);
+    contractEnd.setHours(0, 0, 0, 0);
+    const diffTime = contractEnd - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const isPast = diffDays < 0;
+    const daysText = Math.abs(diffDays) === 1 ? 'day' : 'days';
+    return isPast 
+      ? `${Math.abs(diffDays)} ${daysText} passed`
+      : `${diffDays} ${daysText} remaining`;
+  }
+},
             {
               label: "Actions",
               key: "actions",
@@ -549,7 +539,7 @@ const TenantList = () => {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Payment Status
               </label>
@@ -564,7 +554,7 @@ const TenantList = () => {
                 <option value="due">Due</option>
                 <option value="overDue">Over Due</option>
               </select>
-            </div>
+            </div> */}
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Additional Notes
@@ -602,36 +592,32 @@ const TenantList = () => {
                 ))}
               </select>
             </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Unit</label>
-              <select
-                value={editData.unitId || ""}
-                onChange={(e) =>
-                  setEditData({ ...editData, unitId: e.target.value })
-                }
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              >
-                <option value="">Select a unit</option>
-                {units.map((unit) => (
-                  <option key={unit.id} value={unit.id.toString()}>
-                    {unit.unitNumber}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Status</label>
-              <select
-                value={editData.status}
-                onChange={(e) =>
-                  setEditData({ ...editData, status: e.target.value })
-                }
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              >
-                <option value="active">Active</option>
-                <option value="Inactive">In active</option>
-              </select>
-            </div>
+  <div className="mb-4">
+  <label className="block text-sm font-medium mb-2">
+    Unit {editData.status === 'active' && <span className="text-red-500">*</span>}
+  </label>
+  <select
+    value={editData.unitId || ""}
+    onChange={(e) =>
+      setEditData({ ...editData, unitId: e.target.value })
+    }
+    className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+    disabled={isSaving || editData.status === 'inactive'}
+    required={editData.status === 'active'}
+  >
+    <option value="">Select a unit</option>
+    {units.map((unit) => (
+      <option key={unit.id} value={unit.id}>
+        {unit.unitNumber} {unit.status ? `(${unit.status})` : ''}
+      </option>
+    ))}
+  </select>
+  {editData.status === 'inactive' && editData.unitId && (
+    <p className="text-sm text-gray-500 mt-1">
+      Current unit will be marked as available when saved.
+    </p>
+  )}
+</div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">TIN</label>
               <input
@@ -643,6 +629,35 @@ const TenantList = () => {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
+            {/* Status select */}
+ <div className="mb-4">
+  <label className="block text-sm font-medium mb-2">
+    Status <span className="text-red-500">*</span>
+  </label>
+  <select
+    value={editData.status || 'active'}
+    onChange={(e) => {
+      const newStatus = e.target.value;
+      setEditData(prev => ({
+        ...prev,
+        status: newStatus,
+        // If status is being set to inactive, clear the unit
+        ...(newStatus === 'inactive' && { unitId: '' })
+      }));
+    }}
+    className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+    disabled={isSaving}
+  >
+    <option value="active">Active</option>
+    <option value="inactive">Inactive</option>
+  </select>
+  {editData.status === 'inactive' && editData.unitId && (
+    <p className="text-yellow-600 text-sm mt-1">
+      Note: Setting status to inactive will remove the tenant from the current unit.
+    </p>
+  )}
+</div>
+
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Document</label>
               <input
@@ -661,10 +676,24 @@ const TenantList = () => {
               </button>
               <button
                 onClick={handleEditSubmit}
-                className="bg-blue-500 text-white px-4 py-2 rounded"
                 disabled={isSaving}
+                className={`px-4 py-2 rounded text-white ${
+                  isSaving 
+                    ? 'bg-blue-400 cursor-not-allowed' 
+                    : 'bg-blue-500 hover:bg-blue-600'
+                }`}
               >
-                {isSaving ? "Saving..." : "Save"}
+                {isSaving ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Saving...
+                  </span>
+                ) : (
+                  'Save'
+                )}
               </button>
             </div>
           </div>
@@ -755,12 +784,6 @@ const TenantList = () => {
                   ? formatDateForDisplay(selectedTenant.contractEndDate)
                   : "N/A"}
               </p>
-            </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">
-                Payment Status
-              </label>
-              <p className="text-sm">{selectedTenant.paymentStatus}</p>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Rent Amount</label>
