@@ -391,7 +391,7 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Size (m²)</label>
+              <label className="block text-sm font-medium mb-2">Bed Room</label>
               <input
                 type="number"
                 value={newUnitData.size}
@@ -402,7 +402,7 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
               />
             </div>
 
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Price per (m²)</label>
               <input
                 type="number"
@@ -422,7 +422,7 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
                 readOnly
                 className="bg-gray-100 w-full p-2 border border-gray-300 rounded"
               />
-            </div>
+            </div> */}
 
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Status</label>
@@ -606,10 +606,10 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
 
               <h3 className="text-xl font-bold mb-2 text-blue-700">{unitDetails.unitNumber}</h3>
               <p><strong>Floor Number:</strong> {unitDetails.Floor?.floorNumber || "N/A"}</p>
-              <p><strong>Size (m²):</strong> {unitDetails.size} sq ft</p>
-              <p><strong>Price per (m²):</strong>{unitDetails.pricePerSquare} ETB</p>
+              <p><strong>Bed Room :</strong> {unitDetails.size}</p>
+              {/* <p><strong>Price per (m²):</strong>{unitDetails.pricePerSquare} ETB</p> */}
               <p><strong>Rent Amount:</strong>{unitDetails.rentAmount} ETB</p>
-              <p><strong>Taxed Rent (vat):</strong>{unitDetails.taxedRentAmount} ETB</p>
+              {/* <p><strong>Taxed Rent (vat):</strong>{unitDetails.taxedRentAmount} ETB</p> */}
               <p><strong>Status:</strong> {unitDetails.status}</p>
               
               <div className="mt-3">

@@ -45,7 +45,7 @@ const AddBuildingLaw = () => {
       <TitleCard title="Add Building Rule" topMargin={'mt-4'}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-white-600 font-medium mb-1">Description</label>
+          <label className="block text-white-600 font-medium mb-1">Add Rule</label>
           <textarea
             className="w-full bg-base-100 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
             rows="3"

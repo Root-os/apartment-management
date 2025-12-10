@@ -96,7 +96,7 @@ useEffect(() => {
 
       formData.append('unitNumber', unitNumber);
       formData.append('size', parseFloat(size));
-      formData.append('status', status);
+      // formData.append('status', status);
       formData.append('floorId', parseInt(floorId));
 
       // Append arrays as JSON strings
@@ -133,7 +133,7 @@ for (let pair of formData.entries()) {
       // Reset form after submission
       setUnitNumber('');
       setSize('');
-      setStatus('available');
+      // setStatus('available');
       setAvailableEquipments([]);
       setProblems([]);
       setNewEquipment('');
@@ -199,11 +199,12 @@ for (let pair of formData.entries()) {
 
         {/* Size */}
         <div>
-          <label className="block text-sm font-semibold mb-2">Beed Room</label>
+          <label className="block text-sm font-semibold mb-2">Bed Room</label>
           <input
             type="number"
             value={size}
             onChange={(e) => setSize(e.target.value)}
+            onWheel={(e) => e.target.blur()}   
             required
             className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
              min="1"                
@@ -228,6 +229,7 @@ for (let pair of formData.entries()) {
     type="number"
     value={rent || ''}
     onChange={(e) => setRent(parseFloat(e.target.value) || '')}
+    onWheel={(e) => e.target.blur()}   
     className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
     step="0.01"
     min="0"
@@ -248,7 +250,7 @@ for (let pair of formData.entries()) {
 
 
         {/* Status */}
-        <div>
+        {/* <div>
           <label className="block text-sm font-semibold mb-2">Status</label>
           <select
             value={status}
@@ -259,7 +261,7 @@ for (let pair of formData.entries()) {
             <option value="occupied">Occupied</option>
             <option value="under_maintenance">Under Maintenance</option>
           </select>
-        </div>
+        </div> */}
 
         {/* Available Equipments */}
         <div>

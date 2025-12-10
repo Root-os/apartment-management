@@ -117,7 +117,7 @@ const handleDetailClick = (floor) => {
 
   const columns = [
     { key: 'floorNumber', label: 'Floor Name' },
-    { key: 'noUnits', label: 'Total Units' },
+    { key: 'totalUnits', label: 'Total Units' },
     { key: 'rentedUnits', label: 'Rented Units' },
     { key: 'freeUnits', label: 'Free Units' },
     {
@@ -180,7 +180,7 @@ const handleDetailClick = (floor) => {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
-             <div className="mb-4">
+             {/* <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Number of Units Name</label>
               <input
                 type="number"
@@ -188,7 +188,7 @@ const handleDetailClick = (floor) => {
                 onChange={(e) => setNewFloorData({ ...newFloorData, noUnits: e.target.value })}
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
-            </div>
+            </div> */}
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Status</label>
               <select
@@ -260,8 +260,8 @@ const handleDetailClick = (floor) => {
               }`}>
                 {floorDetails.status || "Not specified"}
               </span> &nbsp;|&nbsp;
-              <strong>Total Slots:</strong> {floorDetails.noUnits} &nbsp;|&nbsp;
-              <strong>Created:</strong> {floorDetails.totalUnits} &nbsp;|&nbsp;
+              <strong>Total Slots Registered:</strong> {floorDetails.totalUnits} &nbsp;|&nbsp;
+              {/* <strong>Created:</strong> {floorDetails.totalUnits} &nbsp;|&nbsp; */}
               <strong>Rented:</strong> {floorDetails.rentedUnits} &nbsp;|&nbsp;
               <strong>Free:</strong> {
                 Array.isArray(floorDetails.freeUnits)
@@ -277,9 +277,9 @@ const handleDetailClick = (floor) => {
                 {floorDetails.freeUnits.map(unit => (
                   <li key={unit.id} className="bg-base-100 p-3 rounded">
                     <strong className="text-blue-700">Unit Number:</strong> {unit.unitNumber}<br />
-                    <strong>Size:</strong> {unit.size} sq ft<br />
+                    {/* <strong>Size:</strong> {unit.size} sq ft<br /> */}
                     <strong>Status:</strong> {unit.status}<br />
-                    <strong>Available Equipments:</strong>
+                    {/* <strong>Available Equipments:</strong>
                     <ul className="list-disc ml-5">
                       {Array.isArray(unit.availableEquipments)
                         ? unit.availableEquipments.map((eq, i) => <li key={i}>{eq}</li>)
@@ -292,7 +292,7 @@ const handleDetailClick = (floor) => {
                         ? unit.problems.map((p, i) => <li key={i}>{p}</li>)
                         : JSON.parse(unit.problems || '[]').map((p, i) => <li key={i}>{p}</li>)
                       }
-                    </ul>
+                    </ul> */}
                   </li>
                 ))}
               </ul>

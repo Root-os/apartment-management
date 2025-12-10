@@ -110,23 +110,23 @@ const AddCollectedRent = () => {
   };
 
   // Auto-calculate nextDueDate
-  useEffect(() => {
-    if (paymentDate && (monthsCount || daysCount)) {
-      let result = new Date(paymentDate);
-      
-      // Add months first (if any)
-      if (monthsCount) {
-        result = addMonths(result, parseInt(monthsCount));
-      }
-      
-      // Then add days (if any)
-      if (daysCount) {
-        result.setDate(result.getDate() + parseInt(daysCount));
-      }
-      
-      setNextDueDate(result.toISOString().split("T")[0]);
+useEffect(() => {
+  if (paymentDate && (monthsCount || daysCount)) {
+    let result = new Date(paymentDate);
+
+    // Convert months to days (1 month = 30 days)
+    if (monthsCount) {
+      result.setDate(result.getDate() + (parseInt(monthsCount) * 30));
     }
-  }, [paymentDate, monthsCount, daysCount]);
+
+    if (daysCount) {
+      result.setDate(result.getDate() + parseInt(daysCount));
+    }
+
+    setNextDueDate(result.toISOString().split("T")[0]);
+  }
+}, [paymentDate, monthsCount, daysCount]);
+
 
   // Calculate paidDays
   useEffect(() => { 
@@ -305,6 +305,7 @@ const handleSubmit = async (e) => {
                 type="number"
                 value={monthsCount}
                 onChange={(e) => setMonthsCount(e.target.value)}
+                onWheel={(e) => e.target.blur()} 
                 className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg"
                 min="0"
               />
@@ -317,6 +318,7 @@ const handleSubmit = async (e) => {
                 type="number"
                 value={daysCount}
                 onChange={(e) => setDaysCount(e.target.value)}
+                onWheel={(e) => e.target.blur()} 
                 className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg"
                 min="0"
               />

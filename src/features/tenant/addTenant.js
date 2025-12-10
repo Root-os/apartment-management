@@ -639,6 +639,7 @@ useEffect(() => {
                   advance: validateAdvance(e.target.value),
                 }));
               }}
+              onWheel={(e) => e.target.blur()}   
               className={`bg-base-100 w-full p-3 border rounded-md ${
                 errors.advance ? "border-red-500" : "border-gray-300"
               }`}

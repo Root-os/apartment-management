@@ -11,7 +11,7 @@ const FloorForm = () => {
 
   const [formData, setFormData] = useState({
     floorNumber: '',
-    noUnits: '',
+    // noUnits: '',
     status: 'available', 
   });
 
@@ -33,7 +33,7 @@ const FloorForm = () => {
       });
       setFormData({
         floorNumber: '',
-        noUnits: '',
+        // noUnits: '',
         status: 'available',
       });
 
@@ -73,7 +73,7 @@ const FloorForm = () => {
         </div>
 
         {/* Number of Units */}
-        <div className="flex flex-col">
+        {/* <div className="flex flex-col">
           <label htmlFor="noUnits" className="text-sm font-medium text-white-700">
             Total Units on this Floor
           </label>
@@ -88,7 +88,7 @@ const FloorForm = () => {
             step="1"              
             className="bg-base-100 mt-1 p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
-        </div>
+        </div> */}
         {/* Status */}
         <div className="flex flex-col">
           <label htmlFor="status" className="text-sm font-medium text-white-700">Status</label>
