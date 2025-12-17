@@ -5,6 +5,7 @@ import Modal from "../../../components/Modal";
 import LoadingComponent from "../../../components/loading";
 import SmartDateInput from "../../../components/Common/smartDatePicker";
 import { CalendarContext } from '../../../context/calendarContext';
+import api from '../../../utils/api';
 
 const WithdrawalRequests = () => {
   const [data, setData] = useState([]);
@@ -41,8 +42,8 @@ const WithdrawalRequests = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}withdrawal-request/all`,
+        const response = await api.get(
+          `withdrawal-request/all`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -63,8 +64,8 @@ const WithdrawalRequests = () => {
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}tenant`,
+        const response = await api.get(
+          `tenant`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -83,8 +84,8 @@ const WithdrawalRequests = () => {
   useEffect(() => {
     const fetchusers = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}auth/users`,
+        const response = await api.get(
+          `auth/users`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -120,8 +121,8 @@ const WithdrawalRequests = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}withdrawal-request/review`,
+      const response = await api.put(
+        `withdrawal-request/review`,
         {
           requestId: requestToUpdate.id,
           status: status,
@@ -173,8 +174,8 @@ const WithdrawalRequests = () => {
   const handleAssign = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}withdrawal-request/assign-employee`,
+      const response = await api.put(
+        `withdrawal-request/assign-employee`,
         {
           requestId: requestToAssign.id,
           employeeId: employeeId,
@@ -226,8 +227,8 @@ const WithdrawalRequests = () => {
   const handleFinalize = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}withdrawal-request/finalize`,
+      const response = await api.put(
+        `withdrawal-request/finalize`,
         {
           requestId: requestToFinalize.id,
           depositRefundStatus: depositRefundStatus,
@@ -272,8 +273,8 @@ const WithdrawalRequests = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(
-        `${process.env.REACT_APP_BASE_URL}withdrawal-request/delete/${requestToDelete.id}`,
+      await api.delete(
+        `withdrawal-request/delete/${requestToDelete.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -303,8 +304,8 @@ const WithdrawalRequests = () => {
 
   const handleCheckTenant = async (tenantId) => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}withdrawal-request/details/${tenantId}`,
+      const response = await api.get(
+        `withdrawal-request/details/${tenantId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

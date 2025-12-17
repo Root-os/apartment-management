@@ -174,7 +174,8 @@ const ExpensePage = () => {
           title="Expenses"
           data={expenses}
           columns={columns}
-          rowsPerPageOptions={[5, 10, 15]}
+         rowsPerPageOptions={[5, 10, 15]}
+
           showSearch={true}
           exportable={true}
           onAdd={handleAddClick}
@@ -201,6 +202,7 @@ const ExpensePage = () => {
                   step="0.5"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
+                  onWheel = {(e)=> e.target.blur()}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>

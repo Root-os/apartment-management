@@ -4,7 +4,7 @@ import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 import SmartDateInput from '../../components/Common/smartDatePicker';
-import { isDate } from 'date-fns';
+// import { isDate } from 'date-fns';
 
 const GovtBillReport = () => {
   const [billPayments, setBillPayments] = useState([]);
@@ -67,15 +67,20 @@ const GovtBillReport = () => {
     }
   };
 
-  const columns = [
-    { key: 'billType', label: 'Bill Type', render: (data) => data.BillType?.typeName || 'N/A' },
-    { key: 'amount', label: 'Amount' },
-    { key: 'startDate', label: 'Start Date', isDate: true },
-    { key: 'endDate', label: 'End Date', isDate },
-    { key: 'status', label: 'Status' },
-    { key: 'paymentMethod', label: 'Payment Method' },
-    { key: 'description', label: 'Description' }
-  ];
+const columns = [
+  {
+    key: 'BillType',
+    label: 'Bill Type',
+    render: (row) => row.BillType?.typeName || 'N/A'
+  },
+  { key: 'amount', label: 'Amount' },
+  { key: 'startDate', label: 'Start Date', isDate: true },
+  { key: 'endDate', label: 'End Date', isDate: true },
+  { key: 'status', label: 'Status' },
+  { key: 'paymentMethod', label: 'Payment Method' },
+  { key: 'description', label: 'Description' }
+];
+
 
   return (
     <div className="p-8">
@@ -152,7 +157,8 @@ const GovtBillReport = () => {
               title="Bill Report"
               data={filteredData}
               columns={columns}
-              rowsPerPageOptions={[5, 10, 15]}
+             rowsPerPageOptions={[5, 10, 15]}
+
               showSearch={true}
               exportable={true}
             />

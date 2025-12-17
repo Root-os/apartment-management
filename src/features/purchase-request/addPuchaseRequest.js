@@ -7,7 +7,7 @@ import SmartDateInput from '../../components/Common/smartDatePicker';
 const PurchaseRequestForm = () => {
   const [items, setItems] = useState([]);
   const [users, setUsers] = useState([]);
-  const [vendors, setVendors] = useState([]); // New state for vendors
+  const [vendors, setVendors] = useState([]); 
   const [loading, setLoading] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -218,6 +218,8 @@ const handleDateChange = (fieldName) => (dateValue) => {
               name="amount"
               value={formData.amount}
               onChange={handleChange}
+              onWheel={(e)=>e.target.blur()}
+              min="0"
               required
               className="w-full p-2 border rounded-md bg-base-100 shadow-sm"
             />

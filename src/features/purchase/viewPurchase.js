@@ -270,6 +270,7 @@ const PurchasesPage = () => {
                   id="amount"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
+                  onWheel={(e)=> e.target.blur()}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   min="1"
                   required
@@ -282,6 +283,7 @@ const PurchasesPage = () => {
                   id="price"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
+                  onWheel={(e)=> e.target.blur()}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   min="0"
                   step="0.01"
@@ -299,17 +301,17 @@ const PurchasesPage = () => {
                 />
               </div>
               <div className="mb-4">
-  <label htmlFor="date" className="block text-sm font-medium text-white-700">
-    Purchase Date
-  </label>
-  <SmartDateInput
-    id="date"
-    value={date}
-    onChange={(gcDate) => setDate(gcDate)}
-    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-    required
-  />
-</div>
+              <label htmlFor="date" className="block text-sm font-medium text-white-700">
+                Purchase Date
+              </label>
+              <SmartDateInput
+                id="date"
+                value={date}
+                onChange={(gcDate) => setDate(gcDate)}
+                className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
 
 <div className="mb-4">
   <label htmlFor="expirationDate" className="block text-sm font-medium text-white-700">

@@ -189,6 +189,7 @@ const handleDateChange = (name) => (value) => {
               name="amount"
               value={formData.amount}
               onChange={handleInputChange}
+              onWheel={(e)=>e.target.blur()}
               className="w-full bg-base-100 p-2 border rounded-md"
               placeholder="Amount"
               min="0"

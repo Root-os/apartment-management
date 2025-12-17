@@ -196,6 +196,7 @@ const handleDateChange = (fieldName) => (dateValue) => {
               step="1"
               value={formData.amount}
               onChange={handleChange}
+              onWheel={(e)=> e.target.blur()}
               className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
               required
             />

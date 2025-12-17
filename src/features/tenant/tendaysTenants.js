@@ -4,6 +4,7 @@ import axios from "axios";
 import TableComponent from "../../components/table";
 import LoadingComponent from "../../components/loading";
 import DisplayDate from "../../components/Common/displayDate";
+import api from '../../utils/api';
 
 const TenDaysTenant = () => {
   const [tenants, setTenants] = useState([]);
@@ -17,8 +18,8 @@ const TenDaysTenant = () => {
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}tenant/10days/remaining`
+        const response = await api.get(
+          `tenant/10days/remaining`
         );
         setTenants(response.data);
         setError("");
@@ -121,7 +122,8 @@ const TenDaysTenant = () => {
             title=""
             data={tenants}
             columns={columns}
-            rowsPerPageOptions={[5, 10, 15]}
+           rowsPerPageOptions={[5, 10, 15]}
+
             showSearch={true}
             exportable={true}
           />
@@ -195,7 +197,7 @@ const TenDaysTenant = () => {
                 <strong>Floor Number:</strong>{" "}
                 {selectedTenant.Floor?.floorNumber}
               </p>
-              <p>
+              {/* <p>
                 <strong>Document:</strong>{" "}
                 <a
                   href={`${process.env.REACT_APP_BASE}${selectedTenant.document}`}
@@ -205,7 +207,7 @@ const TenDaysTenant = () => {
                 >
                   View Document
                 </a>
-              </p>
+              </p> */}
             </div>
             <div className="flex justify-center mt-4">
               <button

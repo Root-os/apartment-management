@@ -78,7 +78,7 @@ const AddPurchaseForm = () => {
       setModalOpen(true);
       setMessageType('success');
       setMessage('Purchase added successfully');
-      window.location.href = '/app/view-purchase';  // Redirect after success
+      // window.location.href = '/app/view-purchase'; 
     } catch (err) {
       setIsLoading(false);
       const errorMessage = err.response ? err.response.data.message : 'Failed to create purchase';
@@ -162,6 +162,7 @@ const AddPurchaseForm = () => {
                 type="number" 
                 value={amount} 
                 onChange={(e) => setAmount(e.target.value)} 
+                onWheel = {(e)=> e.target.blur()}
                 className="p-2 border rounded bg-base-100"
                 min="0"
                 step="1"
@@ -175,6 +176,7 @@ const AddPurchaseForm = () => {
                 type="number" 
                 value={price} 
                 onChange={(e) => setPrice(e.target.value)} 
+                onWheel={(e)=> e.target.blur()}
                 className="p-2 border rounded bg-base-100"
                 min="0"
                 step="1"

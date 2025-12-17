@@ -210,7 +210,8 @@ const PaymentReport = () => {
           title="Filtered Payment Report"
           data={paymentData || []} // Ensure the data is always an array
           columns={columns}
-          rowsPerPageOptions={[5, 10, 15]}
+         rowsPerPageOptions={[5, 10, 15]}
+
           showSearch={true}
           exportable={true}
         />

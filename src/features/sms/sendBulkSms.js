@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TitleCard from "../../components/Cards/TitleCard"
+import Modal from '../../components/Modal';
 
 const BulkSmsSender = () => {
   const [tenants, setTenants] = useState([]);
@@ -14,9 +15,13 @@ const BulkSmsSender = () => {
   const [selectAllTenants, setSelectAllTenants] = useState(false);
   const [selectAllUsers, setSelectAllUsers] = useState(false);
 
-  const [message, setMessage] = useState("");
+
   const [feedback, setFeedback] = useState({ type: "", text: "" });
   const [loading, setLoading] = useState(false);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  const [message, setMessage] = useState('');
 
   const token = localStorage.getItem("token");
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -97,18 +102,20 @@ const BulkSmsSender = () => {
         { references, msg: message },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setFeedback({
-        type: "success",
-        text: res.data.msg || "SMS sent successfully!",
-      });
-      setMessage("");
+
+      setModalOpen(true);
+      setMessageType('success');  
+      setMessage('SMS sent successfully!');
       setSelectedTenants([]);
       setSelectedUsers([]);
     } catch (err) {
-      setFeedback({
-        type: "error",
-        text: err.response?.data?.msg || err.message || "Failed to send SMS.",
-      });
+      // setFeedback({
+      //   type: "error",
+      //   text: err.response?.data?.msg || err.message || "Failed to send SMS.",
+      // });
+      setModalOpen(true);
+      setMessageType('error');  
+      setMessage('Failed to send SMS.');
     } finally {
       setLoading(false);
     }
@@ -236,6 +243,13 @@ const BulkSmsSender = () => {
         {loading ? "Sending..." : "Send Bulk SMS"}
       </button>
       </TitleCard>
+
+      <Modal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        messageType={messageType} 
+        message={message} 
+      />
     </>
   );
 };

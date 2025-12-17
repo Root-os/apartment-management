@@ -216,7 +216,8 @@ const MaintenanceReport = () => {
           title="Maintenance Report"
           data={maintenanceData || []} // Ensure the data is always an array
           columns={columns}
-          rowsPerPageOptions={[5, 10, 15]}
+         rowsPerPageOptions={[5, 10, 15]}
+
           showSearch={true}
           exportable={true}
         />
@@ -227,7 +228,8 @@ const MaintenanceReport = () => {
             title="Maintenance Report"
             data={maintenanceData || []} // Ensure the data is always an array
             columns={columns}
-            rowsPerPageOptions={[5, 10, 15]}
+           rowsPerPageOptions={[5, 10, 15]}
+
             showSearch={true}
             exportable={true}
           />

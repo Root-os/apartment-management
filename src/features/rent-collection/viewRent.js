@@ -5,6 +5,7 @@ import Modal from '../../components/Modal';
 import HistoryModal from './HistoryModal';
 import SmartDateInput from "../../components/Common/smartDatePicker";
 import { CalendarContext } from '../../context/calendarContext';
+import api from '../../utils/api';
 
 const RentCollectionPage = () => {
   const [rentData, setRentData] = useState([]);
@@ -40,7 +41,7 @@ const RentCollectionPage = () => {
   // Fetch Rent Collection Data
   const fetchRentData = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}rent-collection`);
+      const response = await api.get(`rent-collection`);
       setRentData(response.data);
       setLoading(false);
     } catch (error) {
@@ -52,7 +53,7 @@ const RentCollectionPage = () => {
   // Fetch Tenant Data
   const fetchTenantData = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
+      const response = await api.get(`tenant`);
       setTenantData(response.data);
     } catch (error) {
       console.error('Error fetching tenant data:', error);
@@ -64,10 +65,39 @@ const RentCollectionPage = () => {
     fetchTenantData();
   }, []);
 
+  useEffect(() => {
+  if (currentRent?.tenantId) {
+    const tenant = tenantData.find(t => t.id === currentRent.tenantId);
+    if (tenant) {
+      setCurrentRent(prev => ({
+        ...prev,
+        tenantRent: tenant.amount // store tenant rent in currentRent
+      }));
+    }
+  }
+}, [currentRent?.tenantId]);
+
+useEffect(() => {
+  if (currentRent?.paymentDate && currentRent?.nextDueDate && currentRent?.tenantRent) {
+    const start = new Date(currentRent.paymentDate);
+    const end = new Date(currentRent.nextDueDate);
+    const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24));
+    
+    const amount = (currentRent.tenantRent / 30) * diffDays;
+
+    setCurrentRent(prev => ({
+      ...prev,
+      paidDays: diffDays,
+      amountPaid: amount.toFixed(2)
+    }));
+  }
+}, [currentRent?.paymentDate, currentRent?.nextDueDate, currentRent?.tenantRent]);
+
+
   // Handle history modal open
   const openHistoryModal = async (tenantId) => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}rent-collection/${tenantId}`);
+      const response = await api.get(`rent-collection/${tenantId}`);
       setPaymentHistory(response.data.rentPayments);
       setTenantInfo(response.data.tenant);
       setHistoryModalOpen(true);
@@ -79,10 +109,15 @@ const RentCollectionPage = () => {
   };
 
   // Handle edit modal open
-  const openEditModal = (rent) => {
-    setCurrentRent(rent);
-    setEditModalOpen(true);
-  };
+const openEditModal = (rent) => {
+  const tenant = tenantData.find(t => t.id === rent.tenantId);
+  setCurrentRent({
+    ...rent,
+    tenantRent: tenant ? tenant.amount : 0  
+  });
+  setEditModalOpen(true);
+};
+
 
   // Handle delete modal open
   const openDeleteModal = (rentId) => {
@@ -107,13 +142,24 @@ const RentCollectionPage = () => {
   // Handle Edit Form Submission (PUT Request)
   const handleEditSubmit = async (e) => {
     e.preventDefault();
+    if (new Date(currentRent.nextDueDate) < new Date(currentRent.paymentDate)) {
+  setModalMessage('Next due date cannot be earlier than payment date');
+  setIsErrorModalOpen(true);
+  return;
+}
     try {
-      const updatedRent = {
-        ...currentRent,
-        // punishment: parseFloat(currentRent.punishment) || 0,
-        isPaid: !!currentRent.isPaid, // ensure boolean
-      };
-      await axios.put(`${process.env.REACT_APP_BASE_URL}rent-collection/${currentRent.id}`, updatedRent);
+const updatedRent = {
+  tenantId: currentRent.tenantId,
+  paymentDate: currentRent.paymentDate,
+  nextDueDate: currentRent.nextDueDate,
+  paidDays: currentRent.paidDays,
+  amountPaid: currentRent.amountPaid,
+  paymentMethod: currentRent.paymentMethod,
+  status: currentRent.status,
+  isPaid: currentRent.isPaid,
+  punishment: currentRent.punishment
+};
+      await api.put(`rent-collection/${currentRent.id}`, updatedRent);
       fetchRentData(); 
       closeModals();
       setModalOpen(true);
@@ -131,7 +177,7 @@ const RentCollectionPage = () => {
   // Handle Rent Deletion (DELETE Request)
   const handleDeleteRent = async () => {
     try {
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}rent-collection/${currentRent}`);
+      await api.delete(`rent-collection/${currentRent}`);
       fetchRentData();
       closeModals();
       setModalOpen(true);
@@ -160,7 +206,7 @@ const RentCollectionPage = () => {
   
     try {
       const cleanedParams = cleanFilterParams(filterParams); // Ensure this cleans the filter params
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}rent-collection/filter`, cleanedParams);
+      const response = await api.post(`rent-collection/filter`, cleanedParams);
   
       console.log('Filter Response:', response.data); // Log the response data
       
@@ -193,16 +239,16 @@ const handleDateChange = (name) => (value) => {
   const columns = [
     { key: 'tenantName', label: 'Tenant Name', render: (rent) => rent.Tenant.fullName },
     // { key: 'amountPaid', label: 'Amount Paid' },
-    { 
-      key: 'paymentDate', 
-      label: 'paid from', 
-      render: (rent) => new Date(rent.paymentDate).toISOString().split('T')[0] 
-    },
-    { 
-      key: 'nextDueDate', 
-      label: 'paid to', 
-      render: (rent) => new Date(rent.nextDueDate).toISOString().split('T')[0] 
-    },
+  { 
+    key: 'paymentDate', 
+    label: 'Paid From', 
+    render: (rent) => formatDateForDisplay(rent.paymentDate)
+  },
+  { 
+    key: 'nextDueDate', 
+    label: 'Paid To', 
+    render: (rent) => formatDateForDisplay(rent.nextDueDate)
+  },
     { key: 'status', label: 'Payment status'},
     { key: 'paidDays', label: 'paid days' },
     { key: 'amountPaid', label: 'Amount Paid', render: (data) => Math.ceil(data.amountPaid) },
@@ -251,6 +297,7 @@ const handleDateChange = (name) => (value) => {
             value={filterParams.paymentDateFrom}
             onChange={handleDateChange}
             className="mt-1 block w-full p-2 border border-gray-300 rounded"
+          
           />
         </div>
         <div>
@@ -324,7 +371,7 @@ const handleDateChange = (name) => (value) => {
         title="Rent Collection"
         data={rentData}
         columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
+
         showSearch={true}
         exportable={true}
       />
@@ -344,10 +391,11 @@ const handleDateChange = (name) => (value) => {
 
       {/* Edit Modal */}
       {editModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-base-100 p-6 rounded-lg w-full max-w-lg mx-4">
-            <h2 className="text-xl mb-4">Edit Rent Collection</h2>
-            <form onSubmit={handleEditSubmit}>
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+  <div className="bg-base-100 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+    <h2 className="text-xl mb-4">Edit Rent Collection</h2>
+    <form onSubmit={(e) => e.preventDefault()}>
+
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">Tenant</label>
                 <select
@@ -364,10 +412,29 @@ const handleDateChange = (name) => (value) => {
                 </select>
               </div>
               <div className="mb-4">
+  <label>Payment Date</label>
+  <SmartDateInput
+    value={currentRent?.paymentDate || ''}
+    onChange={(date) => setCurrentRent(prev => ({ ...prev, paymentDate: date }))}
+  />
+</div>
+
+<div className="mb-4">
+  <label>Next Due Date</label>
+  <SmartDateInput
+    value={currentRent?.nextDueDate || ''}
+    onChange={(date) => setCurrentRent(prev => ({ ...prev, nextDueDate: date }))}
+    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+  />
+</div>
+
+
+              <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">Amount Paid</label>
                 <input
                   type="number"
                   value={currentRent?.amountPaid || ''}
+                  readOnly
                   onChange={(e) => setCurrentRent({ ...currentRent, amountPaid: e.target.value })}
                   className="bg-base-100 w-full p-2 border border-gray-300 rounded"
                 />
@@ -437,7 +504,11 @@ const handleDateChange = (name) => (value) => {
 
               <div className="flex justify-end space-x-2">
                 <button type="button" onClick={closeModals} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-                <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Save</button>
+                  <button type="button" onClick={handleEditSubmit} className="bg-blue-500 ...">
+    Save
+  </button>
+
+
               </div>
             </form>
           </div>

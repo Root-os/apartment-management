@@ -233,7 +233,8 @@ const TenantReport = () => {
           title="Tenant Report"
           data={filteredData}
           columns={columns}
-          rowsPerPageOptions={[5, 10, 15]}
+         rowsPerPageOptions={[5, 10, 15]}
+
           showSearch={true}
           exportable={true}
         />
@@ -243,7 +244,8 @@ const TenantReport = () => {
             title="Tenant Report"
             data={[]}
             columns={columns}
-            rowsPerPageOptions={[5, 10, 15]}
+           rowsPerPageOptions={[5, 10, 15]}
+
             showSearch={false}
             exportable={false}
           />

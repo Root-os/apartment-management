@@ -70,7 +70,8 @@ const TenantRentPage = () => {
             title={`Rent Payment History `}
             data={paymentHistory}
             columns={columns}
-            rowsPerPageOptions={[5, 10, 15]}
+           rowsPerPageOptions={[5, 10, 15]}
+
             showSearch={true}
             exportable={true}
           />

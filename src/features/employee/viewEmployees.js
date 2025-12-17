@@ -4,6 +4,7 @@ import TableComponent from "../../components/table";
 import LoadingComponent from "../../components/loading";
 import Modal from "../../components/Modal"; // Modal to display success/error messages
 import { CalendarContext } from "../../context/calendarContext";
+import api from '../../utils/api';
 
 const EmployeeList = () => {
   const [employees, setEmployees] = useState([]);
@@ -22,7 +23,6 @@ const EmployeeList = () => {
     email: "",
     salary: "",
     position: "",
-    department: "",
     hireDate: "",
     shift: "",
     employmentType: "",
@@ -50,8 +50,8 @@ const EmployeeList = () => {
 
       try {
         // Fetch employees
-        const employeeResponse = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}auth/employee`,
+        const employeeResponse = await api.get(
+          `auth/employee`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -61,8 +61,8 @@ const EmployeeList = () => {
         setEmployees(employeeResponse.data.users);
 
         // Fetch roles
-        const rolesResponse = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}roles`,
+        const rolesResponse = await api.get(
+          `roles`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -94,7 +94,7 @@ const EmployeeList = () => {
       email: employee.email,
       salary: employee.EmployeeDetail?.salary || "",
       position: employee.EmployeeDetail?.position || "",
-      department: employee.EmployeeDetail?.department || "",
+      // department: employee.EmployeeDetail?.department || "",
       hireDate: employee.EmployeeDetail?.hireDate ? new Date(employee.EmployeeDetail.hireDate).toISOString().split('T')[0] : "",
       shift: employee.EmployeeDetail?.shift || "",
       employmentType: employee.EmployeeDetail?.employmentType || "",
@@ -116,8 +116,8 @@ const EmployeeList = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await axios.delete(
-        `${process.env.REACT_APP_BASE_URL}auth/delete/${selectedEmployee.id}`,
+      const response = await api.delete(
+        `auth/delete/${selectedEmployee.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -144,8 +144,8 @@ const EmployeeList = () => {
     const token = localStorage.getItem("token");
     setBtnLoading(true);
     try {
-      const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}auth/update-employee/${selectedEmployee.id}`,
+      const response = await api.put(
+        `auth/update-employee/${selectedEmployee.id}`,
         {
           ...editEmployeeData,
           roleId: parseInt(editEmployeeData.roleId), // Ensure roleId is sent as a number
@@ -258,7 +258,7 @@ const EmployeeList = () => {
             <p><strong>Phone:</strong> {selectedEmployee.phone}</p>
             <p><strong>Position:</strong> {selectedEmployee.EmployeeDetail?.position || 'N/A'}</p>
             <p><strong>Salary:</strong> {selectedEmployee.EmployeeDetail?.salary || 'N/A'}</p>
-            <p><strong>Department:</strong> {selectedEmployee.EmployeeDetail?.department || 'N/A'}</p>
+            {/* <p><strong>Department:</strong> {selectedEmployee.EmployeeDetail?.department || 'N/A'}</p> */}
             <p><strong>Role:</strong> {selectedEmployee.Role?.name || 'N/A'}</p>
             <p><strong>Work Shift:</strong> {selectedEmployee.EmployeeDetail?.shift || 'N/A'}</p>
             <p><strong>Address:</strong> {selectedEmployee.EmployeeDetail?.address || 'N/A'}</p>
@@ -336,6 +336,7 @@ const EmployeeList = () => {
                   className="w-full p-2 border border-gray-100 rounded mt-1"
                   value={editEmployeeData.salary}
                   onChange={(e) => setEditEmployeeData({ ...editEmployeeData, salary: e.target.value })}
+                  onWheel={(e) => e.target.blur()}
                   placeholder="Salary"
                 />
               </div>
@@ -350,7 +351,7 @@ const EmployeeList = () => {
                   placeholder="Position"
                 />
               </div>
-
+{/* 
               <div className="mb-2">
                 <label className="block text-sm font-medium">Department</label>
                 <input
@@ -360,7 +361,7 @@ const EmployeeList = () => {
                   onChange={(e) => setEditEmployeeData({ ...editEmployeeData, department: e.target.value })}
                   placeholder="Department"
                 />
-              </div>
+              </div> */}
 
               <div className="mb-2">
                 <label className="block text-sm font-medium">Hire Date</label>

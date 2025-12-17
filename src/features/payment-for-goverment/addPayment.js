@@ -11,7 +11,7 @@ const AddGovBillPayment = () => {
   const [amount, setAmount] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [status, setStatus] = useState('pending');
+  const [status, setStatus] = useState('paid');
   const [paymentMethod, setPaymentMethod] = useState('Bank Transfer');
   const [description, setDescription] = useState('');
 
@@ -20,7 +20,7 @@ const AddGovBillPayment = () => {
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [messageType, setMessageType] = useState(''); // success, warning, or error
+  const [messageType, setMessageType] = useState(''); 
 
   // Fetch Bill Types on Component Mount
   useEffect(() => {
@@ -122,6 +122,7 @@ const AddGovBillPayment = () => {
               id="amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
+              onWheel={(e)=>e.target.blur()}
               className=" bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
               min="0"                
@@ -174,9 +175,9 @@ const AddGovBillPayment = () => {
                 onChange={(e) => setStatus(e.target.value)}
                 className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
-                <option value="" disabled>Select Status</option>
-                <option value="pending">Pending</option>
+                
                 <option value="paid">Paid</option>
+                <option value="pending">Pending</option>
               </select>
             </div>
 
@@ -212,8 +213,8 @@ const AddGovBillPayment = () => {
         <Modal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          messageType={messageType} // Pass messageType for success/error styling
-          message={message || error} // Pass either success or error message
+          messageType={messageType} 
+          message={message || error} 
         />
       )}
     </>

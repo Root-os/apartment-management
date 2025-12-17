@@ -5,6 +5,7 @@ import Modal from "../../components/Modal";
 import LoadingComponent from "../../components/loading";
 import DeleteConfirmationModal from "../../components/editDeleteModal";
 import { useNavigate } from "react-router-dom";
+import api from '../../utils/api';
 
 
 const TenantInventoryPage = () => {
@@ -42,8 +43,8 @@ const TenantInventoryPage = () => {
       }
 
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}tenant-inventory`,
+        const response = await api.get(
+          `tenant-inventory`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -129,8 +130,8 @@ const TenantInventoryPage = () => {
     }
 
     try {
-      const response = await axios.delete(
-        `${process.env.REACT_APP_BASE_URL}tenant-inventory/${id}`,
+      const response = await api.delete(
+        `tenant-inventory/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -195,8 +196,8 @@ const TenantInventoryPage = () => {
 
     try {
       setLoading(true);
-      const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}tenant-inventory/${currentInventory.id}`,
+      const response = await api.put(
+        `tenant-inventory/${currentInventory.id}`,
         updatedData,
         {
           headers: {
@@ -433,6 +434,7 @@ const TenantInventoryPage = () => {
                       onChange={(e) =>
                         handleItemChange(index, "quantity", e.target.value)
                       }
+                      onWheel={(e)=> e.target.blur()}
                       min="1"
                       step="1"
                       required

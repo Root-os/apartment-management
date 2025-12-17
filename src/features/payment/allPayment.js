@@ -5,6 +5,7 @@ import GenerateReceipt from "./pdfGenerator";
 import { useNavigate } from "react-router-dom";
 import DisplayDate from "../../components/Common/displayDate";
 import SmartDateInput from "../../components/Common/smartDatePicker";
+import Modal from '../../components/Modal';
 
 const AllPaymentsPage = () => {
   const [payments, setPayments] = useState([]);
@@ -20,8 +21,9 @@ const AllPaymentsPage = () => {
   const [paymentDate, setPaymentDate] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
-  const [messageType, setMessageType] = useState("success");
-  const [message, setMessage] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  const [message, setMessage] = useState('');
   const [selectedVendorPayments, setSelectedVendorPayments] = useState([]);
 
   const navigate = useNavigate();
@@ -116,10 +118,19 @@ const AllPaymentsPage = () => {
       setIsEditModalOpen(false);
       setSelectedPayment(null);
 
-      setMessageType("success");
-      setMessage("Payment updated successfully");
+      // setMessageType("success");
+      // setMessage("Payment updated successfully");
+
+      
+      setModalOpen(true);
+      setMessageType('success');
+      setMessage('Payment updated successfully');
     } catch (error) {
-      setMessageType("error");
+      // setMessageType("error");
+      // setMessage("Unable to update payment");
+
+      setModalOpen(true);
+      setMessageType('error');
       setMessage("Unable to update payment");
     } finally {
       setLoading(false);
@@ -264,6 +275,7 @@ const AllPaymentsPage = () => {
                   id="price"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
+                  onWheel={(e)=> e.target.blur()}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -441,7 +453,15 @@ const AllPaymentsPage = () => {
           </div>
         </div>
       )}
+      
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
+      />
     </div>
+    
   );
 };
 

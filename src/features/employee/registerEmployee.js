@@ -183,9 +183,13 @@ finally {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white-700" htmlFor="password">
+            <label
+              className="block text-sm font-medium text-white-700"
+              htmlFor="password"
+            >
               Password
             </label>
+
             <input
               type="password"
               id="password"
@@ -193,24 +197,38 @@ finally {
               value={employee.password}
               onChange={handleChange}
               required
-              className="bg-base-100 mt-1 p-2 w-full border border-gray-300 rounded-md"
+              minLength={6}
+              className="peer bg-base-100 mt-1 p-2 w-full border border-gray-300 rounded-md"
             />
+
+            {/* error message shows only when input is invalid */}
+            <p className="mt-1 text-sm text-red-500 hidden peer-invalid:block">
+              Password must be at least 6 characters.
+            </p>
           </div>
 
+
           <div>
-            <label className="block text-sm font-medium text-white-700" htmlFor="phone">
-              Phone Number
-            </label>
-            <input
-              type="text"
-              id="phone"
-              name="phone"
-              value={employee.phone}
-              onChange={handleChange}
-              required
-              className="bg-base-100 mt-1 p-2 w-full border border-gray-300 rounded-md"
-            />
-          </div>
+          <label className="block text-sm font-medium text-white-700" htmlFor="phone">
+            Phone Number
+          </label>
+
+          <input
+            type="text"
+            id="phone"
+            name="phone"
+            value={employee.phone}
+            onChange={handleChange}
+            required
+            pattern="^(?:\+251[0-9]{9}|09[0-9]{8}|07[0-9]{8})$"
+            className="peer bg-base-100 mt-1 p-2 w-full border border-gray-300 rounded-md"
+          />
+
+          <p className="text-red-500 text-sm mt-1 hidden peer-invalid:block">
+            Phone must start with +251 or 09 or 07 and contain valid digits.
+          </p>
+        </div>
+
 
           <div>
             <label className="block text-sm font-medium text-white-700" htmlFor="salary">
@@ -222,6 +240,7 @@ finally {
               name="salary"
               value={employee.salary}
               onChange={handleChange}
+              onWheel= {(e) => e.target.blur() }
               min="0"
               required
               className="bg-base-100 mt-1 p-2 w-full border border-gray-300 rounded-md"

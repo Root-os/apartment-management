@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
+import api from '../../utils/api';
 
 const ComplaintsPage = () => {
   const [employees, setEmployees] = useState([]);
@@ -17,7 +18,7 @@ const ComplaintsPage = () => {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/employee`, {
+        const response = await api.get(`auth/employee`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -38,7 +39,7 @@ const ComplaintsPage = () => {
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`, {
+        const response = await api.get(`tenant`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -57,7 +58,7 @@ const ComplaintsPage = () => {
   const fetchComplaints = async (employeeId) => {
     setLoading(true);
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}complaints/assigned/${employeeId}`, {
+      const response = await api.get(`complaints/assigned/${employeeId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

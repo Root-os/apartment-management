@@ -3,6 +3,7 @@ import axios from 'axios';
 import Modal from 'react-modal';
 import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
+import api from '../../utils/api';
 
 const TenantFilterList = () => {
   const [tenants, setTenants] = useState([]);
@@ -19,7 +20,7 @@ const TenantFilterList = () => {
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
+        const response = await api.get(`tenant`);
         setTenants(response.data);
         setLoading(false);
       } catch (err) {
@@ -46,7 +47,7 @@ const TenantFilterList = () => {
 
   const handleFloorClick = async (floorId) => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant/floor/${floorId}`);
+      const response = await api.get(`tenant/floor/${floorId}`);
       setFloorDetails(response.data[0]); 
       setIsFloorModalOpen(true);
     } catch (err) {
@@ -56,7 +57,7 @@ const TenantFilterList = () => {
 
   const handleUnitClick = async (unitId) => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant/unit/${unitId}`);
+      const response = await api.get(`tenant/unit/${unitId}`);
       setUnitDetails(response.data[0]); 
       setIsUnitModalOpen(true);
     } catch (err) {
@@ -136,7 +137,8 @@ const TenantFilterList = () => {
           title="Tenant List"
           data={tenants}
           columns={columns}
-          rowsPerPageOptions={[5, 10, 15]}
+         rowsPerPageOptions={[5, 10, 15]}
+
           showSearch={true}
           exportable={true}
         />

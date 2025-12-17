@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import TableComponent from "../../components/table";
 import LoadingComponent from "../../components/loading";
-import Modal from "../../components/Modal"; // Modal component for success/error messages
+import Modal from "../../components/Modal";
+import api from '../../utils/api';
 
 const CurrencySettingsPage = () => {
   const [data, setData] = useState([]);
@@ -31,8 +32,8 @@ const CurrencySettingsPage = () => {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}setting`, {
+    api
+      .get(`setting`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -105,9 +106,9 @@ const CurrencySettingsPage = () => {
     if (formData.qrImage) {
       formDataToSubmit.append("qrImage", formData.qrImage);
     }
-    axios
+    api
       .put(
-        `${process.env.REACT_APP_BASE_URL}setting/${selectedSetting.id}`,
+        `setting/${selectedSetting.id}`,
         formDataToSubmit,
         {
           headers: {
@@ -168,9 +169,9 @@ const CurrencySettingsPage = () => {
     setButtonLoading(true);
     const token = localStorage.getItem("token");
 
-    axios
+    api
       .delete(
-        `${process.env.REACT_APP_BASE_URL}setting/${selectedSetting.id}`,
+        `setting/${selectedSetting.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

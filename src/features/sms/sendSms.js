@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard'
+import Modal from '../../components/Modal';
 
 const SendNotificationPage = () => {
   const [referenceType, setReferenceType] = useState('');
@@ -10,6 +11,10 @@ const SendNotificationPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState({ type: '', message: '' });
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [messageType, setMessageType] = useState('success');
+  const [message, setMessage] = useState('');
 
   const token = localStorage.getItem('token');
   const baseUrl = process.env.REACT_APP_BASE_URL;
@@ -48,14 +53,23 @@ const SendNotificationPage = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setFeedback({ type: 'success', message: 'Notification sent successfully.' });
-      setMsg('');
+      // setFeedback({ type: 'success', message: 'Notification sent successfully.' });
+      // setMsg('');
+      
+      setModalOpen(true);
+      setMessageType('success');  
+      setMessage('Notification sent successfully.');
+
       setReferenceId('');
     } catch (error) {
-      setFeedback({
-        type: 'error',
-        message: error.response?.data?.message || 'Failed to send SMS.',
-      });
+      // setFeedback({
+      //   type: 'error',
+      //   message: error.response?.data?.message || 'Failed to send SMS.',
+      // });
+
+      setModalOpen(true);
+      setMessageType('error');  
+      setMessage('Failed to send SMS.');
     } finally {
       setLoading(false);
     }
@@ -147,6 +161,13 @@ const SendNotificationPage = () => {
         </button>
       </form>
       </TitleCard>
+
+      <Modal 
+        isOpen={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+        messageType={messageType} 
+        message={message} 
+      />
     </>
   );
 };

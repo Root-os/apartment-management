@@ -6,10 +6,11 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import LoadingComponent from '../../components/loading';
+import api from '../../utils/api';
 
 // Define the validation schema for editing notification
 const validationSchema = yup.object().shape({
-  title: yup.string().min(8).required('Title is required'),
+  title: yup.string().min(3).required('Title is required'),
   body: yup.string().min(10, 'Body must be at least 10 characters long').required('Body is required'),
   type_id: yup.number().required('Notification type is required'),
   isRead: yup.boolean().required('Read status is required'),
@@ -31,11 +32,12 @@ const ViewNotification = () => {
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [modalMessageType, setModalMessageType] = useState('success');
   const [modalMessage, setModalMessage] = useState('');
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}notification/all`, {
+        const response = await api.get(`notification/all`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -50,7 +52,7 @@ const ViewNotification = () => {
 
     const fetchNotificationTypes = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}notification-type`, {
+        const response = await api.get(`notification-type`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -68,7 +70,7 @@ const ViewNotification = () => {
   const onSubmit = async (data) => {
     setLoading(true);
     try {
-      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}notification/update/${selectedNotification.id}`, data, {
+      const response = await api.put(`notification/update/${selectedNotification.id}`, data, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -89,26 +91,29 @@ const ViewNotification = () => {
     }
   };
 
-  const handleDelete = async () => {
-    setLoading(true);
-    try {
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}notification/delete-admin/${selectedNotification.id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setModalMessageType('success');
-      setModalMessage('Notification deleted successfully');
-      setNotifications(notifications.filter(notification => notification.id !== selectedNotification.id));
-      setIsDeleteModalOpen(false);
-      setSelectedNotification(null);
-    } catch (err) {
-      setModalMessageType('error');
-      setModalMessage(err.response?.data?.message || 'An error occurred while deleting the notification.');
-    } finally {
-      setLoading(false);
-    }
-  };
+const handleDeleteConfirm = async () => {
+  if (!selectedNotification) return;
+  setButtonLoading(true);
+  try {
+    await api.delete(`notification/delete-admin/${selectedNotification.id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    // Remove deleted notification from list
+    setNotifications(notifications.filter(n => n.id !== selectedNotification.id));
+    setIsDeleteModalOpen(false);
+    setSelectedNotification(null);
+
+    setModalMessageType('success');
+    setModalMessage('Notification deleted successfully');
+  } catch (err) {
+    console.error(err);
+    setModalMessageType('error');
+    setModalMessage('Failed to delete notification');
+  } finally {
+    setButtonLoading(false);
+  }
+};
+
 
   const handleEditClick = (notification) => {
     setSelectedNotification(notification);
@@ -186,7 +191,8 @@ const ViewNotification = () => {
           title="Notifications"
           data={notifications}
           columns={columns}
-          rowsPerPageOptions={[5, 10, 15]}
+         rowsPerPageOptions={[5, 10, 15]}
+
           showSearch={true}
           exportable={true}
         />
@@ -272,24 +278,29 @@ const ViewNotification = () => {
       )}
 
       {/* Delete Confirmation Modal */}
-      <Modal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        messageType="warning"
-        message="Are you sure you want to delete this notification?"
-        actions={[
-          {
-            label: "Cancel",
-            onClick: () => setIsDeleteModalOpen(false),
-            className: "bg-gray-400 text-white px-4 py-2 rounded"
-          },
-          {
-            label: "Delete",
-            onClick: handleDelete,
-            className: "bg-red-500 text-white px-4 py-2 rounded"
-          }
-        ]}
-      />
+{isDeleteModalOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-base-100 p-6 rounded-lg w-96">
+      <h2 className="text-xl mb-4">Are you sure you want to delete this notification?</h2>
+      <div className="flex justify-end space-x-2">
+        <button 
+          onClick={() => setIsDeleteModalOpen(false)} 
+          className="bg-gray-400 text-white px-4 py-2 rounded"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleDeleteConfirm}
+          className="bg-red-500 text-white px-4 py-2 rounded"
+          disabled={buttonLoading}
+        >
+          {buttonLoading ? 'Deleting...' : 'Delete'}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
       {/* Success/Error Modal */}
       <Modal
@@ -297,13 +308,6 @@ const ViewNotification = () => {
         onClose={() => setModalMessage('')}
         messageType={modalMessageType === 'success' ? 'success' : 'error'}
         message={modalMessage}
-        actions={[
-          {
-            label: "Close",
-            onClick: () => setModalMessage(''),
-            className: "bg-blue-500 text-white px-4 py-2 rounded"
-          }
-        ]}
       />
     </div>
   );

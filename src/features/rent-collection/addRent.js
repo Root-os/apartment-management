@@ -5,6 +5,7 @@ import Modal from "../../components/Modal";
 import { useSearchParams } from "react-router-dom";
 import SmartDateInput from "../../components/Common/smartDatePicker";
 import { CalendarContext } from "../../context/calendarContext";
+import api from '../../utils/api';
 
 const AddCollectedRent = () => {
   const [searchParams] = useSearchParams();
@@ -41,7 +42,7 @@ const AddCollectedRent = () => {
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const res = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
+        const res = await api.get(`tenant`);
         setTenants(res.data);
       } catch {
         setError("Failed to fetch tenants.");
@@ -53,7 +54,7 @@ const AddCollectedRent = () => {
   // Fetch punishment info
   const fetchPunishmentByTenant = async (tenantId) => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}punishments/${tenantId}`);
+      const res = await api.get(`punishments/${tenantId}`);
       if (Array.isArray(res.data) && res.data.length > 0) {
         const latestUnpaid = res.data.find((p) => p.status !== "paid");
         if (latestUnpaid) {
@@ -183,7 +184,11 @@ useEffect(() => {
       const start = tenant.leaseEndDate
         ? new Date(tenant.leaseEndDate)
         : new Date(tenant.leaseStartDate);
-      start.setDate(start.getDate() + 1);
+
+      if (tenant.leaseEndDate) {
+        start.setDate(start.getDate() + 1);
+      }
+
       setPaymentDate(start.toISOString().split("T")[0]);
 
       await fetchPunishmentByTenant(id);
@@ -209,8 +214,8 @@ const handleSubmit = async (e) => {
   // SmartDateInput already gives Gregorian dates, so use them directly
   const payload = {
     tenantId: parseInt(tenantId),
-    paymentDate: new Date(paymentDate).toISOString().split('T')[0],
-    nextDueDate: new Date(nextDueDate).toISOString().split('T')[0],
+    paymentDate,
+    nextDueDate,
     paymentMethod,
     status,
     punishment: punishmentAmount || "0",
@@ -220,7 +225,7 @@ const handleSubmit = async (e) => {
   // console.log("📅 Final payload:", payload);
 
   try {
-    await axios.post(`${process.env.REACT_APP_BASE_URL}rent-collection`, payload);
+    await api.post(`rent-collection`, payload);
     setMessageType("success");
     setMessage("Rent collected successfully!");
     setModalOpen(true);
@@ -271,6 +276,15 @@ const handleSubmit = async (e) => {
           {/* Tenant Info */}
           {tenantId && (
             <div className="mb-4 p-3 rounded-lg text-white-800 shadow flex space-x-6">
+              {leaseStartDate && (
+                <div>
+                  Lease Start:{" "}
+                  <span className="font-medium">
+                    {formatDateForDisplay(leaseStartDate)}
+
+                  </span>
+                </div>
+              )}
               {leaseEndDate && (
                 <div>
                   Lease End:{" "}
@@ -279,6 +293,7 @@ const handleSubmit = async (e) => {
                   </span>
                 </div>
               )}
+              
               {amount && (
                 <div>
                   Monthly Rent: <span className="font-semibold">ETB {amount}</span>

@@ -14,7 +14,7 @@ const AddBillPayment = () => {
   const [amountPaid, setAmountPaid] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("paid");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [paymentDate, setPaymentDate] = useState("");
   const [tenants, setTenants] = useState([]);
@@ -239,6 +239,7 @@ const AddBillPayment = () => {
               className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
               value={amountPaid}
               onChange={(e) => setAmountPaid(e.target.value)}
+              onWheel={(e)=> e.target.blur()}
               required
               min="0"
               step="0.01"
@@ -314,8 +315,8 @@ const AddBillPayment = () => {
               onChange={(e) => setStatus(e.target.value)}
               required
             >
-              <option value="due">Due</option>
               <option value="paid">Paid</option>
+              <option value="due">Due</option>
               <option value="overdue">Overdue</option>
             </select>
           </div>

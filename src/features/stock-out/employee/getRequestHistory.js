@@ -209,7 +209,8 @@ const StockoutPage = () => {
           title="Requests"
           data={tableData}
           columns={columns}
-          rowsPerPageOptions={[5, 10, 15]}
+         rowsPerPageOptions={[5, 10, 15]}
+
           exportable={true}
           showSearch={true}
           onAdd={handleAddClick}

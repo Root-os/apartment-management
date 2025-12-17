@@ -159,6 +159,7 @@ const AddReturn = () => {
               step="1"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
+              onWheel={(e)=>e.target.blur()}
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
               required
             />

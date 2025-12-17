@@ -337,13 +337,13 @@ const AllSendLetterPage = () => {
               <p><strong>Status:</strong> {selectedLetter.status}</p>
               <p><strong>Tenant Phone:</strong> {selectedLetter.Tenant.phoneNumber}</p>
               <p><strong>Tenant Email:</strong> {selectedLetter.Tenant.email}</p>
-              <p><strong>Tenant National ID:</strong> {selectedLetter.Tenant.nationalId}</p>
+              {/* <p><strong>Tenant National ID:</strong> {selectedLetter.Tenant.nationalId}</p> */}
               {/* <p><strong>Lease Start:</strong> {new Date(selectedLetter.Tenant.leaseStartDate).toISOString().split('T')[0]}</p>
               <p><strong>Lease End:</strong> {new Date(selectedLetter.Tenant.leaseEndDate).toISOString().split('T')[0]}</p> */}
-              <p><strong>Payment Status:</strong> {selectedLetter.Tenant.paymentStatus}</p>
+              {/* <p><strong>Payment Status:</strong> {selectedLetter.Tenant.paymentStatus}</p>
               <p><strong>Additional Notes:</strong> {selectedLetter.Tenant.additionalNotes}</p>
               <p><strong>Advance:</strong> {selectedLetter.Tenant.advance}</p>
-              <p><strong>TIN:</strong> {selectedLetter.Tenant.tin}</p>
+              <p><strong>TIN:</strong> {selectedLetter.Tenant.tin}</p> */}
             </div>
             <div className="flex justify-end">
               <button

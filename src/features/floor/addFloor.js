@@ -40,7 +40,7 @@ const FloorForm = () => {
       setModalOpen(true);
       setMessageType('success');  
       setMessage('Floor added successfully');
-      window.location.href='/app/view-floor';
+      // window.location.href='/app/view-floor';
     } catch (error) {
       console.error('Error adding floor data:', error);
       // alert('There was an error adding the floor data.');

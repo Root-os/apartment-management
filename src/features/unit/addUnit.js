@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
+import api from '../../utils/api';
 
 const AddFloorUnit = () => {
   // Form state
   const [unitNumber, setUnitNumber] = useState('');
   const [size, setSize] = useState('');
-  const [status, setStatus] = useState('available');
+  // const [status, setStatus] = useState('available');
   const [availableEquipments, setAvailableEquipments] = useState([]);
   const [problems, setProblems] = useState([]);
   const [rentedDate, setRentedDate] = useState('');
@@ -32,7 +33,7 @@ const AddFloorUnit = () => {
   useEffect(() => {
     const fetchFloors = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}floor`);
+        const response = await api.get("floor");
         setFloors(response.data);
       } catch (err) {
         setError('Failed to fetch floors.');
@@ -42,18 +43,16 @@ const AddFloorUnit = () => {
     fetchFloors();
   }, []);
 
-useEffect(() => {
-  if (size && price) {
-    const calculatedRent = parseFloat(size) * parseFloat(price);
-    setRent(calculatedRent);
-    setTaxedRent(parseFloat((calculatedRent * 1.15).toFixed(2))); // taxedRent = rent + 15%
-  } else {
-    setRent('');
-    setTaxedRent('');
-  }
-}, [size, price]);
-
-
+  useEffect(() => {
+    if (size && price) {
+      const calculatedRent = parseFloat(size) * parseFloat(price);
+      setRent(calculatedRent);
+      setTaxedRent(parseFloat((calculatedRent * 1.15).toFixed(2))); // taxedRent = rent + 15%
+    } else {
+      setRent('');
+      setTaxedRent('');
+    }
+  }, [size, price]);
 
 
   // Add new equipment
@@ -107,17 +106,18 @@ useEffect(() => {
       images.forEach((image, index) => {
         formData.append('images', image);
       });
+
+      formData.append('pricePerSquare', parseFloat(price));
       formData.append('rentAmount', parseFloat(rent));
-   
+      formData.append('taxedRentAmount', parseFloat(taxedRent));
 
       console.log("Sending payload:");
-for (let pair of formData.entries()) {
-  console.log(pair[0] + ": ", pair[1]);
-}
+      for (let pair of formData.entries()) {
+        console.log(pair[0] + ": ", pair[1]);
+      }
     
 
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}unit`,
+      const response = await api.post("unit",
         formData,
         {
           headers: {
@@ -199,12 +199,12 @@ for (let pair of formData.entries()) {
 
         {/* Size */}
         <div>
-          <label className="block text-sm font-semibold mb-2">Bed Room</label>
+          <label className="block text-sm font-semibold mb-2">Size (m²)</label>
           <input
             type="number"
             value={size}
             onChange={(e) => setSize(e.target.value)}
-            onWheel={(e) => e.target.blur()}   
+            onWheel = {(e) => e.target.blur()}
             required
             className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
              min="1"                
@@ -212,41 +212,40 @@ for (let pair of formData.entries()) {
           />
         </div>
 
-        {/* <div>
+        <div>
           <label>Price per square</label>
           <input 
             type='number'
             value={price}
             onChange={(e) => setPrice(e.target.value)}
+            onWheel = {(e) => e.target.blur()}
+            required
             className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
              min="1"                
              step="0.01"
           />
-        </div> */}
-<div>
-  <label>Rent Amount</label>
-  <input
-    type="number"
-    value={rent || ''}
-    onChange={(e) => setRent(parseFloat(e.target.value) || '')}
-    onWheel={(e) => e.target.blur()}   
-    className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-    step="0.01"
-    min="0"
-    required
-  />
-</div>
+        </div>
+        <div>
+          <label>Rent Amount</label>
+          <input
+            type="number"
+            value={rent || ''}
+            readOnly
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+            step="0.01"
+          />
+        </div>
 
-{/* <div>
-  <label>Taxed Rent (15%)</label>
-  <input
-    type="number"
-    value={taxedRent || ''}
-    readOnly
-    className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-    step="0.01"
-  />
-</div> */}
+        <div>
+          <label>Taxed Rent (15%)</label>
+          <input
+            type="number"
+            value={taxedRent || ''}
+            readOnly
+            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+            step="0.01"
+          />
+        </div>
 
 
         {/* Status */}

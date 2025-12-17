@@ -226,7 +226,8 @@ const handleDateChange = (fieldName) => (dateValue) => {
         title="Item Assignments"
         data={itemAssignments}
         columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
+       rowsPerPageOptions={[5, 10, 15]}
+
         showSearch={true}
         exportable={true}
         onAdd={handleAddClick}
@@ -321,6 +322,8 @@ const handleDateChange = (fieldName) => (dateValue) => {
                   name="amount"
                   value={formData.amount}
                   onChange={handleChange}
+                  onWheel={(e)=> e.target.blur()}
+                  min="0"
                   className="w-full mt-1 p-2 border rounded-md bg-base-100"
                 />
               </div>

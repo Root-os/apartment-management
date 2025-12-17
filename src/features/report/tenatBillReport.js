@@ -151,7 +151,8 @@ const TenantBillReport = () => {
           title="Tenant Bill Report"
           data={filteredData}
           columns={columns}
-          rowsPerPageOptions={[5, 10, 15]}
+         rowsPerPageOptions={[5, 10, 15]}
+
           showSearch={true}
           exportable={true}
         />
@@ -161,7 +162,8 @@ const TenantBillReport = () => {
             title="Tenant Bill Report"
             data={[]}
             columns={columns}
-            rowsPerPageOptions={[5, 10, 15]}
+           rowsPerPageOptions={[5, 10, 15]}
+
             showSearch={false}
             exportable={false}
           />

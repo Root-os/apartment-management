@@ -268,7 +268,8 @@ const openEditModal = (record) => {
         title="Maintenance Records"
         data={maintenanceData}
         columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
+       rowsPerPageOptions={[5, 10, 15]}
+
         showSearch={true}
         exportable={true}
         onAdd={handleAddClick}

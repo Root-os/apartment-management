@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../../../utils/api';
 
 const TenantVehicles = () => {
   const { tenantId } = useParams();
@@ -24,7 +25,7 @@ const TenantVehicles = () => {
 
   const fetchVehicles = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant-vehicle/vehicles/${tenantId}`);
+      const response = await api.get(`tenant-vehicle/vehicles/${tenantId}`);
       if (response.data.success) {
         setVehicles(response.data.vehicles);
       }
@@ -55,7 +56,7 @@ const TenantVehicles = () => {
 
   const handleUpdate = async () => {
     try {
-      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}tenant-vehicle/${selectedVehicle.id}`, {
+      const response = await api.put(`tenant-vehicle/${selectedVehicle.id}`, {
         ...formData,
         tenantId: parseInt(tenantId)
       });
@@ -76,7 +77,7 @@ const TenantVehicles = () => {
   
     try {
       const token = localStorage.getItem('token'); // or however you're storing the auth token
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}tenant-vehicle/${vehicleId}`, {
+      await api.delete(`tenant-vehicle/${vehicleId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

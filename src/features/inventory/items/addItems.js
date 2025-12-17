@@ -113,6 +113,7 @@ const AddItem = () => {
               id="itemAmount"
               value={itemAmount}
               onChange={(e) => setItemAmount(e.target.value)}
+              onWheel= {(e) => e.target.blur() }
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
               min="1"
               required
@@ -178,6 +179,7 @@ const AddItem = () => {
               id="minAmount"
               value={minAmount}
               onChange={(e) => setMinAmount(e.target.value)}
+              onWheel= {(e) => e.target.blur() }
               className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
               min="0"
               step="1"

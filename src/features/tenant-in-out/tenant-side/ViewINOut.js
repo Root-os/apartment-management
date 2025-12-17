@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../../components/table'
 import LoadingComponent from '../../../components/loading';
 import { useNavigate } from "react-router-dom";
+import api from '../../../utils/api';
 
 const TenantInventoryTable = () => {
   const [data, setData] = useState([]);
@@ -14,7 +15,7 @@ const TenantInventoryTable = () => {
     const fetchData = async () => {
         const token = localStorage.getItem('token'); 
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant-inventory/tenant`, {
+        const response = await api.get(`tenant-inventory/tenant`, {
             headers : { "Authorization": `Bearer ${token}`, }
         });
         const transformedData = response.data.inventories.map(item => ({
@@ -68,7 +69,8 @@ const TenantInventoryTable = () => {
       title="Tenant Inventory"
       data={data}
       columns={columns}
-      rowsPerPageOptions={[5, 10, 15]}
+     rowsPerPageOptions={[5, 10, 15]}
+
       showSearch={true}
       exportable={true}
     />

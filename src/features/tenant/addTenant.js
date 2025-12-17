@@ -3,6 +3,7 @@ import axios from "axios";
 import TitleCard from "../../components/Cards/TitleCard";
 import Modal from "../../components/Modal";
 import SmartDateInput from "../../components/Common/smartDatePicker";
+import api from '../../utils/api';
 
 const AddTenant = () => {
   // State variables for form fields
@@ -56,8 +57,8 @@ const AddTenant = () => {
 useEffect(() => {
   const fetchFloors = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}floor`
+      const response = await api.get(
+        `floor`
       );
 
       const activeFloors = response.data.filter(
@@ -77,8 +78,8 @@ useEffect(() => {
   // Fetch freeUnits when floor is selected
   const fetchFreeUnits = async (id) => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}floor/${id}`
+      const response = await api.get(
+        `floor/${id}`
       );
       setFreeUnits(
         Array.isArray(response.data.freeUnits) ? response.data.freeUnits : []
@@ -90,8 +91,8 @@ useEffect(() => {
 
   const fetchUnitDetails = async (unitId) => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}unit/${unitId}`
+      const response = await api.get(
+        `unit/${unitId}`
       );
       const rent = response.data?.rentAmount || "";
       setAmount(rent);
@@ -103,12 +104,15 @@ useEffect(() => {
 
   // Validation functions for each field
   const validateFullName = (value) => {
-    const nameRegex = /^[A-Za-z\s]{2,30}$/;
+    const nameRegex = /^[\p{L} .&'-]{2,50}$/u;
+
     if (!value) return "Full Name is required.";
     if (!nameRegex.test(value))
-      return "Full Name must be 2-30 characters and contain only letters and spaces.";
+      return "Full Name must be 2–50 characters and may include letters, spaces, &, hyphens, apostrophes, or periods.";
+
     return "";
   };
+
 
   const validateEmail = (value) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -200,8 +204,8 @@ useEffect(() => {
   };
 
   const validateDocument = (value) => {
-    if (value && value.size > 5 * 1024 * 1024)
-      return "Document size must be less than 5MB.";
+    if (value && value.size > 20 * 1024 * 1024)
+      return "Document size must be less than 20MB.";
     return "";
   };
 
@@ -289,8 +293,8 @@ useEffect(() => {
     if (document) formData.append("document", document);
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}tenant`,
+      const response = await api.post(
+        `tenant`,
         formData,
         { 
           headers: { "Content-Type": "multipart/form-data" }

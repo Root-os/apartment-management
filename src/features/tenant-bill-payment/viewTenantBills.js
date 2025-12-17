@@ -4,6 +4,7 @@ import TableComponent from "../../components/table";
 import Modal from "../../components/Modal";
 import DisplayDate from "../../components/Common/displayDate";
 import SmartDateInput from "../../components/Common/smartDatePicker";
+import api from '../../utils/api';
 
 const ViewBillPayment = () => {
   const [payments, setPayments] = useState([]);
@@ -24,12 +25,12 @@ const ViewBillPayment = () => {
     status: "",
     amountPaid: "",
     paymentMethod: "",
-    paymentDate: "",
+    // paymentDate: "",
   });
 
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}tenant-payments`)
+    api
+      .get(`tenant-payments`)
       .then((response) => {
         setPayments(response.data);
       })
@@ -49,16 +50,22 @@ const ViewBillPayment = () => {
       status: payment.status,
       amountPaid: payment.amountPaid || "",
       paymentMethod: payment.paymentMethod || "",
-      paymentDate: payment.paymentDate ? payment.paymentDate.split("T")[0] : "",
+      // paymentDate: payment.paymentDate ? payment.paymentDate.split("T")[0] : "",
     });
     setIsEditModalOpen(true);
   };
 
   const handleEditSubmit = () => {
     setIsLoading(true);
-    axios
+
+  const payload = {
+    ...newPaymentData,
+    amountPaid: Number(newPaymentData.amountPaid),
+  };
+
+    api
       .put(
-        `${process.env.REACT_APP_BASE_URL}tenant-payments/${selectedPayment.id}`,
+        `tenant-payments/${selectedPayment.id}`,
         newPaymentData
       )
       .then(() => {
@@ -91,9 +98,9 @@ const ViewBillPayment = () => {
   };
 
   const handleDeleteConfirm = () => {
-    axios
+    api
       .delete(
-        `${process.env.REACT_APP_BASE_URL}tenant-payments/${selectedPayment.id}`
+        `tenant-payments/${selectedPayment.id}`
       )
       .then(() => {
         setPayments(
@@ -130,7 +137,11 @@ const ViewBillPayment = () => {
     {
       key: "amountPaid",
       label: "Amount Paid",
-      render: (payment) => `ETB ${payment.amountPaid.toFixed(2)}`,
+      render: (payment) => {
+  const amount = Number(payment.amountPaid);
+  return `ETB ${!isNaN(amount) ? amount.toFixed(2) : "0.00"}`;
+},
+
     },
     { key: "status", label: "Status" },
     { key: "startDate", label: "Start Date", isDate: true },
@@ -173,7 +184,8 @@ const ViewBillPayment = () => {
         title="Tenant Bill Payments"
         data={payments}
         columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
+       rowsPerPageOptions={[5, 10, 15]}
+
         showSearch={true}
         exportable={true}
         onAdd={handleAddClick}
@@ -204,19 +216,20 @@ const ViewBillPayment = () => {
               <label className="block text-sm font-medium mb-2">
                 Amount Paid
               </label>
-              <input
-                type="number"
-                min="1"
-                step="1"
-                value={newPaymentData.amountPaid}
-                onChange={(e) =>
-                  setNewPaymentData({
-                    ...newPaymentData,
-                    amountPaid: e.target.value,
-                  })
-                }
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              />
+<input
+  type="number"
+  min="0"
+  step="0.01"
+  value={newPaymentData.amountPaid}
+  onChange={(e) =>
+    setNewPaymentData({
+      ...newPaymentData,
+      amountPaid: e.target.value === "" ? "" : Number(e.target.value),
+    })
+  }
+     className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+/>
+
             </div>
 
             <div className="mb-4">
@@ -249,7 +262,7 @@ const ViewBillPayment = () => {
               />
             </div>
 
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Payment Date
               </label>
@@ -263,7 +276,7 @@ const ViewBillPayment = () => {
                 }
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
-            </div>
+            </div> */}
 
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Status</label>
@@ -373,9 +386,10 @@ const ViewBillPayment = () => {
                 <DisplayDate date={selectedPayment.startDate} />
               </p>
               <p>
-                <strong>End Date:</strong> {""}
+                <strong>End Date:</strong>{" "}
                 <DisplayDate date={selectedPayment.endDate} />
               </p>
+
               <p>
                 <strong>Amount:</strong> {selectedPayment.amountPaid || "N/A"}
               </p>
@@ -386,14 +400,14 @@ const ViewBillPayment = () => {
                 <strong>Payment Method:</strong>{" "}
                 {selectedPayment.paymentMethod || "N/A"}
               </p>
-              <p>
+              {/* <p>
                 <strong>Payment Date:</strong>{" "}
                 {selectedPayment.paymentDate
                   ? new Date(selectedPayment.paymentDate)
                       .toISOString()
                       .split("T")[0]
                   : "N/A"}
-              </p>
+              </p> */}
             </div>
             <div className="flex justify-center mt-4">
               <button
@@ -412,6 +426,8 @@ const ViewBillPayment = () => {
         onClose={() => setModalOpen(false)}
         messageType={messageType}
         message={modalMessage}
+        rowsPerPageOptions={[30, 50, 100]}
+
       />
     </div>
   );

@@ -165,7 +165,8 @@ const ReturnReport = () => {
         title="Filtered Return Report"
         data={returnData || []}  // Ensure the data is always an array
         columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
+       rowsPerPageOptions={[5, 10, 15]}
+
         showSearch={true}
         exportable={true}
       />
@@ -175,7 +176,8 @@ const ReturnReport = () => {
         title="Filtered Return Report"
         data={returnData || []}  // Ensure the data is always an array
         columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
+       rowsPerPageOptions={[5, 10, 15]}
+
         showSearch={true}
         exportable={true}
       /> 

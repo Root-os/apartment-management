@@ -80,6 +80,7 @@ const AddExpense = () => {
               step="0.01"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
+              onWheel={(e) => e.target.blur()}
               required
               className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
               min="0"

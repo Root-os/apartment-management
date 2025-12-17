@@ -40,20 +40,31 @@ export const CalendarProvider = ({ children }) => {
   // Convert date to display format (Gregorian or Ethiopian)
 const formatDateForDisplay = (date) => {
   if (!date) return "";
-  
-  const d = typeof date === "string" ? new Date(date) : date;
+
+  // Normalize to YYYY-MM-DD
+  let normalized = date;
+  if (typeof date === "string" && date.includes("T")) {
+    normalized = date.split("T")[0];
+  }
+
+  const [y, m, day] = normalized.split("-");
+  const d = new Date(Date.UTC(y, m - 1, day));
+
   if (isNaN(d)) return "";
 
   if (isGregorian) {
     return d.toISOString().split("T")[0];
   }
 
-  // The library returns an array [year, month, day]
-  const [year, month, day] = toEthiopian(d.getFullYear(), d.getMonth() + 1, d.getDate());
-  console.log("📅 Converting to Ethiopian:", d, "→", [year, month, day]);
+  const [year, month, dayNum] = toEthiopian(
+    d.getUTCFullYear(),
+    d.getUTCMonth() + 1,
+    d.getUTCDate()
+  );
 
-  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+  return `${year}-${String(month).padStart(2, "0")}-${String(dayNum).padStart(2, "0")}`;
 };
+
 
   // Convert date from user input to Gregorian before saving
 const convertToGregorian = (date) => {

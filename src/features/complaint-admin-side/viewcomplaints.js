@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import api from '../../utils/api';
 
 const ComplaintsPage = () => {
   const [complaints, setComplaints] = useState([]);
@@ -34,7 +35,7 @@ const ComplaintsPage = () => {
      
       try {
         const token = localStorage.getItem('token'); 
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}complaints/all`, {
+        const response = await api.get(`complaints/all`, {
           headers: {
             Authorization: `Bearer ${token}`, 
           },
@@ -51,7 +52,7 @@ const ComplaintsPage = () => {
     const fetchEmployees = async () => {
       try {
         const token = localStorage.getItem('token'); 
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/employee`, {
+        const response = await api.get(`auth/employee`, {
           headers: {
             Authorization: `Bearer ${token}`, 
           },
@@ -82,7 +83,7 @@ const ComplaintsPage = () => {
   const handleDelete = async () => {
     try {
       const token = localStorage.getItem('token'); 
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}complaints/delete/${complaintToDelete.id}`, {
+      await api.delete(`complaints/delete/${complaintToDelete.id}`, {
         headers: {
           Authorization: `Bearer ${token}`, 
         },
@@ -115,8 +116,8 @@ const ComplaintsPage = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}complaints/assign`,
+      const response = await api.put(
+        `complaints/assign`,
         {
           complaintId: complaintToAssign.id,
           employeeId: employeeId,
@@ -168,8 +169,8 @@ const ComplaintsPage = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token'); // Get admin token from localStorage
-      const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}complaints/update-status`,
+      const response = await api.put(
+        `complaints/update-status`,
         {
           complaintId: complaintToUpdateStatus.id,
           status: status,
@@ -335,7 +336,8 @@ const ComplaintsPage = () => {
         title="Complaints List"
         data={complaints}
         columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
+       rowsPerPageOptions={[5, 10, 15]}
+
         showSearch={true}
         exportable={true}
       />

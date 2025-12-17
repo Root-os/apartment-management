@@ -13,7 +13,7 @@ console.log('user id is', userId);
 
 // Define the validation schema
 const validationSchema = yup.object().shape({
-  title: yup.string().min(8).required('Title is required'),
+  // title: yup.string().min(8).required('Title is required'),
   body: yup.string().min(10, 'Body must be at least 10 characters long').required('Body is required'),
   receiver_id: yup.number().required('Receiver is required'),
   receiver_type: yup.string().oneOf(['tenant', 'staff']).required('Receiver type is required'),

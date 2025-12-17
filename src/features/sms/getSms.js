@@ -13,6 +13,7 @@ const ViewSentSMS = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [modalMessageType, setModalMessageType] = useState("success");
+  const [buttonLoading, setButtonLoading] = useState(false);
 
   useEffect(() => {
     const fetchSMS = async () => {
@@ -37,30 +38,26 @@ const ViewSentSMS = () => {
     fetchSMS();
   }, []);
 
-  const handleDelete = async () => {
-    if (!selectedSms) return;
-    setLoading(true);
-    try {
-      await axios.delete(
-        `${process.env.REACT_APP_BASE_URL}sms/${selectedSms.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setSmsList(smsList.filter((sms) => sms.id !== selectedSms.id));
-      setModalMessageType("success");
-      setModalMessage("Message deleted successfully");
-    } catch (error) {
-      setModalMessageType("error");
-      setModalMessage("Failed to delete SMS.");
-    } finally {
-      setIsDeleteModalOpen(false);
-      setSelectedSms(null);
-      setLoading(false);
-    }
-  };
+const handleDeleteConfirm = async () => {
+  if (!selectedSms) return;
+  setButtonLoading(true);
+  try {
+    await axios.delete(`${process.env.REACT_APP_BASE_URL}sms/${selectedSms.id}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    setSmsList(smsList.filter(sms => sms.id !== selectedSms.id));
+    setModalMessageType("success");
+    setModalMessage("Message deleted successfully");
+    setIsDeleteModalOpen(false);
+    setSelectedSms(null);
+  } catch (error) {
+    console.error(error);
+    setModalMessageType("error");
+    setModalMessage("Failed to delete SMS.");
+  } finally {
+    setButtonLoading(false);
+  }
+};
 
   const columns = [
     {
@@ -142,39 +139,31 @@ const ViewSentSMS = () => {
       )}
 
       {/* Delete Modal */}
-      <Modal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        messageType="warning"
-        message="Are you sure you want to delete this SMS?"
-        actions={[
-          {
-            label: "Cancel",
-            onClick: () => setIsDeleteModalOpen(false),
-            className: "bg-gray-400 text-white px-4 py-2 rounded",
-          },
-          {
-            label: "Delete",
-            onClick: handleDelete,
-            className: "bg-red-500 text-white px-4 py-2 rounded",
-          },
-        ]}
-      />
+{/* Delete Confirmation Modal */}
+{isDeleteModalOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-base-100 p-6 rounded-lg w-96">
+      <h2 className="text-xl mb-4">Are you sure you want to delete this SMS?</h2>
+      <div className="flex justify-end space-x-2">
+        <button 
+          onClick={() => setIsDeleteModalOpen(false)} 
+          className="bg-gray-400 text-white px-4 py-2 rounded"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleDeleteConfirm}
+          className="bg-red-500 text-white px-4 py-2 rounded"
+          disabled={buttonLoading}
+        >
+          {buttonLoading ? 'Deleting...' : 'Delete'}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 
-      {/* Status Modal */}
-      <Modal
-        isOpen={modalMessage !== ""}
-        onClose={() => setModalMessage("")}
-        messageType={modalMessageType}
-        message={modalMessage}
-        actions={[
-          {
-            label: "Close",
-            onClick: () => setModalMessage(""),
-            className: "bg-blue-500 text-white px-4 py-2 rounded",
-          },
-        ]}
-      />
+
     </div>
   );
 };

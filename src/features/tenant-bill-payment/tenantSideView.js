@@ -3,6 +3,7 @@ import axios from "axios";
 import TableComponent from "../../components/table";
 import Modal from "../../components/Modal";
 import Loading from "../../components/loading";
+import api from '../../utils/api';
 
 const TenantPaymentHistory = () => {
   const [payments, setPayments] = useState([]);
@@ -22,8 +23,8 @@ const TenantPaymentHistory = () => {
     }
 
     setIsLoading(true);
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}tenant-payments/${tenantId}`)
+    api
+      .get(`tenant-payments/${tenantId}`)
       .then((response) => {
         setPayments(response.data);
       })

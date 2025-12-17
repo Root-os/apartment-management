@@ -127,7 +127,8 @@ const ExpenseReport = () => {
           title="Expense Report"
           data={filteredData} 
           columns={columns}
-          rowsPerPageOptions={[5, 10, 15]}
+         rowsPerPageOptions={[5, 10, 15]}
+
           showSearch={true}
           exportable={true}
         />

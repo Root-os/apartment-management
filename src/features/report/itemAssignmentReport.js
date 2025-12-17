@@ -165,7 +165,8 @@ const ItemAssignmentReport = () => {
             title="Filtered Item Assignment Report"
             data={itemAssignments}
             columns={columns}
-            rowsPerPageOptions={[5, 10, 15]}
+           rowsPerPageOptions={[5, 10, 15]}
+
             showSearch={true}
             exportable={true}
           />

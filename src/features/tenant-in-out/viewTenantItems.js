@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import api from '../../utils/api';
 
 const TenantItems = () => {
   const { id: tenantId } = useParams();
@@ -20,8 +21,8 @@ const TenantItems = () => {
         }
         console.log("Tenant ID from URL params:", tenantId); 
 
-        const response = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}tenant-items/tenant/${tenantId}`,
+        const response = await api.get(
+          `tenant-items/tenant/${tenantId}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

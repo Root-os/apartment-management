@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import api from '../../utils/api';
 
 const TenantComplaintsPage = () => {
   const [complaints, setComplaints] = useState([]);
@@ -27,7 +28,7 @@ const TenantComplaintsPage = () => {
   useEffect(() => {
     const fetchComplaints = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}complaints/tenant/${userId}`, {
+        const response = await api.get(`complaints/tenant/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -52,8 +53,8 @@ const TenantComplaintsPage = () => {
  const handleConfirm = async () => {
   setIsLoading(true);
   try {
-    const response = await axios.put(
-      `${process.env.REACT_APP_BASE_URL}complaints/confirm-resolution`,
+    const response = await api.put(
+      `complaints/confirm-resolution`,
       {
         complaintId: complaintToConfirm.id,
         feedback: feedback,
@@ -177,7 +178,8 @@ const TenantComplaintsPage = () => {
         title="Your Complaints"
         data={complaints}
         columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
+       rowsPerPageOptions={[5, 10, 15]}
+
         showSearch={true}
         exportable={true}
         onAdd={handleAddClick}

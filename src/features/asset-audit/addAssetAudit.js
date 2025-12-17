@@ -23,11 +23,6 @@ const AddAssetAuditPage = () => {
   const [message, setMessage] = useState('');
 
 
-
-
-
- 
-
   useEffect(() => {
     axios.get(`${process.env.REACT_APP_BASE_URL}items`)
       .then(response => setItems(response.data))
@@ -186,21 +181,19 @@ const AddAssetAuditPage = () => {
             </>
           )}
 
-   <div className="relative">
-  <label htmlFor="date" className="block text-sm font-medium text-white-700">
-    Audited Date
-  </label>
+          <div className="relative">
+          <label htmlFor="date" className="block text-sm font-medium text-white-700">
+            Audited Date
+          </label>
 
-  <SmartDateInput
-    id="date"
-    value={date}
-    onChange={setDate}
-    className="mt-1 w-full bg-base-100 border border-gray-300 rounded-lg p-2 shadow-sm focus:ring-2 focus:ring-blue-500"
-    required
-  />
-</div>
-
-
+          <SmartDateInput
+            id="date"
+            value={date}
+            onChange={setDate}
+            className="mt-1 w-full bg-base-100 border border-gray-300 rounded-lg p-2 shadow-sm focus:ring-2 focus:ring-blue-500"
+            required
+          />
+        </div>
 
           <div>
             <label htmlFor="existing_amount" className="block text-sm font-medium text-white-700">Existing Amount</label>
@@ -209,6 +202,7 @@ const AddAssetAuditPage = () => {
               id="existing_amount"
               value={existingAmount}
               onChange={(e) => setExistingAmount(e.target.value)}
+              onWheel={(e)=> e.target.blur()}
               className="mt-2 p-3 bg-base-100 w-full border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
               required
               min="0"
@@ -223,6 +217,7 @@ const AddAssetAuditPage = () => {
               id="damaged_amount"
               value={damagedAmount}
               onChange={(e) => setDamagedAmount(e.target.value)}
+              onWheel={(e)=> e.target.blur()}
               className="mt-2 p-3 bg-base-100 w-full border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
               required
               min="0"
@@ -237,6 +232,7 @@ const AddAssetAuditPage = () => {
               id="lost_amount"
               value={lostAmount}
               onChange={(e) => setLostAmount(e.target.value)}
+              onWheel={(e)=> e.target.blur()}
               className="mt-2 p-3 bg-base-100 w-full border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
               required
               min="0"

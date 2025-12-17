@@ -1,7 +1,10 @@
-import React from 'react';
+import React, {useContext} from 'react';
+import { CalendarContext } from '../../context/calendarContext';
 
 const HistoryModal = ({ isOpen, onClose, tenantInfo, paymentHistory }) => {
+  const { formatDateForDisplay } = useContext(CalendarContext);
   if (!isOpen) return null;
+
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -21,9 +24,9 @@ const HistoryModal = ({ isOpen, onClose, tenantInfo, paymentHistory }) => {
                 <tr>
                   <th className="py-2 px-4 border-b dark:border-gray-700">Amount Paid</th>
                   <th className="py-2 px-4 border-b dark:border-gray-700">Payment Date</th>
+                  <th className="py-2 px-4 border-b dark:border-gray-700">Next Due Date</th>
                   <th className="py-2 px-4 border-b dark:border-gray-700">Paid Days</th>
                   <th className="py-2 px-4 border-b dark:border-gray-700">Payment Method</th>
-                  <th className="py-2 px-4 border-b dark:border-gray-700">Next Due Date</th>
                   <th className="py-2 px-4 border-b dark:border-gray-700">Status</th>
                 </tr>
               </thead>
@@ -31,10 +34,10 @@ const HistoryModal = ({ isOpen, onClose, tenantInfo, paymentHistory }) => {
                 {paymentHistory.map((payment) => (
                   <tr key={payment.id}>
                     <td className="py-2 px-4 border-b dark:border-gray-700">{Math.ceil(payment.amountPaid)}</td>
-                    <td className="py-2 px-4 border-b dark:border-gray-700">{new Date(payment.paymentDate).toISOString().split('T')[0]}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-700">{formatDateForDisplay(payment.paymentDate)}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-700">{formatDateForDisplay(payment.nextDueDate)}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-700">{payment.paidDays}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-700">{payment.paymentMethod}</td>
-                    <td className="py-2 px-4 border-b dark:border-gray-700">{new Date(payment.nextDueDate).toISOString().split('T')[0]}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-700">{payment.status}</td>
                   </tr>
                 ))}

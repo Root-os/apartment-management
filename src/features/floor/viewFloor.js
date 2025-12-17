@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import TableComponent from "../../components/table";
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import api from '../../utils/api';
 
 const FloorManagement = () => {
   const [floors, setFloors] = useState([]);
@@ -28,7 +29,7 @@ const FloorManagement = () => {
 
   // Fetch floors
   useEffect(() => {
-    axios.get(`${process.env.REACT_APP_BASE_URL}floor`)
+    api.get(`floor`)
       .then(response => {
         setFloors(response.data);
       })
@@ -52,7 +53,7 @@ const FloorManagement = () => {
 
   const handleEditSubmit = () => {
     setButtonLoading(true); // Start button loading
-    axios.put(`${process.env.REACT_APP_BASE_URL}floor/${selectedFloor.id}`, newFloorData)
+    api.put(`floor/${selectedFloor.id}`, newFloorData)
       .then(() => {
         setFloors(floors.map(floor => (floor.id === selectedFloor.id ? { ...floor, ...newFloorData } : floor)));
         setIsEditModalOpen(false);
@@ -69,7 +70,7 @@ const FloorManagement = () => {
         setMessage('Unable to update, please try again');
       })
       .finally(() => {
-        setButtonLoading(false); // End button loading
+        setButtonLoading(false); 
       });
   };
 
@@ -81,7 +82,7 @@ const FloorManagement = () => {
 
   const handleDeleteConfirm = () => {
     setButtonLoading(true); // Start button loading for delete
-    axios.delete(`${process.env.REACT_APP_BASE_URL}floor/${selectedFloor.id}`)
+    api.delete(`floor/${selectedFloor.id}`)
       .then(() => {
         setFloors(floors.filter(floor => floor.id !== selectedFloor.id));
         setIsDeleteModalOpen(false);
@@ -104,7 +105,7 @@ const FloorManagement = () => {
 
   // Detail floor
 const handleDetailClick = (floor) => {
-  axios.get(`${process.env.REACT_APP_BASE_URL}floor/${floor.id}`)
+  api.get(`floor/${floor.id}`)
     .then(response => {
       setFloorDetails({
         ...floor,             
@@ -160,7 +161,8 @@ const handleDetailClick = (floor) => {
         title="Floor List"
         data={floors}
         columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
+       rowsPerPageOptions={[5, 10, 15]}
+
         showSearch={true}
         exportable={true}
         onAdd={handleAddClick}

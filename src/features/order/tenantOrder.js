@@ -85,6 +85,8 @@ const CreateOrder = ({ isOpen, onClose, orderTypeId }) => {
               id="amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
+              onWheel={(e)=> e.target.blur()}
+              min="0"
               className="mt-1 bg-white block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />

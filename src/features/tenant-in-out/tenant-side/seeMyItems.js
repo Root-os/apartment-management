@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import api from '../../../utils/api';
 
 const MyTenantItems = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const MyTenantItems = () => {
           return;
         }
 
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant-items/my-items`, {
+        const response = await api.get(`tenant-items/my-items`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

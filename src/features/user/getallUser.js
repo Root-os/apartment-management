@@ -98,7 +98,8 @@ const UserAll = () => {
           title="Users"
           data={users}
           columns={columns}
-          rowsPerPageOptions={[5, 10, 15]}
+         rowsPerPageOptions={[5, 10, 15]}
+
           showSearch={true}
           exportable={true}
         />

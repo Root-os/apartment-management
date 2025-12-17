@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal'; // Imported Modal for success/error messages
 import LoadingComponent from '../../components/loading';
+import api from '../../utils/api';
 
 const token = localStorage.getItem('token');
 
@@ -18,7 +19,7 @@ const SentEmail = () => {
   useEffect(() => {
     const fetchEmails = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}email/sent`, {
+        const response = await api.get(`email/sent`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -38,7 +39,7 @@ const SentEmail = () => {
     
 
     try {
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}email/delete-admin/${selectedEmail.id}`, {
+      await api.delete(`email/delete-admin/${selectedEmail.id}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -61,6 +62,11 @@ const SentEmail = () => {
   };
 
   const columns = [
+    { 
+      key: 'receiver', 
+      label: 'Receiver',
+      render: (email) => email.receiver ? email.receiver.fullName : ''
+    },
     { key: 'subject', label: 'Subject' },
     { key: 'content', label: 'Content' },
     { key: 'status', label: 'Status' },
@@ -94,7 +100,8 @@ const SentEmail = () => {
           title="Sent Emails"
           data={emails}
           columns={columns}
-          rowsPerPageOptions={[5, 10, 15]}
+         rowsPerPageOptions={[5, 10, 15]}
+
           showSearch={true}
           exportable={true}
         />

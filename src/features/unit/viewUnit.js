@@ -4,6 +4,7 @@ import TableComponent from "../../components/table";
 import {FaSearch} from 'react-icons/fa';
 import Modal from '../../components/Modal';
 import LoadingComponent from "../../components/loading";
+import api from '../../utils/api';
 
 const UnitList = () => {
   const [units, setUnits] = useState([]);
@@ -24,6 +25,14 @@ const UnitList = () => {
   const [selectedStatus, setSelectedStatus] = useState([]);
   const [filteredUnits, setFilteredUnits] = useState([]);
 
+  // Image viewer state
+const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
+const [currentImage, setCurrentImage] = useState(null);
+const [zoomLevel, setZoomLevel] = useState(1);
+
+
+  const BASE_URL = api.defaults.baseURL;
+
 const [newUnitData, setNewUnitData] = useState({
     unitNumber: '',
     size: '',
@@ -41,11 +50,13 @@ const [newUnitData, setNewUnitData] = useState({
 
   const [newEquipment, setNewEquipment] = useState("");
   const [newProblem, setNewProblem] = useState("");
+  const [imagesChanged, setImagesChanged] = useState(false);
+
 
   useEffect(() => {
     const fetchUnitData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit`);
+        const response = await api.get(`unit`);
         setUnits(response.data); 
         setLoading(false); 
       } catch (err) {
@@ -56,7 +67,7 @@ const [newUnitData, setNewUnitData] = useState({
 
     const fetchFloorData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}floor`);
+        const response = await api.get(`floor`);
         setFloors(response.data);
       } catch (err) {
         console.error("Failed to fetch floors.");
@@ -80,82 +91,84 @@ const [newUnitData, setNewUnitData] = useState({
   }, [newUnitData.size, newUnitData.pricePerSquare]);
 
 
-    const handleEditClick = (unit) => {
-      setSelectedUnit(unit);
-      setNewUnitData({
-          unitNumber: unit.unitNumber,
-          size: unit.size,
-          status: unit.status,
-          availableEquipments: Array.isArray(unit.availableEquipments) ? unit.availableEquipments : JSON.parse(unit.availableEquipments),
-          problems: Array.isArray(unit.problems) ? unit.problems : JSON.parse(unit.problems),
-          floorId: unit.floorId,
-          images: unit.images || [],
-          pricePerSquare: unit.pricePerSquare || '',
-          rentAmount: unit.rentAmount || '',
-          taxedRentAmount: unit.taxedRentAmount || '',
-      });
-      setIsEditModalOpen(true);
-    };
+const handleEditClick = (unit) => {
+  setSelectedUnit(unit);
 
-  const handleEditSubmit = () => {
-    setBtnLoading(true);
+  setNewUnitData({
+    unitNumber: unit.unitNumber,
+    size: unit.size,
+    status: unit.status,
+    availableEquipments: Array.isArray(unit.availableEquipments)
+      ? unit.availableEquipments
+      : JSON.parse(unit.availableEquipments),
+    problems: Array.isArray(unit.problems)
+      ? unit.problems
+      : JSON.parse(unit.problems),
+    floorId: unit.floorId,
+    images: [...(unit.images || [])], // keep full URLs, don't strip here
+    pricePerSquare: unit.pricePerSquare || '',
+    rentAmount: unit.rentAmount || '',
+    taxedRentAmount: unit.taxedRentAmount || '',
+  });
 
-    const formData = new FormData();
+  setImagesChanged(false); // reset flag
+  setIsEditModalOpen(true);
+};
 
-    // Append all simple fields except images
-    for (const key in newUnitData) {
-      if (key !== 'images') {
-        const value = newUnitData[key];
 
-        // For arrays like availableEquipments or problems, stringify before appending
-        if (Array.isArray(value)) {
-          formData.append(key, JSON.stringify(value));
-        } else {
-          formData.append(key, value);
-        }
+
+const handleEditSubmit = () => {
+  setBtnLoading(true);
+
+  const formData = new FormData();
+
+  // Append all fields except images
+  for (const key in newUnitData) {
+    if (key !== 'images') {
+      const value = newUnitData[key];
+      // For arrays like availableEquipments or problems, stringify them
+      if (Array.isArray(value)) {
+        formData.append(key, JSON.stringify(value));
+      } else {
+        formData.append(key, value);
       }
     }
+  }
 
-    // Append images separately
-    (newUnitData.images || []).forEach((img, idx) => {
-      if (typeof img === 'string') {
-        // Existing image URL or path, append as string
-        formData.append(`images[${idx}]`, img);
-      } else {
-        // New file object
-        formData.append('images', img);
-      }
-    });
+  // Only send existingImages if user changed images
+  if (imagesChanged) {
+    const existingImages = newUnitData.images.filter(img => typeof img === 'string');
+    formData.append('existingImages', JSON.stringify(existingImages));
+  }
 
-    axios.put(`${process.env.REACT_APP_BASE_URL}unit/${selectedUnit.id}`, formData, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-        // Let axios/browser set Content-Type for multipart/form-data
-      },
-    })
-    .then(() => {
-      setUnits(units.map(unit => unit.id === selectedUnit.id ? { ...unit, ...newUnitData } : unit));
-      setIsEditModalOpen(false);
+  // Append new uploaded files
+  const newFiles = newUnitData.images.filter(img => img instanceof File);
+  newFiles.forEach(file => formData.append('images', file));
 
-      setModalOpen(true);
-      setMessageType('success');
-      setMessage('Unit updated successfully');
-    })
-    .catch(error => {
-      // Extract backend error message if available
-      let backendMessage = 'Unable to update, please try again';
-      if (error.response?.data?.message) {
-        backendMessage = error.response.data.message;
-      }
+  // Call API
+  api.put(`unit/${selectedUnit.id}`, formData, {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('token')}`,
+    },
+  })
+  .then(() => {
+    // Update local state
+    setUnits(units.map(unit => unit.id === selectedUnit.id ? { ...unit, ...newUnitData } : unit));
+    setIsEditModalOpen(false);
+    setModalOpen(true);
+    setMessageType('success');
+    setMessage('Unit updated successfully');
+    setImagesChanged(false); // Reset flag after successful update
+  })
+  .catch(error => {
+    const backendMessage = error.response?.data?.message || 'Unable to update, please try again';
+    setModalOpen(true);
+    setMessageType('error');
+    setMessage(backendMessage);
+  })
+  .finally(() => setBtnLoading(false));
+};
 
-      setModalOpen(true);
-      setMessageType('error');
-      setMessage(backendMessage);
-    })
-    .finally(() => {
-      setBtnLoading(false);
-    });
-  };
 
 
   const handleDeleteClick = (unit) => {
@@ -164,7 +177,7 @@ const [newUnitData, setNewUnitData] = useState({
   };
 
   const handleDeleteConfirm = () => {
-    axios.delete(`${process.env.REACT_APP_BASE_URL}unit/${selectedUnit.id}`)
+    api.delete(`unit/${selectedUnit.id}`)
       .then(() => {
         setUnits(units.filter(unit => unit.id !== selectedUnit.id));
         setFilteredUnits(filteredUnits.filter(unit => unit.id !== selectedUnit.id));
@@ -248,13 +261,13 @@ const handleDetailClick = (unit) => {
     try {
       let response;
       if (selectedStatus.includes("free") && selectedStatus.includes("rented")) {
-        response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit`);
+        response = await api.get(`unit`);
       } else if (selectedStatus.includes("free")) {
-        response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit/free/units`);
+        response = await api.get(`unit/free/units`);
       } else if (selectedStatus.includes("rented")) {
-        response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit/rented/units`);
+        response = await api.get(`unit/rented/units`);
       } else {
-        response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit`);
+        response = await api.get(`unit`);
       }
       setFilteredUnits(response.data);
     } catch (error) {
@@ -284,6 +297,23 @@ const handleDetailClick = (unit) => {
       </button>
     </div>
   );
+
+  // Open image viewer
+const openImageViewer = (image) => {
+  setCurrentImage(image);
+  setIsImageViewerOpen(true);
+};
+
+// Close image viewer
+const closeImageViewer = () => {
+  setIsImageViewerOpen(false);
+  setZoomLevel(1); // reset zoom
+};
+
+// Zoom functions
+const zoomIn = () => setZoomLevel(prev => Math.min(prev + 0.1, 3));
+const zoomOut = () => setZoomLevel(prev => Math.max(prev - 0.1, 1));
+
 
   const columns = [
     {
@@ -391,23 +421,25 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Bed Room</label>
+              <label className="block text-sm font-medium mb-2">Size (m²)</label>
               <input
                 type="number"
                 value={newUnitData.size}
                 onChange={(e) => setNewUnitData({ ...newUnitData, size: e.target.value })}
+                onWheel={(e)=>e.target.blur()}
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
                 min="1"
                 step="1"
               />
             </div>
 
-            {/* <div className="mb-4">
+            <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Price per (m²)</label>
               <input
                 type="number"
                 value={newUnitData.pricePerSquare}
                 onChange={(e) => setNewUnitData({ ...newUnitData, pricePerSquare: e.target.value })}
+                onWheel={(e)=>e.target.blur()}
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
                 min="0"
                 step="0.01"
@@ -422,7 +454,7 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
                 readOnly
                 className="bg-gray-100 w-full p-2 border border-gray-300 rounded"
               />
-            </div> */}
+            </div>
 
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Status</label>
@@ -534,34 +566,38 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
                     alt={`Unit Image ${index + 1}`}
                     className="w-full h-20 object-cover rounded"
                   />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const updatedImages = [...newUnitData.images];
-                      updatedImages.splice(index, 1);
-                      setNewUnitData({...newUnitData, images: updatedImages});
-                    }}
-                    className="absolute top-0 right-0 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center"
-                  >
-                    &times;
-                  </button>
+<button
+  type="button"
+  onClick={() => {
+    const updatedImages = [...newUnitData.images];
+    updatedImages.splice(index, 1);
+    setNewUnitData({...newUnitData, images: updatedImages});
+    setImagesChanged(true); // <-- add this
+  }}
+  className="absolute top-0 right-0 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center"
+>
+  &times;
+</button>
+
                 </div>
               ))}
             </div>
 
-             <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={(e) => {
-                  const files = Array.from(e.target.files);
-                  setNewUnitData(prev => ({
-                    ...prev,
-                    images: [...(prev.images || []), ...files]  // always use latest images from state
-                  }));
-                }}
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              />
+<input
+  type="file"
+  multiple
+  accept="image/*"
+  onChange={(e) => {
+    const files = Array.from(e.target.files);
+    setNewUnitData(prev => ({
+      ...prev,
+      images: [...(prev.images || []), ...files]
+    }));
+    setImagesChanged(true); // <-- add this
+  }}
+  className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+/>
+
 
             </div>
             <div className="flex justify-end space-x-2">
@@ -606,10 +642,10 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
 
               <h3 className="text-xl font-bold mb-2 text-blue-700">{unitDetails.unitNumber}</h3>
               <p><strong>Floor Number:</strong> {unitDetails.Floor?.floorNumber || "N/A"}</p>
-              <p><strong>Bed Room :</strong> {unitDetails.size}</p>
-              {/* <p><strong>Price per (m²):</strong>{unitDetails.pricePerSquare} ETB</p> */}
+              <p><strong>Size (m²):</strong> {unitDetails.size} sq ft</p>
+              <p><strong>Price per (m²):</strong>{unitDetails.pricePerSquare} ETB</p>
               <p><strong>Rent Amount:</strong>{unitDetails.rentAmount} ETB</p>
-              {/* <p><strong>Taxed Rent (vat):</strong>{unitDetails.taxedRentAmount} ETB</p> */}
+              <p><strong>Taxed Rent (vat):</strong>{unitDetails.taxedRentAmount} ETB</p>
               <p><strong>Status:</strong> {unitDetails.status}</p>
               
               <div className="mt-3">
@@ -626,25 +662,29 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
                 </ul>
               </div>
 
-              {unitDetails.images && unitDetails.images.length > 0 && (
-                <div className="mt-4">
-                  <strong>Images:</strong>
-                  <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                    {unitDetails.images.map((imgUrl, idx) => {
-                      const cleanUrl = imgUrl.replace(/\\/g, '/');
-                      return (
-                        <img
-                          key={idx}
-                          src={cleanUrl}
-                          alt={`Unit ${unitDetails.unitNumber} Image ${idx + 1}`}
-                          className="w-full h-24 object-cover rounded shadow-md border"
-                          loading="lazy"
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+{unitDetails.images && unitDetails.images.length > 0 && (
+  <div className="mt-4">
+    <strong>Images:</strong>
+    <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+      {unitDetails.images.map((imgUrl, idx) => {
+        const url = typeof imgUrl === "string" ? imgUrl : imgUrl?.url || null;
+        if (!url) return null;
+        const cleanUrl = url.replace(/\\/g, "/");
+        return (
+          <img
+            key={idx}
+            src={cleanUrl}
+            alt={`Unit ${unitDetails.unitNumber} Image ${idx + 1}`}
+            className="w-full h-24 object-cover rounded shadow-md border cursor-pointer"
+            loading="lazy"
+            onClick={() => openImageViewer(cleanUrl)} // <-- Add this
+          />
+        );
+      })}
+    </div>
+  </div>
+)}
+
 
               <div className="mt-6 text-right">
                 <button
@@ -658,13 +698,35 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
           </div>
         );
       })()}
+      {isImageViewerOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+    <div className="relative bg-white p-4 rounded-lg max-w-[95vw] max-h-[95vh] flex flex-col">
+      <div className="flex justify-between items-center mb-4 z-10">
+        <div className="flex space-x-2">
+          <button onClick={zoomOut} className="text-white bg-gray-800 px-4 py-2 rounded-full">Zoom Out</button>
+          <button onClick={zoomIn} className="text-white bg-gray-800 px-4 py-2 rounded-full">Zoom In</button>
+        </div>
+        <button onClick={closeImageViewer} className="text-white bg-gray-800 px-2 py-1 rounded-full">X</button>
+      </div>
+
+      <div className="flex-1 overflow-auto">
+        <img
+          src={currentImage}
+          alt="Zoomed"
+          style={{ transform: `scale(${zoomLevel})`, transition: 'transform 0.3s ease', transformOrigin: 'center' }}
+          className="max-w-full max-h-[80vh] object-contain"
+        />
+      </div>
+    </div>
+  </div>
+)}
 
 
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         messageType={messageType}
-        message={message}
+        message={message}z
       />
     </div>
   );

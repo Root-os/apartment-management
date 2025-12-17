@@ -244,7 +244,8 @@ const handleDetailClick = (payment) => {
           title="Paid Bill Payments for Gov't"
           data={billPayments}
           columns={columns}
-          rowsPerPageOptions={[5, 10, 15]}
+         rowsPerPageOptions={[5, 10, 15]}
+
           showSearch={true}
           exportable={true}
           onAdd={handleAddClick}
@@ -278,6 +279,7 @@ const handleDetailClick = (payment) => {
                   type="number"
                   value={editData.amount}
                   onChange={(e) => setEditData({ ...editData, amount: e.target.value })}
+                  onWheel={(e)=> e.target.blur()}
                   className="w-full p-2 border border-gray-300 rounded bg-base-100"
                   min="0"
                   step="1"

@@ -304,7 +304,8 @@ const PurchasesRequestPage = () => {
           title="Purchase Requests"
           data={data}
           columns={columns}
-          rowsPerPageOptions={[5, 10, 15]}
+         rowsPerPageOptions={[5, 10, 15]}
+
           showSearch={true}
           exportable={true}
           onAdd={handleAddClick}

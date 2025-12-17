@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Modal from "../../components/Modal";
 import TitleCard from "../../components/Cards/TitleCard";
@@ -20,6 +21,7 @@ const InventoryForm = () => {
   const [messageType, setmessageType] = useState("success");
   const [message, setMessage] = useState("");
 
+  const navigate = useNavigate();
   // Fetch all tenants once the component is mounted
   useEffect(() => {
     const fetchTenants = async () => {
@@ -54,16 +56,20 @@ const InventoryForm = () => {
     const emptyItem = items.some(
       (item) => !item.name || !item.condition || item.quantity <= 0
     );
-    if (emptyItem) {
-      setMessage("Please fill out all fields for each item.");
-      return;
-    }
-    const payload = {
-      tenantId,
-      type,
-      items,
-      notes,
-    };
+if (emptyItem) {
+  setMessage("Please fill out all fields for each item.");
+  setmessageType("error");
+  setModalOpen(true);
+  return;
+}
+
+const payload = {
+  tenantId: Number(tenantId),
+  type,
+  items,
+  notes,
+};
+
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -89,7 +95,10 @@ const InventoryForm = () => {
         setModalOpen(true);
         setmessageType("success");
         setMessage("Inventory data created successfully!");
-        window.location.href = "/app/view-in-out";
+        // window.location.href = "/app/view-in-out";
+        setTimeout(() => {
+  navigate("/app/view-in-out");
+}, 1500);
       } else {
         setMessage("Failed to create inventory data.");
       }
@@ -186,9 +195,11 @@ const InventoryForm = () => {
                   className="p-2 w-full border border-gray-300 rounded-md bg-base-100"
                   placeholder="Quantity"
                   value={item.quantity}
-                  onChange={(e) =>
-                    handleItemChange(index, "quantity", e.target.value)
-                  }
+             onChange={(e) =>
+  handleItemChange(index, "quantity", Number(e.target.value))
+}
+
+                  onWheel={(e)=> e.target.blur()}
                   min="1"
                   step="1"
                 />

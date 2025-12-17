@@ -80,7 +80,6 @@ const VendorsPage = () => {
     if (contractTerms) {
       formData.append("contractTerms", contractTerms);
     }
-
     try {
       const response = await axios.put(
         `${process.env.REACT_APP_BASE_URL}vendors/${selectedVendor.id}`,

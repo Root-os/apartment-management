@@ -272,6 +272,7 @@ const PaymentRequestsPage = () => {
             step="1"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
+            onWheel={(e)=> e.target.blur()}
             className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>

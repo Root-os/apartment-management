@@ -25,25 +25,27 @@ const SmartDateInput = ({
   const ethiopianWeekdays = ["ሰ", "ማ", "ረ", "ሐ", "አ", "ቅ", "እ"];
 
   // Convert Gregorian to Ethiopian using your library
-  const gregorianToEthiopian = (gregorianDate) => {
-    if (!gregorianDate) return null;
-    
-    try {
-      const date = new Date(gregorianDate);
-      if (isNaN(date)) return null;
+const gregorianToEthiopian = (gregorianDate) => {
+  if (!gregorianDate) return null;
 
-      const [year, month, day] = toEthiopian(
-        date.getFullYear(), 
-        date.getMonth() + 1, 
-        date.getDate()
-      );
-      
-      return { year, month, day };
-    } catch (error) {
-      console.error("Error converting to Ethiopian date:", error);
-      return null;
-    }
-  };
+  const normalized = gregorianDate.includes("T")
+    ? gregorianDate.split("T")[0]
+    : gregorianDate;
+
+  const [y, m, d] = normalized.split("-");
+  const date = new Date(Date.UTC(y, m - 1, d));
+
+  if (isNaN(date)) return null;
+
+  const [year, month, day] = toEthiopian(
+    date.getUTCFullYear(),
+    date.getUTCMonth() + 1,
+    date.getUTCDate()
+  );
+
+  return { year, month, day };
+};
+
 
   // Convert Ethiopian to Gregorian using your library
   const ethiopianToGregorian = (ethDate) => {

@@ -9,7 +9,7 @@ const TableComponent = ({
   title, 
   data, 
   columns, 
-  rowsPerPageOptions = [5, 10, 15], 
+  rowsPerPageOptions = [30, 50, 100], 
   showSearch = true,
   exportable = true, 
   onAdd,
@@ -24,6 +24,17 @@ const TableComponent = ({
   const { isGregorian, formatDateForDisplay } = useContext(CalendarContext);
 
   console.log(`🧭 Table "${title}" using calendar:`, isGregorian ? "Gregorian" : "Ethiopian");
+
+  const normalizeDateString = (value) => {
+  if (!value) return value;
+
+  if (typeof value === "string" && value.includes("T")) {
+    return value.split("T")[0]; // YYYY-MM-DD
+  }
+
+  return value;
+};
+
 
 
   const handleSort = (key) => {
@@ -151,82 +162,99 @@ const TableComponent = ({
       </div>
       </div>
       {/* Table */}
-<div className="print-area">
-  <table className="min-w-full table-auto border-collapse print:hidden" id="table">
-    <thead>
-      <tr className="border-b bg-base-300 ">
-        {columns.map((column) => (
-          <th
-            key={column.key}
-            className="px-4 py-2 text-left font-medium text-white-700 cursor-pointer"
-            onClick={() => handleSort(column.key)}
-          >
-            {column.label}
-            {sortConfig.key === column.key && (
-              sortConfig.direction === 'asc' ? <FaSortUp className="inline" /> : <FaSortDown className="inline" />
-            )}
-          </th>
-        ))}
-      </tr>
-    </thead>
-<tbody>
-  {paginatedData.map((row, index) => (
-    <tr key={index} className="border-b">
-      {columns.map((column) => {
-        let cellValue = row[column.key];
+      <div className="print-area">
+        <table className="min-w-full table-auto border-collapse print:hidden" id="table">
+          <thead>
+            <tr className="border-b bg-base-300 ">
+              {columns.map((column) => (
+                <th
+                  key={column.key}
+                  className="px-4 py-2 text-left font-medium text-white-700 cursor-pointer"
+                  onClick={() => handleSort(column.key)}
+                >
+                  {column.label}
+                  {sortConfig.key === column.key && (
+                    sortConfig.direction === 'asc' ? <FaSortUp className="inline" /> : <FaSortDown className="inline" />
+                  )}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedData.map((row, index) => (
+              <tr key={index} className="border-b">
+                {columns.map((column) => {
+                  let cellValue = row[column.key];
 
-        // ✅ Auto-format date fields (unless custom render is provided)
-        if (!column.render && typeof cellValue === 'string') {
-          const lowerKey = column.key.toLowerCase();
-          if (
-            lowerKey.includes('date') ||
-            lowerKey.endsWith('at') ||
-            lowerKey.startsWith('date')
-          ) {
-           console.log(`📅 Formatting field "${column.key}" with value:`, cellValue);
-          cellValue = formatDateForDisplay(cellValue);
-          console.log(`🗓️ Formatted (${isGregorian ? "Gregorian" : "Ethiopian"}):`, cellValue);
-          }
-        }
+                  // ✅ Auto-format date fields (unless custom render is provided)
+                  if (!column.render && typeof cellValue === 'string') {
+                    const lowerKey = column.key.toLowerCase();
+                    if (
+                      lowerKey.includes('date') ||
+                      lowerKey.endsWith('at') ||
+                      lowerKey.startsWith('date')
+                    ) {
+                    console.log(`📅 Formatting field "${column.key}" with value:`, cellValue);
 
-        return (
-          <td key={column.key} className={`px-4 ${rowPadding}`}>
-            {column.render ? column.render(row) : cellValue}
-          </td>
-        );
-      })}
-    </tr>
-  ))}
-</tbody>
+                    const normalizedDate = normalizeDateString(cellValue);
+                    cellValue = formatDateForDisplay(normalizedDate);
 
-  </table>
-   {/* Print-only table, shows all filtered & sorted data */}
-  <table className="min-w-full table-auto border-collapse hidden print:table" id="print-table">
-    <thead>
-      <tr className="border-b bg-base-300 ">
-        {columns.map((column) => (
-          <th
-            key={column.key}
-            className="px-4 py-2 text-left font-medium text-white-700"
-          >
-            {column.label}
-          </th>
-        ))}
-      </tr>
-    </thead>
-    <tbody>
-      {sortedData.map((row, index) => (
-        <tr key={index} className="border-b">
-          {columns.map((column) => (
-            <td key={column.key} className={`px-4 ${rowPadding}`}>
-              {column.render ? column.render(row) : row[column.key]}
-            </td>
-          ))}
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
+                    console.log(`🗓️ Formatted (${isGregorian ? "Gregorian" : "Ethiopian"}):`, cellValue);
+                    }
+                  }
+
+                  return (
+                    <td key={column.key} className={`px-4 ${rowPadding}`}>
+                      {column.render ? column.render(row) : cellValue}
+                    </td>
+                  );
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {/* Print-only table, shows all filtered & sorted data */}
+        <table className="min-w-full table-auto border-collapse hidden print:table" id="print-table">
+          <thead>
+            <tr className="border-b bg-base-300 ">
+              {columns.map((column) => (
+                <th
+                  key={column.key}
+                  className="px-4 py-2 text-left font-medium text-white-700"
+                >
+                  {column.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {sortedData.map((row, index) => (
+              <tr key={index} className="border-b">
+                {columns.map((column) => (
+                <td key={column.key} className={`px-4 ${rowPadding}`}>
+                    {column.render
+                      ? column.render(row)
+                      : (() => {
+                          const value = row[column.key];
+                          if (typeof value === "string") {
+                            const lowerKey = column.key.toLowerCase();
+                            if (
+                              lowerKey.includes("date") ||
+                              lowerKey.endsWith("at") ||
+                              lowerKey.startsWith("date")
+                            ) {
+                              return formatDateForDisplay(normalizeDateString(value));
+                            }
+                          }
+                          return value;
+                        })()}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       {/* Pagination */}
       <div className="flex justify-between items-center mt-4">

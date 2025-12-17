@@ -152,7 +152,8 @@ const ViewMyRequest = () => {
         title="Withdrawal Requests"
         data={withdrawalRequests}
         columns={columns}
-        rowsPerPageOptions={[5, 10, 15]}
+       rowsPerPageOptions={[5, 10, 15]}
+
         showSearch={true}
         exportable={true}
         onAdd={handleAddClick}
