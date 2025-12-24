@@ -26,7 +26,7 @@ const WithdrawalRequests = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [requestToDelete, setRequestToDelete] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedRequest, setSelectedRequest] = useState(null); // State to hold selected request details
+  const [selectedRequest, setSelectedRequest] = useState(null); 
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [tenantDetailModalOpen, setTenantDetailModalOpen] = useState(false);
   const [tenantDetail, setTenantDetail] = useState(null);
@@ -298,8 +298,8 @@ const WithdrawalRequests = () => {
   };
 
   const handleDetailClick = (request) => {
-    setSelectedRequest(request); // Set the request to be displayed in the modal
-    setIsDetailsModalOpen(true); // Open the details modal
+    setSelectedRequest(request); 
+    setIsDetailsModalOpen(true); 
   };
 
   const handleCheckTenant = async (tenantId) => {
@@ -401,6 +401,12 @@ const WithdrawalRequests = () => {
       key: "tenantId",
       label: "Tenant Name",
       render: (row) => getTenantNameById(row.tenantId),
+    },
+    { label: 'Floor', key: 'floorNumber',
+      render: (row) => row?.Tenant?.Floor?.floorNumber || 'N/A'
+    },
+    { label: 'Unit Number', key: 'unitNumber',
+      render: (row) => row?.Tenant?.Unit?.unitNumber || 'N/A'
     },
     {
       key: "employeeId",
@@ -514,6 +520,7 @@ const WithdrawalRequests = () => {
         />
       )}
 
+      {/* update status */}
       {isStatusModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 p-6 rounded-lg w-96">
@@ -569,7 +576,7 @@ const WithdrawalRequests = () => {
           </div>
         </div>
       )}
-
+       {/* assign staff */}
       {isAssignModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 p-6 rounded-lg w-96">
@@ -613,7 +620,7 @@ const WithdrawalRequests = () => {
           </div>
         </div>
       )}
-
+       {/* finalize reques */}
       {isFinalizeModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 p-6 rounded-lg w-96">
@@ -655,7 +662,7 @@ const WithdrawalRequests = () => {
           </div>
         </div>
       )}
-
+       {/* delete request */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 p-6 rounded-lg w-98">
@@ -679,7 +686,7 @@ const WithdrawalRequests = () => {
           </div>
         </div>
       )}
-
+        {/* see detail */}
       {isDetailsModalOpen && selectedRequest && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 p-6 rounded-lg w-96">
@@ -724,7 +731,7 @@ const WithdrawalRequests = () => {
           </div>
         </div>
       )}
-
+       {/* check info */}
       {tenantDetailModalOpen && tenantDetail && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 rounded-lg shadow-lg p-6 w-[90%] max-w-xl max-h-[90vh] overflow-y-auto">
@@ -734,12 +741,25 @@ const WithdrawalRequests = () => {
               <p>
                 <strong>Full Name:</strong> {tenantDetail.fullName}
               </p>
+              <p><strong>Rent :</strong>{tenantDetail.amount}</p>
+              <p><strong>Advance :</strong> {tenantDetail.advance}</p>
+              <p><strong>Rented At :</strong>{" "}{formatDateForDisplay(tenantDetail.leaseStartDate)}</p>
+              <p><strong>Rent Paid Till :</strong>{" "}{formatDateForDisplay(tenantDetail.leaseEndDate)}</p>
               <p>
                 <strong>Requested at:</strong>{" "}
+                  {formatDateForDisplay(
+                    tenantDetail.WithdrawalRequests?.[0]?.terminationDate
+                  )}
               </p>
 
               <div className="mt-2">
-                <h3 className="font-medium">Unit Info</h3>
+                <h3 className="font-medium text-blue-600 bold">Unit Info</h3>
+                <p>
+                  <strong>Unit :</strong> {tenantDetail.Unit?.unitNumber}
+                </p>
+                <p>
+                  <strong>Floor :</strong> {tenantDetail.Floor?.floorNumber}
+                </p>
                 <p>
                   <strong>Available Equipments:</strong>{" "}
                   {JSON.parse(
@@ -753,6 +773,7 @@ const WithdrawalRequests = () => {
               </div>
 
               <div className="mt-2">
+                <h2 className="font-large text-blue-600">Payment Histories</h2> 
                 <h3 className="font-medium">Rent Summary</h3>
                 {tenantDetail.latestRent ? (
                   <>

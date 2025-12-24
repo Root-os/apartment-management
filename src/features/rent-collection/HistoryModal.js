@@ -33,7 +33,7 @@ const HistoryModal = ({ isOpen, onClose, tenantInfo, paymentHistory }) => {
               <tbody>
                 {paymentHistory.map((payment) => (
                   <tr key={payment.id}>
-                    <td className="py-2 px-4 border-b dark:border-gray-700">{Math.ceil(payment.amountPaid)}</td>
+                    <td className="py-2 px-4 border-b dark:border-gray-700">{Number(payment.amountPaid).toFixed(2)}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-700">{formatDateForDisplay(payment.paymentDate)}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-700">{formatDateForDisplay(payment.nextDueDate)}</td>
                     <td className="py-2 px-4 border-b dark:border-gray-700">{payment.paidDays}</td>

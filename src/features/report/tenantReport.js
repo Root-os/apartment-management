@@ -82,8 +82,8 @@ const TenantReport = () => {
 
   const columns = [
     { key: 'tenantName', label: 'Tenant Name', render: (data) => data.fullName },
-    { key: 'unitNumber', label: 'Unit Number', render: (data) => data.Unit?.unitNumber },
-    { key: 'floorNumber', label: 'Floor Number', render: (data) => data.Floor?.floorNumber },
+    { key: 'floorNumber', label: 'Floor ', render: (data) => data.Floor?.floorNumber },
+    { key: 'unitNumber', label: 'Unit ', render: (data) => data.Unit?.unitNumber },
     // { key: 'paymentStatus', label: 'Payment Status', render: (data) => data.paymentStatus },
     { key: 'leaseStartDate', label: 'Lease Start Date', render: (data) => data.leaseStartDate ? formatDateForDisplay(data.leaseStartDate) : '-' },
     { key: 'leaseEndDate', label: 'Lease End Date', render: (data) => data.leaseEndDate ? formatDateForDisplay(data.leaseEndDate): '-' },

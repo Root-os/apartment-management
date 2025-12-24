@@ -2,15 +2,18 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard'
 import Modal from '../../components/Modal'
+import api from '../../utils/api';
 
 
 const AddComplaint = () => {
   const [tenants, setTenants] = useState([]);
   const [tenantId, setTenantId] = useState('');
+  const [selectedTenantId, setSelectedTenantId] = useState('');
   const [description, setDescription] = useState('');
   const [urgency, setUrgency] = useState('low');
-  const [files, setFiles] = useState([]); // Store the actual files
+  const [files, setFiles] = useState([]); 
   const [loading, setLoading] = useState(false);
+  const [units, setUnits] = useState([]);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success')
@@ -18,15 +21,30 @@ const AddComplaint = () => {
 
   const token = localStorage.getItem('token');
 
-  useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}tenant`)
-      .then((response) => {
-        setTenants(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching tenants:', error);
-      });
+  // useEffect(() => {
+  //   axios
+  //     .get(`${process.env.REACT_APP_BASE_URL}tenant`)
+  //     .then((response) => {
+  //       setTenants(response.data);
+  //     })
+  //     .catch((error) => {
+  //       console.error('Error fetching tenants:', error);
+  //     });
+  // }, []);
+
+    useEffect(() => {
+    const fetchUnits = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await api.get(`dashboard/for-tenant`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUnits(response.data.unitsOccupied || []);
+      } catch (err) {
+        console.error("Error fetching units:", err);
+      }
+    };
+    fetchUnits();
   }, []);
 
   const handleFileChange = (event) => {
@@ -42,17 +60,17 @@ const AddComplaint = () => {
     setLoading(true);
 
     const formData = new FormData();
-    formData.append('tenantId', tenantId);
+    formData.append('tenantId', selectedTenantId);
     formData.append('description', description);
     formData.append('urgency', urgency);
 
     files.forEach((file) => {
-      formData.append('images', file); // Append the actual file
+      formData.append('images', file); 
     });
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}complaints/submit`,
+      const response = await api.post(
+        `complaints/submit`,
         formData,
         {
           headers: {
@@ -61,7 +79,7 @@ const AddComplaint = () => {
           },
         }
       );
-      // setMessage(response.data.message);
+
       setLoading(false);
       setModalOpen(true)
       setMessageType('success')
@@ -71,7 +89,7 @@ const AddComplaint = () => {
       setTenantId('');
       setUrgency('low');
       setFiles([]);
-      window.location.href='/app/complain-tenant-view';
+      // window.location.href='/app/complain-tenant-view';
     } catch (error) {
       setLoading(false);
 
@@ -87,6 +105,22 @@ const AddComplaint = () => {
     <>
       <TitleCard title="Add Complain">
       <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="mb-4">
+          <label className="block text-sm font-semibold mb-2">Select Unit</label>
+            <select
+              value={selectedTenantId}
+              onChange={(e) => setSelectedTenantId(e.target.value)}
+              required
+              className="w-full border rounded-lg p-2 bg-base-100"
+            >
+              <option value="">-- Select a unit --</option>
+              {units.map((u) => (
+                <option key={u.tenantId} value={u.tenantId}>
+                  Unit {u.unitNumber} (Floor {u.floorNumber})
+                </option>
+              ))}
+            </select>
+        </div>
         <div>
           <label htmlFor="description" className="block text-sm font-medium">
             Description

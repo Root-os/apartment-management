@@ -121,6 +121,7 @@ const handleDetailClick = (floor) => {
     { key: 'totalUnits', label: 'Total Units' },
     { key: 'rentedUnits', label: 'Rented Units' },
     { key: 'freeUnits', label: 'Free Units' },
+    { key: 'underMaintenanceUnits', label: 'Under Maintenance'},
     {
       key: 'actions',
       label: 'Actions',

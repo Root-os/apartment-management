@@ -32,6 +32,10 @@ const AddTenant = () => {
   const [messageType, setMessageType] = useState("success");
   const [message, setMessage] = useState("");
 
+const [tenantType, setTenantType] = useState("new"); // "new" | "existing"
+const [existingTenants, setExistingTenants] = useState([]);
+const [selectedTenantId, setSelectedTenantId] = useState("");
+
   // State for individual field errors
   const [errors, setErrors] = useState({
     fullName: "",
@@ -52,6 +56,19 @@ const AddTenant = () => {
     document: "",
     api: "",
   });
+
+useEffect(() => {
+  const fetchTenants = async () => {
+    try {
+      const res = await api.get("tenant"); // correct endpoint
+      setExistingTenants(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  fetchTenants();
+}, []);
+
 
   // Fetch floor data for dropdown
 useEffect(() => {
@@ -74,7 +91,6 @@ useEffect(() => {
   fetchFloors();
 }, []);
 
-
   // Fetch freeUnits when floor is selected
   const fetchFreeUnits = async (id) => {
     try {
@@ -94,7 +110,7 @@ useEffect(() => {
       const response = await api.get(
         `unit/${unitId}`
       );
-      const rent = response.data?.rentAmount || "";
+      const rent = response.data?.taxedRentAmount || "";
       setAmount(rent);
     } catch (err) {
       console.error("Failed to fetch unit details:", err);
@@ -293,63 +309,147 @@ useEffect(() => {
     if (document) formData.append("document", document);
 
     try {
-      const response = await api.post(
-        `tenant`,
-        formData,
-        { 
-          headers: { "Content-Type": "multipart/form-data" }
-         }
-      );
-      console.log("API Response:", response.data);
+  const response = await api.post(
+    `tenant`,
+    formData,
+    { headers: { "Content-Type": "multipart/form-data" } }
+  );
+  console.log("API Response:", response.data);
 
-      // Reset form fields
-      setFullName("");
-      setEmail("");
-      setDocument(null);
-      setPhoneNumber("");
-      setHasCar(false);
-      setCarName("");
-      setCarPlate("");
-      setColor("");
-      setNationalId("");
-      setTin("");
-      setFloorId("");
-      setUnitId("");
-      setLeaseStartDate("");
-      setContractEndDate("");
-      setLeaseEndDate("");
-      setAmount("");
-      setAdditionalNotes("");
-      setAdvance("");
-      setErrors({});
+  // Reset form fields
+  setFullName("");
+  setEmail("");
+  setDocument(null);
+  setPhoneNumber("");
+  setHasCar(false);
+  setCarName("");
+  setCarPlate("");
+  setColor("");
+  setNationalId("");
+  setTin("");
+  setFloorId("");
+  setUnitId("");
+  setLeaseStartDate("");
+  setContractEndDate("");
+  setLeaseEndDate("");
+  setAmount("");
+  setAdditionalNotes("");
+  setAdvance("");
+  setErrors({});
 
-      const password = response.data?.password || "";
-      setModalOpen(true);
-      setMessageType("success");
-      setMessage(
-        `Tenant added successfully.\n\nTemporary Password: ${password}`
-      );
-      // window.location.href = '/app/tenant-view';
-    } catch (err) {
-      const errorMessage =
-        err.response?.data?.error || "Unknown error occurred";
-      console.error("Error Response:", err.response?.data);
-      setErrors((prev) => ({
-        ...prev,
-        api: "Failed to add tenant: " + errorMessage,
-      }));
-      setModalOpen(true);
-      setMessageType("error");
-      setMessage("Failed to add tenant: " + errorMessage);
-    } finally {
-      setLoading(false);
-    }
+  const password = response.data?.password || "";
+  const isExisting = response.data?.isExisting;
+
+  setModalOpen(true);
+  setMessageType("success");
+  if (isExisting) {
+    setMessage(
+      `Tenant occupied another unit Successfully.`
+    );
+  } else {
+    setMessage(
+      `Tenant added successfully.\n\nTemporary Password: ${password}`
+    );
+  }
+
+  } catch (err) {
+    const errorMessage =
+      err.response?.data?.error || "Unknown error occurred";
+    console.error("Error Response:", err.response?.data);
+    setErrors((prev) => ({
+      ...prev,
+      api: "Failed to add tenant: " + errorMessage,
+    }));
+    setModalOpen(true);
+    setMessageType("error");
+    setMessage("Failed to add tenant: " + errorMessage);
+  } finally {
+    setLoading(false);
+  }
+
   };
+
+const handleTenantSelect = async (tenantId) => {
+  if (!tenantId) return;
+
+  try {
+    const res = await api.get(`tenant/${tenantId}`);
+    const tenant = res.data?.[0];
+
+    if (!tenant) {
+      console.warn("Tenant not found");
+      return;
+    }
+
+    setFullName(tenant.fullName ?? "");
+    setPhoneNumber(tenant.phoneNumber ?? "");
+    setEmail(tenant.email ?? "");
+    setNationalId(tenant.nationalId ?? "");
+    setTin(tenant.tin ?? "");
+
+  } catch (error) {
+    console.error("Error fetching tenant", error);
+  }
+};
 
   return (
     <>
       <TitleCard title={"Add Tenant"} topMargin={"mt-2"}>
         <form onSubmit={handleSubmit} className="space-y-4">
+
+          {/* Tenant Type */}
+<div>
+  <label className="block text-sm font-semibold mb-2">
+    Tenant Type <span className="text-red-500">*</span>
+  </label>
+
+  <div className="flex gap-6">
+    <label className="flex items-center gap-2">
+      <input
+        type="radio"
+        name="tenantType"
+        checked={tenantType === "new"}
+        onChange={() => {
+          setTenantType("new");
+          setSelectedTenantId("");
+        }}
+      />
+      New
+    </label>
+
+    <label className="flex items-center gap-2">
+      <input
+        type="radio"
+        name="tenantType"
+        checked={tenantType === "existing"}
+        onChange={() => setTenantType("existing")}
+      />
+      Existing
+    </label>
+  </div>
+</div>
+
+   {tenantType === "existing" && (
+  <div>
+    <label className="block text-sm font-semibold mb-2">
+      Select Existing Tenant <span className="text-red-500">*</span>
+    </label>
+
+    <select
+      value={selectedTenantId}
+      onChange={(e) => handleTenantSelect(e.target.value)}
+      className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+    >
+      <option value="">Select Tenant</option>
+      {existingTenants.map((tenant) => (
+        <option key={tenant.id} value={tenant.id}>
+          {tenant.fullName} – {tenant.phoneNumber}
+        </option>
+      ))}
+    </select>
+  </div>
+)}
+
           {/* Full Name */}
           <div>
             <label className="block text-sm font-semibold mb-2">

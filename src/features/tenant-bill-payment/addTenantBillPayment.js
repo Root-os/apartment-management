@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import Modal from "../../components/Modal";
 import TitleCard from "../../components/Cards/TitleCard";
 import { useSearchParams } from "react-router-dom";
 import SmartDateInput from "../../components/Common/smartDatePicker";
+import { CalendarContext } from "../../context/calendarContext";
+import api from '../../utils/api';
 
 const AddBillPayment = () => {
   const [tenantId, setTenantId] = useState("");
@@ -28,6 +30,15 @@ const AddBillPayment = () => {
   const [messageType, setMessageType] = useState("success");
   const [modalMessage, setModalMessage] = useState("");
 
+  const [lastPayment, setLastPayment] = useState(null);
+  const [loadingLastPayment, setLoadingLastPayment] = useState(false);
+
+    const {
+    isGregorian,
+    convertToGregorian,
+    formatDateForDisplay
+  } = useContext(CalendarContext);
+
   useEffect(() => {
     const tenantIdFromUrl = searchParams.get("tenantId");
     if (tenantIdFromUrl) {
@@ -36,9 +47,7 @@ const AddBillPayment = () => {
 
     const fetchTenants = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}tenant`
-        );
+        const response = await api.get(`tenant`);
         setTenants(response.data);
       } catch (error) {
         console.error("Error fetching tenants:", error);
@@ -47,8 +56,8 @@ const AddBillPayment = () => {
 
     const fetchBillTypes = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}bill-type`
+        const response = await api.get(
+          `bill-type`
         );
         setBillTypes(response.data);
       } catch (error) {
@@ -59,6 +68,55 @@ const AddBillPayment = () => {
     fetchTenants();
     fetchBillTypes();
   }, [searchParams]);
+
+  useEffect(() => {
+  const fetchLastPayment = async () => {
+    if (!tenantId || !billPaymentTypeId) {
+      setLastPayment(null);
+      return;
+    }
+
+    setLoadingLastPayment(true);
+
+    try {
+      const response = await api.get(
+        `tenant-payments/last`,
+        {
+          params: {
+            tenantId,
+            billPaymentTypeId,
+          },
+        }
+      );
+
+      if (response.data) {
+        const { startDate, endDate } = response.data;
+
+        setLastPayment({
+          startDate,
+          endDate,
+        });
+
+        setStartDate(addOneDay(endDate));
+      } else {
+        setLastPayment(null);
+      }
+    } catch (error) {
+      console.error("No previous payment found");
+      setLastPayment(null);
+    } finally {
+      setLoadingLastPayment(false);
+    }
+  };
+
+  fetchLastPayment();
+}, [tenantId, billPaymentTypeId]);
+
+  const addOneDay = (dateString) => {
+  const date = new Date(dateString);
+  date.setDate(date.getDate() + 1);
+  return date.toISOString().split("T")[0];
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -104,8 +162,8 @@ const AddBillPayment = () => {
     console.log("Payload being sent:", payload);
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}tenant-payments`,
+      const response = await api.post(
+        `tenant-payments`,
         payload,
         {
           headers: {
@@ -159,23 +217,25 @@ const AddBillPayment = () => {
             >
               Tenant
             </label>
-            <select
-              id="tenantId"
-              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-              value={tenantId}
-              onChange={(e) => setTenantId(e.target.value)}
-              required
-              disabled={!!searchParams.get("tenantId")} // disables if coming from URL
-            >
-              <option value="" disabled>
-                Select Tenant
-              </option>
-              {tenants.map((tenant) => (
-                <option key={tenant.id} value={tenant.id}>
-                  {tenant.fullName}
+              <select
+                id="tenantId"
+                className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+                value={tenantId}
+                onChange={(e) => setTenantId(e.target.value)}
+                required
+                disabled={!!searchParams.get("tenantId")}
+              >
+                <option value="" disabled>
+                  Select Tenant
                 </option>
-              ))}
-            </select>
+
+                {tenants.map((tenant) => (
+                  <option key={tenant.id} value={tenant.id}>
+                    {tenant.fullName} — Unit {tenant.Unit?.unitNumber ?? "N/A"}
+                  </option>
+                ))}
+              </select>
+
           </div>
 
           <div>
@@ -226,26 +286,17 @@ const AddBillPayment = () => {
             />
           </div> */}
 
-          <div>
-            <label
-              htmlFor="amountPaid"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Amount Paid
-            </label>
-            <input
-              type="number"
-              id="amountPaid"
-              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-              value={amountPaid}
-              onChange={(e) => setAmountPaid(e.target.value)}
-              onWheel={(e)=> e.target.blur()}
-              required
-              min="0"
-              step="0.01"
-            />
-          </div>
-
+          {lastPayment && (
+           <div className="p-3 rounded bg-gray-100 dark:bg-gray-800 text-sm">
+              <p className="font-medium text-gray-700 dark:text-gray-300">
+                Last Payment Period
+              </p>
+              <p className="text-gray-600 dark:text-gray-400">
+                {formatDateForDisplay(lastPayment.startDate)} →{" "}
+                {formatDateForDisplay(lastPayment.endDate)}
+              </p>
+            </div>
+          )}
           <div>
             <label
               htmlFor="startDate"
@@ -275,6 +326,26 @@ const AddBillPayment = () => {
               value={endDate}
               onChange={(date) => setEndDate(date)}
               required
+            />
+          </div>
+
+                    <div>
+            <label
+              htmlFor="amountPaid"
+              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
+              Amount Paid
+            </label>
+            <input
+              type="number"
+              id="amountPaid"
+              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+              value={amountPaid}
+              onChange={(e) => setAmountPaid(e.target.value)}
+              onWheel={(e)=> e.target.blur()}
+              required
+              min="0"
+              step="0.01"
             />
           </div>
 

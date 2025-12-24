@@ -75,26 +75,33 @@ const AddCollectedRent = () => {
     }
   };
 
-  // Auto-fill tenant info if tenantId in URL
-  useEffect(() => {
-    if (tenants.length && tenantIdFromUrl) {
-      const tenant = tenants.find((t) => t.id.toString() === tenantIdFromUrl);
-      if (tenant) {
-        setTenantId(tenantIdFromUrl);
-        setAmount(tenant.amount || "");
-        setLeaseStartDate(tenant.leaseStartDate || "");
-        setLeaseEndDate(tenant.leaseEndDate || "");
+ 
+useEffect(() => {
+  if (tenants.length && tenantIdFromUrl) {
+    const tenant = tenants.find((t) => t.id.toString() === tenantIdFromUrl);
+    if (tenant) {
+      setTenantId(tenantIdFromUrl);
+      setAmount(tenant.amount || "");
+      setLeaseStartDate(tenant.leaseStartDate || "");
+      setLeaseEndDate(tenant.leaseEndDate || "");
 
-        const start = tenant.leaseEndDate
-          ? new Date(tenant.leaseEndDate)
-          : new Date(tenant.leaseStartDate);
+      // Same logic as in handleTenantSelect
+      let start = tenant.leaseEndDate
+        ? new Date(tenant.leaseEndDate)
+        : new Date(tenant.leaseStartDate);
+
+     
+      if (tenant.leaseEndDate) {
         start.setDate(start.getDate() + 1);
-        const iso = start.toISOString().split("T")[0];
-        setPaymentDate(iso);
-        fetchPunishmentByTenant(tenantIdFromUrl);
       }
+
+      const iso = start.toISOString().split("T")[0];
+      setPaymentDate(iso);
+
+      fetchPunishmentByTenant(tenantIdFromUrl);
     }
-  }, [tenants, tenantIdFromUrl]);
+  }
+}, [tenants, tenantIdFromUrl]);
 
   // Helper function to add months with proper date handling
   const addMonths = (date, months) => {
@@ -102,9 +109,9 @@ const AddCollectedRent = () => {
     const dayOfMonth = result.getDate();
     result.setMonth(result.getMonth() + months);
     
-    // Handle month overflow (e.g., Jan 31 + 1 month)
+  
     if (result.getDate() !== dayOfMonth) {
-      result.setDate(0); // Set to last day of previous month
+      result.setDate(0); 
     }
     
     return result;
@@ -115,7 +122,6 @@ useEffect(() => {
   if (paymentDate && (monthsCount || daysCount)) {
     let result = new Date(paymentDate);
 
-    // Convert months to days (1 month = 30 days)
     if (monthsCount) {
       result.setDate(result.getDate() + (parseInt(monthsCount) * 30));
     }
@@ -124,38 +130,31 @@ useEffect(() => {
       result.setDate(result.getDate() + parseInt(daysCount));
     }
 
+    result.setDate(result.getDate() - 1);
     setNextDueDate(result.toISOString().split("T")[0]);
   }
 }, [paymentDate, monthsCount, daysCount]);
 
 
   // Calculate paidDays
-  useEffect(() => { 
-    if (paymentDate && nextDueDate) {
-      if (monthsCount) {
-        // When monthsCount is provided, use 30 days per month
-        const totalMonths = parseInt(monthsCount) || 0;
-        const additionalDays = parseInt(daysCount) || 0;
-        const calculatedDays = (totalMonths * 30) + additionalDays;
-        // console.log('Calculating with 30-day months:', { totalMonths, additionalDays, calculatedDays });
-        setPaidDays(calculatedDays);
-      } else if (daysCount) {
-        // When only daysCount is provided
-        // console.log('Using only daysCount:', daysCount);
-        setPaidDays(parseInt(daysCount));
-      } else {
-        // Fallback to calendar days
-        const start = new Date(paymentDate);
-        const end = new Date(nextDueDate);
-        const diffTime = Math.abs(end - start);
-        const calendarDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        // console.log('Falling back to calendar days:', { start, end, diffTime, calendarDays });
-        setPaidDays(calendarDays);
-      }
-    } else {
-      setPaidDays("");
-    }
-  }, [paymentDate, nextDueDate, monthsCount, daysCount]);
+useEffect(() => { 
+  if (paymentDate && nextDueDate) {
+    const start = new Date(paymentDate);
+    const end = new Date(nextDueDate);
+
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+
+    const diffTime = end - start;
+    const calendarDays =
+      Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    setPaidDays(calendarDays);
+  } else {
+    setPaidDays("");
+  }
+}, [paymentDate, nextDueDate, monthsCount, daysCount]);
+
 
   // Calculate amountPaid
   useEffect(() => {
@@ -267,7 +266,8 @@ const handleSubmit = async (e) => {
               <option value="">Select Tenant</option>
               {tenants.map((t) => (
                 <option key={t.id} value={t.id}>
-                  {t.fullName}
+                  {t.fullName} — Unit {t.Unit?.unitNumber ?? "N/A"}
+                  {/* {tenant.fullName} — Unit {tenant.Unit?.unitNumber ?? "N/A"} */}
                 </option>
               ))}
             </select>

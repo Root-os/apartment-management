@@ -76,6 +76,8 @@ const TenantBillReport = () => {
   // Columns definition including payment type name
   const columns = [
     { key: 'tenantName', label: 'Tenant Name', render: (payment) => payment?.Tenant?.fullName || 'N/A' },
+    { key: 'floorNumber', label: 'Floor ', render: (payment) => payment?.Tenant?.Floor?.floorNumber || 'N/A' },
+    { key: 'unitNumber', label: 'Unit ', render: (payment) => payment?.Tenant?.Unit?.unitNumber || 'N/A' },
     { key: 'billTypeName', label: 'Bill Type', render: (payment) => payment?.BillType?.typeName || 'N/A' },
     { key: 'amountPaid', label: 'Amount Paid', render: (payment) => payment?.amountPaid ?? 'N/A' },
     { key: 'startDate', label: 'Start Date', render: (payment) => payment.startDate ? formatDateForDisplay(payment.startDate) : '-'},

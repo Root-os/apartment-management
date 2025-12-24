@@ -66,7 +66,7 @@ const tenantRoutes = [
   {
     path: "",
     icon: <EnvelopeIcon className={`${iconClasses} inline`} />,
-    name: "Tenant Complain",
+    name: "My Complain",
     submenu: [
       {
         path: "/app/complain-tenant-add",
@@ -129,7 +129,7 @@ const tenantRoutes = [
   {
     path: "",
     icon: <MailIcon className={`${iconClasses} inline`} />,
-    name: "Communication",
+    name: "My Communications",
     submenu: [
       {
         path: "/app/my-notification",
@@ -146,24 +146,24 @@ const tenantRoutes = [
   {
     path: "",
     icon: <WalletIcon className={`${iconClasses} inline`} />,
-    name: "Payment History",
+    name: "My Payment History",
     submenu: [
       {
         path: "/app/tenant-rent-collection",
         icon: <EyeIcon className={submenuIconClasses} />,
-        name: "Paid Rents ",
+        name: "My Paid Rents ",
       },
       {
         path: "/app/tenant-payment-history",
         icon: <EyeIcon className={submenuIconClasses} />,
-        name: "Paid Bills ",
+        name: "My Paid Bills ",
       },
     ],
   },
   {
     path: "",
     icon: <WalletIcon className={`${iconClasses} inline`} />,
-    name: "Payment Request",
+    name: "My Payment Request",
     submenu: [
       {
         path: "/app/payment-request-history",

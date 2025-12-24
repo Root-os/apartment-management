@@ -168,7 +168,7 @@ const ComplaintsPage = () => {
   const handleUpdateStatus = async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('token'); // Get admin token from localStorage
+      const token = localStorage.getItem('token'); 
       const response = await api.put(
         `complaints/update-status`,
         {
@@ -177,19 +177,18 @@ const ComplaintsPage = () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Include token in headers
+            Authorization: `Bearer ${token}`, 
           },
         }
       );
       
-      // Preserve the assignedEmployee while updating the status
+
       setComplaints((prevComplaints) =>
         prevComplaints.map((complaint) =>
           complaint.id === complaintToUpdateStatus.id
             ? {
                 ...complaint,
-                status: response.data.complaint.status, // Update only status
-                // Don't overwrite assignedEmployee, keep the existing one
+                status: response.data.complaint.status, 
                 assignedEmployee: complaint.assignedEmployee,
               }
             : complaint
@@ -282,6 +281,12 @@ const ComplaintsPage = () => {
       label: 'Tenant',
       key: 'tenant',
       render: (row) => row.Tenant?.fullName || 'Unknown',
+    },
+    { label: 'Floor ', key: 'floorNumber',
+      render: (row) => row?.Tenant?.Floor?.floorNumber || 'N/A'
+    },
+    { label: 'Unit ', key: 'unitNumber',
+      render: (row) => row?.Tenant?.Unit?.unitNumber || 'N/A'
     },
     {
       label: 'Assigned Employee',

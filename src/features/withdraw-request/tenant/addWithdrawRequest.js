@@ -1,66 +1,61 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import TitleCard from '../../../components/Cards/TitleCard'
+import TitleCard from '../../../components/Cards/TitleCard';
 import Modal from '../../../components/Modal';
 import SmartDateInput from '../../../components/Common/smartDatePicker';
+import api from '../../../utils/api';
 
 const WithdrawalRequestForm = () => {
-  const [tenants, setTenants] = useState([]);
-  const [tenantId, setTenantId] = useState('');
+  const [units, setUnits] = useState([]);
+  // const [selectedUnitId, setSelectedUnitId] = useState('');
+  const [selectedTenantId, setSelectedTenantId] = useState('');
   const [terminationDate, setTerminationDate] = useState('');
   const [reason, setReason] = useState('');
-  const [message, setMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('success');
-  // const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Fetch tenant data
+ 
   useEffect(() => {
-    const fetchTenants = async () => {
+    const fetchUnits = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
-        setTenants(response.data);
-      } catch (error) {
-        console.error('Error fetching tenants:', error);
+        const token = localStorage.getItem('token');
+        const response = await api.get(`dashboard/for-tenant`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUnits(response.data.unitsOccupied || []);
+      } catch (err) {
+        console.error("Error fetching units:", err);
       }
     };
-
-    fetchTenants();
+    fetchUnits();
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const data = {
-      tenantId: parseInt(tenantId),
-      terminationDate,
-      reason,
-    };
+    if (!selectedTenantId) return alert("Please select a unit.");
 
     try {
       setIsLoading(true);
-      const token = localStorage.getItem('token'); 
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}withdrawal-request/submit`, data, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const token = localStorage.getItem('token');
+      const data = { tenantId: selectedTenantId,terminationDate, reason };
+      const response = await api.post(`/withdrawal-request/submit`, data, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      // setMessage(response.data.message);
-      setReason('');
-      setTerminationDate('');
 
-      setModalOpen(true);
-      setMessageType('success');  
       setMessage(response.data.message);
-      window.location.href='/app/withdraw-request-view';
-    } catch (error) {
-      console.error('Error submitting request:', error);
-      // setMessage('An error occurred. Please try again.');
+      setMessageType('success');
       setModalOpen(true);
-      setMessageType('error');
-      setMessage('Failed to submit withdraw request');
+      setTerminationDate('');
+      setReason('');
+    } catch (err) {
+      console.error(err);
+      // const message = err.response?.data?.message || 'Failed to submit withdrawal request.';
 
+      setMessage(err.response?.data?.message || 'Failed to submit withdrawal request.');
+      setMessageType('error');
+      setModalOpen(true);
     } finally {
       setIsLoading(false);
     }
@@ -68,52 +63,64 @@ const WithdrawalRequestForm = () => {
 
   return (
     <>
-      <TitleCard title="Send Withdrawal Request" topMargin={'mt-2'}>
-      <form onSubmit={handleSubmit}>
-        {/* Termination Date */}
-        <div className="mb-4">
-          <label htmlFor="terminationDate" className="block text-sm font-semibold mb-2">Termination Date</label>
-          <SmartDateInput
-            id="terminationDate"
-            name="terminationDate"
-            value={terminationDate}
-            onChange={(date) => setTerminationDate(date)}
-            className="bg-base-100 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            required
-          />
-        </div>
+      <TitleCard title="Send Withdrawal Request" topMargin="mt-2">
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-sm font-semibold mb-2">Select Unit</label>
+              <select
+                value={selectedTenantId}
+                onChange={(e) => setSelectedTenantId(e.target.value)}
+                required
+                className="w-full border rounded-lg p-2 bg-base-100"
+              >
+                <option value="">-- Select a unit --</option>
+                {units.map((u) => (
+                  <option key={u.tenantId} value={u.tenantId}>
+                    Unit {u.unitNumber} (Floor {u.floorNumber})
+                  </option>
+                ))}
+              </select>
+          </div>
 
-        {/* Reason */}
-        <div className="mb-4">
-          <label htmlFor="reason" className="block text-sm font-semibold mb-2">Reason</label>
-          <textarea
-            id="reason"
-            name="reason"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            className="bg-base-100 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            rows="4"
-            required
-          />
-        </div>
+          {/* Termination Date */}
+          <div className="mb-4">
+            <label className="block text-sm font-semibold mb-2">Termination Date</label>
+            <SmartDateInput
+              value={terminationDate}
+              onChange={(date) => setTerminationDate(date)}
+              className="bg-base-100 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
+          </div>
 
-        {/* Submit Button */}
-        <div className="flex justify-center">
+          {/* Reason */}
+          <div className="mb-4">
+            <label className="block text-sm font-semibold mb-2">Reason</label>
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              rows="4"
+              className="bg-base-100 w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+              required
+            />
+          </div>
+
+          {/* Submit */}
           <button
             type="submit"
-            className={`w-full px-6 py-2 text-white font-semibold rounded-lg focus:outline-none ${isLoading ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-700'}`}
             disabled={isLoading}
+            className={`w-full px-6 py-2 text-white font-semibold rounded-lg ${isLoading ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-700'}`}
           >
             {isLoading ? 'Submitting...' : 'Submit Request'}
           </button>
-        </div>
-      </form>
+        </form>
       </TitleCard>
-        <Modal 
-        isOpen={modalOpen} 
-        onClose={() => setModalOpen(false)} 
-        messageType={messageType} 
-        message={message} 
+
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
       />
     </>
   );

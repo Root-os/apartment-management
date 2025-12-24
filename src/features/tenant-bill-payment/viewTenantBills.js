@@ -130,6 +130,16 @@ const ViewBillPayment = () => {
       render: (payment) => payment.Tenant.fullName,
     },
     {
+      key: 'floorNumber',
+      label: 'Floor',
+      render: (payment) => payment.Tenant?.Floor?.floorNumber || 'N/A',
+    },
+    {
+      key: 'unitNumber',
+      label: 'Unit',
+      render: (payment) => payment.Tenant?.Unit?.unitNumber || 'N/A',
+    },
+    {
       key: "billType",
       label: "Bill Type",
       render: (payment) => payment.BillType.typeName,

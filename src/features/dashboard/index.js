@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import LoadingComponent from '../../components/loading';
 import {
@@ -149,10 +150,10 @@ const Dashboard = () => {
     pendingStockouts: 'Pending Stockouts',
     completedStockouts: 'Completed Stockouts',
     rejectedStockouts: 'Rejected Stockouts',
-    totalTenantPayments: 'Total Tenant Payments',
-    pendingTenantPayments: 'Pending Tenant Payments',
-    paidTenantPayments: 'Paid Tenant Payments',
-    overdueTenantPayments: 'Overdue Tenant Payments',
+    // totalTenantPayments: 'Total Tenant Payments',
+    // pendingTenantPayments: 'Pending Tenant Payments',
+    // paidTenantPayments: 'Paid Tenant Payments',
+    // overdueTenantPayments: 'Overdue Tenant Payments',
     totalBillPayments: 'Total Bill Payments',
     pendingBillPayments: 'Pending Bill Payments',
     paidBillPayments: 'Paid Bill Payments',
@@ -174,10 +175,31 @@ const iconMapping = {
   emails: <FaEnvelope className="text-white text-5xl" title="Emails" />,
   employees: <FaUser className="text-white text-5xl" title="Employees" />,
   stockouts: <FaDolly className="text-white text-5xl" title="Stockouts" />,
-  tenantPayments: <FaMoneyBillAlt className="text-white text-5xl" title="Tenant Payments" />,
+  // tenantPayments: <FaMoneyBillAlt className="text-white text-5xl" title="Tenant Payments" />,
   billPayments: <FaFileInvoiceDollar className="text-white text-5xl" title="Bill Payments" />,
   rentCollections: <FaHome className="text-white text-5xl" title="Rent Collections" />,
 };
+
+const routeMapping = {
+  notifications: '/app/all-notfication',
+  paymentsRequest: '/app/payment-request-view',
+  complaints: '/app/complain-from-tenant',
+  units: '/app/view-unit',
+  floors: '/app/view-floor',
+  tenantInventories: '/app/view-in-out',
+  tenants: '/app/tenant-view',
+  withdrawals: '/app/view-withdraw-requests',
+  // tenantVehicles: '/vehicles',
+  expenses: '/app/expense-view',
+  items: '/app/item-view',
+  emails: '/app/send-bulk-email',
+  employees: '/app/view-employee',
+  stockouts: '/app/see-out-requests',
+  // tenantPayments: '/app/tenant-payments',
+  tenantBillPayments: '/app/tenant-bill-view',
+  rentCollections: '/app/rent-collection-view',
+};
+
 
   const handleWrapToggle = () => {
     setIsWrapped(!isWrapped);
@@ -262,32 +284,30 @@ const iconMapping = {
           }`}
         >
           {Object.keys(counts).map((key) => (
-            <div
-              key={key}
-              className="card hover:shadow-xl transition-all transform hover:scale-105 relative"
-              style={{ backgroundColor: generateRandomColor() }}
-            >
-              <div className="absolute top-3 left-3 flex items-center space-x-3">
-              <div className="flex flex-wrap items-center gap-2 w-full">
-              <div className="flex-shrink-0">
-                {iconMapping[key] || <FaQuestionCircle className="text-white text-5xl" title="Unknown" />}
+            <Link to={routeMapping[key] || "#"} key={key}>
+              <div
+                className="card hover:shadow-xl transition-all transform hover:scale-105 relative cursor-pointer"
+                style={{ backgroundColor: generateRandomColor() }}
+              >
+                <div className="absolute top-3 left-3 flex items-center space-x-3">
+                  <div className="flex-shrink-0">
+                    {iconMapping[key] || <FaQuestionCircle className="text-white text-5xl" title="Unknown" />}
+                  </div>
+                  <h3 className="text-base sm:text-xl md:text-2xl font-semibold text-white break-words whitespace-normal">
+                    {keyMapping[key] || key}
+                  </h3>
+                </div>
+                <div className="card-body p-8 mt-12">
+                  <ul className="text-l text-white font-bold">
+                    {Object.keys(counts[key]).map((subKey) => (
+                      <li key={subKey}>
+                        {subKey}: {counts[key][subKey]}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-              <h3 className="text-base sm:text-xl md:text-2xl font-semibold text-white break-words whitespace-normal">
-                {keyMapping[key] || key}
-              </h3>
-              </div>
-
-              </div>
-              <div className="card-body p-8 mt-12">
-                <ul className="text-l text-white font-bold">
-                  {Object.keys(counts[key]).map((subKey) => (
-                    <li key={subKey}>
-                      {subKey}: {counts[key][subKey]}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
+            </Link>
           ))}
         </div>
       ) : (

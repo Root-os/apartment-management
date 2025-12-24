@@ -41,7 +41,7 @@ const TenantLoginPage = () => {
         setError('Login failed. Please check your credentials.');
       }
     } catch (err) {
-      setError('Something went wrong. Please try again later.');
+      setError('Invalid credentials.');
       console.error('Login Error:', err);
     } finally {
       setIsLoading(false);

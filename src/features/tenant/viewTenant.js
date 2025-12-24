@@ -49,9 +49,9 @@ const TenantList = () => {
     document: "",
     status: "",
     description: "",
-    carName: "", // Added for carName
-    carPlate: "", // Added for carPlate
-    color: "", // Added for color
+    carName: "", 
+    carPlate: "", 
+    color: "", 
   });
 
   // Loading and Saving States
@@ -113,9 +113,9 @@ const TenantList = () => {
       phoneNumber: tenant.phoneNumber,
       email: tenant.email,
       nationalId: tenant.nationalId,
-    leaseStartDate: normalizeDate(tenant.leaseStartDate),
-    leaseEndDate: normalizeDate(tenant.leaseEndDate),
-    contractEndDate: normalizeDate(tenant.contractEndDate),
+      leaseStartDate: normalizeDate(tenant.leaseStartDate),
+      leaseEndDate: normalizeDate(tenant.leaseEndDate),
+      contractEndDate: normalizeDate(tenant.contractEndDate),
       additionalNotes: tenant.additionalNotes || "",
       unitId: tenant.unitId || "",
       floorId: tenant.floorId || "",
@@ -124,6 +124,7 @@ const TenantList = () => {
       tin: tenant.tin || "",
       document: tenant.document || "",
       status: tenant.status || "active",
+      resetPassword: false,
     });
 
     // Fetch units for the current floor if floorId exists
@@ -152,11 +153,9 @@ const TenantList = () => {
     }
   };
 
-
 // Handle form submit
 const handleEditSubmit = async () => {
   try {
-    // Basic validation
     if (!editData.fullName || !editData.phoneNumber) {
       setModal({
         isOpen: true,
@@ -168,60 +167,49 @@ const handleEditSubmit = async () => {
 
     setIsSaving(true);
 
-    // Normalize status to lowercase
-const normalizedData = {
-  ...editData,
-  status: editData.status?.toLowerCase() || "active",
-  unitId: editData.unitId ? Number(editData.unitId) : null,
-  floorId: editData.floorId ? Number(editData.floorId) : null,
-};
-
-
-
+    const normalizedData = {
+      ...editData,
+      status: editData.status?.toLowerCase() || "active",
+      unitId: editData.unitId ? Number(editData.unitId) : null,
+      floorId: editData.floorId ? Number(editData.floorId) : null,
+    };
 
     const formData = new FormData();
 
-    // Append all fields to formData
     Object.keys(normalizedData).forEach(key => {
-      if (key === 'document' && normalizedData[key] instanceof File) {
+      if (key === "document" && normalizedData[key] instanceof File) {
         formData.append(key, normalizedData[key]);
       } else if (normalizedData[key] !== null && normalizedData[key] !== undefined) {
         formData.append(key, normalizedData[key]);
       }
     });
 
-    // Add unitId and floorId as numbers if they exist
-    // if (editData.unitId) {
-    //   formData.append('unitId', Number(editData.unitId));
-    // }
-    // if (editData.floorId) {
-    //   formData.append('floorId', Number(editData.floorId));
-    // }
+    if (editData.resetPassword) {
+      formData.set("resetPassword", "true"); // set avoids duplicates
+    }
 
     const response = await api.put(
       `tenant/${selectedTenant.id}`,
       formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
+      { headers: { "Content-Type": "multipart/form-data" } }
     );
 
-    // Update the tenants list
-    const updatedTenants = tenants.map(tenant =>
-      tenant.id === selectedTenant.id ? response.data : tenant
+    // ✅ SINGLE modal decision
+    setModal({
+      isOpen: true,
+      messageType: response.data.newPassword ? "success" : "error",
+      message: response.data.newPassword
+        ? `Tenant updated successfully.\nNew password: ${response.data.newPassword}`
+        : "Tenant updated successfully",
+    });
+
+    const updatedTenants = tenants.map(t =>
+      t.id === selectedTenant.id ? response.data : t
     );
     setTenants(updatedTenants);
 
     setIsEditModalOpen(false);
-    setModal({
-      isOpen: true,
-      messageType: "success",
-      message: "Tenant updated successfully",
-    });
   } catch (error) {
-    console.error("Error updating tenant:", error);
     setModal({
       isOpen: true,
       messageType: "error",
@@ -231,7 +219,6 @@ const normalizedData = {
     setIsSaving(false);
   }
 };
-
 
   // Submit delete request to the API
   const handleDeleteSubmit = async () => {
@@ -316,65 +303,64 @@ const normalizedData = {
               render: (row) => row.Floor?.floorNumber || "N/A",
             },
             {
-  label: "Rent Remaining Days",
-  key: "remainingDays",
-  render: (row) => {
-    if (!row.leaseEndDate) return "Not specified";
+              label: "Rent Remaining Days",
+              key: "remainingDays",
+              render: (row) => {
+                if (!row.leaseEndDate) return "Not specified";
 
-    const today = new Date();
-    const leaseEnd = new Date(row.leaseEndDate);
+                const today = new Date();
+                const leaseEnd = new Date(row.leaseEndDate);
 
-    if (isNaN(leaseEnd)) return "Invalid date";
+                if (isNaN(leaseEnd)) return "Invalid date";
 
-    today.setHours(0, 0, 0, 0);
-    leaseEnd.setHours(0, 0, 0, 0);
+                today.setHours(0, 0, 0, 0);
+                leaseEnd.setHours(0, 0, 0, 0);
 
-    const diffTime = leaseEnd - today;
-    let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                const diffTime = leaseEnd - today;
+                let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays >= 0) {
-      // ✅ inclusive: count today + end date
-      diffDays += 1;
-      const daysText = diffDays === 1 ? "day" : "days";
-      return `${diffDays} ${daysText} remaining`;
-    }
+                if (diffDays >= 0) {
+                  // ✅ inclusive: count today + end date
+                  diffDays += 1;
+                  const daysText = diffDays === 1 ? "day" : "days";
+                  return `${diffDays} ${daysText} remaining`;
+                }
 
-    // Past
-    const passedDays = Math.abs(diffDays);
-    const daysText = passedDays === 1 ? "day" : "days";
-    return `${passedDays} ${daysText} passed`;
-  }
-},
+                // Past
+                const passedDays = Math.abs(diffDays);
+                const daysText = passedDays === 1 ? "day" : "days";
+                return `${passedDays} ${daysText} passed`;
+              }
+            },
 
-{
-  label: "Contract Remaining Days",
-  key: "contractRemainingDays",
-  render: (row) => {
-    if (!row.contractEndDate) return "Not specified";
+            {
+              label: "Contract Remaining Days",
+              key: "contractRemainingDays",
+              render: (row) => {
+                if (!row.contractEndDate) return "Not specified";
 
-    const today = new Date();
-    const contractEnd = new Date(row.contractEndDate);
+                const today = new Date();
+                const contractEnd = new Date(row.contractEndDate);
 
-    if (isNaN(contractEnd)) return "Invalid date";
+                if (isNaN(contractEnd)) return "Invalid date";
 
-    today.setHours(0, 0, 0, 0);
-    contractEnd.setHours(0, 0, 0, 0);
+                today.setHours(0, 0, 0, 0);
+                contractEnd.setHours(0, 0, 0, 0);
 
-    const diffTime = contractEnd - today;
-    let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                const diffTime = contractEnd - today;
+                let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-    if (diffDays >= 0) {
-      diffDays += 1; // ✅ inclusive
-      const daysText = diffDays === 1 ? "day" : "days";
-      return `${diffDays} ${daysText} remaining`;
-    }
+                if (diffDays >= 0) {
+                  diffDays += 1; // ✅ inclusive
+                  const daysText = diffDays === 1 ? "day" : "days";
+                  return `${diffDays} ${daysText} remaining`;
+                }
 
-    const passedDays = Math.abs(diffDays);
-    const daysText = passedDays === 1 ? "day" : "days";
-    return `${passedDays} ${daysText} passed`;
-  }
-},
-
+                const passedDays = Math.abs(diffDays);
+                const daysText = passedDays === 1 ? "day" : "days";
+                return `${passedDays} ${daysText} passed`;
+              }
+            },
             {
               label: "Actions",
               key: "actions",
@@ -543,6 +529,7 @@ const normalizedData = {
                 onChange={(e) =>
                   setEditData({ ...editData, amount: e.target.value })
                 }
+                readOnly
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
@@ -688,6 +675,22 @@ const normalizedData = {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
+            <div className="mb-4 flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="resetPassword"
+                checked={editData.resetPassword || false}
+                onChange={(e) =>
+                  setEditData({ ...editData, resetPassword: e.target.checked })
+                }
+                className="h-4 w-4"
+              />
+              <label htmlFor="resetPassword" className="text-sm font-medium">
+                Reset password and send SMS
+              </label>
+            </div>
+
+
 
             <div className="flex justify-end space-x-2">
               <button
@@ -789,9 +792,9 @@ const normalizedData = {
                 Lease Start Date
               </label>
               <p className="text-sm">
-  {selectedTenant.leaseStartDate
-    ? formatDateForDisplay(normalizeDate(selectedTenant.leaseStartDate))
-    : "N/A"}
+                {selectedTenant.leaseStartDate
+                  ? formatDateForDisplay(normalizeDate(selectedTenant.leaseStartDate))
+                  : "N/A"}
               </p>
             </div>
             <div className="mb-4">
@@ -1026,11 +1029,9 @@ const normalizedData = {
                 Rented Date
               </label>
               <p className="text-sm">
-                {unitDetails.Unit.rentedDate
-                  ? new Date(unitDetails.Unit.rentedDate)
-                      .toISOString()
-                      .split("T")[0]
-                  : "not specified"}
+                {selectedTenant.leaseStartDate
+                  ? formatDateForDisplay(normalizeDate(selectedTenant.leaseStartDate))
+                  : "N/A"}
               </p>
             </div>
 

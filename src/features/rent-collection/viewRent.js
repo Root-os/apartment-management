@@ -79,9 +79,15 @@ const RentCollectionPage = () => {
 
 useEffect(() => {
   if (currentRent?.paymentDate && currentRent?.nextDueDate && currentRent?.tenantRent) {
-    const start = new Date(currentRent.paymentDate);
-    const end = new Date(currentRent.nextDueDate);
-    const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24));
+const start = new Date(currentRent.paymentDate);
+const end = new Date(currentRent.nextDueDate);
+
+// Force midnight UTC for consistency
+start.setHours(0, 0, 0, 0);
+end.setHours(0, 0, 0, 0);
+
+const diffDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
     
     const amount = (currentRent.tenantRent / 30) * diffDays;
 
@@ -95,9 +101,9 @@ useEffect(() => {
 
 
   // Handle history modal open
-  const openHistoryModal = async (tenantId) => {
+  const openHistoryModal = async (id) => {
     try {
-      const response = await api.get(`rent-collection/${tenantId}`);
+      const response = await api.get(`rent-collection/${id}`);
       setPaymentHistory(response.data.rentPayments);
       setTenantInfo(response.data.tenant);
       setHistoryModalOpen(true);
@@ -237,21 +243,34 @@ const handleDateChange = (name) => (value) => {
 };
 
   const columns = [
-    { key: 'tenantName', label: 'Tenant Name', render: (rent) => rent.Tenant.fullName },
-    // { key: 'amountPaid', label: 'Amount Paid' },
-  { 
-    key: 'paymentDate', 
-    label: 'Paid From', 
-    render: (rent) => formatDateForDisplay(rent.paymentDate)
-  },
-  { 
-    key: 'nextDueDate', 
-    label: 'Paid To', 
-    render: (rent) => formatDateForDisplay(rent.nextDueDate)
-  },
+    { 
+      key: 'tenantName', 
+      label: 'Tenant Name', 
+      render: (rent) => rent.Tenant.fullName
+    },
+    {
+      key: 'floorNumber',
+      label: 'Floor',
+      render: (rent) => rent.Tenant?.Floor?.floorNumber || 'N/A',
+    },
+    { 
+      label: 'Unit Number', 
+      key: 'unitNumber',
+      render: (rent) => rent?.Tenant?.Unit?.unitNumber || 'N/A',
+    },
+    { 
+      key: 'paymentDate', 
+      label: 'Paid From', 
+      render: (rent) => formatDateForDisplay(rent.paymentDate)
+    },
+    { 
+      key: 'nextDueDate', 
+      label: 'Paid To', 
+      render: (rent) => formatDateForDisplay(rent.nextDueDate)
+    },
     { key: 'status', label: 'Payment status'},
     { key: 'paidDays', label: 'paid days' },
-    { key: 'amountPaid', label: 'Amount Paid', render: (data) => Math.ceil(data.amountPaid) },
+    { key: 'amountPaid', label: 'Amount Paid', render: (rent) => Number(rent.amountPaid).toFixed(2),},
     {
         key: 'actions',
         label: 'Actions',
@@ -276,7 +295,7 @@ const handleDateChange = (name) => (value) => {
               Details
             </button>
             <button
-              onClick={() => openHistoryModal(rent.tenantId)}
+              onClick={() => openHistoryModal(rent.id)}
               className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
             >
               Payment History
@@ -391,11 +410,10 @@ const handleDateChange = (name) => (value) => {
 
       {/* Edit Modal */}
       {editModalOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-  <div className="bg-base-100 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-    <h2 className="text-xl mb-4">Edit Rent Collection</h2>
-    <form onSubmit={(e) => e.preventDefault()}>
-
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="bg-base-100 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
+          <h2 className="text-xl mb-4">Edit Rent Collection</h2>
+          <form onSubmit={(e) => e.preventDefault()}>
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">Tenant</label>
                 <select

@@ -43,16 +43,19 @@ const AddFloorUnit = () => {
     fetchFloors();
   }, []);
 
-  useEffect(() => {
-    if (size && price) {
-      const calculatedRent = parseFloat(size) * parseFloat(price);
-      setRent(calculatedRent);
-      setTaxedRent(parseFloat((calculatedRent * 1.15).toFixed(2))); // taxedRent = rent + 15%
-    } else {
-      setRent('');
-      setTaxedRent('');
-    }
-  }, [size, price]);
+useEffect(() => {
+  if (size && price) {
+    const calculatedRent = parseFloat(size) * parseFloat(price);
+    setRent(Math.round(calculatedRent * 100) / 100); 
+
+    const taxed = calculatedRent * 1.15; 
+    setTaxedRent(Math.round(taxed * 100) / 100); 
+  } else {
+    setRent('');
+    setTaxedRent('');
+  }
+}, [size, price]);
+
 
 
   // Add new equipment

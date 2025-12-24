@@ -78,6 +78,8 @@ const TenantPaymentRequestsPage = () => {
   };
 
   const columns = [
+    {key: "floorNumber", label: "Floor", render: (row) => row.Tenant.Floor?. floorNumber || "N/A" },
+    {key: "unitNumber", label: "Unit", render: (row) => row.Tenant.Unit?. unitNumber || "N/A" },
     { key: 'message', label: 'Message' },
     { key: 'level', label: 'Level' },
     {

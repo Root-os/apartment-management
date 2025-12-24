@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import Loading from '../../components/loading';
+import api from '../../utils/api'
 
 const TenantRentPage = () => {
   const [tenantInfo, setTenantInfo] = useState(null);
@@ -22,43 +23,56 @@ const TenantRentPage = () => {
       return;
     }
 
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}rent-collection/${tenantId}`);
-        setTenantInfo(response.data.tenant);
-        setPaymentHistory(response.data.rentPayments);
-      } catch (err) {
-        setMessage('Failed to fetch rent payment data.');
-        setMessageType('error');
-        setModalOpen(true);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      const response = await api.get('rent-collection/my-rents');
+
+      setPaymentHistory(Array.isArray(response.data) ? response.data : []);
+
+    } catch (err) {
+      console.error(err);
+      setMessage('Failed to fetch rent payment data.');
+      setMessageType('error');
+      setModalOpen(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
     fetchData();
   }, []);
 
-  const columns = [
-    {
-      key: 'paymentDate',
-      label: 'Payment Date',
-      isDate: true,
-    },
-    {
-      key: 'nextDueDate',
-      label: 'Next Due Date',
-      isDate: true,
-    },
-    { key: 'paidDays', label: 'Paid Days' },
-    {
-      key: 'amountPaid',
-      label: 'Amount Paid',
-      render: (row) => `${Math.ceil(row.amountPaid)} ETB`,
-    },
-    { key: 'status', label: 'Status' },
-    { key: 'paymentMethod', label: 'Method' },
-  ];
+const columns = [
+  {
+    key: 'floorNumber',
+    label: 'Floor',
+    render: (row) => row.Tenant?.Floor?.floorNumber || 'N/A',
+  },
+  {
+    key: 'unitNumber',
+    label: 'Unit',
+    render: (row) => row.Tenant?.Unit?.unitNumber || 'N/A',
+  },
+  {
+    key: 'paymentDate',
+    label: 'Paid From',
+    isDate: true,
+  },
+  {
+    key: 'nextDueDate',
+    label: 'Paid To',
+    isDate: true,
+  },
+  { key: 'paidDays', label: 'Paid Days' },
+  {
+    key: 'amountPaid',
+    label: 'Amount Paid',
+    render: (row) => `${Math.ceil(Number(row.amountPaid))} ETB`,
+  },
+  { key: 'status', label: 'Status' },
+  { key: 'paymentMethod', label: 'Method' },
+];
+
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -66,21 +80,20 @@ const TenantRentPage = () => {
       <Loading/>
       ) : (
         <>
-          <TableComponent
-            title={`Rent Payment History `}
-            data={paymentHistory}
-            columns={columns}
-           rowsPerPageOptions={[5, 10, 15]}
+<TableComponent
+  title="Rent Payment History"
+  data={Array.isArray(paymentHistory) ? paymentHistory : []}
+  columns={columns}
+  showSearch={true}
+  exportable={true}
+/>
 
-            showSearch={true}
-            exportable={true}
-          />
 
-          {paymentHistory.length === 0 && (
+          {/* {paymentHistory.length === 0 && (
             <p className="text-center text-gray-500 mt-4">
               No rent payment history available.
             </p>
-          )}
+          )} */}
         </>
       )}
 

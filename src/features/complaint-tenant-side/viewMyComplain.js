@@ -28,7 +28,7 @@ const TenantComplaintsPage = () => {
   useEffect(() => {
     const fetchComplaints = async () => {
       try {
-        const response = await api.get(`complaints/tenant/${userId}`, {
+        const response = await api.get(`complaints/tenant`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -138,6 +138,9 @@ const TenantComplaintsPage = () => {
   };
 
   const columns = [
+    { label: 'Unit Number', key: 'unitNumber',
+      render: (row) => row?.Tenant?.Unit?.unitNumber || 'N/A'
+    },
     { label: 'Description', key: 'description' },
     { label: 'Urgency', key: 'urgency' },
      {

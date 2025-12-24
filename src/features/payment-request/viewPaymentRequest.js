@@ -142,6 +142,8 @@ const PaymentRequestsPage = () => {
         return tenant ? tenant.fullName : 'Unknown';
       },
     },
+    {key: "floorNumber", label: "Floor", render: (row) => row.Tenant.Floor?. floorNumber || "N/A" },
+    {key: "unitNumber", label: "Unit", render: (row) => row.Tenant.Unit?. unitNumber || "N/A" },
     {
       key: 'paymentTypeId',  // Updated key
       label: 'Payment Type',  // Updated label

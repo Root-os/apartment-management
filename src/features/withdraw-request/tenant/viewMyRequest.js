@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../../components/table'
 import LoadingComponent from '../../../components/loading';
 import Modal from '../../../components/Modal';
+import api from '../../../utils/api';
 
 const ViewMyRequest = () => {
   const [withdrawalRequests, setWithdrawalRequests] = useState([]);
@@ -17,10 +18,9 @@ const ViewMyRequest = () => {
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
 
-  // Fetch withdrawal requests data
+
   const fetchData = async () => {
     try {
-      // Retrieve the token from localStorage
       const token = localStorage.getItem('token');
 
       if (!token) {
@@ -28,7 +28,7 @@ const ViewMyRequest = () => {
         setLoading(false);
         return;
       }
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}withdrawal-request/tenant/my-requests`, {
+      const response = await api.get(`withdrawal-request/tenant/my-requests`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -68,8 +68,7 @@ const ViewMyRequest = () => {
         return;
       }
 
-      // Ensure we are making a PUT request
-      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}withdrawal-request/feedback`, {
+      const response = await api.put(`withdrawal-request/feedback`, {
         requestId: requestToFeedback.id,
         tenantFeedback: feedback,
       }, {
@@ -110,6 +109,9 @@ const ViewMyRequest = () => {
   };
 
   const columns = [
+    { label: 'Unit Number', key: 'unitNumber',
+      render: (row) => row?.Tenant?.Unit?.unitNumber || 'N/A'
+    },
     { label: 'Reason', key: 'reason' },
     {
       key: 'terminationDate',

@@ -122,6 +122,16 @@ const ComplaintsPage = () => {
   // Table columns
   const columns = [
     { label: 'Tenant Name', key: 'tenantId', render: (row) => getTenantNameById(row.tenantId) },
+    {
+      label: 'Floor',
+      key: 'floorNumber',
+      render: (row) => row.Tenant?.Floor?.floorNumber || 'N/A',
+    },
+    {
+      label: 'Unit',
+      key: 'unitNumber',
+      render: (row) => row.Tenant?.Unit?.unitNumber || 'N/A',
+    },
     { label: 'Description', key: 'description' },
     { label: 'Urgency', key: 'urgency' },
     { label: 'Status', key: 'status' },

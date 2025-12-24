@@ -12,7 +12,7 @@ const InventoryForm = () => {
   const [tenants, setTenants] = useState([]); // State to store all tenants
   const [type, setType] = useState("move-in");
   const [items, setItems] = useState([
-    { name: "", condition: "", quantity: 1 },
+    { name: "",  quantity: 1 },
   ]);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
@@ -54,7 +54,7 @@ const InventoryForm = () => {
     e.preventDefault();
 
     const emptyItem = items.some(
-      (item) => !item.name || !item.condition || item.quantity <= 0
+      (item) => !item.name ||  item.quantity <= 0
     );
 if (emptyItem) {
   setMessage("Please fill out all fields for each item.");
@@ -97,8 +97,8 @@ const payload = {
         setMessage("Inventory data created successfully!");
         // window.location.href = "/app/view-in-out";
         setTimeout(() => {
-  navigate("/app/view-in-out");
-}, 1500);
+        navigate("/app/view-in-out");
+      }, 1500);
       } else {
         setMessage("Failed to create inventory data.");
       }
@@ -121,7 +121,7 @@ const payload = {
   };
 
   const addItem = () => {
-    setItems([...items, { name: "", condition: "", quantity: 1 }]);
+    setItems([...items, { name: "",  quantity: 1 }]);
   };
 
   const removeItem = (index) => {
@@ -181,7 +181,7 @@ const payload = {
                     handleItemChange(index, "name", e.target.value)
                   }
                 />
-                <input
+                {/* <input
                   type="text"
                   className="p-2 w-full border border-gray-300 rounded-md bg-base-100"
                   placeholder="Condition"
@@ -189,16 +189,15 @@ const payload = {
                   onChange={(e) =>
                     handleItemChange(index, "condition", e.target.value)
                   }
-                />
+                /> */}
                 <input
                   type="number"
                   className="p-2 w-full border border-gray-300 rounded-md bg-base-100"
                   placeholder="Quantity"
                   value={item.quantity}
-             onChange={(e) =>
-  handleItemChange(index, "quantity", Number(e.target.value))
-}
-
+                  onChange={(e) =>
+                      handleItemChange(index, "quantity", Number(e.target.value))
+                    }
                   onWheel={(e)=> e.target.blur()}
                   min="1"
                   step="1"

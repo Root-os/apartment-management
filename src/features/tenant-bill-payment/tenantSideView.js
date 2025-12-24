@@ -24,7 +24,7 @@ const TenantPaymentHistory = () => {
 
     setIsLoading(true);
     api
-      .get(`tenant-payments/${tenantId}`)
+      .get(`tenant-payments/my-bills`)
       .then((response) => {
         setPayments(response.data);
       })
@@ -40,7 +40,9 @@ const TenantPaymentHistory = () => {
   }, []);
 
   const columns = [
-    { key: "tenantName", label: "Tenant Name", render: (p) => p.Tenant?.fullName || "N/A" },
+    // { key: "tenantName", label: "Tenant Name", render: (p) => p.Tenant?.fullName || "N/A" },
+    { key: "floorNumber", label: "Floor", render: (p) => p.Tenant.Floor?.floorNumber || "N/A"},
+    { key: "unitNumber", label: "Unit", render: (p)=> p.Tenant.Unit?.unitNumber || "N/A"},
     { key: "billType", label: "Bill Type", render: (p) => p.BillType?.typeName || "N/A" },
     { key: "amountPaid", label: "Amount Paid", render: (p) => p.amountPaid },
     {

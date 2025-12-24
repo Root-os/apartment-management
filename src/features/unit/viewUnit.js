@@ -326,7 +326,11 @@ const zoomOut = () => setZoomLevel(prev => Math.max(prev - 0.1, 1));
     },
     {
       Header: "Rent",
-      accessor: "rentAmount"
+      accessor: "taxedRentAmount",
+      Cell: ({ value }) =>
+        value !== null && value !== undefined
+          ? Number(value).toFixed(2)
+          : "0.00",
     },
     {
       Header: "Status",
@@ -447,7 +451,17 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Taxed Rent (15%)</label>
+              <label className="block text-sm font-medium mb-2">Base Rent </label>
+              <input
+                type="number"
+                value={newUnitData.rentAmount}
+                readOnly
+                className="bg-gray-100 w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">Rent with vat</label>
               <input
                 type="number"
                 value={newUnitData.taxedRentAmount}
