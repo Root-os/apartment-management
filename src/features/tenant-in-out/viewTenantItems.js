@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import api from '../../utils/api';
 
 const TenantItems = () => {
-  const { id: tenantId } = useParams();
+  const { id: phoneNumber } = useParams();
   const navigate = useNavigate();
+
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,24 +14,13 @@ const TenantItems = () => {
     const fetchItems = async () => {
       try {
         const token = localStorage.getItem('token');
-        if (!token) {
-          setError('No authentication token found. Please log in.');
-          setLoading(false);
-          return;
-        }
-        console.log("Tenant ID from URL params:", tenantId); 
+        if (!token) throw new Error('No authentication token found.');
 
-        const response = await api.get(
-          `tenant-items/tenant/${tenantId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log("Response data from API:", response.data);
+        const response = await api.get(`/tenant-items/tenant/${phoneNumber}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
-        setItems(response.data);
+        setItems(response.data.tenants[0]?.items || []);
         setLoading(false);
       } catch (err) {
         console.error('Failed to fetch tenant items:', err);
@@ -41,27 +30,15 @@ const TenantItems = () => {
     };
 
     fetchItems();
-  }, [tenantId]);
+  }, [phoneNumber]);
 
   const columns = [
     { label: 'Item Name', key: 'itemName' },
     { label: 'Quantity', key: 'quantity' },
-    { label: 'Status', key: 'status'},
-    { label: 'Registered At', key: 'createdAt', render: (row) => new Date(row.createdAt).toISOString().split('T')[0]},
-
   ];
 
-  if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
-  }
-
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen text-red-500">
-        {error}
-      </div>
-    );
-  }
+  if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
+  if (error) return <div className="flex justify-center items-center h-screen text-red-500">{error}</div>;
 
   return (
     <div className="container mx-auto p-6">
@@ -74,43 +51,38 @@ const TenantItems = () => {
           Back
         </button>
       </div>
+
       {items.length === 0 ? (
-  <p className="text-center text-gray-500">No items found for this tenant.</p>
-) : (
-  <div className="overflow-x-auto shadow-lg rounded-xl bg-white">
-    <table className="min-w-full text-sm text-gray-800">
-      <thead>
-        <tr className="bg-indigo-600 text-white">
-          {columns.map((col) => (
-            <th
-              key={col.key}
-              className="py-4 px-6 text-left font-semibold tracking-wide"
-            >
-              {col.label}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {items.map((row, index) => (
-          <tr
-            key={row.id}
-            className={`transition hover:bg-indigo-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}`}
-          >
-            {columns.map((col) => (
-              <td
-                key={col.key}
-                className="py-4 px-6 border-t border-gray-200"
-              >
-                {col.render ? col.render(row) : row[col.key]}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-)}
+        <p className="text-center text-gray-500">No items found for this tenant.</p>
+      ) : (
+        <div className="overflow-x-auto shadow-lg rounded-xl bg-white">
+          <table className="min-w-full text-sm text-gray-800">
+            <thead>
+              <tr className="bg-indigo-600 text-white">
+                {columns.map((col) => (
+                  <th key={col.key} className="py-4 px-6 text-left font-semibold tracking-wide">
+                    {col.label}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((row, index) => (
+                <tr
+                  key={`${row.itemName}-${index}`}
+                  className={`transition hover:bg-indigo-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}`}
+                >
+                  {columns.map((col) => (
+                    <td key={col.key} className="py-4 px-6 border-t border-gray-200">
+                      {row[col.key]}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

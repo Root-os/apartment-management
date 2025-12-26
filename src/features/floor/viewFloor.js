@@ -162,7 +162,6 @@ const handleDetailClick = (floor) => {
         title="Floor List"
         data={floors}
         columns={columns}
-       rowsPerPageOptions={[5, 10, 15]}
 
         showSearch={true}
         exportable={true}

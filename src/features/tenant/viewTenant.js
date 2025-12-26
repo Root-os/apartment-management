@@ -195,13 +195,14 @@ const handleEditSubmit = async () => {
     );
 
     // ✅ SINGLE modal decision
-    setModal({
-      isOpen: true,
-      messageType: response.data.newPassword ? "success" : "error",
-      message: response.data.newPassword
-        ? `Tenant updated successfully.\nNew password: ${response.data.newPassword}`
-        : "Tenant updated successfully",
-    });
+setModal({
+  isOpen: true,
+  messageType: "success",
+  message: response.data.newPassword
+    ? `Tenant updated successfully.\nNew password: ${response.data.newPassword}`
+    : "Tenant updated successfully",
+});
+
 
     const updatedTenants = tenants.map(t =>
       t.id === selectedTenant.id ? response.data : t

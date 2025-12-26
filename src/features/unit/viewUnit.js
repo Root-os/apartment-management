@@ -401,7 +401,6 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
            label: col.Header,
            render: col.Cell ? (row) => col.Cell({ value: row[col.accessor], row }) : undefined
           }))}
-          rowsPerPageOptions={[5, 10, 15]}
           showSearch={true}
           exportable={true}
           customHeader={<StatusFilter selectedStatus={selectedStatus} onStatusChange={handleStatusChange} onSearchClick={handleSearchClick} />}

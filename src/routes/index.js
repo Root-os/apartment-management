@@ -233,6 +233,9 @@ const InOutAdd = lazy(() =>
 const ViewInOut = lazy(() =>
   import("../pages/protected/Inventory-in-out/ViewInOut")
 );
+const ViewDetail = lazy(() =>
+  import("../pages/protected/Inventory-in-out/ViewDetail")
+);
 const tenantViewInOut = lazy(() =>
   import("../pages/protected/Inventory-in-out/tenantViewInOut")
 );
@@ -484,6 +487,7 @@ const adminRoutes = [
       { path: "/item-view", component: ItemView },
       { path: "/add-in-out", component: InOutAdd },
       { path: "/view-in-out", component: ViewInOut },
+      { path: "/tenant-inventory/:phoneNumber", component: ViewDetail},
       { path: "/view-stocks", component: StockView },
       { path: "/view-low-level-stock", component: LowLevelStock },
       { path: "/see-out-requests", component: AdminViewRequest },

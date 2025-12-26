@@ -6,10 +6,13 @@ import TitleCard from "../../components/Cards/TitleCard";
 import { useSearchParams } from "react-router-dom";
 
 const InventoryForm = () => {
-  const [tenantId, setTenantId] = useState(null);
+ const [profiles, setProfiles] = useState([]);
+const [selectedProfileIndex, setSelectedProfileIndex] = useState("");
+const [selectedTenantId, setSelectedTenantId] = useState("");
+
+
   const [searchParams] = useSearchParams();
 
-  const [tenants, setTenants] = useState([]); // State to store all tenants
   const [type, setType] = useState("move-in");
   const [items, setItems] = useState([
     { name: "",  quantity: 1 },
@@ -23,52 +26,65 @@ const InventoryForm = () => {
 
   const navigate = useNavigate();
   // Fetch all tenants once the component is mounted
-  useEffect(() => {
-    const fetchTenants = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}tenant`
-        );
-        setTenants(response.data);
-      } catch (error) {
-        console.error("Error fetching tenants:", error);
-      }
-    };
-
-    // Get tenantId from URL
-    const tenantIdFromUrl = searchParams.get("tenantId");
-    if (tenantIdFromUrl) {
-      setTenantId(tenantIdFromUrl);
+useEffect(() => {
+  const fetchProfiles = async () => {
+    try {
+      const res = await axios.get(
+        `${process.env.REACT_APP_BASE_URL}tenant/floor-units`
+      );
+      setProfiles(res.data);
+    } catch (error) {
+      console.error("Error fetching profiles:", error);
     }
-
-    fetchTenants();
-  }, [searchParams]);
-
-  // Handle tenant selection from the dropdown
-  const handleTenantChange = (event) => {
-    setTenantId(event.target.value);
   };
+
+  fetchProfiles();
+}, []);
+
+
+useEffect(() => {
+  const tenantIdFromUrl = searchParams.get("tenantId");
+  if (!tenantIdFromUrl || profiles.length === 0) return;
+
+  profiles.forEach((profile, profileIndex) => {
+    const matchedTenant = profile.tenant.find(
+      (t) => t.tenantId === Number(tenantIdFromUrl)
+    );
+
+    if (matchedTenant) {
+      setSelectedProfileIndex(profileIndex);
+      setSelectedTenantId(matchedTenant.tenantId);
+    }
+  });
+}, [searchParams, profiles]);
 
   // Handle the form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!selectedTenantId) {
+      setMessage("Please select a tenant and unit.");
+      setmessageType("error");
+      setModalOpen(true);
+      return;
+    }
+
     const emptyItem = items.some(
       (item) => !item.name ||  item.quantity <= 0
     );
-if (emptyItem) {
-  setMessage("Please fill out all fields for each item.");
-  setmessageType("error");
-  setModalOpen(true);
-  return;
-}
+    if (emptyItem) {
+      setMessage("Please fill out all fields for each item.");
+      setmessageType("error");
+      setModalOpen(true);
+      return;
+    }
 
-const payload = {
-  tenantId: Number(tenantId),
-  type,
-  items,
-  notes,
-};
+    const payload = {
+      tenantId: Number(selectedTenantId),
+      type,
+      items,
+      notes,
+    };
 
     const token = localStorage.getItem("token");
 
@@ -134,24 +150,43 @@ const payload = {
       <TitleCard title={"Add In/Out data"} topMargin={"mt-1"}>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="tenantId" className="block text-sm font-medium">
-              Tenant
-            </label>
-            <select
-              id="tenantId"
-              className="mt-1 p-2 w-full border border-gray-300 rounded-md bg-base-100"
-              value={tenantId || ""}
-              onChange={handleTenantChange}
-              disabled={!!searchParams.get("tenantId")} // disables if coming from URL
-            >
-              <option value="">Select a Tenant</option>
-              {tenants.map((tenant) => (
-                <option key={tenant.id} value={tenant.id}>
-                  {tenant.fullName}
-                </option>
-              ))}
-            </select>
+            <label className="block text-sm font-medium">Tenant</label>
+<select
+  className="mt-1 p-2 w-full border rounded bg-base-100"
+  value={selectedProfileIndex}
+  onChange={(e) => {
+    setSelectedProfileIndex(e.target.value);
+    setSelectedTenantId(""); // reset unit
+  }}
+>
+  <option value="">Select Tenant</option>
+  {profiles.map((profile, index) => (
+    <option key={profile.phoneNumber} value={index}>
+      {profile.fullName} ({profile.phoneNumber})
+    </option>
+  ))}
+</select>
+
           </div>
+
+          {selectedProfileIndex !== "" && (
+  <>
+    <label className="block text-sm font-medium mt-4">Unit</label>
+    <select
+      className="mt-1 p-2 w-full border rounded bg-base-100"
+      value={selectedTenantId}
+      onChange={(e) => setSelectedTenantId(e.target.value)}
+    >
+      <option value="">Select Unit</option>
+      {profiles[selectedProfileIndex].tenant.map((t) => (
+        <option key={t.tenantId} value={t.tenantId}>
+          Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
+        </option>
+      ))}
+    </select>
+  </>
+)}
+
 
           <div className="mb-4">
             <label htmlFor="type" className="block text-sm font-medium">
