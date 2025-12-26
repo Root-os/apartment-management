@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
 import Modal from "../../components/Modal";
+import api from "../../utils/api"
 
 const TenantItemOutRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -29,7 +30,7 @@ const TenantItemOutRequests = () => {
 
   const fetchRequests = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}item-out-request`, {
+      const response = await api.get(`item-out-request`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRequests(response.data);
@@ -42,7 +43,7 @@ const TenantItemOutRequests = () => {
 
   const fetchTenantItems = async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant-items/my-items`, {
+      const res = await api.get(`tenant-items/my-items`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTenantItems(res.data);
@@ -80,8 +81,8 @@ const TenantItemOutRequests = () => {
     }
 
     try {
-      await axios.put(
-        `${process.env.REACT_APP_BASE_URL}item-out-request/${editingRequest.id}`,
+      await api.put(
+        `item-out-request/${editingRequest.id}`,
         payload,
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -119,7 +120,7 @@ const TenantItemOutRequests = () => {
     setDeletingId(requestToDelete);
     setShowConfirmModal(false);
     try {
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}item-out-request/${requestToDelete}`, {
+      await api.delete(`item-out-request/${requestToDelete}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRequests((prev) => prev.filter((req) => req.id !== requestToDelete));
@@ -143,8 +144,26 @@ const TenantItemOutRequests = () => {
     key: 'itemName',
     render: (row) => row.item?.itemName || row.name || 'N/A',
   },
-  { label: 'Quantity', key: 'quantity' },
+  {
+    label: 'Quantity',
+    key: 'quantity',
+    render: (row) => row.item?.quantity || row.quantity || 'N/A',
+  },
   { label: 'Status', key: 'status' },
+  {
+    label: 'Unit',
+    key: 'unitNumber',
+    render: (row) => row.unitNumber || 'N/A',
+  },
+  {
+    label: 'Floor',
+    key: 'floorNumber',
+    render: (row) => row.floorNumber || 'N/A',
+  },
+  {
+    label: 'Requested By',
+    key: 'tenantName',
+  },
   {
     label: 'Requested At',
     key: 'createdAt',

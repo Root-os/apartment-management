@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import TitleCard from "../../components/Cards/TitleCard";
 import Modal from "../../components/Modal";
+import api from "../../utils/api";
 
 const ItemOutRequestForm = () => {
   const [items, setItems] = useState([]);
@@ -11,19 +12,45 @@ const ItemOutRequestForm = () => {
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
 
+  const [units, setUnits] = useState([]);
+  const [selectedTenantId, setSelectedTenantId] = useState('');
+
+  useEffect(() => {
+    const fetchUnits = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await api.get(`dashboard/for-tenant`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUnits(response.data.unitsOccupied || []);
+      } catch (err) {
+        console.error("Error fetching units:", err);
+      }
+    };
+    fetchUnits();
+  }, []);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}tenant-items/my-items`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+    api.get(`tenant-items/my-items`, {
+        headers: { Authorization: `Bearer ${token}` },
       })
-      .then((res) => setItems(res.data))
+      .then((res) => {
+        if (selectedTenantId) {
+          // Filter items for the selected unit
+          const filtered = res.data.filter(
+            (item) => item.TenantInventory.tenantId === parseInt(selectedTenantId)
+          );
+          setItems(filtered);
+        } else {
+          setItems([]); 
+        }
+      })
       .catch((err) => console.error("Failed to fetch tenant items:", err));
-  }, []);
+  }, [selectedTenantId]);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,6 +66,7 @@ const ItemOutRequestForm = () => {
 
     const data = {
       quantity: parseInt(form.quantity),
+      tenantId: selectedTenantId ? parseInt(selectedTenantId) : undefined,
     };
 
     if (form.tenantItemId) {
@@ -48,8 +76,8 @@ const ItemOutRequestForm = () => {
     }
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}item-out-request`,
+      const response = await api.post(
+        `item-out-request`,
         data,
         {
           headers: {
@@ -75,26 +103,45 @@ const ItemOutRequestForm = () => {
     <>
       <TitleCard title="Send Item Out Request" topMargin="mt-2">
         <form onSubmit={handleSubmit}>
-          {/* Dropdown for existing item */}
-          <div className="mb-4">
-            <label className="block text-sm font-semibold mb-2">Select Existing Item</label>
-            <select
-              name="tenantItemId"
-              value={form.tenantItemId}
-              onChange={(e) => {
-                handleChange(e);
-                if (e.target.value) setForm((prev) => ({ ...prev, name: "" }));
-              }}
-              className="w-full border rounded-lg p-2 bg-base-100"
-            >
-              <option value="">-- None --</option>
-              {items.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.itemName} (Qty: {item.quantity})
-                </option>
-              ))}
-            </select>
+
+                   <div className="mb-4">
+            <label className="block text-sm font-semibold mb-2">Select Unit</label>
+              <select
+                value={selectedTenantId}
+                onChange={(e) => setSelectedTenantId(e.target.value)}
+                className="w-full border rounded-lg p-2 bg-base-100"
+              >
+                <option value="">-- Select a unit --</option>
+                {units.map((u) => (
+                  <option key={u.tenantId} value={u.tenantId}>
+                    Unit {u.unitNumber} (Floor {u.floorNumber})
+                  </option>
+                ))}
+              </select>
           </div>
+          {/* Dropdown for existing item */}
+          {selectedTenantId && (
+            <div className="mb-4">
+              <label className="block text-sm font-semibold mb-2">Select Existing Item</label>
+              <select
+                name="tenantItemId"
+                value={form.tenantItemId}
+                onChange={(e) => {
+                  handleChange(e);
+                  if (e.target.value) setForm((prev) => ({ ...prev, name: "" }));
+                }}
+                className="w-full border rounded-lg p-2 bg-base-100"
+              >
+                <option value="">-- None --</option>
+                {items.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.itemName} (Qty: {item.quantity})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
 
           {/* New Item Name */}
           <div className="mb-4">

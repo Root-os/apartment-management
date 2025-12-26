@@ -361,6 +361,9 @@ const AdminViewRequest = lazy(() =>
 const ViewTenantItems = lazy(() =>
   import("../pages/protected/ItemOutRequest/ViewTenantItems")
 );
+const Detail = lazy(() =>
+  import("../pages/protected/ItemOutRequest/Detail")
+);
 const SeeMyItems = lazy(() =>
   import("../pages/protected/ItemOutRequest/SeeMyItems")
 );
@@ -492,6 +495,7 @@ const adminRoutes = [
       { path: "/view-low-level-stock", component: LowLevelStock },
       { path: "/see-out-requests", component: AdminViewRequest },
       { path: "/see-tenant-items/:id", component: ViewTenantItems },
+      { path: "/see-request-detail", component: Detail},
       { path: "/navigate-audit-history", component: NavigateAuditHistory },
     ],
   },

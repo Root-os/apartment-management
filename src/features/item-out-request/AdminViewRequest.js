@@ -1,125 +1,59 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
+import api from '../../utils/api';
 
-const ItemOutRequests = () => {
-  const [requests, setRequests] = useState([]);
+const TenantItemOutRequests = () => {
+  const [tenants, setTenants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [updatingId, setUpdatingId] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    fetchRequests();
+    const fetchData = async () => {
+      const token = localStorage.getItem('token');
+      try {
+        const response = await api.get('item-out-request/admin', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setTenants(response.data);
+        setLoading(false);
+      } catch (err) {
+        setError(err.message || 'Failed to fetch data');
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
-
-  const fetchRequests = async () => {
-    const token = localStorage.getItem('token');
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}item-out-request/admin`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setRequests(response.data);
-      setLoading(false);
-    } catch (err) {
-      setError(err.message || 'Failed to fetch item out requests');
-      setLoading(false);
-    }
-  };
-
-  const updateStatus = async (id, newStatus) => {
-    const token = localStorage.getItem('token');
-    setUpdatingId(id);
-    try {
-      const response = await axios.patch(
-        `${process.env.REACT_APP_BASE_URL}item-out-request/${id}/status`,
-        { status: newStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      // Update state with new status
-      setRequests((prevRequests) =>
-        prevRequests.map((req) =>
-          req.id === id ? { ...req, status: newStatus } : req
-        )
-      );
-    } catch (err) {
-      alert('Failed to update status: ' + (err.response?.data?.error || err.message));
-    } finally {
-      setUpdatingId(null);
-    }
-  };
 
   const columns = [
     { label: 'Tenant Name', key: 'tenantName' },
-    { label: 'Item Name', key: 'itemName', render: row => row.item?.itemName || row.name || 'N/A' },
-    { label: 'Quantity', key: 'quantity' },
-    { label: 'Status', key: 'status' },
-    {
-      label: 'Requested At',
-      key: 'createdAt',
-      isDate: true,
-    },
+    { label: 'Phone Number', key: 'phoneNumber' },
+    { label: 'Email', key: 'email' },
     {
       label: 'Actions',
       key: 'actions',
-      render: (row) => {
-        if (row.status === 'Approved') {
-          return (
-            <span className="px-3 py-1 bg-green-300 text-white rounded text-sm font-semibold cursor-default">
-              Approved
-            </span>
-          );
-        }
-
-        if (row.status === 'Rejected') {
-          return (
-            <span className="px-3 py-1 bg-red-300 text-white rounded text-sm font-semibold cursor-default">
-              Rejected
-            </span>
-          );
-        }
-
-        return (
-          <div className="flex space-x-2">
-            <button
-              onClick={() => updateStatus(row.id, 'Approved')}
-              className="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
-              disabled={updatingId === row.id}
-            >
-              Approve
-            </button>
-            <button
-              onClick={() => updateStatus(row.id, 'Rejected')}
-              className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 disabled:opacity-50"
-              disabled={updatingId === row.id}
-            >
-              Reject
-            </button>
-          </div>
-        );
-      },
-    }
+      render: (row) => (
+        <button
+          onClick={() =>
+            navigate(`/app/see-request-detail`, { state: { tenant: row } })
+          }
+          className="px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white"
+        >
+          View Requests
+        </button>
+      ),
+    },
   ];
 
-  if (loading) {
-    return <LoadingComponent />;
-  }
-
-  if (error) {
-    return <div className="text-red-500">Error: {error}</div>;
-  }
+  if (loading) return <LoadingComponent />;
+  if (error) return <div className="text-red-500">{error}</div>;
 
   return (
     <TableComponent
-      title="All Tenant Item Out Requests"
-      data={requests}
+      title="All Tenants Item Out Requests"
+      data={tenants}
       columns={columns}
       rowsPerPageOptions={[5, 10, 20]}
       showSearch={true}
@@ -128,4 +62,4 @@ const ItemOutRequests = () => {
   );
 };
 
-export default ItemOutRequests;
+export default TenantItemOutRequests;

@@ -4,6 +4,7 @@ import axios from "axios";
 import Modal from "../../components/Modal";
 import TitleCard from "../../components/Cards/TitleCard";
 import { useSearchParams } from "react-router-dom";
+import api from '../../utils/api';
 
 const InventoryForm = () => {
  const [profiles, setProfiles] = useState([]);
@@ -29,8 +30,8 @@ const [selectedTenantId, setSelectedTenantId] = useState("");
 useEffect(() => {
   const fetchProfiles = async () => {
     try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}tenant/floor-units`
+      const res = await api.get(
+        `tenant/floor-units`
       );
       setProfiles(res.data);
     } catch (error) {
@@ -96,8 +97,8 @@ useEffect(() => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}tenant-inventory`,
+      const response = await api.post(
+        `tenant-inventory`,
         payload,
         {
           headers: {
