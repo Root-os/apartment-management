@@ -33,6 +33,11 @@ const AddBillPayment = () => {
   const [lastPayment, setLastPayment] = useState(null);
   const [loadingLastPayment, setLoadingLastPayment] = useState(false);
 
+  const [profiles, setProfiles] = useState([]);
+  const [selectedProfileIndex, setSelectedProfileIndex] = useState("");
+
+
+
     const {
     isGregorian,
     convertToGregorian,
@@ -47,8 +52,9 @@ const AddBillPayment = () => {
 
     const fetchTenants = async () => {
       try {
-        const response = await api.get(`tenant`);
-        setTenants(response.data);
+        const response = await api.get(`tenant/floor-units`)
+
+        setProfiles(response.data);
       } catch (error) {
         console.error("Error fetching tenants:", error);
       }
@@ -111,6 +117,23 @@ const AddBillPayment = () => {
 
   fetchLastPayment();
 }, [tenantId, billPaymentTypeId]);
+
+useEffect(() => {
+  const tenantIdFromUrl = searchParams.get("tenantId");
+  if (!tenantIdFromUrl || profiles.length === 0) return;
+
+  profiles.forEach((profile, profileIndex) => {
+    const matchedTenant = profile.tenant.find(
+      (t) => t.tenantId === Number(tenantIdFromUrl)
+    );
+
+    if (matchedTenant) {
+      setSelectedProfileIndex(profileIndex);
+      setTenantId(matchedTenant.tenantId);
+    }
+  });
+}, [searchParams, profiles]);
+
 
   const addOneDay = (dateString) => {
   const date = new Date(dateString);
@@ -218,25 +241,38 @@ const AddBillPayment = () => {
               Tenant
             </label>
               <select
-                id="tenantId"
-                className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-                value={tenantId}
-                onChange={(e) => setTenantId(e.target.value)}
-                required
-                disabled={!!searchParams.get("tenantId")}
-              >
-                <option value="" disabled>
-                  Select Tenant
-                </option>
+  className="bg-base-100 w-full p-3 border rounded"
+  value={selectedProfileIndex}
+  onChange={(e) => {
+    setSelectedProfileIndex(e.target.value);
+    setTenantId("");
+  }}
+>
+  <option value="">Select Tenant</option>
+  {profiles.map((profile, index) => (
+    <option key={profile.phoneNumber} value={index}>
+      {profile.fullName} ({profile.phoneNumber})
+    </option>
+  ))}
+</select>
 
-                {tenants.map((tenant) => (
-                  <option key={tenant.id} value={tenant.id}>
-                    {tenant.fullName} — Unit {tenant.Unit?.unitNumber ?? "N/A"}
-                  </option>
-                ))}
-              </select>
 
           </div>
+          {selectedProfileIndex !== "" && (
+  <select
+    className="bg-base-100 w-full p-3 border rounded mt-2"
+    value={tenantId}
+    onChange={(e) => setTenantId(e.target.value)}
+  >
+    <option value="">Select Unit</option>
+    {profiles[selectedProfileIndex].tenant.map((t) => (
+      <option key={t.tenantId} value={t.tenantId}>
+        Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
+      </option>
+    ))}
+  </select>
+)}
+
 
           <div>
             <label

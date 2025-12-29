@@ -38,6 +38,7 @@ const EmployeeList = () => {
   const [message, setMessage] = useState('');
 
   const {formatDateForDisplay} = useContext(CalendarContext);
+  const [changePassword, setChangePassword] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -102,6 +103,7 @@ const EmployeeList = () => {
       address: employee.EmployeeDetail?.address || "",
       bankAccount: employee.EmployeeDetail?.bankAccount || "",
       roleId: employee.roleId?.toString() || "", // Initialize roleId
+      password: "",
     });
     setIsEditModalOpen(true);
   };
@@ -425,6 +427,29 @@ const EmployeeList = () => {
                   ))}
                 </select>
               </div>
+
+              <div className="mb-2 flex items-center">
+  <input
+    type="checkbox"
+    id="changePassword"
+    checked={changePassword}
+    onChange={(e) => setChangePassword(e.target.checked)}
+    className="mr-2"
+  />
+  <label htmlFor="changePassword" className="text-sm font-medium">Change Password</label>
+</div>
+{changePassword && (
+  <div className="mb-2">
+    <label className="block text-sm font-medium">New Password</label>
+    <input
+      type="password"
+      className="w-full p-2 border border-gray-100 rounded mt-1"
+      value={editEmployeeData.password}
+      onChange={(e) => setEditEmployeeData({ ...editEmployeeData, password: e.target.value })}
+      placeholder="Enter new password"
+    />
+  </div>
+)}
 
               <div className="mt-4 flex justify-end space-x-2">
                 <button

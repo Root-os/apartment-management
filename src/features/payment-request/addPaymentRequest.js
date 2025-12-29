@@ -3,6 +3,7 @@ import axios from "axios";
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
 import SmartDateInput from '../../components/Common/smartDatePicker';
+import api from '../../utils/api';
 
 const AddPaymentRequest = () => {
   const [formData, setFormData] = useState({
@@ -24,17 +25,24 @@ const AddPaymentRequest = () => {
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
 
+  const [profiles, setProfiles] = useState([]);
+  const [selectedProfileIndex, setSelectedProfileIndex] = useState("");
+  const [tenantId, setTenantId] = useState("");
+
+
+  
+
   useEffect(() => {
     // Fetch payment types
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}payment-types`)
+    api
+      .get(`payment-types`)
       .then((response) => setPaymentTypes(response.data))
       .catch((error) => console.error("Error fetching payment types:", error));
 
     // Fetch tenants
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}tenant`)
-      .then((response) => setTenants(response.data))
+    api
+      .get(`tenant/floor-units`)
+       .then((response) => setProfiles(response.data))
       .catch((error) => console.error("Error fetching tenants:", error));
   }, []);
 
@@ -51,6 +59,27 @@ const handleDateChange = (name) => (value) => {
     [name]: value,
   }));
 };
+
+const handleProfileChange = (e) => {
+  const index = e.target.value;
+  setSelectedProfileIndex(index);
+
+  // reset tenantId (unit) when tenant changes
+  setFormData((prev) => ({
+    ...prev,
+    tenantId: "",
+  }));
+};
+
+const handleUnitChange = (e) => {
+  const tenantId = e.target.value;
+
+  setFormData((prev) => ({
+    ...prev,
+    tenantId: tenantId,
+  }));
+};
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -128,23 +157,43 @@ const handleDateChange = (name) => (value) => {
       <TitleCard title={'Request Tenant Paymentt'} topMargin={'mt-1'}>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Tenant Dropdown */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Tenant</label>
-            <select
-              name="tenantId"
-              value={formData.tenantId}
-              onChange={handleInputChange}
-              className="w-full bg-base-100 p-2 border rounded-md"
-            >
-              <option value="">Select Tenant</option>
-              {tenants.map((tenant) => (
-                <option key={tenant.id} value={tenant.id}>
-                  {tenant.fullName}
-                </option>
-              ))}
-            </select>
-            {errors.tenantId && <p className="text-red-500">{errors.tenantId}</p>}
-          </div>
+<div>
+  <label className="block text-sm font-medium mb-1">Tenant</label>
+  <select
+    value={selectedProfileIndex}
+    onChange={handleProfileChange}
+    className="w-full bg-base-100 p-2 border rounded-md"
+  >
+    <option value="">Select Tenant</option>
+    {profiles.map((profile, index) => (
+      <option key={profile.phoneNumber} value={index}>
+        {profile.fullName} ({profile.phoneNumber})
+      </option>
+    ))}
+  </select>
+</div>
+
+{selectedProfileIndex !== "" &&
+  profiles[selectedProfileIndex] &&
+  Array.isArray(profiles[selectedProfileIndex].tenant) && (
+    <div>
+      <label className="block text-sm font-medium mb-1">Unit</label>
+      <select
+        value={formData.tenantId}
+        onChange={handleUnitChange}
+        className="w-full bg-base-100 p-2 border rounded-md"
+      >
+        <option value="">Select Unit</option>
+        {profiles[selectedProfileIndex].tenant.map((t) => (
+          <option key={t.tenantId} value={t.tenantId}>
+            Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
+          </option>
+        ))}
+      </select>
+    </div>
+)}
+
+
 
           {/* Payment Type Dropdown */}
           <div>

@@ -382,7 +382,7 @@ const WithdrawalRequests = () => {
   >
     {/* Dropdown items */}
   </div>;
-  // Add this useEffect to handle clicks outside dropdown
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (!event.target.closest(".dropdown-container")) {
@@ -395,6 +395,34 @@ const WithdrawalRequests = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const calculateRentStatus = (monthlyRent, diffDays) => {
+  const dailyRent = monthlyRent / 30;
+  const amount = Math.abs(diffDays * dailyRent);
+
+  if (diffDays > 0) {
+    return {
+      type: "credit",
+      days: diffDays,
+      amount: amount.toFixed(2),
+    };
+  }
+
+  if (diffDays < 0) {
+    return {
+      type: "debt",
+      days: Math.abs(diffDays),
+      amount: amount.toFixed(2),
+    };
+  }
+
+  return {
+    type: "clear",
+    days: 0,
+    amount: "0.00",
+  };
+};
+
 
   const columns = [
     {
@@ -731,6 +759,7 @@ const WithdrawalRequests = () => {
           </div>
         </div>
       )}
+
        {/* check info */}
       {tenantDetailModalOpen && tenantDetail && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -751,7 +780,6 @@ const WithdrawalRequests = () => {
                     tenantDetail.WithdrawalRequests?.[0]?.terminationDate
                   )}
               </p>
-
               <div className="mt-2">
                 <h3 className="font-medium text-blue-600 bold">Unit Info</h3>
                 <p>
@@ -788,26 +816,43 @@ const WithdrawalRequests = () => {
                     </p>
                     {tenantDetail.WithdrawalRequests?.[0]?.terminationDate &&
                       (() => {
-                        const due = new Date(
-                          tenantDetail.latestRent.nextDueDate
-                        );
+                        const due = new Date(tenantDetail.latestRent.nextDueDate);
                         const term = new Date(
                           tenantDetail.WithdrawalRequests[0].terminationDate
                         );
+
                         const diff = Math.ceil(
                           (due - term) / (1000 * 60 * 60 * 24)
                         );
-                        if (diff > 0) {
-                          return <p>tenant has {diff} day(s).</p>;
-                        } else if (diff < 0) {
+
+                        const rentStatus = calculateRentStatus(
+                          tenantDetail.amount,
+                          diff
+                        );
+
+                        if (rentStatus.type === "credit") {
                           return (
-                            <p>
-                              {Math.abs(diff)} day(s) overdue or to be paid.
+                            <p className="text-green-600">
+                              Tenant has <strong>{rentStatus.days}</strong> day(s) remaining  
+                              — Credit: <strong>{rentStatus.amount}</strong>
                             </p>
                           );
-                        } else {
-                          return <p>Free from dept. .No remaining</p>;
                         }
+
+                        if (rentStatus.type === "debt") {
+                          return (
+                            <p className="text-red-600">
+                              Tenant has <strong>{rentStatus.days}</strong> overdue day(s)  
+                              — Debt: <strong>{rentStatus.amount}</strong>
+                            </p>
+                          );
+                        }
+
+                        return (
+                          <p className="text-gray-600">
+                            Free from debt. No remaining balance.
+                          </p>
+                        );
                       })()}
                   </>
                 ) : (

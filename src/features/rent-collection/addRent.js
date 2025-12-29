@@ -234,9 +234,19 @@ const handleSubmit = async (e) => {
     setPaymentDate("");
     setNextDueDate("");
     setAmountPaid("");
-  } catch (err) {
-    setError(err.response?.data?.error || "Failed to submit rent.");
-  } finally {
+  } catch (error) {
+  // console.log("FULL ERROR OBJECT:", error);
+  // console.log("RESPONSE:", error.response);
+  // console.log("RESPONSE DATA:", error.response?.data);
+
+  const backendMessage =
+    error.response?.data?.message ||
+    error.message ||
+    "Something went wrong. Please try again.";
+
+  setError(backendMessage);
+}
+ finally {
     setLoading(false);
   }
 };

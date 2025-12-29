@@ -411,57 +411,57 @@ const handleTenantSelect = async (tenantId) => {
         <form onSubmit={handleSubmit} className="space-y-4">
 
           {/* Tenant Type */}
-<div>
-  <label className="block text-sm font-semibold mb-2">
-    Tenant Type <span className="text-red-500">*</span>
-  </label>
+          <div>
+            <label className="block text-sm font-semibold mb-2">
+              Tenant Type <span className="text-red-500">*</span>
+            </label>
 
-  <div className="flex gap-6">
-    <label className="flex items-center gap-2">
-      <input
-        type="radio"
-        name="tenantType"
-        checked={tenantType === "new"}
-        onChange={() => {
-          setTenantType("new");
-          setSelectedTenantId("");
-        }}
-      />
-      New
-    </label>
+            <div className="flex gap-6">
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="tenantType"
+                  checked={tenantType === "new"}
+                  onChange={() => {
+                    setTenantType("new");
+                    setSelectedTenantId("");
+                  }}
+                />
+                New
+              </label>
 
-    <label className="flex items-center gap-2">
-      <input
-        type="radio"
-        name="tenantType"
-        checked={tenantType === "existing"}
-        onChange={() => setTenantType("existing")}
-      />
-      Existing
-    </label>
-  </div>
-</div>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name="tenantType"
+                  checked={tenantType === "existing"}
+                  onChange={() => setTenantType("existing")}
+                />
+                Existing
+              </label>
+            </div>
+          </div>
 
-   {tenantType === "existing" && (
-  <div>
-    <label className="block text-sm font-semibold mb-2">
-      Select Existing Tenant <span className="text-red-500">*</span>
-    </label>
+            {tenantType === "existing" && (
+            <div>
+              <label className="block text-sm font-semibold mb-2">
+                Select Existing Tenant <span className="text-red-500">*</span>
+              </label>
 
-    <select
-      value={selectedTenantId}
-      onChange={(e) => handleTenantSelect(e.target.value)}
-      className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-    >
-      <option value="">Select Tenant</option>
-      {existingTenants.map((tenant) => (
-        <option key={tenant.id} value={tenant.id}>
-          {tenant.fullName} – {tenant.phoneNumber}
-        </option>
-      ))}
-    </select>
-  </div>
-)}
+              <select
+                value={selectedTenantId}
+                onChange={(e) => handleTenantSelect(e.target.value)}
+                className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+              >
+                <option value="">Select Tenant</option>
+                {existingTenants.map((tenant) => (
+                  <option key={tenant.id} value={tenant.id}>
+                    {tenant.fullName} – {tenant.phoneNumber}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Full Name */}
           <div>

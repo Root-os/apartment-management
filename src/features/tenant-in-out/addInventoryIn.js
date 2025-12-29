@@ -21,39 +21,102 @@ const InventoryForm = () => {
   const [messageType, setmessageType] = useState("success");
   const [message, setMessage] = useState("");
 
+  const [tenantInventory, setTenantInventory] = useState([]);
+
   const navigate = useNavigate();
   // Fetch all tenants once the component is mounted
-useEffect(() => {
-  const fetchProfiles = async () => {
-    try {
-      const res = await api.get(
-        `tenant/floor-units`
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      try {
+        const res = await api.get(
+          `tenant/floor-units`
+        );
+        setProfiles(res.data);
+      } catch (error) {
+        console.error("Error fetching profiles:", error);
+      }
+    };
+
+    fetchProfiles();
+  }, []);
+
+
+  useEffect(() => {
+    const tenantIdFromUrl = searchParams.get("tenantId");
+    if (!tenantIdFromUrl || profiles.length === 0) return;
+
+    profiles.forEach((profile, profileIndex) => {
+      const matchedTenant = profile.tenant.find(
+        (t) => t.tenantId === Number(tenantIdFromUrl)
       );
-      setProfiles(res.data);
+
+      if (matchedTenant) {
+        setSelectedProfileIndex(profileIndex);
+        setSelectedTenantId(matchedTenant.tenantId);
+      }
+    });
+  }, [searchParams, profiles]);
+
+
+  // Fetch tenant inventory when tenant changes
+useEffect(() => {
+  if (!selectedTenantId) return;
+
+  const fetchTenantInventory = async () => {
+    try {
+      const res = await api.get(`/tenant-inventory`);
+
+      // Find tenant who has the selected tenantId in their units
+      const tenantData = res.data.tenants.find(t =>
+        t.units.some(u => u.tenantId === selectedTenantId)
+      );
+
+      if (tenantData) {
+        // Filter units that match the selected tenantId
+        const tenantUnits = tenantData.units.filter(u => u.tenantId === selectedTenantId);
+        setTenantInventory(tenantUnits);
+      }
     } catch (error) {
-      console.error("Error fetching profiles:", error);
+      console.error(error);
     }
   };
 
-  fetchProfiles();
-}, []);
+  fetchTenantInventory();
+}, [selectedTenantId]);
 
 
+// Prefill items when type is move-out AND tenantInventory is loaded
 useEffect(() => {
-  const tenantIdFromUrl = searchParams.get("tenantId");
-  if (!tenantIdFromUrl || profiles.length === 0) return;
+  if (type.toLowerCase() !== "move-out" || tenantInventory.length === 0) return;
 
-  profiles.forEach((profile, profileIndex) => {
-    const matchedTenant = profile.tenant.find(
-      (t) => t.tenantId === Number(tenantIdFromUrl)
+  // Filter all move-in units (case-insensitive, trimmed)
+  const moveInUnits = tenantInventory.filter(
+    (u) => u.type?.trim().toLowerCase() === "move-in"
+  );
+
+  if (moveInUnits.length === 0) {
+    console.log("No move-in units found for tenant", selectedTenantId);
+    setItems([]); // clear items if no move-in units
+    return;
+  }
+
+  // Flatten all move-in items
+  const moveInItems = moveInUnits
+    .flatMap((unit) =>
+      unit.items
+        .filter((item) => item.quantity > 0)
+        .map((item) => ({
+          name: item.itemName,
+          quantity: item.quantity,
+        }))
     );
 
-    if (matchedTenant) {
-      setSelectedProfileIndex(profileIndex);
-      setSelectedTenantId(matchedTenant.tenantId);
-    }
-  });
-}, [searchParams, profiles]);
+  console.log("Prefilled move-in items (non-zero):", moveInItems);
+
+  setItems(moveInItems);
+}, [tenantInventory, type, selectedTenantId]);
+
+
 
   // Handle the form submission
   const handleSubmit = async (e) => {
@@ -170,7 +233,7 @@ useEffect(() => {
               <select
                 className="mt-1 p-2 w-full border rounded bg-base-100"
                 value={selectedTenantId}
-                onChange={(e) => setSelectedTenantId(e.target.value)}
+                onChange={(e) => setSelectedTenantId(Number(e.target.value))} 
               >
                 <option value="">Select Unit</option>
                 {profiles[selectedProfileIndex].tenant.map((t) => (
@@ -208,6 +271,7 @@ useEffect(() => {
                   onChange={(e) =>
                     handleItemChange(index, "name", e.target.value)
                   }
+                    readOnly={type === "move-out"} 
                 />
                 {/* <input
                   type="text"
