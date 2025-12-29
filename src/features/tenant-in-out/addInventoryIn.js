@@ -7,17 +7,13 @@ import { useSearchParams } from "react-router-dom";
 import api from '../../utils/api';
 
 const InventoryForm = () => {
- const [profiles, setProfiles] = useState([]);
-const [selectedProfileIndex, setSelectedProfileIndex] = useState("");
-const [selectedTenantId, setSelectedTenantId] = useState("");
-
-
+  const [profiles, setProfiles] = useState([]);
+  const [selectedProfileIndex, setSelectedProfileIndex] = useState("");
+  const [selectedTenantId, setSelectedTenantId] = useState("");
   const [searchParams] = useSearchParams();
 
   const [type, setType] = useState("move-in");
-  const [items, setItems] = useState([
-    { name: "",  quantity: 1 },
-  ]);
+  const [items, setItems] = useState([{ name: "",  quantity: 1 },]);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -152,43 +148,39 @@ useEffect(() => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-sm font-medium">Tenant</label>
-<select
-  className="mt-1 p-2 w-full border rounded bg-base-100"
-  value={selectedProfileIndex}
-  onChange={(e) => {
-    setSelectedProfileIndex(e.target.value);
-    setSelectedTenantId(""); // reset unit
-  }}
->
-  <option value="">Select Tenant</option>
-  {profiles.map((profile, index) => (
-    <option key={profile.phoneNumber} value={index}>
-      {profile.fullName} ({profile.phoneNumber})
-    </option>
-  ))}
-</select>
-
+              <select
+                className="mt-1 p-2 w-full border rounded bg-base-100"
+                value={selectedProfileIndex}
+                onChange={(e) => {
+                  setSelectedProfileIndex(e.target.value);
+                  setSelectedTenantId(""); // reset unit
+                }}
+              >
+                <option value="">Select Tenant</option>
+                {profiles.map((profile, index) => (
+                  <option key={profile.phoneNumber} value={index}>
+                    {profile.fullName} ({profile.phoneNumber})
+                  </option>
+                ))}
+              </select>                         
           </div>
-
           {selectedProfileIndex !== "" && (
-  <>
-    <label className="block text-sm font-medium mt-4">Unit</label>
-    <select
-      className="mt-1 p-2 w-full border rounded bg-base-100"
-      value={selectedTenantId}
-      onChange={(e) => setSelectedTenantId(e.target.value)}
-    >
-      <option value="">Select Unit</option>
-      {profiles[selectedProfileIndex].tenant.map((t) => (
-        <option key={t.tenantId} value={t.tenantId}>
-          Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
-        </option>
-      ))}
-    </select>
-  </>
-)}
-
-
+            <>
+              <label className="block text-sm font-medium mt-4">Unit</label>
+              <select
+                className="mt-1 p-2 w-full border rounded bg-base-100"
+                value={selectedTenantId}
+                onChange={(e) => setSelectedTenantId(e.target.value)}
+              >
+                <option value="">Select Unit</option>
+                {profiles[selectedProfileIndex].tenant.map((t) => (
+                  <option key={t.tenantId} value={t.tenantId}>
+                    Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
+                  </option>
+                ))}
+              </select>
+            </>
+          )}
           <div className="mb-4">
             <label htmlFor="type" className="block text-sm font-medium">
               Type

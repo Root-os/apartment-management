@@ -185,7 +185,7 @@ const BulkSmsSender = () => {
                   className="h-4 w-4"
                 />
                 <span className="text-sm">
-                  {t.fullName || "Unnamed"} ({t.phoneNumber || "No phone"})
+                  {t.fullName || "Unnamed"} ({t.phoneNumber || "No phone"}) — Unit {t.Unit?.unitNumber ?? "N/A"}
                 </span>
               </label>
             ))}

@@ -125,12 +125,12 @@ const UpdateStatus = async () => {
         onCancel={() => setConfirmModal({ isOpen: false, id: null, status: null })}
       />
 
-            <Modal
-              isOpen={modalOpen}
-              onClose={() => setModalOpen(false)}
-              messageType={messageType}
-              message={message}
-            />
+      <Modal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        messageType={messageType}
+        message={message}
+      />
     </div>
   );
 };

@@ -118,7 +118,8 @@ const TenantBillReport = () => {
             >
               <option value="">Select Tenant</option>
               {tenants.map((tenant) => (
-                <option key={tenant.id} value={tenant.id}>{tenant.fullName}</option>
+                <option key={tenant.id} value={tenant.id}>{tenant.fullName} — Unit {tenant.Unit?.unitNumber ?? "N/A"} </option>
+                //{t.fullName} — Unit {t.Unit?.unitNumber ?? "N/A"}
               ))}
             </select>
           </div>

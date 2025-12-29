@@ -132,7 +132,7 @@ const SendLetter = () => {
               </option>
               {tenants.map((tenant) => (
                 <option key={tenant.id} value={tenant.id}>
-                  {tenant.fullName}
+                  {tenant.fullName} — Unit {tenant.Unit?.unitNumber ?? "N/A"}
                 </option>
               ))}
             </select>

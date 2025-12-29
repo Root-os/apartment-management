@@ -35,6 +35,7 @@ const AddTenant = () => {
 const [tenantType, setTenantType] = useState("new"); // "new" | "existing"
 const [existingTenants, setExistingTenants] = useState([]);
 const [selectedTenantId, setSelectedTenantId] = useState("");
+const [profiles, setProfiles] = useState([]);
 
   // State for individual field errors
   const [errors, setErrors] = useState({
@@ -60,14 +61,26 @@ const [selectedTenantId, setSelectedTenantId] = useState("");
 useEffect(() => {
   const fetchTenants = async () => {
     try {
-      const res = await api.get("tenant"); // correct endpoint
-      setExistingTenants(res.data);
+      const res = await api.get("/tenant/floor-units");
+
+      // Deduplicated list of tenants
+      const tenants = res.data
+        .filter((person) => person.tenant && person.tenant.length > 0)
+        .map((person) => ({
+          id: person.tenant[0].tenantId, // one valid tenantId
+          fullName: person.fullName,
+          phoneNumber: person.phoneNumber,
+        }));
+
+      setExistingTenants(tenants);
     } catch (err) {
-      console.error(err);
+      console.error("Error fetching tenants:", err);
     }
   };
+
   fetchTenants();
 }, []);
+
 
 
   // Fetch floor data for dropdown
