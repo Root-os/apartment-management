@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
+import api from '../../utils/api';
 
 const token = localStorage.getItem('token');
 
@@ -29,14 +30,19 @@ const AddEmail = () => {
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        setTenants(response.data);
+        const res = await api.get("/tenant/floor-units");
+
+        const tenants = res.data
+          .filter((person) => person.tenant && person.tenant.length > 0)
+          .map((person) => ({
+            id: person.tenant[0].tenantId, 
+            fullName: person.fullName,
+            phoneNumber: person.phoneNumber,
+          }));
+
+        setTenants(tenants);
       } catch (err) {
-        console.error('Error fetching tenants', err);
+        console.error("Error fetching tenants:", err);
       }
     };
 
@@ -110,7 +116,7 @@ const AddEmail = () => {
           >
             <option value="">Select Receiver</option>
             {tenants.map(tenant => (
-              <option key={tenant.id} value={tenant.id}>{tenant.fullName}</option>
+              <option key={tenant.id} value={tenant.id}>{tenant.fullName} – {tenant.phoneNumber}</option>
             ))}
           </select>
           {errors.receiverId && <p className="text-red-500">{errors.receiverId.message}</p>}

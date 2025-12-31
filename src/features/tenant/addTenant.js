@@ -58,51 +58,49 @@ const [profiles, setProfiles] = useState([]);
     api: "",
   });
 
-useEffect(() => {
-  const fetchTenants = async () => {
-    try {
-      const res = await api.get("/tenant/floor-units");
+  useEffect(() => {
+    const fetchTenants = async () => {
+      try {
+        const res = await api.get("/tenant/floor-units");
 
-      // Deduplicated list of tenants
-      const tenants = res.data
-        .filter((person) => person.tenant && person.tenant.length > 0)
-        .map((person) => ({
-          id: person.tenant[0].tenantId, // one valid tenantId
-          fullName: person.fullName,
-          phoneNumber: person.phoneNumber,
-        }));
+        // Deduplicated list of tenants
+        const tenants = res.data
+          .filter((person) => person.tenant && person.tenant.length > 0)
+          .map((person) => ({
+            id: person.tenant[0].tenantId, // one valid tenantId
+            fullName: person.fullName,
+            phoneNumber: person.phoneNumber,
+          }));
 
-      setExistingTenants(tenants);
-    } catch (err) {
-      console.error("Error fetching tenants:", err);
-    }
-  };
+        setExistingTenants(tenants);
+      } catch (err) {
+        console.error("Error fetching tenants:", err);
+      }
+    };
 
-  fetchTenants();
-}, []);
+    fetchTenants();
+  }, []);
 
+    // Fetch floor data for dropdown
+  useEffect(() => {
+    const fetchFloors = async () => {
+      try {
+        const response = await api.get(
+          `floor`
+        );
 
+        const activeFloors = response.data.filter(
+          (floor) => floor.status === "active"
+        );
 
-  // Fetch floor data for dropdown
-useEffect(() => {
-  const fetchFloors = async () => {
-    try {
-      const response = await api.get(
-        `floor`
-      );
+        setFloors(activeFloors);
+      } catch (err) {
+        setErrors((prev) => ({ ...prev, api: "Failed to fetch floor data." }));
+      }
+    };
 
-      const activeFloors = response.data.filter(
-        (floor) => floor.status === "active"
-      );
-
-      setFloors(activeFloors);
-    } catch (err) {
-      setErrors((prev) => ({ ...prev, api: "Failed to fetch floor data." }));
-    }
-  };
-
-  fetchFloors();
-}, []);
+    fetchFloors();
+  }, []);
 
   // Fetch freeUnits when floor is selected
   const fetchFreeUnits = async (id) => {

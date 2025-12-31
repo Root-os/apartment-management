@@ -5,6 +5,7 @@ import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 import { CalendarContext } from '../../context/calendarContext';
 import SmartDateInput from '../../components/Common/smartDatePicker';
+import api from '../../utils/api'
 
 
 // Utility function to format ISO date strings into human-readable format
@@ -61,14 +62,23 @@ const ParkingPage = () => {
 
   const { formatDateForDisplay } = React.useContext(CalendarContext);
 
-  const formatDateTimeForDisplay = (isoString) => {
+const formatDateTimeForDisplay = (isoString) => {
   if (!isoString) return 'N/A';
-  
+
   try {
-    const date = new Date(isoString);
-    const datePart = formatDateForDisplay(isoString.split('T')[0]);
-    const timePart = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
+    // Ensure isoString is a string
+    const safeString = String(isoString);
+
+    // Extract date part safely
+    const datePartRaw = safeString.split('T')[0] || safeString;
+    const datePart = formatDateForDisplay(datePartRaw);
+
+    // Create a Date object and extract time
+    const dateObj = new Date(safeString);
+    const timePart = isNaN(dateObj.getTime())
+      ? 'Invalid Time'
+      : dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
     return `${datePart} ${timePart}`;
   } catch (error) {
     return 'Invalid Date';
@@ -76,12 +86,13 @@ const ParkingPage = () => {
 };
 
 
+
   // Fetch the parking data from the API
   useEffect(() => {
     setPageLoading(true);
     const fetchParkingData = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}parking`);
+        const response = await api.get(`parking`);
         setParkingData(response.data);
       } catch (error) {
         console.error('Error fetching parking data:', error);
@@ -96,9 +107,9 @@ const ParkingPage = () => {
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const url = `${process.env.REACT_APP_BASE_URL}tenant`;
-        console.log("Fetching tenants from URL:", url); // Log the URL for debugging
-        const response = await axios.get(url);
+        // const url = `tenant`;
+        // console.log("Fetching tenants from URL:", url); 
+        const response = await api.get(`tenant`);
         setTenantList(response.data);
       } catch (error) {
         console.error('Error fetching tenants:', error);
@@ -187,7 +198,7 @@ const ParkingPage = () => {
         tenantId: isTenant ? tenantId : null,
       };
 
-      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}parking/${selectedParking.id}`, updatedParking);
+      const response = await api.put(`parking/${selectedParking.id}`, updatedParking);
       console.log('Updated parking response:', response.data);
 
       // Update parkingData with a new array reference
@@ -215,7 +226,7 @@ const ParkingPage = () => {
   // Handle delete request
   const handleDelete = async () => {
     try {
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}parking/${selectedParking.id}`);
+      await api.delete(`parking/${selectedParking.id}`);
       setParkingData(parkingData.filter((parking) => parking.id !== selectedParking.id));
       setIsDeleteModalOpen(false);
       setSelectedParking(null);
@@ -398,10 +409,9 @@ const ParkingPage = () => {
   </label>
   <SmartDateInput
     id="timeOutDate"
-    value={timeOut.split('T')[0]} // Extract date part
+    value={(timeOut || "").split("T")[0]} // Safe split
     onChange={(gcDate) => {
-      // Combine new date with existing time
-      const timePart = timeOut.split('T')[1] || '00:00';
+      const timePart = (timeOut || "").split("T")[1] || "00:00";
       setTimeOut(`${gcDate}T${timePart}`);
     }}
     className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -415,10 +425,9 @@ const ParkingPage = () => {
   <input
     type="time"
     id="timeOutTime"
-    value={timeOut.split('T')[1] || ''}
+    value={(timeOut || "").split("T")[1] || ""} // Safe split
     onChange={(e) => {
-      // Combine existing date with new time
-      const datePart = timeOut.split('T')[0] || new Date().toISOString().split('T')[0];
+      const datePart = (timeOut || "").split("T")[0] || new Date().toISOString().split("T")[0];
       setTimeOut(`${datePart}T${e.target.value}`);
     }}
     className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -484,8 +493,8 @@ const ParkingPage = () => {
         <p><strong>Car Name:</strong> {selectedParkingDetails.carName}</p>
         <p><strong>Driver Name:</strong> {selectedParkingDetails.driverName}</p>
         <p><strong>Driver Phone:</strong> {selectedParkingDetails.driverPhone}</p>
-<p><strong>Time In:</strong> {formatDateTimeForDisplay(selectedParkingDetails.timeIn)}</p>
-<p><strong>Time Out:</strong> {formatDateTimeForDisplay(selectedParkingDetails.timeOut)}</p>
+        <p><strong>Time In:</strong> {formatDateTimeForDisplay(selectedParkingDetails.timeIn)}</p>
+        <p><strong>Time Out:</strong> {formatDateTimeForDisplay(selectedParkingDetails.timeOut)}</p>
         <p><strong>Price:</strong> {selectedParkingDetails.price}</p>
         <p><strong>Status:</strong> {selectedParkingDetails.status}</p>
         <p><strong>Is Tenant:</strong> {selectedParkingDetails.isTenant ? 'Yes' : 'No'}</p>

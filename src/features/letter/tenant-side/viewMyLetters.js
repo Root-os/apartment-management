@@ -4,6 +4,7 @@ import TableComponent from "../../../components/table";
 import Modal from "../../../components/Modal";
 import { useNavigate } from "react-router-dom";
 import { CalendarContext } from '../../../context/calendarContext';
+import api from '../../../utils/api';
 
 const TenantLettersPage = () => {
   const [letters, setLetters] = useState([]);
@@ -42,29 +43,45 @@ const TenantLettersPage = () => {
     }
   };
   const tenantId = getTenantIdFromToken();
+
   const fetchTenantLetters = async () => {
-    if (!tenantId) {
-      setMessage("Tenant ID not found.");
+  try {
+    const token = localStorage.getItem("token"); // get token from storage
+    if (!token) {
+      setMessage("No token found. Please login.");
       setMessageType("error");
       setModalOpen(true);
       return;
     }
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}letter/tenant/${tenantId}`
-      );
-      const data = response.data.data.map((letter) => ({
+
+    const response = await api.get(
+      `letter/my-letters`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.data.success && response.data.data.length > 0) {
+      const tenantLetters = response.data.data[0].letters.map((letter) => ({
         ...letter,
         formattedDate: letter.Date?.split("T")[0] || "N/A",
-        hasResponse: (letter.LetterResponses || []).length > 0,
+        hasResponse: (letter.letterResponses || []).length > 0,
       }));
-      setLetters(data);
-    } catch (error) {
-      setMessage("Failed to fetch letters.");
-      setMessageType("error");
-      setModalOpen(true);
+      setLetters(tenantLetters);
+    } else {
+      setLetters([]);
     }
-  };
+  } catch (error) {
+    setMessage("Failed to fetch letters.");
+    setMessageType("error");
+    setModalOpen(true);
+    console.error(error);
+  }
+};
+
+
 
   useEffect(() => {
     fetchTenantLetters();
@@ -76,7 +93,8 @@ const TenantLettersPage = () => {
   };
 
   const columns = [
-    { key: "LetterType.name", label: "Letter Type", render: (row) => row.LetterType?.name },
+    { key: "unitNumber", label: "Unit", render: (row) => row.unit?.unitNumber },
+    { key: "letterTypeName", label: "Letter Type", render: (row) => row.letterType?.name },
     { key: "description", label: "Description" },
     { key: "formattedDate", label: "Date", isDate: true },
     {
@@ -114,8 +132,9 @@ const TenantLettersPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-base-100 p-6 rounded-md w-full max-w-lg max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">Letter Details</h2>
-            <p><strong>Type:</strong> {selectedLetter.LetterType?.name}</p>
-           <p><strong>Date:</strong> {formatDateForDisplay(selectedLetter.date) || 'N/A'}</p>
+            <p><strong>Type:</strong> {selectedLetter.letterType?.name || 'N/A'}</p>
+
+           <p><strong>Date:</strong> {formatDateForDisplay(selectedLetter.Date) || 'N/A'}</p>
             <p><strong>Description:</strong> {selectedLetter.description}</p>
             <p><strong>Status:</strong> {selectedLetter.status}</p>
             <div className="flex justify-end mt-4">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TitleCard from "../../components/Cards/TitleCard"
 import Modal from '../../components/Modal';
+import api from '../../utils/api';
 
 const BulkSmsSender = () => {
   const [tenants, setTenants] = useState([]);
@@ -30,19 +31,39 @@ const BulkSmsSender = () => {
     if (!token) return;
 
     axios
-      .get(`${baseUrl}tenant`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => setTenants(res.data))
-      .catch((err) => console.error("Failed to load tenants", err));
-
-    axios
       .get(`${baseUrl}auth/employee`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setUsers(res.data.users))
       .catch((err) => console.error("Failed to load users", err));
   }, [token, baseUrl]);
+
+  useEffect(() => {
+  if (!token) return;
+
+  const fetchTenants = async () => {
+    try {
+      const res = await api.get('/tenant/floor-units', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const mappedTenants = res.data
+        .filter(p => p.tenant && p.tenant.length > 0) 
+        .map(p => ({
+          id: p.tenant[0].tenantId,   
+          fullName: p.fullName,
+          phoneNumber: p.phoneNumber,
+        }));
+
+      setTenants(mappedTenants);
+    } catch (err) {
+      console.error('Failed to load tenants', err);
+    }
+  };
+
+  fetchTenants();
+}, [token]);
+
 
   useEffect(() => {
     setSelectAllTenants(
@@ -185,7 +206,7 @@ const BulkSmsSender = () => {
                   className="h-4 w-4"
                 />
                 <span className="text-sm">
-                  {t.fullName || "Unnamed"} ({t.phoneNumber || "No phone"}) — Unit {t.Unit?.unitNumber ?? "N/A"}
+                  {t.fullName || "Unnamed"} ({t.phoneNumber || "No phone"}) 
                 </span>
               </label>
             ))}

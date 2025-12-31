@@ -3,6 +3,7 @@ import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
 import SmartDateInput from '../../components/Common/smartDatePicker';
+import api from '../../utils/api'
 
 const SendLetter = () => {
   // State variables for form inputs
@@ -19,6 +20,9 @@ const SendLetter = () => {
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
 
+    const [profiles, setProfiles] = useState([]);
+  const [selectedProfileIndex, setSelectedProfileIndex] = useState("");
+
   useEffect(() => {
     // Fetch letter types
     axios
@@ -31,15 +35,40 @@ const SendLetter = () => {
       });
 
     // Fetch tenants
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}tenant`)
-      .then((response) => {
-        setTenants(response.data);
-      })
-      .catch((error) => {
-        console.error('There was an error fetching the tenants:', error);
-      });
+  const fetchTenants = async () => {
+    try {
+      const res = await api.get('/tenant/floor-units'); // fetch tenants with units
+      setProfiles(res.data); // store full profiles
+    } catch (err) {
+      console.error('Failed to load tenants', err);
+    }
+  };
+  fetchTenants();
   }, []);
+
+  useEffect(() => {
+
+  const fetchTenants = async () => {
+    try {
+      const res = await api.get('/tenant/floor-units');
+
+      const mappedTenants = res.data
+        .filter(p => p.tenant && p.tenant.length > 0) // only tenants that exist
+        .map(p => ({
+          id: p.tenant[0].tenantId,   // use tenantId like email page
+          fullName: p.fullName,
+          phoneNumber: p.phoneNumber,
+        }));
+
+      setTenants(mappedTenants);
+    } catch (err) {
+      console.error('Failed to load tenants', err);
+    }
+  };
+
+  fetchTenants();
+}, []);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -116,27 +145,49 @@ const SendLetter = () => {
             </select>
           </div>
 
-          <div className="mb-4">
-            <label htmlFor="tenantId" className="block text-sm font-medium text-white-700">
-              Tenant
-            </label>
-            <select
-              id="tenantId"
-              value={tenantId}
-              onChange={(e) => setTenantId(e.target.value)}
-              className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
-              required
-            >
-              <option value="" disabled>
-                Select Tenant
-              </option>
-              {tenants.map((tenant) => (
-                <option key={tenant.id} value={tenant.id}>
-                  {tenant.fullName} — Unit {tenant.Unit?.unitNumber ?? "N/A"}
-                </option>
-              ))}
-            </select>
-          </div>
+{/* Tenant Dropdown */}
+<div className="mb-4">
+  <label className="block text-sm font-medium text-white-700">Tenant</label>
+  <select
+    value={selectedProfileIndex}
+    onChange={(e) => {
+      const index = e.target.value;
+      setSelectedProfileIndex(index);
+      setTenantId(""); // reset unit when tenant changes
+    }}
+    className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
+  >
+    <option value="">Select Tenant</option>
+    {profiles.map((profile, index) => (
+      <option key={profile.phoneNumber} value={index}>
+        {profile.fullName} ({profile.phoneNumber})
+      </option>
+    ))}
+  </select>
+</div>
+
+{/* Unit Dropdown */}
+{selectedProfileIndex !== "" &&
+  profiles[selectedProfileIndex] &&
+  Array.isArray(profiles[selectedProfileIndex].tenant) && (
+    <div className="mb-4">
+      <label className="block text-sm font-medium text-white-700">Unit</label>
+      <select
+        value={tenantId}
+        onChange={(e) => setTenantId(e.target.value)}
+        className="w-full mt-2 p-2 border border-gray-300 rounded-md bg-base-100"
+      >
+        <option value="">Select Unit</option>
+        {profiles[selectedProfileIndex].tenant.map((t) => (
+          <option key={t.tenantId} value={t.tenantId}>
+Unit {t.unit?.unitNumber} – Floor {t.floor?.floorNumber}
+
+          </option>
+        ))}
+      </select>
+    </div>
+)}
+
 
           <div className="mb-4">
             <label htmlFor="letterDate" className="block text-sm font-medium text-white-700">

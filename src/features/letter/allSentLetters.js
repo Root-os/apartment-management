@@ -7,7 +7,7 @@ import { MoreHorizontal } from "lucide-react";
 import { ChevronDown } from "lucide-react";
 import { CalendarContext } from '../../context/calendarContext';
 import SmartDateInput from '../../components/Common/smartDatePicker';
-
+import api from '../../utils/api';
 
 
 const AllSendLetterPage = () => {
@@ -35,12 +35,11 @@ const AllSendLetterPage = () => {
   const handleClick = () => setOpenDropdownId(null);
   document.addEventListener("click", handleClick);
   return () => document.removeEventListener("click", handleClick);
-}, []);
+  }, []);
 
-  
   const fetchLetters = () => {
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}letter`)
+    api
+      .get(`letter`)
       .then((response) => {
         const formattedLetters = response.data.map((letter) => ({
           ...letter,
@@ -55,12 +54,12 @@ const AllSendLetterPage = () => {
 
   useEffect(() => {
     fetchLetters();
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}letter-type`)
+    api
+      .get(`letter-type`)
       .then((response) => setLetterTypes(response.data))
       .catch((error) => console.error("Error fetching letter types:", error));
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}tenant`)
+    api
+      .get(`tenant`)
       .then((response) => setTenants(response.data))
       .catch((error) => console.error("Error fetching tenants:", error));
   }, []);
@@ -92,11 +91,11 @@ const AllSendLetterPage = () => {
       const updatedLetter = {
         letterTypeId: parseInt(letterTypeId),
         tenantId: parseInt(tenantId),
-        letterDate: letterDate,
+        Date: letterDate,
         description: description,
       };
-      const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}letter/${selectedLetter.id}`,
+      const response = await api.put(
+        `letter/${selectedLetter.id}`,
         updatedLetter
       );
       const updatedLetterType = letterTypes.find((lt) => lt.id === parseInt(letterTypeId));
@@ -126,7 +125,7 @@ const AllSendLetterPage = () => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-     await axios.delete(`${process.env.REACT_APP_BASE_URL}letter/${selectedLetter.id}`);
+     await api.delete(`letter/${selectedLetter.id}`);
       fetchLetters();
       setIsDeleteModalOpen(false);
       setSelectedLetter(null);
@@ -140,75 +139,77 @@ const AllSendLetterPage = () => {
     }
   };
 
- const handleRespondClick = (letter) => {
-  navigate(`/app/letter-response/${letter.id}`);
-};
-
+  const handleRespondClick = (letter) => {
+    navigate(`/app/letter-response/${letter.id}`);
+  };
 
   const handleGeneratePdf = (letter) => {
     navigate("/app/letters-in-pdf", { state: { letterDetails: letter } });
   };
 
   const columns = [
-    { key: "LetterType.name", label: "Letter Type", render: (row) => row.LetterType?.name },
     { key: "Tenant.fullName", label: "Tenant", render: (row) => row.Tenant?.fullName },
+    { key: "floorNumber", label: "Floor", render: (row) => row.Tenant.Floor?.floorNumber },
+    { key: "unitNumber", label: "Unit", render: (row) => row.Tenant.Unit?.unitNumber },
+    { key: "LetterType.name", label: "Letter Type", render: (row) => row.LetterType?.name },
     { key: "description", label: "Description" },
- {
-  label: "Actions",
-  key: "actions",
-  render: (row) => (
-    <div className="relative inline-block text-left" onClick={(e) => e.stopPropagation()}>
-      <button
-        onClick={() => setOpenDropdownId(openDropdownId === row.id ? null : row.id)}
-        className="text-blue-600 font-medium hover:underline inline-flex items-center"
-      >
-        Actions <span className="ml-1">▼</span>
-      </button>
+    {
+      label: "Actions",
+      key: "actions",
+      render: (row) => (
+        <div className="relative inline-block text-left" onClick={(e) => e.stopPropagation()}>
+          <button
+            onClick={() => setOpenDropdownId(openDropdownId === row.id ? null : row.id)}
+            className="text-blue-600 font-medium hover:underline inline-flex items-center"
+          >
+            Actions <span className="ml-1">▼</span>
+          </button>
 
-      {openDropdownId === row.id && (
-        <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-md shadow-lg z-10">
-          <button
-            onClick={() => { handleEditClick(row); setOpenDropdownId(null); }}
-            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => { handleDeleteClick(row); setOpenDropdownId(null); }}
-            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-600"
-          >
-            Delete
-          </button>
-          <button
-            onClick={() => { handleDetailClick(row); setOpenDropdownId(null); }}
-            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-          >
-            Detail
-          </button>
-          <button
-            onClick={() => { handleGeneratePdf(row); setOpenDropdownId(null); }}
-            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-indigo-600"
-          >
-            Letter
-          </button>
-          <button
-            onClick={() => { handleRespondClick(row); setOpenDropdownId(null); }}
-            className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-green-600"
-          >
-            Response
-          </button>
+          {openDropdownId === row.id && (
+            <div className="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-md shadow-lg z-10">
+              <button
+                onClick={() => { handleEditClick(row); setOpenDropdownId(null); }}
+                className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => { handleDeleteClick(row); setOpenDropdownId(null); }}
+                className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-red-600"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => { handleDetailClick(row); setOpenDropdownId(null); }}
+                className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+              >
+                Detail
+              </button>
+              <button
+                onClick={() => { handleGeneratePdf(row); setOpenDropdownId(null); }}
+                className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-indigo-600"
+              >
+                Letter
+              </button>
+              <button
+                onClick={() => { handleRespondClick(row); setOpenDropdownId(null); }}
+                className="w-full text-left px-4 py-2 text-sm hover:bg-gray-100 text-green-600"
+              >
+                Response
+              </button>
+            </div>
+          )}
         </div>
-      )}
-    </div>
-  )
-}
-
-
+      )
+    }
   ];
 
   const handleAddClick = () => {
     window.location.href = "/app/send-Letter";
   };
+
+const isTenantDisabled = selectedLetter?.LetterResponses?.length > 0;
+
 
   return (
     <div className="container mx-auto p-6">
@@ -250,11 +251,12 @@ const AllSendLetterPage = () => {
                   id="tenantId"
                   value={tenantId}
                   onChange={(e) => setTenantId(e.target.value)}
+                   disabled={isTenantDisabled}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="" disabled>Select Tenant</option>
                   {tenants.map((tenant) => (
-                    <option key={tenant.id} value={tenant.id}>{tenant.fullName}</option>
+                    <option key={tenant.id} value={tenant.id}>{tenant.fullName}— Unit {tenant.Unit?.unitNumber ?? "N/A"}</option>
                   ))}
                 </select>
               </div>
@@ -280,6 +282,12 @@ const AllSendLetterPage = () => {
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              {isTenantDisabled && (
+                <p className="text-yellow-500 text-sm mt-1">
+                  <strong>Note:</strong> Tenant cannot be changed because this letter already has a response.
+                </p>
+              )}
+
               <div className="flex justify-end">
                 <button
                   type="submit"

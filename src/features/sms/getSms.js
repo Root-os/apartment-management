@@ -3,6 +3,7 @@ import axios from "axios";
 import TableComponent from "../../components/table";
 import Modal from "../../components/Modal";
 import LoadingComponent from "../../components/loading";
+import api from '../../utils/api';
 
 const token = localStorage.getItem("token");
 
@@ -18,8 +19,8 @@ const ViewSentSMS = () => {
   useEffect(() => {
     const fetchSMS = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}sms`,
+        const response = await api.get(
+          `sms`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -42,7 +43,7 @@ const handleDeleteConfirm = async () => {
   if (!selectedSms) return;
   setButtonLoading(true);
   try {
-    await axios.delete(`${process.env.REACT_APP_BASE_URL}sms/${selectedSms.id}`, {
+    await api.delete(`sms/${selectedSms.id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
     setSmsList(smsList.filter(sms => sms.id !== selectedSms.id));
@@ -132,7 +133,6 @@ const handleDeleteConfirm = async () => {
           title="SMS Log"
           data={smsList}
           columns={columns}
-          rowsPerPageOptions={[5, 10, 20]}
           showSearch={true}
           exportable={true}
         />

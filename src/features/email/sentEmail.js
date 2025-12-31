@@ -67,6 +67,11 @@ const SentEmail = () => {
       label: 'Receiver',
       render: (email) => email.receiver ? email.receiver.fullName : ''
     },
+    { 
+      key: 'receiver', 
+      label: 'Email',
+      render: (email) => email.receiver ? email.receiver.email : ''
+    },
     { key: 'subject', label: 'Subject' },
     { key: 'content', label: 'Content' },
     { key: 'status', label: 'Status' },

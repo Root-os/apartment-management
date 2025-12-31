@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
+import api from '../../utils/api';
 
 const token = localStorage.getItem('token');
 const userId = localStorage.getItem('userId');
@@ -39,7 +40,7 @@ const AddNotification = () => {
   useEffect(() => {
    const fetchUsers = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}auth/employee`, {
+        const response = await api.get(`auth/employee`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -59,21 +60,26 @@ const AddNotification = () => {
 
     const fetchTenants = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        setTenants(response.data);
+        const res = await api.get("/tenant/floor-units");
+
+        const tenants = res.data
+          .filter((person) => person.tenant && person.tenant.length > 0)
+          .map((person) => ({
+            id: person.tenant[0].tenantId, 
+            fullName: person.fullName,
+            phoneNumber: person.phoneNumber,
+          }));
+
+        setTenants(tenants);
       } catch (err) {
-        console.error('Error fetching tenants', err);
+        console.error("Error fetching tenants:", err);
       }
     };
 
     const fetchNotificationTypes = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}notification-type`,
+        const response = await api.get(
+          `notification-type`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -103,8 +109,8 @@ const AddNotification = () => {
     };
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}notification/create`,
+      const response = await api.post(
+        `notification/create`,
         payload,
         {
           headers: {
@@ -117,7 +123,6 @@ const AddNotification = () => {
       setMessageType('success');
       setMessage('Notification created successfully');
 
-      // Reset form fields after successful submission
       reset();
 
     } catch (err) {
@@ -197,7 +202,7 @@ const AddNotification = () => {
                 <option value="">Select Tenant</option>
                 {tenants.map((tenant) => (
                   <option key={tenant.id} value={tenant.id}>
-                    {tenant.fullName} — Unit {tenant.Unit?.unitNumber ?? "N/A"}
+                    {tenant.fullName} – {tenant.phoneNumber}
                   </option>
                 ))}
               </select>

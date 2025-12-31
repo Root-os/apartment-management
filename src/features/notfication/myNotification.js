@@ -1,30 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import TableComponent from '../../components/table'; // Adjust the path as needed
-import LoadingComponent from '../../components/loading'; // Assume you have a loading component
+import TableComponent from '../../components/table'; 
+import LoadingComponent from '../../components/loading'; 
+import api from '../../utils/api';
 
 const TenantNotificationPage = () => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch notifications from the API
+
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const token = localStorage.getItem('token'); // Get tenant token from local storage
+        const token = localStorage.getItem('token'); 
         if (!token) {
           throw new Error('No authentication token found. Please log in.');
         }
 
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}notification/my-notification`, {
+        const response = await api.get(`notification/my-notification`, {
           headers: {
-            Authorization: `Bearer ${token}`, // Include token in the Authorization header
+            Authorization: `Bearer ${token}`, 
           },
         });
 
-        // Assuming the response matches the provided structure
-        setNotifications(response.data.rows || []); // Use rows from the response
+        setNotifications(response.data.rows || []); 
       } catch (err) {
         setError(err.message || 'Failed to fetch notifications');
       } finally {
@@ -35,7 +35,7 @@ const TenantNotificationPage = () => {
     fetchNotifications();
   }, []);
 
-  // Define table columns based on the response structure
+
   const columns = [
     {
       label: 'Title',
@@ -53,16 +53,16 @@ const TenantNotificationPage = () => {
     {
       label: 'Type',
       key: 'type',
-      render: (row) => row.type?.name || 'N/A', // Access nested type.name
+      render: (row) => row.type?.name || 'N/A', 
     },
     {
       label: 'Recieved At',
       key: 'createdAt',
-      render: (row) => new Date(row.createdAt).toLocaleString(), // Format date
+      render: (row) => new Date(row.createdAt).toLocaleString(),
     },
   ];
 
-  // Handle loading and error states
+  
   if (loading) {
     return <LoadingComponent />;
   }
@@ -82,9 +82,8 @@ const TenantNotificationPage = () => {
         title="My Notifications"
         data={notifications}
         columns={columns}
-        rowsPerPageOptions={[5, 10, 20]}
         showSearch={true}
-        exportable={true} // Allows CSV and PDF export
+        exportable={true} 
       />
     </div>
   );

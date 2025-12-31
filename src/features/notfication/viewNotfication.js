@@ -8,7 +8,7 @@ import * as yup from 'yup';
 import LoadingComponent from '../../components/loading';
 import api from '../../utils/api';
 
-// Define the validation schema for editing notification
+
 const validationSchema = yup.object().shape({
   title: yup.string().min(3).required('Title is required'),
   body: yup.string().min(10, 'Body must be at least 10 characters long').required('Body is required'),
@@ -42,7 +42,7 @@ const ViewNotification = () => {
             Authorization: `Bearer ${token}`
           }
         });
-        setNotifications(response.data.data || []); // Use 'data' instead of 'rows'
+        setNotifications(response.data.data || []); 
       } catch (err) {
         setError('An error occurred while fetching the notifications.');
       } finally {
@@ -77,7 +77,6 @@ const ViewNotification = () => {
       });
       setModalMessageType('success');
       setModalMessage('Notification updated successfully');
-      // Adjust based on actual API response structure
       setNotifications(notifications.map(notification => 
         notification.id === selectedNotification.id ? response.data.notification || response.data : notification
       ));
@@ -98,7 +97,7 @@ const handleDeleteConfirm = async () => {
     await api.delete(`notification/delete-admin/${selectedNotification.id}`, {
       headers: { Authorization: `Bearer ${token}` }
     });
-    // Remove deleted notification from list
+
     setNotifications(notifications.filter(n => n.id !== selectedNotification.id));
     setIsDeleteModalOpen(false);
     setSelectedNotification(null);
@@ -191,8 +190,6 @@ const handleDeleteConfirm = async () => {
           title="Notifications"
           data={notifications}
           columns={columns}
-         rowsPerPageOptions={[5, 10, 15]}
-
           showSearch={true}
           exportable={true}
         />
@@ -278,29 +275,28 @@ const handleDeleteConfirm = async () => {
       )}
 
       {/* Delete Confirmation Modal */}
-{isDeleteModalOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div className="bg-base-100 p-6 rounded-lg w-96">
-      <h2 className="text-xl mb-4">Are you sure you want to delete this notification?</h2>
-      <div className="flex justify-end space-x-2">
-        <button 
-          onClick={() => setIsDeleteModalOpen(false)} 
-          className="bg-gray-400 text-white px-4 py-2 rounded"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={handleDeleteConfirm}
-          className="bg-red-500 text-white px-4 py-2 rounded"
-          disabled={buttonLoading}
-        >
-          {buttonLoading ? 'Deleting...' : 'Delete'}
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-base-100 p-6 rounded-lg w-96">
+            <h2 className="text-xl mb-4">Are you sure you want to delete this notification?</h2>
+            <div className="flex justify-end space-x-2">
+              <button 
+                onClick={() => setIsDeleteModalOpen(false)} 
+                className="bg-gray-400 text-white px-4 py-2 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                className="bg-red-500 text-white px-4 py-2 rounded"
+                disabled={buttonLoading}
+              >
+                {buttonLoading ? 'Deleting...' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Success/Error Modal */}
       <Modal

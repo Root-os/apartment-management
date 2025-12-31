@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import TitleCard from '../../components/Cards/TitleCard'
 import Modal from '../../components/Modal';
+import api from '../../utils/api'
 
 const SendNotificationPage = () => {
   const [referenceType, setReferenceType] = useState('');
@@ -15,20 +16,13 @@ const SendNotificationPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
+  
 
   const token = localStorage.getItem('token');
   const baseUrl = process.env.REACT_APP_BASE_URL;
 
   useEffect(() => {
     if (!token) return;
-
-    // Fetch tenants
-    axios.get(`${baseUrl}tenant`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then(res => setTenants(res.data))
-      .catch(err => console.error('Failed to load tenants', err));
-
     // Fetch users (employees)
     axios.get(`${baseUrl}auth/employee`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -36,6 +30,32 @@ const SendNotificationPage = () => {
       .then(res => setUsers(res.data.users))
       .catch(err => console.error('Failed to load users', err));
   }, );
+
+  useEffect(() => {
+  if (!token) return;
+
+  const fetchTenants = async () => {
+    try {
+      const res = await api.get('/tenant/floor-units', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const mappedTenants = res.data
+        .filter(p => p.tenant && p.tenant.length > 0) // only tenants that exist
+        .map(p => ({
+          id: p.tenant[0].tenantId,   // use tenantId like email page
+          fullName: p.fullName,
+          phoneNumber: p.phoneNumber,
+        }));
+
+      setTenants(mappedTenants);
+    } catch (err) {
+      console.error('Failed to load tenants', err);
+    }
+  };
+
+  fetchTenants();
+}, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,9 +72,6 @@ const SendNotificationPage = () => {
       await axios.post(`${baseUrl}sms/send-sms`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
-
-      // setFeedback({ type: 'success', message: 'Notification sent successfully.' });
-      // setMsg('');
       
       setModalOpen(true);
       setMessageType('success');  
@@ -62,14 +79,9 @@ const SendNotificationPage = () => {
 
       setReferenceId('');
     } catch (error) {
-      // setFeedback({
-      //   type: 'error',
-      //   message: error.response?.data?.message || 'Failed to send SMS.',
-      // });
-
       setModalOpen(true);
       setMessageType('error');  
-      setMessage('Failed to send SMS.');
+      setMessage( error.response?.data?.message || 'Failed to send SMS.');
     } finally {
       setLoading(false);
     }
@@ -79,7 +91,7 @@ const SendNotificationPage = () => {
     if (referenceType === 'Tenant') {
       return tenants.map(t => (
         <option key={t.id} value={t.id}>
-          {t.fullName}
+          {t.fullName} – {t.phoneNumber}
         </option>
       ));
     } else if (referenceType === 'User') {

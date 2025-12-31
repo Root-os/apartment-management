@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TableComponent from '../../components/table'; 
 import LoadingComponent from '../../components/loading';
+import api from '../../utils/api';
 
 const NotificationPage = () => {
   const [notifications, setNotifications] = useState([]);
@@ -10,7 +11,7 @@ const NotificationPage = () => {
   const fetchNotifications = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}notification/staff-notification`, {
+      const response = await api.get(`notification/staff-notification`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

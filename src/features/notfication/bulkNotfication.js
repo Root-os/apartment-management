@@ -5,6 +5,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
+import api from '../../utils/api';
 
 const token = localStorage.getItem('token');
 const userId = localStorage.getItem('UserId');
@@ -31,7 +32,7 @@ const BulkNotification = () => {
   useEffect(() => {
     const fetchNotificationTypes = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}notification-type`, {
+        const response = await api.get(`notification-type`, {
           headers: {
             Authorization: `Bearer ${token}`
           }
@@ -57,7 +58,7 @@ const BulkNotification = () => {
     };
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}notification/group`, payload, {
+      const response = await api.post(`notification/group`, payload, {
         headers: {
           Authorization: `Bearer ${token}`
         }

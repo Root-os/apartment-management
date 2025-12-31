@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext} from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 import html2pdf from "html2pdf.js";
 import { useNavigate } from 'react-router-dom';
 import { HiPrinter, HiShare, HiDownload } from "react-icons/hi";
 import Loading from '../../components/loading';
+import { CalendarContext } from '../../context/calendarContext';
 
 const LetterDetailPage = () => {
   const { state } = useLocation();
@@ -13,6 +14,7 @@ const LetterDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const letterRef = useRef();
   const navigate = useNavigate();
+  const { formatDateForDisplay } = useContext(CalendarContext);
 
   // Color space conversion utilities (from GenerateReceiptPage)
   const oklchToRgb = (l, c, h) => {
@@ -252,7 +254,7 @@ const LetterDetailPage = () => {
   }
 
   const tenant = letter.Tenant;
-  const currentDate = new Date(letter.letterDate || letter.createdAt).toISOString().split("T")[0];
+  // const currentDate = new Date(letter.letterDate || letter.createdAt).toISOString().split("T")[0];
 
   return (
     <>
@@ -284,8 +286,10 @@ const LetterDetailPage = () => {
 
         {/* Date and Subject */}
         <div className="mb-8 text-right">
-          <p className="mb-2">Date: {currentDate}</p>
+          <p className="mb-2">Date: {letter.Date?formatDateForDisplay(letter.Date) : '-'}</p>
         </div>
+
+           {/* <p><strong>Date:</strong> {selectedLetter.Date ? formatDateForDisplay(selectedLetter.Date) : '-'}</p> */}
 
         {/* Recipient Block */}
         <div className="mb-8">
