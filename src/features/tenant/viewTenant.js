@@ -26,6 +26,9 @@ const TenantList = () => {
   const [unitDetails, setUnitDetails] = useState(null);
   const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
 
+  const [amount, setAmount] = useState("");
+
+
    const {  formatDateForDisplay } = useContext(CalendarContext);
    const { isGregorian } = useContext(CalendarContext);
 
@@ -99,6 +102,18 @@ const TenantList = () => {
       setError("Failed to fetch freeUnits.");
     }
   };
+
+  const fetchUnitDetails = async (unitId) => {
+  try {
+    const response = await api.get(`unit/${unitId}`);
+    const rent = response.data?.taxedRentAmount || "";
+    setAmount(rent); // auto-fill rent input
+  } catch (err) {
+    console.error("Failed to fetch unit details:", err);
+    setError((prev) => ({ ...prev, api: "Failed to fetch unit rent." }));
+  }
+};
+
 
   // Handle file change for document upload
   const handleFileChange = (e) => {
@@ -185,7 +200,7 @@ const handleEditSubmit = async () => {
     });
 
     if (editData.resetPassword) {
-      formData.set("resetPassword", "true"); // set avoids duplicates
+      formData.set("resetPassword", "true"); 
     }
 
     const response = await api.put(
@@ -195,31 +210,29 @@ const handleEditSubmit = async () => {
     );
 
     // ✅ SINGLE modal decision
-setModal({
-  isOpen: true,
-  messageType: "success",
-  message: response.data.newPassword
-    ? `Tenant updated successfully.\nNew password: ${response.data.newPassword}`
-    : "Tenant updated successfully",
-});
-
+    setModal({
+      isOpen: true,
+      messageType: "success",
+      message: response.data.newPassword
+        ? `Tenant updated successfully.\nNew password: ${response.data.newPassword}`
+        : "Tenant updated successfully",
+    });
 
     const updatedTenants = tenants.map(t =>
       t.id === selectedTenant.id ? response.data : t
-    );
-    setTenants(updatedTenants);
-
-    setIsEditModalOpen(false);
-  } catch (error) {
-    setModal({
-      isOpen: true,
-      messageType: "error",
-      message: error.response?.data?.message || "Failed to update tenant",
-    });
-  } finally {
-    setIsSaving(false);
-  }
-};
+      );
+      setTenants(updatedTenants);
+      setIsEditModalOpen(false);
+      } catch (error) {
+        setModal({
+          isOpen: true,
+          messageType: "error",
+          message: error.response?.data?.message || "Failed to update tenant",
+        });
+      } finally {
+        setIsSaving(false);
+      }
+    };
 
   // Submit delete request to the API
   const handleDeleteSubmit = async () => {
@@ -602,32 +615,53 @@ setModal({
               </select>
             </div>
             
-            <div className="mb-4">
-            <label className="block text-sm font-medium mb-2">
-              Unit {editData.status === 'active' && <span className="text-red-500">*</span>}
-            </label>
-            <select
-              value={editData.unitId || ""}
-              onChange={(e) =>
-                setEditData({ ...editData, unitId: e.target.value })
-              }
-              className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              disabled={isSaving || editData.status === 'inactive'}
-              required={editData.status === 'active'}
-            >
-              <option value="">Select a unit</option>
-              {units.map((unit) => (
-                <option key={unit.id} value={unit.id}>
-                  {unit.unitNumber} {unit.status ? `(${unit.status})` : ''}
-                </option>
-              ))}
-            </select>
-            {editData.status === 'inactive' && editData.unitId && (
-              <p className="text-sm text-gray-500 mt-1">
-                Current unit will be marked as available when saved.
-              </p>
-            )}
-          </div>
+<div className="mb-4">
+  <label className="block text-sm font-medium mb-2">
+    Unit {editData.status === 'active' && <span className="text-red-500">*</span>}
+  </label>
+  <select
+    value={editData.unitId || ""}
+    onChange={async (e) => {
+      const selectedUnitId = e.target.value;
+
+      // Update selected unit
+      setEditData((prev) => ({ ...prev, unitId: selectedUnitId }));
+
+      if (selectedUnitId) {
+        try {
+          // Fetch unit details for rent
+          const response = await api.get(`unit/${selectedUnitId}`);
+          const rent = response.data?.taxedRentAmount || "";
+
+          // Auto-fill rent in editData
+          setEditData((prev) => ({ ...prev, amount: rent }));
+        } catch (err) {
+          console.error("Failed to fetch unit details:", err);
+        }
+      } else {
+        // Clear rent if no unit selected
+        setEditData((prev) => ({ ...prev, amount: "" }));
+      }
+    }}
+    className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+    disabled={isSaving || editData.status === 'inactive'}
+    required={editData.status === 'active'}
+  >
+    <option value="">Select a unit</option>
+    {units.map((unit) => (
+      <option key={unit.id} value={unit.id}>
+        {unit.unitNumber} {unit.status ? `(${unit.status})` : ''}
+      </option>
+    ))}
+  </select>
+
+  {editData.status === 'inactive' && editData.unitId && (
+    <p className="text-sm text-gray-500 mt-1">
+      Current unit will be marked as available when saved.
+    </p>
+  )}
+</div>
+          
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">TIN</label>
               <input

@@ -629,7 +629,7 @@ const handleTenantSelect = async (tenantId) => {
                 if (selectedUnitId) {
                   fetchUnitDetails(selectedUnitId); // ← auto-fetch rent
                 } else {
-                  setAmount(""); // clear if nothing selected
+                  setAmount(""); 
                 }
               }}
               className={`bg-base-100 w-full p-3 border rounded-md ${
