@@ -241,39 +241,35 @@ useEffect(() => {
               Tenant
             </label>
               <select
-  className="bg-base-100 w-full p-3 border rounded"
-  value={selectedProfileIndex}
-  onChange={(e) => {
-    setSelectedProfileIndex(e.target.value);
-    setTenantId("");
-  }}
->
-  <option value="">Select Tenant</option>
-  {profiles.map((profile, index) => (
-    <option key={profile.phoneNumber} value={index}>
-      {profile.fullName} ({profile.phoneNumber})
-    </option>
-  ))}
-</select>
-
-
+                className="bg-base-100 w-full p-3 border rounded"
+                value={selectedProfileIndex}
+                onChange={(e) => {
+                  setSelectedProfileIndex(e.target.value);
+                  setTenantId("");
+                }}
+              >
+                <option value="">Select Tenant</option>
+                {profiles.map((profile, index) => (
+                  <option key={profile.phoneNumber} value={index}>
+                    {profile.fullName} ({profile.phoneNumber})
+                  </option>
+                ))}
+              </select>
           </div>
           {selectedProfileIndex !== "" && (
-  <select
-    className="bg-base-100 w-full p-3 border rounded mt-2"
-    value={tenantId}
-    onChange={(e) => setTenantId(e.target.value)}
-  >
-    <option value="">Select Unit</option>
-    {profiles[selectedProfileIndex].tenant.map((t) => (
-      <option key={t.tenantId} value={t.tenantId}>
-        Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
-      </option>
-    ))}
-  </select>
-)}
-
-
+            <select
+              className="bg-base-100 w-full p-3 border rounded mt-2"
+              value={tenantId}
+              onChange={(e) => setTenantId(e.target.value)}
+            >
+              <option value="">Select Unit</option>
+              {profiles[selectedProfileIndex].tenant.map((t) => (
+                <option key={t.tenantId} value={t.tenantId}>
+                  Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
+                </option>
+              ))}
+            </select>
+          )}
           <div>
             <label
               htmlFor="billPaymentTypeId"

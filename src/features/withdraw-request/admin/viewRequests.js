@@ -85,7 +85,7 @@ const WithdrawalRequests = () => {
     const fetchusers = async () => {
       try {
         const response = await api.get(
-          `auth/users`,
+          `auth/employee`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -397,31 +397,31 @@ const WithdrawalRequests = () => {
   }, []);
 
   const calculateRentStatus = (monthlyRent, diffDays) => {
-  const dailyRent = monthlyRent / 30;
-  const amount = Math.abs(diffDays * dailyRent);
+    const dailyRent = monthlyRent / 30;
+    const amount = Math.abs(diffDays * dailyRent);
 
-  if (diffDays > 0) {
+    if (diffDays > 0) {
+      return {
+        type: "credit",
+        days: diffDays,
+        amount: amount.toFixed(2),
+      };
+    }
+
+    if (diffDays < 0) {
+      return {
+        type: "debt",
+        days: Math.abs(diffDays),
+        amount: amount.toFixed(2),
+      };
+    }
+
     return {
-      type: "credit",
-      days: diffDays,
-      amount: amount.toFixed(2),
+      type: "clear",
+      days: 0,
+      amount: "0.00",
     };
-  }
-
-  if (diffDays < 0) {
-    return {
-      type: "debt",
-      days: Math.abs(diffDays),
-      amount: amount.toFixed(2),
-    };
-  }
-
-  return {
-    type: "clear",
-    days: 0,
-    amount: "0.00",
   };
-};
 
 
   const columns = [
@@ -582,8 +582,16 @@ const WithdrawalRequests = () => {
                 id="adminResponse"
                 value={adminResponse}
                 onChange={(e) => setAdminResponse(e.target.value)}
-                className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                rows="4"
+                  className="
+                      mt-1 block w-full
+                      px-3 py-2
+                      rounded-md
+                      border border-gray-400
+                      text-gray-900
+                      focus:outline-none
+                      focus:ring-2 focus:ring-indigo-500
+                      focus:border-indigo-500
+                    "rows="4"
               />
             </div>
             <div className="flex justify-end space-x-2">

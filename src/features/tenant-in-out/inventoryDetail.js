@@ -207,7 +207,7 @@ const TenantInventoryDetailsPage = () => {
           <div key={inv.inventoryId} className="bg-white shadow-md rounded-lg p-5 border border-gray-200 relative">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold text-gray-800">
-                Inventory #{inv.inventoryId} ({inv.type})
+                Inventory  ({inv.type})
               </h2>
               <div className="flex gap-2">
                 <button

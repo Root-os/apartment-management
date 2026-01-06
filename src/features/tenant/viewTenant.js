@@ -114,7 +114,6 @@ const TenantList = () => {
   }
 };
 
-
   // Handle file change for document upload
   const handleFileChange = (e) => {
     setEditData({ ...editData, document: e.target.files[0] });
@@ -156,17 +155,29 @@ const TenantList = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const handleUnitClick = async (unitId) => {
-    try {
-      const response = await api.get(
-        `tenant/unit/${unitId}`
-      );
-      setUnitDetails(response.data[0]);
-      setIsUnitModalOpen(true);
-    } catch (err) {
-      setError("Failed to fetch unit details.");
-    }
-  };
+const handleUnitClick = async (unitId) => {
+  try {
+    const { data } = await api.get(`tenant/unit/${unitId}`);
+
+    const tenant = data[0];
+
+    setUnitDetails({
+      ...tenant,
+      Unit: tenant?.Unit ?? {
+        unitNumber: "",
+        size: null,
+        status: "",
+        availableEquipments: "[]",
+        problems: "[]",
+        rentedDate: null,
+      },
+    });
+
+    setIsUnitModalOpen(true);
+  } catch (err) {
+    setError("Failed to fetch unit details.");
+  }
+};
 
 // Handle form submit
 const handleEditSubmit = async () => {
@@ -1064,8 +1075,8 @@ const handleEditSubmit = async () => {
                 Rented Date
               </label>
               <p className="text-sm">
-                {selectedTenant.leaseStartDate
-                  ? formatDateForDisplay(normalizeDate(selectedTenant.leaseStartDate))
+                {unitDetails.Unit.rentedDate
+                  ? formatDateForDisplay(normalizeDate(unitDetails.Unit.rentedDate))
                   : "N/A"}
               </p>
             </div>
@@ -1081,6 +1092,7 @@ const handleEditSubmit = async () => {
           </div>
         </div>
       )}
+
       {/* Modal for success/error messages */}
       <Modal
         isOpen={modal.isOpen}

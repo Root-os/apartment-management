@@ -12,7 +12,7 @@ const FloorForm = () => {
   const [formData, setFormData] = useState({
     floorNumber: '',
     // noUnits: '',
-    status: 'available', 
+    status: 'active', 
   });
 
   const handleInputChange = (e) => {

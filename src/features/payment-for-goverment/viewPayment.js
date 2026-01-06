@@ -5,6 +5,7 @@ import LoadingComponent from '../../components/loading';
 import Modal from '../../components/Modal';
 import { CalendarContext } from '../../context/calendarContext';
 import SmartDateInput from '../../components/Common/smartDatePicker';
+import api from '../../utils/api';
 
 
 
@@ -42,7 +43,7 @@ const GovBillPaymentPage = () => {
   useEffect(() => {
     const fetchBillPayments = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-payments`);
+        const response = await api.get(`bill-payments`);
         setBillPayments(response.data);
       } catch (err) {
         setError('An error occurred while fetching the bill payments.');
@@ -53,7 +54,7 @@ const GovBillPaymentPage = () => {
 
     const fetchBillTypes = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-type`);
+        const response = await api.get(`bill-type`);
         setBillTypes(response.data);
       } catch (err) {
         setError('An error occurred while fetching the bill types.');
@@ -82,7 +83,7 @@ const GovBillPaymentPage = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await axios.put(`${process.env.REACT_APP_BASE_URL}bill-payments/${selectedPayment.id}`, editData);
+      await api.put(`bill-payments/${selectedPayment.id}`, editData);
       setBillPayments(billPayments.map((payment) => (payment.id === selectedPayment.id ? { ...payment, ...editData } : payment)));
       setIsEditModalOpen(false);
       setModalOpen(true);
@@ -105,7 +106,7 @@ const GovBillPaymentPage = () => {
 
   const handleDeleteConfirm = async () => {
     try {
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}bill-payments/${selectedPayment.id}`);
+      await api.delete(`bill-payments/${selectedPayment.id}`);
       setBillPayments(billPayments.filter((payment) => payment.id !== selectedPayment.id));
       setIsDeleteModalOpen(false);
       setModalOpen(true);
@@ -119,42 +120,34 @@ const GovBillPaymentPage = () => {
     }
   };
 
- const handleFilterChange = async (e) => {
+const handleFilterChange = async (e) => {
   const status = e.target.value;
   setFilterStatus(status);
 
-  if (status) {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-payments/by-status/${status}`);
+  try {
+    if (status) {
+      const response = await api.get(`bill-payments/by-status/${status}`);
+
+      // ✅ Always set array
+      setBillPayments(Array.isArray(response.data) ? response.data : []);
+
+      // Optional message
       if (response.data.length === 0) {
-        setError(`No bill payments found with the status "${status}". Please check again later.`);
-      } else {
-        setBillPayments(response.data);
-        setError(null); // Clear any previous errors
-      }
-    } catch (err) {
-      if (err.response && err.response.status === 404) {
         setError(`No bill payments found with the status "${status}".`);
       } else {
-        setError('An error occurred while filtering the bill payments. Please try again later.');
+        setError(null);
       }
+    } else {
+      const response = await api.get(`bill-payments`);
+      setBillPayments(Array.isArray(response.data) ? response.data : []);
+      setError(null);
     }
-  } else {
-    // Fetch all bill payments if no status is selected
-    const fetchBillPayments = async () => {
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-payments`);
-        setBillPayments(response.data);
-      } catch (err) {
-        setError('An error occurred while fetching the bill payments. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchBillPayments();
+  } catch (err) {
+    setBillPayments([]); // ✅ VERY IMPORTANT
+    setError('An error occurred while filtering the bill payments.');
   }
 };
+
 
 const handleDetailClick = (payment) => {
   setSelectedDetail(payment); // Set the selected payment's details

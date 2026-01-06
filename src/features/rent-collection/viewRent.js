@@ -26,6 +26,10 @@ const RentCollectionPage = () => {
   const [message, setMessage] = useState('');
   const [noDataMessage, setNoDataMessage] = useState(false);
 
+  const [tenantList, setTenantList] = useState([]);
+  const [filterLoading, setFilterLoading] = useState(false);
+
+
 
   const [filterParams, setFilterParams] = useState({
     paymentDateFrom: '',
@@ -33,7 +37,8 @@ const RentCollectionPage = () => {
     nextDueDateFrom: '',
     nextDueDateTo: '',
     paymentFrequency: '',
-    status: ''
+    status: '',
+    tenantId:''
   });
 
    const {  formatDateForDisplay } = useContext(CalendarContext);
@@ -60,44 +65,67 @@ const RentCollectionPage = () => {
     }
   };
 
+  const fetchUniqueTenants = async () => {
+    try {
+      const response = await api.get("tenant/floor-units");
+      const tenants = [];
+
+      response.data.forEach((t) => {
+        // Pick the first tenant record for this phone number
+        if (t.tenant?.length > 0) {
+          tenants.push({
+            phoneNumber: t.phoneNumber,
+            fullName: t.fullName,
+            tenantId: t.tenant[0].tenantId, // first lease tenantId
+          });
+        }
+      });
+
+      setTenantList(tenants);
+    } catch (error) {
+      console.error("Error fetching tenants:", error);
+    }
+  };
+
   useEffect(() => {
     fetchRentData();
     fetchTenantData();
+    fetchUniqueTenants();
   }, []);
 
   useEffect(() => {
-  if (currentRent?.tenantId) {
-    const tenant = tenantData.find(t => t.id === currentRent.tenantId);
-    if (tenant) {
+    if (currentRent?.tenantId) {
+      const tenant = tenantData.find(t => t.id === currentRent.tenantId);
+      if (tenant) {
+        setCurrentRent(prev => ({
+          ...prev,
+          tenantRent: tenant.amount // store tenant rent in currentRent
+        }));
+      }
+    }
+  }, [currentRent?.tenantId]);
+
+  useEffect(() => {
+    if (currentRent?.paymentDate && currentRent?.nextDueDate && currentRent?.tenantRent) {
+  const start = new Date(currentRent.paymentDate);
+  const end = new Date(currentRent.nextDueDate);
+
+  // Force midnight UTC for consistency
+  start.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+
+  const diffDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+      
+      const amount = (currentRent.tenantRent / 30) * diffDays;
+
       setCurrentRent(prev => ({
         ...prev,
-        tenantRent: tenant.amount // store tenant rent in currentRent
+        paidDays: diffDays,
+        amountPaid: amount.toFixed(2)
       }));
     }
-  }
-}, [currentRent?.tenantId]);
-
-useEffect(() => {
-  if (currentRent?.paymentDate && currentRent?.nextDueDate && currentRent?.tenantRent) {
-const start = new Date(currentRent.paymentDate);
-const end = new Date(currentRent.nextDueDate);
-
-// Force midnight UTC for consistency
-start.setHours(0, 0, 0, 0);
-end.setHours(0, 0, 0, 0);
-
-const diffDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
-
-    
-    const amount = (currentRent.tenantRent / 30) * diffDays;
-
-    setCurrentRent(prev => ({
-      ...prev,
-      paidDays: diffDays,
-      amountPaid: amount.toFixed(2)
-    }));
-  }
-}, [currentRent?.paymentDate, currentRent?.nextDueDate, currentRent?.tenantRent]);
+  }, [currentRent?.paymentDate, currentRent?.nextDueDate, currentRent?.tenantRent]);
 
 
   // Handle history modal open
@@ -115,15 +143,26 @@ const diffDays = Math.round((end - start) / (1000 * 60 * 60 * 24)) + 1;
   };
 
   // Handle edit modal open
-const openEditModal = (rent) => {
-  const tenant = tenantData.find(t => t.id === rent.tenantId);
-  setCurrentRent({
-    ...rent,
-    tenantRent: tenant ? tenant.amount : 0  
-  });
-  setEditModalOpen(true);
-};
+  const openEditModal = (rent) => {
+    const tenant = tenantData.find(t => t.id === rent.tenantId);
 
+    // Convert dates to YYYY-MM-DD format for SmartDateInput
+    const paymentDate = rent.paymentDate
+      ? new Date(rent.paymentDate).toISOString().split('T')[0]
+      : '';
+    const nextDueDate = rent.nextDueDate
+      ? new Date(rent.nextDueDate).toISOString().split('T')[0]
+      : '';
+
+    setCurrentRent({
+      ...rent,
+      tenantRent: tenant ? tenant.amount : 0,
+      paymentDate,
+      nextDueDate
+    });
+
+    setEditModalOpen(true);
+  };
 
   // Handle delete modal open
   const openDeleteModal = (rentId) => {
@@ -206,41 +245,62 @@ const updatedRent = {
     }
     return cleaned;
   };
+
   // Handle Filter Submit
   const handleFilterSubmit = async (e) => {
     e.preventDefault();
-  
+      setFilterLoading(true);
+    // Clean filter params once
+    const cleanedParams = cleanFilterParams(filterParams);
+
+    // Convert tenantId to number if exists
+    if (cleanedParams.tenantId) {
+      cleanedParams.tenantId = Number(cleanedParams.tenantId);
+    }
+
+    console.log('FILTER PAYLOAD BEING SENT:', cleanedParams);
+
     try {
-      const cleanedParams = cleanFilterParams(filterParams); // Ensure this cleans the filter params
       const response = await api.post(`rent-collection/filter`, cleanedParams);
-  
-      console.log('Filter Response:', response.data); // Log the response data
-      
-      // Check if the response message indicates no data found
+
+      console.log('Filter Response:', response.data);
+
       if (response.data.message === "No rent collections found matching the filters") {
         setRentData([]);
-        setNoDataMessage(true); // Set no data message flag
+        setNoDataMessage(true);
       } else {
-        setRentData(response.data); // Set the filtered data
-        setNoDataMessage(false); // Clear no data message flag
+        setRentData(response.data);
+        setNoDataMessage(false);
       }
     } catch (error) {
       console.error('Error filtering rent collections:', error);
-      setNoDataMessage(true); // Set no data message flag in case of error
-    } finally {
-     
+      setNoDataMessage(true);
+    }finally {
+        setFilterLoading(false);
     }
   };
-// For regular inputs
-const handleInputChange = (e) => {
-  const { name, value } = e.target;
-  setFilterParams({ ...filterParams, [name]: value });
-};
 
-// For SmartDateInput components
-const handleDateChange = (name) => (value) => {
-  setFilterParams({ ...filterParams, [name]: value });
-};
+  const handleResetFilters = () => {
+    setFilterParams({
+      paymentDateFrom: '',
+      paymentDateTo: '',
+      nextDueDateFrom: '',
+      nextDueDateTo: '',
+      status: '',
+      tenantId: ''
+    });
+  };
+
+  // For regular inputs
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFilterParams({ ...filterParams, [name]: value });
+  };
+
+  // For SmartDateInput components
+  const handleDateChange = (name) => (value) => {
+    setFilterParams({ ...filterParams, [name]: value });
+  };
 
   const columns = [
     { 
@@ -294,12 +354,12 @@ const handleDateChange = (name) => (value) => {
             >
               Details
             </button>
-            <button
+            {/* <button
               onClick={() => openHistoryModal(rent.id)}
               className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600"
             >
               Payment History
-            </button>
+            </button> */}
           </div>
         )
       }
@@ -310,58 +370,57 @@ const handleDateChange = (name) => (value) => {
       <form onSubmit={handleFilterSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
         <div>
           <label htmlFor="paymentDateFrom" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Date From</label>
-          <SmartDateInput
-            id="paymentDateFrom"
-            name="paymentDateFrom"
-            value={filterParams.paymentDateFrom}
-            onChange={handleDateChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded"
-          
-          />
+            <SmartDateInput
+              id="paymentDateFrom"
+              name="paymentDateFrom"
+              value={filterParams.paymentDateFrom}
+              onChange={handleDateChange('paymentDateFrom')}
+            />
         </div>
         <div>
           <label htmlFor="paymentDateTo" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Date To</label>
-          <SmartDateInput
-            id="paymentDateTo"
-            name="paymentDateTo"
-            value={filterParams.paymentDateTo}
-            onChange={handleDateChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded"
-          />
+            <SmartDateInput
+              id="paymentDateTo"
+              name="paymentDateTo"
+              value={filterParams.paymentDateTo}
+              onChange={handleDateChange('paymentDateTo')}
+            />
         </div>
         <div>
           <label htmlFor="nextDueDateFrom" className="dark:text-gray-300 block text-sm font-medium text-gray-700">Next Due Date From</label>
-          <SmartDateInput
-            id="nextDueDateFrom"
-            name="nextDueDateFrom"
-            value={filterParams.nextDueDateFrom}
-            onChange={handleDateChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded"
-          />
+            <SmartDateInput
+              id="nextDueDateFrom"
+              name="nextDueDateFrom"
+              value={filterParams.nextDueDateFrom}
+              onChange={handleDateChange('nextDueDateFrom')}
+            />
         </div>
         <div>
           <label htmlFor="nextDueDateTo" className="dark:text-gray-300 block text-sm font-medium text-gray-700">Next Due Date To</label>
-          <SmartDateInput
-            id="nextDueDateTo"
-            name="nextDueDateTo"
-            value={filterParams.nextDueDateTo}
-            onChange={handleDateChange}
-            className="mt-1 block w-full p-2 border border-gray-300 rounded"
-          />
+            <SmartDateInput
+              id="nextDueDateTo"
+              name="nextDueDateTo"
+              value={filterParams.nextDueDateTo}
+              onChange={handleDateChange('nextDueDateTo')}
+            />
         </div>
         <div>
-          <label htmlFor="paymentFrequency" className="dark:text-gray-300 block text-sm font-medium text-gray-700">Payment Frequency</label>
+          <label htmlFor="tenantId" className="dark:text-gray-300 block text-sm font-medium text-gray-700">
+            Tenant
+          </label>
           <select
-            id="paymentFrequency"
-            name="paymentFrequency"
-            value={filterParams.paymentFrequency}
-            onChange={handleInputChange}
+            id="tenantId"
+            name="tenantId"
+            value={filterParams.tenantId || ""}
+            onChange={(e) => setFilterParams(prev => ({ ...prev, tenantId: e.target.value }))}
             className="mt-1 block w-full p-2 border border-gray-300 rounded"
           >
-            <option value="">Select Frequency</option>
-            <option value="Monthly">Monthly</option>
-            <option value="Quarterly">Quarterly</option>
-            <option value="Yearly">Yearly</option>
+            <option value="">Select Tenant</option>
+            {tenantList.map((tenant) => (
+              <option key={tenant.tenantId} value={tenant.tenantId}>
+                {tenant.fullName} ({tenant.phoneNumber})
+              </option>
+            ))}
           </select>
         </div>
         <div>
@@ -379,9 +438,21 @@ const handleDateChange = (name) => (value) => {
             <option value="Overdue">Overdue</option>
           </select>
         </div>
-        <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex justify-end">
-          <button type="submit" className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700">
-            Filter Data
+        <div className="col-span-1 sm:col-span-2 lg:col-span-3 flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={handleResetFilters}
+            className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
+          >
+            Reset
+          </button>
+
+          <button
+            type="submit"
+            className={`bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700 flex items-center justify-center`}
+            disabled={filterLoading}
+          >
+        {filterLoading ? 'Filtering...' : 'Filter Data'}
           </button>
         </div>
       </form>
@@ -390,7 +461,6 @@ const handleDateChange = (name) => (value) => {
         title="Rent Collection"
         data={rentData}
         columns={columns}
-
         showSearch={true}
         exportable={true}
       />
@@ -430,23 +500,20 @@ const handleDateChange = (name) => (value) => {
                 </select>
               </div>
               <div className="mb-4">
-  <label>Payment Date</label>
-  <SmartDateInput
-    value={currentRent?.paymentDate || ''}
-    onChange={(date) => setCurrentRent(prev => ({ ...prev, paymentDate: date }))}
-  />
-</div>
-
-<div className="mb-4">
-  <label>Next Due Date</label>
-  <SmartDateInput
-    value={currentRent?.nextDueDate || ''}
-    onChange={(date) => setCurrentRent(prev => ({ ...prev, nextDueDate: date }))}
-    onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
-  />
-</div>
-
-
+                <label>Payment Date</label>
+                <SmartDateInput
+                  value={currentRent?.paymentDate || ''}
+                  onChange={(date) => setCurrentRent(prev => ({ ...prev, paymentDate: date }))}
+                />
+              </div>
+              <div className="mb-4">
+                <label>Next Due Date</label>
+                <SmartDateInput
+                  value={currentRent?.nextDueDate || ''}
+                  onChange={(date) => setCurrentRent(prev => ({ ...prev, nextDueDate: date }))}
+                  onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
+                />
+              </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">Amount Paid</label>
                 <input
@@ -469,18 +536,6 @@ const handleDateChange = (name) => (value) => {
                   <option value="Mobile Banking">Mobile</option>
                 </select>
               </div>
-              {/* <div className="mb-4">
-                <label className="block text-sm font-medium mb-2">Payment Frequency</label>
-                <select
-                  value={currentRent?.paymentFrequency || ''}
-                  onChange={(e) => setCurrentRent({ ...currentRent, paymentFrequency: e.target.value })}
-                  className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-                >
-                  <option value="Monthly">Monthly</option>
-                  <option value="Quarterly">Quarterly</option>
-                  <option value="Yearly">Yearly</option>
-                </select>
-              </div> */}
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-2">Status</label>
                 <select
@@ -523,10 +578,8 @@ const handleDateChange = (name) => (value) => {
               <div className="flex justify-end space-x-2">
                 <button type="button" onClick={closeModals} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
                   <button type="button" onClick={handleEditSubmit} className="bg-blue-500 ...">
-    Save
-  </button>
-
-
+                    Save
+                  </button>
               </div>
             </form>
           </div>

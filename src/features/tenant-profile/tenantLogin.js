@@ -41,7 +41,10 @@ const TenantLoginPage = () => {
         setError('Login failed. Please check your credentials.');
       }
     } catch (err) {
-      setError('Invalid credentials.');
+      const backendMessage =
+      err.response?.data?.message || 'Something went wrong. Please try again.';
+
+      setError(backendMessage);
       console.error('Login Error:', err);
     } finally {
       setIsLoading(false);
@@ -52,7 +55,7 @@ const TenantLoginPage = () => {
     <div
       className="min-h-screen flex items-center justify-center relative"
       style={{
-        backgroundImage: 'url(/solo.jpg)',
+        backgroundImage: 'url(/orda3.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}

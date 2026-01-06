@@ -117,11 +117,11 @@ const ViewBillPayment = () => {
         setMessageType("error");
         setModalMessage("Unable to delete payment");
       });
-  };
-  const handleDetailClick = (payment) => {
-    setSelectedPayment(payment);
-    setIsDetailModalOpen(true);
-  };
+    };
+    const handleDetailClick = (payment) => {
+      setSelectedPayment(payment);
+      setIsDetailModalOpen(true);
+    };
 
   const columns = [
     {
@@ -148,9 +148,9 @@ const ViewBillPayment = () => {
       key: "amountPaid",
       label: "Amount Paid",
       render: (payment) => {
-  const amount = Number(payment.amountPaid);
-  return `ETB ${!isNaN(amount) ? amount.toFixed(2) : "0.00"}`;
-},
+      const amount = Number(payment.amountPaid);
+      return `ETB ${!isNaN(amount) ? amount.toFixed(2) : "0.00"}`;
+    },
 
     },
     { key: "status", label: "Status" },
@@ -226,20 +226,19 @@ const ViewBillPayment = () => {
               <label className="block text-sm font-medium mb-2">
                 Amount Paid
               </label>
-<input
-  type="number"
-  min="0"
-  step="0.01"
-  value={newPaymentData.amountPaid}
-  onChange={(e) =>
-    setNewPaymentData({
-      ...newPaymentData,
-      amountPaid: e.target.value === "" ? "" : Number(e.target.value),
-    })
-  }
-     className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-/>
-
+                <input
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={newPaymentData.amountPaid}
+                  onChange={(e) =>
+                    setNewPaymentData({
+                      ...newPaymentData,
+                      amountPaid: e.target.value === "" ? "" : Number(e.target.value),
+                    })
+                  }
+                    className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+                />
             </div>
 
             <div className="mb-4">
@@ -345,6 +344,7 @@ const ViewBillPayment = () => {
           </div>
         </div>
       )}
+
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 p-6 rounded-lg w-98">

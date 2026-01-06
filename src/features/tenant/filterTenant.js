@@ -137,8 +137,6 @@ const TenantFilterList = () => {
           title="Tenant List"
           data={tenants}
           columns={columns}
-         rowsPerPageOptions={[5, 10, 15]}
-
           showSearch={true}
           exportable={true}
         />
@@ -200,17 +198,93 @@ const TenantFilterList = () => {
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Document</label>
-              {selectedTenant.document ? (
-                isImage(selectedTenant.document) ? (
-                  <img src={getDocumentUrl(selectedTenant.document)} alt="Document" className="w-16 h-16 object-cover" />
-                ) : (
-                  <a href={getDocumentUrl(selectedTenant.document)} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
-                    View Document
-                  </a>
-                )
-              ) : (
-                'N/A'
-              )}
+            {selectedTenant.document && (
+              <div className="mb-4">
+                <p>
+                  <strong>Document:</strong>
+                </p>
+                {(() => {
+                  const baseUrl = `${process.env.REACT_APP_BASE}`;
+
+                  // Case 1: If document is a File object (after upload, before refresh)
+                  if (selectedTenant.document instanceof File) {
+                    const fileName = selectedTenant.document.name.toLowerCase();
+                    if (
+                      fileName.endsWith(".jpg") ||
+                      fileName.endsWith(".jpeg") ||
+                      fileName.endsWith(".png")
+                    ) {
+                      return (
+                        <div>
+                          <img
+                            src={URL.createObjectURL(selectedTenant.document)}
+                            alt="Tenant Document Preview"
+                            className="w-full h-auto max-h-64 object-contain"
+                            onError={(e) =>
+                              (e.target.src = "/path/to/fallback-image.jpg")
+                            }
+                          />
+                          <p className="text-sm text-gray-500">
+                            Preview (refresh to view uploaded file)
+                          </p>
+                        </div>
+                      );
+                    } else {
+                      return <p>{fileName} (Uploaded, refresh to view)</p>;
+                    }
+                  }
+
+                  // Case 2: If document is a string (URL from server)
+                  const fullDocumentUrl = `${baseUrl}${
+                    selectedTenant.document.startsWith("/") ? "" : "/"
+                  }${selectedTenant.document}`;
+                  if (
+                    fullDocumentUrl.endsWith(".pdf") ||
+                    fullDocumentUrl.endsWith(".doc") ||
+                    fullDocumentUrl.endsWith(".docx")
+                  ) {
+                    return (
+                      <a
+                        href={fullDocumentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline"
+                      >
+                        View Document
+                      </a>
+                    );
+                  } else if (
+                    fullDocumentUrl.endsWith(".jpg") ||
+                    fullDocumentUrl.endsWith(".jpeg") ||
+                    fullDocumentUrl.endsWith(".png")
+                  ) {
+                    return (
+                      <div>
+                        <img
+                          src={fullDocumentUrl}
+                          alt="Tenant Document"
+                          className="w-full h-auto max-h-64 object-contain"
+                          onError={(e) =>
+                            (e.target.src = "/path/to/fallback-image.jpg")
+                          }
+                        />
+                      </div>
+                    );
+                  } else {
+                    return (
+                      <a
+                        href={fullDocumentUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:underline"
+                      >
+                        View Document
+                      </a>
+                    );
+                  }
+                })()}
+              </div>
+            )}
             </div>
             <div className="flex justify-end">
               <button

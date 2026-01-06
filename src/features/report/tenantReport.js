@@ -5,6 +5,7 @@ import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 import SmartDateInput from "../../components/Common/smartDatePicker";
 import { CalendarContext } from '../../context/calendarContext';
+import api from '../../utils/api'
 
 const TenantReport = () => {
   const [units, setUnits] = useState([]);
@@ -34,7 +35,7 @@ const TenantReport = () => {
   useEffect(() => {
     const fetchUnits = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}unit`);
+        const response = await api.get(`unit`);
         setUnits(response.data);
       } catch (error) {
         console.error("Error fetching units:", error);
@@ -45,7 +46,7 @@ const TenantReport = () => {
 
     const fetchFloors = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}floor`);
+        const response = await api.get(`floor`);
         setFloors(response.data);
       } catch (error) {
         console.error("Error fetching floors:", error);
@@ -60,7 +61,7 @@ const TenantReport = () => {
     e.preventDefault();
     setIsLoading(true); // Start loading
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}tenant/filter`, filterParams);
+      const response = await api.post(`tenant/filter`, filterParams);
       setFilteredData(response.data);
     } catch (error) {
       const message = error.response?.status === 404
@@ -233,8 +234,6 @@ const TenantReport = () => {
           title="Tenant Report"
           data={filteredData}
           columns={columns}
-         rowsPerPageOptions={[5, 10, 15]}
-
           showSearch={true}
           exportable={true}
         />
@@ -244,8 +243,6 @@ const TenantReport = () => {
             title="Tenant Report"
             data={[]}
             columns={columns}
-           rowsPerPageOptions={[5, 10, 15]}
-
             showSearch={false}
             exportable={false}
           />

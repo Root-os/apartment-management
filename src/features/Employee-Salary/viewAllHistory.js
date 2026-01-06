@@ -6,6 +6,7 @@ import DeleteConfirmationModal from '../../components/editDeleteModal';
 import LoadingComponent from '../../components/loading';
 import SmartDateInput from '../../components/Common/smartDatePicker';
 import { CalendarContext } from '../../context/calendarContext';
+import api from '../../utils/api';
 
 const SalaryPayments = () => {
   const [salaryData, setSalaryData] = useState([]);
@@ -33,7 +34,7 @@ const SalaryPayments = () => {
     const fetchSalaryData = async () => {
       const token = localStorage.getItem('token');
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}salary-payments/all`, {
+        const response = await api.get(`salary-payments/all`, {
 
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -53,8 +54,8 @@ const SalaryPayments = () => {
     setError(null);
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}salary-payments/filterByDateRange`,
+      const response = await api.post(
+        `salary-payments/filterByDateRange`,
         {
           fromDate,
           toDate,
@@ -84,8 +85,8 @@ const SalaryPayments = () => {
     setError(null);
     // Re-fetch all data (or you could save original data on first load)
     setLoading(true);
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}salary-payments/all`, {
+    api
+      .get(`salary-payments/all`, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       })
       .then((res) => setSalaryData(res.data.data))
@@ -108,8 +109,8 @@ const SalaryPayments = () => {
         status,
       };
 
-      const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}salary-payments/${selectedSalary.id}`,
+      const response = await api.put(
+        `salary-payments/${selectedSalary.id}`,
         updatedSalary,
         {
           headers: {
@@ -153,8 +154,8 @@ const SalaryPayments = () => {
   const handleDelete = async (id) => {
     setIsLoading(true);
     try {
-      const response = await axios.delete(
-        `${process.env.REACT_APP_BASE_URL}salary-payments/${id}`,
+      const response = await api.delete(
+        `salary-payments/${id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,

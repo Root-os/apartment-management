@@ -5,6 +5,7 @@ import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 import SmartDateInput from '../../components/Common/smartDatePicker';
 import { CalendarContext } from '../../context/calendarContext';
+import api from '../../utils/api';
 
 
 const ChargingReport = () => {
@@ -61,6 +62,28 @@ const formatDateTimeForTable = (isoString) => {
       }
     };
 
+    const fetchUniqueTenants = async () => {
+      try {
+        const response = await api.get("tenant/floor-units");
+        const tenants = [];
+
+        response.data.forEach((t) => {
+          // Pick the first tenant record for this phone number
+          if (t.tenant?.length > 0) {
+            tenants.push({
+              phoneNumber: t.phoneNumber,
+              fullName: t.fullName,
+              tenantId: t.tenant[0].tenantId, // first lease tenantId
+            });
+          }
+        });
+
+        setTenants(tenants);
+      } catch (error) {
+        console.error("Error fetching tenants:", error);
+      }
+    };
+
     const fetchCarList = async () => {
       try {
         const response = await axios.get(`${process.env.REACT_APP_BASE_URL}charging`);
@@ -73,7 +96,7 @@ const formatDateTimeForTable = (isoString) => {
       }
     };
 
-    Promise.all([fetchTenants(), fetchCarList()]).finally(() => setLoading(false));
+    Promise.all([fetchTenants(), fetchCarList(), fetchUniqueTenants()]).finally(() => setLoading(false));
   }, []);
 
   // Handle filter submit
@@ -126,12 +149,13 @@ const formatDateTimeForTable = (isoString) => {
   },
   { key: 'status', label: 'Status' },
   { key: 'chargingCost', label: 'Charging Cost' },
+  
   {
     key: 'name',
     label: 'Name',
     render: (data) => {
       if (data.isTenant) {
-        return data.Tenant?.FullName || 'Unknown Tenant';
+        return data.Tenant?.fullName || 'Unknown Tenant';
       } else {
         return data.driverName || 'Unknown Driver';
       }
@@ -221,19 +245,20 @@ const formatDateTimeForTable = (isoString) => {
 
         {filterParams.isTenant && (
           <div>
-            <label htmlFor="tenantId" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            <label htmlFor="tenantId" className="dark:text-gray-300 block text-sm font-medium text-gray-700">
               Tenant
             </label>
             <select
               id="tenantId"
-              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-              value={filterParams.tenantId}
-              onChange={(e) => setFilterParams({ ...filterParams, tenantId: e.target.value })}
+              name="tenantId"
+              value={filterParams.tenantId || ""}
+              onChange={(e) => setFilterParams(prev => ({ ...prev, tenantId: e.target.value }))}
+              className="mt-1 block w-full p-2 border border-gray-300 rounded"
             >
               <option value="">Select Tenant</option>
               {tenants.map((tenant) => (
-                <option key={tenant.id} value={tenant.id}>
-                  {tenant.fullName} — Unit {tenant.Unit?.unitNumber ?? "N/A"}
+                <option key={tenant.tenantId} value={tenant.tenantId}>
+                  {tenant.fullName} ({tenant.phoneNumber})
                 </option>
               ))}
             </select>

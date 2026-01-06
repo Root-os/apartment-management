@@ -5,11 +5,12 @@ import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 import SmartDateInput from "../../components/Common/smartDatePicker";
 import { CalendarContext } from '../../context/calendarContext';
+import api from '../../utils/api'
 
 const TenantBillReport = () => {
   const [tenants, setTenants] = useState([]);
   const [billTypes, setBillTypes] = useState([]);
-  const [paymentTypes, setPaymentTypes] = useState([]); // State for payment types
+  const [paymentTypes, setPaymentTypes] = useState([]); 
   const [filteredData, setFilteredData] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState('');
@@ -27,7 +28,7 @@ const TenantBillReport = () => {
     const fetchTenants = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
+        const response = await api.get(`tenant`);
         setTenants(response.data);
       } catch (error) {
         console.error("Error fetching tenants:", error);
@@ -39,7 +40,7 @@ const TenantBillReport = () => {
     const fetchBillTypes = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}bill-type`);
+        const response = await api.get(`bill-type`);
         setBillTypes(response.data);
        
       } catch (error) {
@@ -49,8 +50,31 @@ const TenantBillReport = () => {
       }
     };
 
+      const fetchUniqueTenants = async () => {
+  try {
+    const response = await api.get("tenant/floor-units");
+    const tenants = [];
+
+    response.data.forEach((t) => {
+      // Pick the first tenant record for this phone number
+      if (t.tenant?.length > 0) {
+        tenants.push({
+          phoneNumber: t.phoneNumber,
+          fullName: t.fullName,
+          tenantId: t.tenant[0].tenantId, // first lease tenantId
+        });
+      }
+    });
+
+    setTenants(tenants);
+  } catch (error) {
+    console.error("Error fetching tenants:", error);
+  }
+};
+
     fetchTenants();
     fetchBillTypes();
+     fetchUniqueTenants();
  // Fetch payment types
   }, []);
 
@@ -58,7 +82,7 @@ const TenantBillReport = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}tenant-payments/reports`, filterParams);
+      const response = await api.post(`tenant-payments/reports`, filterParams);
       setFilteredData(response.data);
     } catch (error) {
       const message = error.response?.status === 404
@@ -67,13 +91,13 @@ const TenantBillReport = () => {
       setModalMessage(message);
       setIsModalOpen(true);
       console.error("Error filtering data:", error);
-      setFilteredData([]); // Reset filteredData to empty array on error
+      setFilteredData([]); 
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Columns definition including payment type name
+
   const columns = [
     { key: 'tenantName', label: 'Tenant Name', render: (payment) => payment?.Tenant?.fullName || 'N/A' },
     { key: 'floorNumber', label: 'Floor ', render: (payment) => payment?.Tenant?.Floor?.floorNumber || 'N/A' },
@@ -109,17 +133,21 @@ const TenantBillReport = () => {
             />
           </div>
           <div>
-            <label htmlFor="tenantId" className="block text-sm font-medium text-white-600 dark:text-gray-300">Tenant</label>
+            <label htmlFor="tenantId" className="dark:text-gray-300 block text-sm font-medium text-gray-700">
+              Tenant
+            </label>
             <select
               id="tenantId"
-              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
-              value={filterParams.tenantId}
-              onChange={(e) => setFilterParams({ ...filterParams, tenantId: e.target.value })}
+              name="tenantId"
+              value={filterParams.tenantId || ""}
+              onChange={(e) => setFilterParams(prev => ({ ...prev, tenantId: e.target.value }))}
+              className="mt-1 block w-full p-2 border border-gray-300 rounded"
             >
               <option value="">Select Tenant</option>
               {tenants.map((tenant) => (
-                <option key={tenant.id} value={tenant.id}>{tenant.fullName} — Unit {tenant.Unit?.unitNumber ?? "N/A"} </option>
-                //{t.fullName} — Unit {t.Unit?.unitNumber ?? "N/A"}
+                <option key={tenant.tenantId} value={tenant.tenantId}>
+                  {tenant.fullName} ({tenant.phoneNumber})
+                </option>
               ))}
             </select>
           </div>
@@ -165,8 +193,6 @@ const TenantBillReport = () => {
             title="Tenant Bill Report"
             data={[]}
             columns={columns}
-           rowsPerPageOptions={[5, 10, 15]}
-
             showSearch={false}
             exportable={false}
           />
