@@ -191,6 +191,7 @@ const SettingView = lazy(() => import("../pages/protected/SettingView"));
 const CalendarToggle = lazy(() =>
   import("../pages/protected/setting/CalendarToggle")
 );
+const ApplyPunishment = lazy(() => import("../pages/protected/setting/ApplyPunishment"))
 // Purchase
 const PurchaseAdd = lazy(() => import("../pages/protected/PurchaseAdd"));
 const PurchaseView = lazy(() => import("../pages/protected/PurchaseView"));
@@ -590,6 +591,7 @@ const adminRoutes = [
       { path: "/add-setting", component: SettingAdd },
       { path: "/view-settings", component: SettingView },
       { path: "/calendar-settings", component: CalendarToggle },
+      { path: "/apply-punishment", component: ApplyPunishment },
       { path: "/All-User", component: ALlUser },
       { path: "/add-role", component: RoleAdd },
       { path: "/view-role", component: RoleView },

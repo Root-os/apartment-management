@@ -924,12 +924,12 @@ const adminRoutes = [
         path: "/app/calendar-settings",
         icon: <CogIcon className={submenuIconClasses} />,
         name: "Calendar Settings",
-      }
-      // {
-      //   path: '/app/register-user',
-      //   icon: <PlusIcon className={submenuIconClasses}/>,
-      //   name: 'User Registration  ',
-      // },
+      },
+      {
+        path: '/app/apply-punishment',
+        icon: <CogIcon className={submenuIconClasses} />,
+        name: 'Apply Punishment   ',
+      },
     ],
   },
 ];
