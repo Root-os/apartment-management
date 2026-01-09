@@ -25,8 +25,8 @@ const SendLetter = () => {
 
   useEffect(() => {
     // Fetch letter types
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}letter-type`)
+    api
+      .get(`letter-type`)
       .then((response) => {
         setLetterTypes(response.data);
       })
@@ -37,8 +37,8 @@ const SendLetter = () => {
     // Fetch tenants
   const fetchTenants = async () => {
     try {
-      const res = await api.get('/tenant/floor-units'); // fetch tenants with units
-      setProfiles(res.data); // store full profiles
+      const res = await api.get('/tenant/floor-units'); 
+      setProfiles(res.data);
     } catch (err) {
       console.error('Failed to load tenants', err);
     }
@@ -47,15 +47,14 @@ const SendLetter = () => {
   }, []);
 
   useEffect(() => {
-
   const fetchTenants = async () => {
     try {
       const res = await api.get('/tenant/floor-units');
 
       const mappedTenants = res.data
-        .filter(p => p.tenant && p.tenant.length > 0) // only tenants that exist
+        .filter(p => p.tenant && p.tenant.length > 0)
         .map(p => ({
-          id: p.tenant[0].tenantId,   // use tenantId like email page
+          id: p.tenant[0].tenantId,  
           fullName: p.fullName,
           phoneNumber: p.phoneNumber,
         }));
@@ -65,6 +64,7 @@ const SendLetter = () => {
       console.error('Failed to load tenants', err);
     }
   };
+  
 
   fetchTenants();
 }, []);
@@ -117,6 +117,20 @@ const SendLetter = () => {
       setLoading(false);
     }
   };
+  useEffect(() => {
+  if (selectedProfileIndex === "" || !profiles[selectedProfileIndex]) return;
+
+  const tenantUnits = profiles[selectedProfileIndex].tenant;
+
+  if (tenantUnits.length === 1) {
+    // Only one unit → auto-select it
+    setTenantId(tenantUnits[0].tenantId);
+  } else {
+    // More than one unit → clear selection
+    setTenantId("");
+  }
+}, [selectedProfileIndex, profiles]);
+
 
   return (
     <>

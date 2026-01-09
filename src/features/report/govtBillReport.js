@@ -37,16 +37,6 @@ const GovtBillReport = () => {
     fetchBillTypes();
   }, []);
 
-  // Reset filter fields to initial state
-  const resetFilterFields = () => {
-    setFilterParams({
-      startDate: '',
-      endDate: '',
-      billTypeId: '',
-      createdAt: ''
-    });
-  };
-
   const handleFilterSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true); // Start loading
@@ -54,7 +44,6 @@ const GovtBillReport = () => {
     try {
       const response = await axios.post(`${process.env.REACT_APP_BASE_URL}bill-payments/bill-report`, filterParams);
       setFilteredData(response.data);
-      resetFilterFields(); // Reset fields after successful filter
     } catch (error) {
       const message = error.response?.status === 404
         ? 'No bill payments found with the given filters'
@@ -66,6 +55,17 @@ const GovtBillReport = () => {
       setIsLoading(false); // Stop loading
     }
   };
+
+    // Reset filter fields to initial state
+  const handleResetFilters = () => {
+    setFilterParams({
+      startDate: '',
+      endDate: '',
+      billTypeId: '',
+     
+    });
+  };
+
 
 const columns = [
   {
@@ -138,7 +138,14 @@ const columns = [
           </div> */}
 
           {/* Submit Button */}
-          <div className="col-span-4 flex justify-end">
+          <div className="col-span-4 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
+            >
+              Reset
+            </button>
             <button
               type="submit"
               className="w-40 bg-blue-500 text-white p-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:text-gray-300"

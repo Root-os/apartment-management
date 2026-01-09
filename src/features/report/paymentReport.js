@@ -67,6 +67,15 @@ const PaymentReport = () => {
     }
   };
 
+      const handleResetFilters = () => {
+    setFilterParams({
+    vendorId: "",
+    status: "",
+    startDate: "",
+    endDate: "",
+    });
+  };
+
   const columns = [
     {
       key: "Vendor.fname",
@@ -191,7 +200,14 @@ const PaymentReport = () => {
             />
           </div>
           {/* Filter Button at the Bottom */}
-          <div className="col-span-full flex justify-end mt-4">
+          <div className="col-span-full flex justify-end mt-4 gap-2">
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
+            >
+              Reset
+            </button>
             <button
               type="submit"
               className="w-40 bg-blue-500 text-white p-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:text-gray-300"

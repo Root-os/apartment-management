@@ -4,6 +4,7 @@ import TitleCard from '../../components/Cards/TitleCard';
 import Modal from '../../components/Modal';
 import SmartDateInput from '../../components/Common/smartDatePicker';
 import { CalendarContext} from '../../context/calendarContext';
+import api from '../../utils/api';
 
 const AddParking = () => {
   const [carPlate, setCarPlate] = useState("");
@@ -23,13 +24,14 @@ const AddParking = () => {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [carNameError, setCarNameError] = useState("");
+  
 
   const { formatDateForDisplay } = useContext(CalendarContext);
 
 
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}tenant`)
+    api
+      .get(`tenant`)
       .then((response) => {
         setTenants(response.data);
       })
@@ -64,6 +66,20 @@ const AddParking = () => {
       setCarName("");
     }
   };
+
+  useEffect(() => {
+  if (tenants.length === 0) return;
+
+  tenants.forEach((tenant) => {
+    if (tenant.TenantVehicles.length === 1) {
+      setTenantId(tenant.id);
+      setTenantCar(tenant.TenantVehicles[0]);
+      setCarPlate(tenant.TenantVehicles[0].carPlate);
+      setCarName(tenant.TenantVehicles[0].carName);
+    }
+  });
+}, [tenants]);
+
 
   // Handle the status change
   const handleStatusChange = (e) => {
@@ -108,8 +124,8 @@ const AddParking = () => {
     // Log the data that will be sent to the server
     console.log("Sending parking data to server:", parkingData);
   
-    axios
-      .post(`${process.env.REACT_APP_BASE_URL}parking`, parkingData)
+    api
+      .post(`parking`, parkingData)
       .then((response) => {
         // Log the successful response from the server
         console.log("Server response:", response);

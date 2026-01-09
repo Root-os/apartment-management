@@ -615,6 +615,7 @@ const updatedRent = {
               <p><strong>Paid Days:</strong> {currentRent.paidDays}</p>
               <p><strong>Next Due Date:</strong> {formatDateForDisplay(currentRent.nextDueDate)}</p>
               <p><strong>Payment Statuss:</strong> {currentRent.status}</p>
+              <p><strong>Payment Method:</strong> {currentRent.paymentMethod}</p>
               <p><strong>Punishment:</strong> {currentRent.punishment}</p>
               <p><strong>Is Paid:</strong> {currentRent.isPaid ? 'Yes' : 'No'}</p>
 

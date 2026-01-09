@@ -31,25 +31,27 @@ const ItemOutRequestForm = () => {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    api.get(`tenant-items/my-items`, {
+  const fetchUnits = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await api.get(`dashboard/for-tenant`, {
         headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        if (selectedTenantId) {
-          // Filter items for the selected unit
-          const filtered = res.data.filter(
-            (item) => item.TenantInventory.tenantId === parseInt(selectedTenantId)
-          );
-          setItems(filtered);
-        } else {
-          setItems([]); 
-        }
-      })
-      .catch((err) => console.error("Failed to fetch tenant items:", err));
-  }, [selectedTenantId]);
+      });
+
+      const fetchedUnits = response.data.unitsOccupied || [];
+      setUnits(fetchedUnits);
+
+      // Auto-select if only one unit
+      if (fetchedUnits.length === 1) {
+        setSelectedTenantId(fetchedUnits[0].tenantId);
+      }
+    } catch (err) {
+      console.error("Error fetching units:", err);
+    }
+  };
+  fetchUnits();
+}, []);
+
 
 
   const handleChange = (e) => {
@@ -104,7 +106,7 @@ const ItemOutRequestForm = () => {
       <TitleCard title="Send Item Out Request" topMargin="mt-2">
         <form onSubmit={handleSubmit}>
 
-                   <div className="mb-4">
+          <div className="mb-4">
             <label className="block text-sm font-semibold mb-2">Select Unit</label>
               <select
                 value={selectedTenantId}

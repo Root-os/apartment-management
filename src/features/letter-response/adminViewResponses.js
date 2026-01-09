@@ -3,6 +3,7 @@ import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import TitleCard from '../../components/Cards/TitleCard';
 import Loading from '../../components/loading';
+import api from '../../utils/api';
 
 const LetterResponseAdminSide = () => {
   const { letterId } = useParams();
@@ -14,8 +15,8 @@ const LetterResponseAdminSide = () => {
   useEffect(() => {
     const fetchResponse = async () => {
       try {
-        const res = await axios.get(
-          `${process.env.REACT_APP_BASE_URL}letter-response/admin/${letterId}`
+        const res = await api.get(
+          `letter-response/admin/${letterId}`
         );
         const responses = res.data.data;
         if (Array.isArray(responses) && responses.length > 0) {
@@ -33,8 +34,8 @@ const LetterResponseAdminSide = () => {
 
   const handleStatusUpdate = async (newStatus) => {
     try {
-      await axios.patch(
-        `${process.env.REACT_APP_BASE_URL}letter-response/admin/status/${response.id}`,
+      await api.patch(
+        `letter-response/admin/status/${response.id}`,
         { status: newStatus }
       );
       setResponse(prev => ({ ...prev, status: newStatus }));
@@ -44,13 +45,40 @@ const LetterResponseAdminSide = () => {
     }
   };
 
-  if (error) return <div className="p-6 text-red-600 text-center font-semibold">{error}</div>;
-  if (!response) return <Loading/>
+  // ===================== BACK BUTTON FIX =====================
+  // Always show back button even if there's an error or loading
+  const BackButton = (
+    <div className="mb-6">
+      <button
+        onClick={() => navigate(-1)}
+        className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300"
+      >
+        ← Back
+      </button>
+    </div>
+  );
+  // ============================================================
+
+  if (error) return (
+    <div className="p-4">
+      {BackButton}
+      <div className="p-6 text-red-600 text-center font-semibold">{error}</div>
+    </div>
+  );
+
+  if (!response) return (
+    <div className="p-4">
+      {BackButton}
+      <Loading />
+    </div>
+  );
 
   const letterDescription = response?.Letter?.description || "N/A";
 
   return (
-    <div>
+    <div className="p-4">
+      {BackButton}
+
       <TitleCard title="Letter Response" topMargin={'mt-1'}>
         <table className="min-w-full border border-gray-300 rounded-md text-left">
           <tbody>
@@ -109,15 +137,6 @@ const LetterResponseAdminSide = () => {
           </select>
         </div>
       </TitleCard>
-
-      <div>
-        <button
-          onClick={() => navigate(-1)}
-          className="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 mb-6"
-        >
-          ← Back
-        </button>
-      </div>
     </div>
   );
 };

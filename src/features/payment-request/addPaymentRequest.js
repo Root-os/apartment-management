@@ -151,6 +151,22 @@ const handleUnitChange = (e) => {
     }
   };
 
+  useEffect(() => {
+  if (profiles.length === 0) return;
+
+  profiles.forEach((profile, index) => {
+    // If profile has exactly 1 unit and no tenantId set yet
+    if (profile.tenant.length === 1 && !formData.tenantId) {
+      setSelectedProfileIndex(index);
+      setFormData((prev) => ({
+        ...prev,
+        tenantId: profile.tenant[0].tenantId,
+      }));
+    }
+  });
+}, [profiles]);
+
+
   return (
     <>
     {/* Request Tenant Payment */}
@@ -183,7 +199,9 @@ const handleUnitChange = (e) => {
         onChange={handleUnitChange}
         className="w-full bg-base-100 p-2 border rounded-md"
       >
-        <option value="">Select Unit</option>
+        {profiles[selectedProfileIndex].tenant.length > 1 && (
+          <option value="">Select Unit</option>
+        )}
         {profiles[selectedProfileIndex].tenant.map((t) => (
           <option key={t.tenantId} value={t.tenantId}>
             Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
@@ -192,6 +210,7 @@ const handleUnitChange = (e) => {
       </select>
     </div>
 )}
+
 
 
 

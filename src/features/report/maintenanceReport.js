@@ -11,8 +11,8 @@ const MaintenanceReport = () => {
   const [itemList, setItemList] = useState([]); // Store list of items
   const [filterParams, setFilterParams] = useState({
     startDate: "",
-    unitId: "", // This will be updated with selected unit ID
-    itemId: "", // This will be updated with selected item ID
+    unitId: "", 
+    itemId: "", 
   });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
@@ -88,6 +88,14 @@ const MaintenanceReport = () => {
     }
   };
 
+  const handleResetFilters = () => {
+    setFilterParams({
+    startDate: "",
+    unitId: "", 
+    itemId: "", 
+    });
+  };
+
  const columns = [
   {
     key: "maintenanceUnit.unitNumber",
@@ -121,7 +129,7 @@ const MaintenanceReport = () => {
           className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-6"
         >
           {/* Start Date */}
-          <div className="min-w-[100px]">
+          <div className="min-w-[120px]">
             <label
               htmlFor="startDate"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -198,7 +206,14 @@ const MaintenanceReport = () => {
           </div>
 
           {/* Submit Button */}
-          <div className="col-span-1 sm:col-span-2 md:col-span-4 lg:col-span-6 flex justify-end">
+          <div className="col-span-1 sm:col-span-2 md:col-span-4 lg:col-span-6 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
+            >
+              Reset
+            </button>
             <button
               type="submit"
               className="w-40 bg-blue-500 text-white p-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:text-gray-300"

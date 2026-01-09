@@ -130,7 +130,11 @@ useEffect(() => {
     if (matchedTenant) {
       setSelectedProfileIndex(profileIndex);
       setTenantId(matchedTenant.tenantId);
+    }else if (profile.tenant.length === 1) {
+      setSelectedProfileIndex(profileIndex);
+      setTenantId(profile.tenant[0].tenantId);
     }
+
   });
 }, [searchParams, profiles]);
 
@@ -261,13 +265,17 @@ useEffect(() => {
               className="bg-base-100 w-full p-3 border rounded mt-2"
               value={tenantId}
               onChange={(e) => setTenantId(e.target.value)}
+             
             >
-              <option value="">Select Unit</option>
-              {profiles[selectedProfileIndex].tenant.map((t) => (
-                <option key={t.tenantId} value={t.tenantId}>
-                  Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
-                </option>
-              ))}
+          {profiles[selectedProfileIndex].tenant.length > 1 && (
+            <option value="">Select Unit</option>
+          )}
+          {profiles[selectedProfileIndex].tenant.map((t) => (
+            <option key={t.tenantId} value={t.tenantId}>
+              Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
+            </option>
+          ))}
+
             </select>
           )}
           <div>

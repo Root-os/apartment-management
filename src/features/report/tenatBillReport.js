@@ -50,27 +50,26 @@ const TenantBillReport = () => {
       }
     };
 
-      const fetchUniqueTenants = async () => {
-  try {
-    const response = await api.get("tenant/floor-units");
-    const tenants = [];
+    const fetchUniqueTenants = async () => {
+      try {
+        const response = await api.get("tenant/floor-units");
+        const tenants = [];
 
-    response.data.forEach((t) => {
-      // Pick the first tenant record for this phone number
-      if (t.tenant?.length > 0) {
-        tenants.push({
-          phoneNumber: t.phoneNumber,
-          fullName: t.fullName,
-          tenantId: t.tenant[0].tenantId, // first lease tenantId
-        });
+        response.data.forEach((t) => {
+          // Pick the first tenant record for this phone number
+          if (t.tenant?.length > 0) {
+            tenants.push({
+              phoneNumber: t.phoneNumber,
+              fullName: t.fullName,
+              tenantId: t.tenant[0].tenantId, // first lease tenantId
+            });
+          }
+         });
+        setTenants(tenants);
+      } catch (error) {
+        console.error("Error fetching tenants:", error);
       }
-    });
-
-    setTenants(tenants);
-  } catch (error) {
-    console.error("Error fetching tenants:", error);
-  }
-};
+    };
 
     fetchTenants();
     fetchBillTypes();
@@ -97,7 +96,14 @@ const TenantBillReport = () => {
     }
   };
 
-
+    const handleResetFilters = () => {
+    setFilterParams({
+    startDate: "",
+    endDate: "",
+    billPaymentTypeId: "",
+    tenantId: "",
+    });
+  };
   const columns = [
     { key: 'tenantName', label: 'Tenant Name', render: (payment) => payment?.Tenant?.fullName || 'N/A' },
     { key: 'floorNumber', label: 'Floor ', render: (payment) => payment?.Tenant?.Floor?.floorNumber || 'N/A' },
@@ -165,7 +171,14 @@ const TenantBillReport = () => {
               ))}
             </select>
           </div>
-          <div className="col-span-4 flex justify-end">
+          <div className="col-span-4 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
+            >
+              Reset
+            </button>
             <button
               type="submit"
               className="w-40 bg-blue-500 text-white p-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:text-gray-300"

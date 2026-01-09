@@ -91,6 +91,8 @@ const gregorianToEthiopian = (gregorianDate) => {
         setCurrentMonth({ year: ethDate.year, month: ethDate.month });
       }
     } else {
+
+        setSelectedDate(null);
       // Set default to current Ethiopian date
       const currentEth = getCurrentEthiopianDate();
       if (currentEth) {

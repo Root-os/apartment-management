@@ -43,11 +43,11 @@ const FloorForm = () => {
       // window.location.href='/app/view-floor';
     } catch (error) {
       console.error('Error adding floor data:', error);
-      // alert('There was an error adding the floor data.');
+      const backendError = error.response?.data?.error || 'Something went wrong. Please try again.';
 
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Failed to add floor');
+      setMessage(backendError);
     }finally
     {
       setIsLoading(false);

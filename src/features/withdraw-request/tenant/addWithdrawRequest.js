@@ -25,6 +25,14 @@ const WithdrawalRequestForm = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUnits(response.data.unitsOccupied || []);
+
+        const fetchedUnits = response.data.unitsOccupied || [];
+        setUnits(fetchedUnits);
+
+        if (fetchedUnits.length === 1) {
+          setSelectedTenantId(fetchedUnits[0].tenantId);
+        }
+
       } catch (err) {
         console.error("Error fetching units:", err);
       }
@@ -65,22 +73,33 @@ const WithdrawalRequestForm = () => {
     <>
       <TitleCard title="Send Withdrawal Request" topMargin="mt-2">
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-semibold mb-2">Select Unit</label>
-              <select
-                value={selectedTenantId}
-                onChange={(e) => setSelectedTenantId(e.target.value)}
-                required
-                className="w-full border rounded-lg p-2 bg-base-100"
-              >
-                <option value="">-- Select a unit --</option>
-                {units.map((u) => (
-                  <option key={u.tenantId} value={u.tenantId}>
-                    Unit {u.unitNumber} (Floor {u.floorNumber})
-                  </option>
-                ))}
-              </select>
-          </div>
+<div className="mb-4">
+  <label className="block text-sm font-semibold mb-2">Select Unit</label>
+  
+  {units.length === 1 ? (
+    <input
+      type="text"
+      value={`Unit ${units[0].unitNumber} (Floor ${units[0].floorNumber})`}
+      readOnly
+      className="w-full border rounded-lg p-2 bg-gray-100 cursor-not-allowed"
+    />
+  ) : (
+    <select
+      value={selectedTenantId}
+      onChange={(e) => setSelectedTenantId(e.target.value)}
+      required
+      className="w-full border rounded-lg p-2 bg-base-100"
+    >
+      <option value="">-- Select a unit --</option>
+      {units.map((u) => (
+        <option key={u.tenantId} value={u.tenantId}>
+          Unit {u.unitNumber} (Floor {u.floorNumber})
+        </option>
+      ))}
+    </select>
+  )}
+</div>
+
 
           {/* Termination Date */}
           <div className="mb-4">

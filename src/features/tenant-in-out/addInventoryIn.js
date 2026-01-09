@@ -84,6 +84,17 @@ useEffect(() => {
   fetchTenantInventory();
 }, [selectedTenantId]);
 
+useEffect(() => {
+  if (profiles.length === 0) return;
+
+  profiles.forEach((profile, index) => {
+    if (profile.tenant.length === 1) {
+      setSelectedProfileIndex(index);
+      setSelectedTenantId(profile.tenant[0].tenantId);
+    }
+  });
+}, [profiles]);
+
 
 // Prefill items when type is move-out AND tenantInventory is loaded
 useEffect(() => {
@@ -115,7 +126,6 @@ useEffect(() => {
 
   setItems(moveInItems);
 }, [tenantInventory, type, selectedTenantId]);
-
 
 
   // Handle the form submission
@@ -228,22 +238,25 @@ useEffect(() => {
               </select>                         
           </div>
           {selectedProfileIndex !== "" && (
-            <>
-              <label className="block text-sm font-medium mt-4">Unit</label>
-              <select
-                className="mt-1 p-2 w-full border rounded bg-base-100"
-                value={selectedTenantId}
-                onChange={(e) => setSelectedTenantId(Number(e.target.value))} 
-              >
-                <option value="">Select Unit</option>
-                {profiles[selectedProfileIndex].tenant.map((t) => (
-                  <option key={t.tenantId} value={t.tenantId}>
-                    Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
-                  </option>
-                ))}
-              </select>
-            </>
-          )}
+  <>
+    <label className="block text-sm font-medium mt-4">Unit</label>
+    <select
+      className="mt-1 p-2 w-full border rounded bg-base-100"
+      value={selectedTenantId}
+      onChange={(e) => setSelectedTenantId(Number(e.target.value))}
+    >
+      {profiles[selectedProfileIndex].tenant.length > 1 && (
+        <option value="">Select Unit</option>
+      )}
+      {profiles[selectedProfileIndex].tenant.map((t) => (
+        <option key={t.tenantId} value={t.tenantId}>
+          Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
+        </option>
+      ))}
+    </select>
+  </>
+)}
+
           <div className="mb-4">
             <label htmlFor="type" className="block text-sm font-medium">
               Type

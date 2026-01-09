@@ -18,7 +18,7 @@ const PurchaseReport = () => {
     startDate: '',
     endDate: '',
     itemCategoryId: '',
-    vendorId: '', // Add vendorId to filter params
+    vendorId: '',
   });
 
   useEffect(() => {
@@ -63,6 +63,15 @@ const PurchaseReport = () => {
     } finally {
       setIsLoading(false); // Stop loading
     }
+  };
+
+  const handleResetFilters = () => {
+    setFilterParams({
+    startDate: '',
+    endDate: '',
+    itemCategoryId: '',
+    vendorId: '',
+    });
   };
 
   const columns = [
@@ -159,7 +168,14 @@ const PurchaseReport = () => {
           </div>
 
           {/* Submit Button */}
-          <div className="col-span-4 flex justify-end">
+          <div className="col-span-4 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
+            >
+              Reset
+            </button>
             <button
               type="submit"
               className="w-40 bg-blue-500 text-white p-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:text-gray-300"

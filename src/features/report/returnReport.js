@@ -67,6 +67,15 @@ const ReturnReport = () => {
     }
   };
 
+      const handleResetFilters = () => {
+    setFilterParams({
+    vendorId: '',
+    itemId: '',
+    startDate: '',
+    endDate: '',
+    });
+  };
+
   const columns = [
     { key: 'Vendor.fname', label: 'Vendor', render: (row) => `${row.Vendor.fname} ${row.Vendor.lname}` },
     { key: 'Item.itemName', label: 'Item', render: (row) => row.Item.itemName },
@@ -149,7 +158,14 @@ const ReturnReport = () => {
           </div>
 
           {/* Submit Button */}
-          <div className="col-span-4 flex justify-end">
+          <div className="col-span-4 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={handleResetFilters}
+              className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600"
+            >
+              Reset
+            </button>
             <button
               type="submit"
               className="w-40 bg-blue-500 text-white p-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:text-gray-300"
