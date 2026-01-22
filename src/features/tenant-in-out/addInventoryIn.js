@@ -13,7 +13,7 @@ const InventoryForm = () => {
   const [searchParams] = useSearchParams();
 
   const [type, setType] = useState("move-in");
-  const [items, setItems] = useState([{ name: "",  quantity: 1 },]);
+  const [items, setItems] = useState([{ name: "",  quantity: 1 }]);
   const [notes, setNotes] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -24,13 +24,12 @@ const InventoryForm = () => {
   const [tenantInventory, setTenantInventory] = useState([]);
 
   const navigate = useNavigate();
+
   // Fetch all tenants once the component is mounted
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        const res = await api.get(
-          `tenant/floor-units`
-        );
+        const res = await api.get(`tenant/floor-units`);
         setProfiles(res.data);
       } catch (error) {
         console.error("Error fetching profiles:", error);
@@ -40,92 +39,96 @@ const InventoryForm = () => {
     fetchProfiles();
   }, []);
 
-
   useEffect(() => {
+    if (profiles.length === 0) return;
+
     const tenantIdFromUrl = searchParams.get("tenantId");
-    if (!tenantIdFromUrl || profiles.length === 0) return;
 
-    profiles.forEach((profile, profileIndex) => {
-      const matchedTenant = profile.tenant.find(
-        (t) => t.tenantId === Number(tenantIdFromUrl)
-      );
-
-      if (matchedTenant) {
-        setSelectedProfileIndex(profileIndex);
-        setSelectedTenantId(matchedTenant.tenantId);
+    if (tenantIdFromUrl) {
+      // Navigated via URL → select that tenant/unit
+      for (let i = 0; i < profiles.length; i++) {
+        const matchedTenant = profiles[i].tenant.find(
+          (t) => String(t.tenantId) === tenantIdFromUrl
+        );
+        if (matchedTenant) {
+          setSelectedProfileIndex(String(i));
+          setSelectedTenantId(Number(matchedTenant.tenantId)); // ✅ Store as number
+          return; // stop here
+        }
       }
-    });
-  }, [searchParams, profiles]);
-
+    }
+    // Otherwise, manual open → leave both selects empty
+  }, [profiles, searchParams]);
 
   // Fetch tenant inventory when tenant changes
-useEffect(() => {
-  if (!selectedTenantId) return;
+  useEffect(() => {
+    if (!selectedTenantId) return;
 
-  const fetchTenantInventory = async () => {
-    try {
-      const res = await api.get(`/tenant-inventory`);
+    const fetchTenantInventory = async () => {
+      try {
+        const res = await api.get(`/tenant-inventory`);
 
-      // Find tenant who has the selected tenantId in their units
-      const tenantData = res.data.tenants.find(t =>
-        t.units.some(u => u.tenantId === selectedTenantId)
-      );
+        const selectedId = Number(selectedTenantId); // ✅ convert to number
 
-      if (tenantData) {
-        // Filter units that match the selected tenantId
-        const tenantUnits = tenantData.units.filter(u => u.tenantId === selectedTenantId);
-        setTenantInventory(tenantUnits);
+        // Find tenant who has the selected tenantId in their units
+        const tenantData = res.data.tenants.find(t =>
+          t.units.some(u => u.tenantId === selectedId)
+        );
+
+        if (tenantData) {
+          // Filter units that match the selected tenantId
+          const tenantUnits = tenantData.units.filter(u => u.tenantId === selectedId);
+          setTenantInventory(tenantUnits);
+        }
+      } catch (error) {
+        console.error(error);
       }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    };
 
-  fetchTenantInventory();
-}, [selectedTenantId]);
+    fetchTenantInventory();
+  }, [selectedTenantId]);
 
-useEffect(() => {
-  if (profiles.length === 0) return;
+  // Prefill items when type is move-out AND tenantInventory is loaded
+  useEffect(() => {
+    if (type.toLowerCase() !== "move-out" || tenantInventory.length === 0) return;
 
-  profiles.forEach((profile, index) => {
-    if (profile.tenant.length === 1) {
-      setSelectedProfileIndex(index);
-      setSelectedTenantId(profile.tenant[0].tenantId);
-    }
-  });
-}, [profiles]);
-
-
-// Prefill items when type is move-out AND tenantInventory is loaded
-useEffect(() => {
-  if (type.toLowerCase() !== "move-out" || tenantInventory.length === 0) return;
-
-  // Filter all move-in units (case-insensitive, trimmed)
-  const moveInUnits = tenantInventory.filter(
-    (u) => u.type?.trim().toLowerCase() === "move-in"
-  );
-
-  if (moveInUnits.length === 0) {
-    console.log("No move-in units found for tenant", selectedTenantId);
-    setItems([]); // clear items if no move-in units
-    return;
-  }
-
-  // Flatten all move-in items
-  const moveInItems = moveInUnits
-    .flatMap((unit) =>
-      unit.items
-        .filter((item) => item.quantity > 0)
-        .map((item) => ({
-          name: item.itemName,
-          quantity: item.quantity,
-        }))
+    const moveInUnits = tenantInventory.filter(
+      (u) => u.type?.trim().toLowerCase() === "move-in"
     );
 
-  console.log("Prefilled move-in items (non-zero):", moveInItems);
+    if (moveInUnits.length === 0) {
+      console.log("No move-in units found for tenant", selectedTenantId);
+      setItems([]); // clear items if no move-in units
+      return;
+    }
 
-  setItems(moveInItems);
-}, [tenantInventory, type, selectedTenantId]);
+    const moveInItems = moveInUnits.flatMap(unit =>
+      unit.items
+        .filter(item => item.quantity > 0)
+        .map(item => ({ name: item.itemName, quantity: item.quantity }))
+    );
+
+    console.log("Prefilled move-in items (non-zero):", moveInItems);
+
+    setItems(moveInItems);
+  }, [tenantInventory, type]); // ✅ no need for selectedTenantId
+
+  // Auto-select tenant if only one unit
+ useEffect(() => {
+  if (selectedProfileIndex === "") return;
+
+  const tenantList = profiles[selectedProfileIndex].tenant;
+  const tenantIdFromUrl = searchParams.get("tenantId");
+
+  // ✅ If came from URL, DO NOT override
+  if (tenantIdFromUrl) return;
+
+  if (tenantList.length === 1) {
+    setSelectedTenantId(tenantList[0].tenantId);
+  } else {
+    setSelectedTenantId("");
+  }
+}, [selectedProfileIndex, profiles, searchParams]);
 
 
   // Handle the form submission
@@ -140,7 +143,7 @@ useEffect(() => {
     }
 
     const emptyItem = items.some(
-      (item) => !item.name ||  item.quantity <= 0
+      (item) => !item.name || item.quantity <= 0
     );
     if (emptyItem) {
       setMessage("Please fill out all fields for each item.");
@@ -181,17 +184,15 @@ useEffect(() => {
         setModalOpen(true);
         setmessageType("success");
         setMessage("Inventory data created successfully!");
-        // window.location.href = "/app/view-in-out";
         setTimeout(() => {
-        navigate("/app/view-in-out");
-      }, 1500);
+          navigate("/app/view-in-out");
+        }, 1500);
       } else {
         setMessage("Failed to create inventory data.");
       }
     } catch (error) {
       console.error("Error:", error.response || error);
       setMessage("Failed to create inventory data. Please try again.");
-
       setModalOpen(true);
       setmessageType("error");
       setMessage("Unable to add the data!");
@@ -207,7 +208,7 @@ useEffect(() => {
   };
 
   const addItem = () => {
-    setItems([...items, { name: "",  quantity: 1 }]);
+    setItems([...items, { name: "", quantity: 1 }]);
   };
 
   const removeItem = (index) => {
@@ -221,41 +222,42 @@ useEffect(() => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-sm font-medium">Tenant</label>
+            <select
+              className="mt-1 p-2 w-full border rounded bg-base-100"
+              value={selectedProfileIndex}
+              onChange={(e) => {
+                setSelectedProfileIndex(e.target.value);
+                setSelectedTenantId(""); // reset unit
+              }}
+            >
+              <option value="">Select Tenant</option>
+              {profiles.map((profile, index) => (
+                <option key={profile.phoneNumber} value={index}>
+                  {profile.fullName} ({profile.phoneNumber})
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {selectedProfileIndex !== "" && (
+            <>
+              <label className="block text-sm font-medium mt-4">Unit</label>
               <select
                 className="mt-1 p-2 w-full border rounded bg-base-100"
-                value={selectedProfileIndex}
-                onChange={(e) => {
-                  setSelectedProfileIndex(e.target.value);
-                  setSelectedTenantId(""); // reset unit
-                }}
+                value={selectedTenantId}
+                onChange={(e) => setSelectedTenantId(Number(e.target.value))} // ✅ store as number
               >
-                <option value="">Select Tenant</option>
-                {profiles.map((profile, index) => (
-                  <option key={profile.phoneNumber} value={index}>
-                    {profile.fullName} ({profile.phoneNumber})
+                {profiles[selectedProfileIndex].tenant.length > 1 && (
+                  <option value="">Select Unit</option>
+                )}
+                {profiles[selectedProfileIndex].tenant.map((t) => (
+                  <option key={t.tenantId} value={t.tenantId}>
+                    Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
                   </option>
                 ))}
-              </select>                         
-          </div>
-          {selectedProfileIndex !== "" && (
-  <>
-    <label className="block text-sm font-medium mt-4">Unit</label>
-    <select
-      className="mt-1 p-2 w-full border rounded bg-base-100"
-      value={selectedTenantId}
-      onChange={(e) => setSelectedTenantId(Number(e.target.value))}
-    >
-      {profiles[selectedProfileIndex].tenant.length > 1 && (
-        <option value="">Select Unit</option>
-      )}
-      {profiles[selectedProfileIndex].tenant.map((t) => (
-        <option key={t.tenantId} value={t.tenantId}>
-          Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
-        </option>
-      ))}
-    </select>
-  </>
-)}
+              </select>
+            </>
+          )}
 
           <div className="mb-4">
             <label htmlFor="type" className="block text-sm font-medium">
@@ -284,25 +286,16 @@ useEffect(() => {
                   onChange={(e) =>
                     handleItemChange(index, "name", e.target.value)
                   }
-                    readOnly={type === "move-out"} 
+                  readOnly={type === "move-out"}
                 />
-                {/* <input
-                  type="text"
-                  className="p-2 w-full border border-gray-300 rounded-md bg-base-100"
-                  placeholder="Condition"
-                  value={item.condition}
-                  onChange={(e) =>
-                    handleItemChange(index, "condition", e.target.value)
-                  }
-                /> */}
                 <input
                   type="number"
                   className="p-2 w-full border border-gray-300 rounded-md bg-base-100"
                   placeholder="Quantity"
                   value={item.quantity}
                   onChange={(e) =>
-                      handleItemChange(index, "quantity", Number(e.target.value))
-                    }
+                    handleItemChange(index, "quantity", Number(e.target.value))
+                  }
                   onWheel={(e)=> e.target.blur()}
                   min="1"
                   step="1"

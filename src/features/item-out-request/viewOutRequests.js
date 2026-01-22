@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
 import Modal from "../../components/Modal";
-import api from "../../utils/api"
+import api from "../../utils/api";
 
 const TenantItemOutRequests = () => {
   const [requests, setRequests] = useState([]);
@@ -13,10 +12,10 @@ const TenantItemOutRequests = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [requestToDelete, setRequestToDelete] = useState(null);
 
-  const [editingRequest, setEditingRequest] = useState(null); 
-  const [tenantItems, setTenantItems] = useState([]); 
+  const [editingRequest, setEditingRequest] = useState(null);
+  const [tenantItems, setTenantItems] = useState([]);
   const [formData, setFormData] = useState({});
-  
+
   const [modalOpen, setModalOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("success");
@@ -25,9 +24,10 @@ const TenantItemOutRequests = () => {
 
   useEffect(() => {
     fetchRequests();
-    fetchTenantItems();
+    // fetchTenantItems();
   }, []);
 
+  // Fetch all requests
   const fetchRequests = async () => {
     try {
       const response = await api.get(`item-out-request`, {
@@ -41,69 +41,97 @@ const TenantItemOutRequests = () => {
     }
   };
 
-  const fetchTenantItems = async () => {
-    try {
-      const res = await api.get(`tenant-items/my-items`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setTenantItems(res.data);
-    } catch (err) {
-      console.error('Failed to load tenant items', err);
-    }
-  };
-
-  const openEditModal = (request) => {
-    setEditingRequest(request);
-    setFormData({
-      tenantItemId: request.tenantItemId || '',
-      name: request.name || '',
-      quantity: request.quantity,
+  // Fetch tenant items for editing (by tenantId)
+const fetchTenantItemsForEdit = async (tenantId) => {
+  try {
+    if (!tenantId) return [];
+    const response = await api.get(`tenant-items/${tenantId}/items`, {
+      headers: { Authorization: `Bearer ${token}` },
     });
-  };
+    setTenantItems(response.data.items || []);
+    return response.data.items || [];
+  } catch (err) {
+    console.error("Failed to load tenant items", err);
+    setTenantItems([]);
+    return [];
+  }
+};
 
+
+const openEditModal = async (request) => {
+  console.log("Opening edit modal for request:", request);
+
+  setEditingRequest(request);
+
+  let items = [];
+  if (request.tenantId) {
+    items = await fetchTenantItemsForEdit(request.tenantId);
+    console.log("Tenant items loaded for edit:", items);
+  }
+
+  // Determine the correct value for the select/input
+  let itemValue = "";
+  if (request.item?.id) {
+    itemValue = `id-${request.item.id}`;  // Use item.id from request
+  } else if (request.name) {
+    itemValue = request.name;             // Custom item name
+  } else if (items.length > 0) {
+    itemValue = `id-${items[0].id}`;     // Fallback to first tenant item
+  }
+
+  setFormData({
+    itemValue,
+    quantity: request.quantity || 1,
+  });
+
+  console.log("Form data set for edit:", {
+    itemValue,
+    quantity: request.quantity || 1,
+  });
+};
+
+  // Handle form changes
   const handleEditChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
   };
 
+  // Submit edited request
   const submitEdit = async () => {
-    const payload = {
-      quantity: parseInt(formData.quantity, 10),
-    };
+    const payload = { quantity: parseInt(formData.quantity, 10) };
 
-    if (editingRequest.tenantItemId) {
-      payload.tenantItemId = parseInt(formData.tenantItemId, 10);
-    } else {
-      payload.name = formData.name;
+    // Dropdown value starts with "id-"
+    if (formData.itemValue?.startsWith("id-")) {
+      payload.tenantItemId = parseInt(formData.itemValue.split("-")[1], 10);
+    } else if (formData.itemValue) {
+      payload.name = formData.itemValue;
     }
 
     try {
-      await api.put(
-        `item-out-request/${editingRequest.id}`,
-        payload,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      await api.put(`item-out-request/${editingRequest.id}`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setModalOpen(true);
-      setMessageType('success');
-      setMessage('Request Updated successfully');
-      await fetchRequests();
-      setEditingRequest(null);
+      setMessage("Request updated successfully");
+      setMessageType("success");
+      fetchRequests();
+      closeEditModal();
     } catch (err) {
       setModalOpen(true);
-      setMessageType('error');
-      setMessage((err.response?.data?.error || err.message));
+      setMessage(err.response?.data?.error || err.message);
+      setMessageType("error");
     }
   };
 
   const closeEditModal = () => {
     setEditingRequest(null);
     setFormData({});
+    setTenantItems([]);
   };
+
 
   const openDeleteModal = (id) => {
     setRequestToDelete(id);
@@ -123,15 +151,14 @@ const TenantItemOutRequests = () => {
       await api.delete(`item-out-request/${requestToDelete}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setRequests((prev) => prev.filter((req) => req.id !== requestToDelete));
+      setRequests(prev => prev.filter(req => req.id !== requestToDelete));
       setModalOpen(true);
       setMessageType('success');
       setMessage('Request deleted successfully');
     } catch (err) {
-      //alert('Failed to delete request: ' + (err.response?.data?.message || err.message));
       setModalOpen(true);
       setMessageType('error');
-      setMessage((err.response?.data?.message || err.message));
+      setMessage(err.response?.data?.message || err.message);
     } finally {
       setDeletingId(null);
       setRequestToDelete(null);
@@ -139,90 +166,81 @@ const TenantItemOutRequests = () => {
   };
 
   const columns = [
-  {
-    label: 'Item Name',
-    key: 'itemName',
-    render: (row) => row.item?.itemName || row.name || 'N/A',
-  },
-  {
-    label: 'Quantity',
-    key: 'quantity',
-    render: (row) => row.item?.quantity || row.quantity || 'N/A',
-  },
-  { label: 'Status', key: 'status' },
-  {
-    label: 'Unit',
-    key: 'unitNumber',
-    render: (row) => row.unitNumber || 'N/A',
-  },
-  {
-    label: 'Floor',
-    key: 'floorNumber',
-    render: (row) => row.floorNumber || 'N/A',
-  },
-  {
-    label: 'Requested By',
-    key: 'tenantName',
-  },
-  {
-    label: 'Requested At',
-    key: 'createdAt',
-    isDate: true,
-  },
-  {
-  label: 'Actions',
-  key: 'actions',
-  render: (row) => {
-    const isPending = row.status === 'Pending';
-    const isDeleting = deletingId === row.id;
+    {
+      label: 'Item Name',
+      key: 'itemName',
+      render: (row) => row.item?.itemName || row.name || 'N/A',
+    },
+    {
+      label: 'Quantity',
+      key: 'quantity',
+      render: (row) => row.quantity || row.item?.quantity ||  'N/A',
+    },
+    { label: 'Status', key: 'status' },
+    {
+      label: 'Unit',
+      key: 'unitNumber',
+      render: (row) => row.unitNumber || 'N/A',
+    },
+    {
+      label: 'Floor',
+      key: 'floorNumber',
+      render: (row) => row.floorNumber || 'N/A',
+    },
+    {
+      label: 'Requested At',
+      key: 'createdAt',
+      isDate: true,
+    },
+    {
+      label: 'Actions',
+      key: 'actions',
+      render: (row) => {
+        const isPending = row.status === 'Pending';
+        const isDeleting = deletingId === row.id;
 
-    return (
-      <div className="flex gap-2">
-        {/* Edit Button */}
-        <button
-          onClick={() => isPending && openEditModal(row)}
-          disabled={!isPending}
-          className={`px-3 py-1 rounded text-white transition-colors duration-200 ${
-            isPending
-              ? 'bg-blue-600 hover:bg-blue-700'
-              : 'bg-blue-600 opacity-50 cursor-not-allowed'
-          }`}
-        >
-          Edit
-        </button>
+        return (
+          <div className="flex gap-2">
+            <button
+              onClick={() => isPending && openEditModal(row)}
+              disabled={!isPending}
+              className={`px-3 py-1 rounded text-white transition-colors duration-200 ${
+                isPending ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-600 opacity-50 cursor-not-allowed'
+              }`}
+            >
+              Edit
+            </button>
 
-        {/* Delete Button */}
-        <button
-          onClick={() => isPending && openDeleteModal(row.id)}
-          disabled={!isPending || isDeleting}
-          className={`px-3 py-1 rounded text-white transition-colors duration-200 ${
-            isPending
-              ? isDeleting
-                ? 'bg-red-600 opacity-50 cursor-wait'
-                : 'bg-red-600 hover:bg-red-700'
-              : 'bg-red-600 opacity-50 cursor-not-allowed'
-          }`}
-        >
-          {isDeleting ? 'Deleting...' : 'Delete'}
-        </button>
-      </div>
-    );
-  },
-}
+            <button
+              onClick={() => isPending && openDeleteModal(row.id)}
+              disabled={!isPending || isDeleting}
+              className={`px-3 py-1 rounded text-white transition-colors duration-200 ${
+                isPending
+                  ? isDeleting
+                    ? 'bg-red-600 opacity-50 cursor-wait'
+                    : 'bg-red-600 hover:bg-red-700'
+                  : 'bg-red-600 opacity-50 cursor-not-allowed'
+              }`}
+            >
+              {isDeleting ? 'Deleting...' : 'Delete'}
+            </button>
+          </div>
+        );
+      },
+    },
+  ];
 
-];
+    if (loading) return <LoadingComponent />;
+    if (error) return <div className="text-red-500">Error: {error}</div>;
 
-
-  if (loading) return <LoadingComponent />;
-  if (error) return <div className="text-red-500">Error: {error}</div>;
+  const tableData = requests.length > 0 ? requests[0].requests : [];
 
   return (
     <>
       <TableComponent
         title="My Item Out Requests"
-        data={requests}
+        data={tableData}
         columns={columns}
-        rowsPerPageOptions={[5, 10, 20]}
         showSearch={true}
         exportable={true}
       />
@@ -257,59 +275,66 @@ const TenantItemOutRequests = () => {
           <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
             <h2 className="text-lg font-semibold mb-4">Edit Request</h2>
 
-            <form className="space-y-4">
-              {editingRequest.tenantItemId ? (
-                <>
-                  <div>
-                    <label className="block mb-1 font-medium">Item</label>
-                    <select
-                      name="tenantItemId"
-                      value={formData.tenantItemId}
-                      onChange={handleEditChange}
-                      className="w-full border rounded px-3 py-2"
-                    >
-                      <option value="">Select item</option>
-                      {tenantItems.map((item) => (
-                        <option key={item.id} value={item.id}>
-                          {item.itemName}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </>
+            <div className="space-y-4">
+              {/* Item select or input */}
+              {tenantItems.length > 0 ? (
+                <div>
+                  <label className="block mb-1 font-medium">Item</label>
+                  <select
+                    name="itemValue"
+                    value={formData.itemValue || ""}
+                    onChange={handleEditChange}
+                    className="w-full border rounded px-3 py-2"
+                  >
+                    <option value="">Select item</option>
+                    {tenantItems.map(item => (
+                      <option key={item.id} value={`id-${item.id}`}>
+                        {item.itemName} (Available: {item.quantity})
+                      </option>
+                    ))}
+                  </select>
+                </div>
               ) : (
                 <div>
                   <label className="block mb-1 font-medium">Item Name</label>
                   <input
                     type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleEditChange}
+                    value={formData.itemValue || ""}
+                    onChange={(e) =>
+                      setFormData(prev => ({ ...prev, itemValue: e.target.value }))
+                    }
                     className="w-full border rounded px-3 py-2"
+                    placeholder="Enter item name"
                   />
                 </div>
               )}
+
+              {/* Quantity */}
               <div>
                 <label className="block mb-1 font-medium">Quantity</label>
                 <input
                   type="number"
-                  name="quantity"
-                  value={formData.quantity}
-                  onChange={handleEditChange}
                   min="1"
+                  value={formData.quantity || 1}
+                  onChange={(e) =>
+                    setFormData(prev => ({ ...prev, quantity: e.target.value }))
+                  }
                   className="w-full border rounded px-3 py-2"
                 />
               </div>
-            </form>
+            </div>
 
             <div className="mt-6 flex justify-end gap-3">
               <button
+                type="button"
                 onClick={submitEdit}
                 className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
               >
                 Update
               </button>
+
               <button
+                type="button"
                 onClick={closeEditModal}
                 className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
               >
@@ -319,7 +344,8 @@ const TenantItemOutRequests = () => {
           </div>
         </div>
       )}
-        <Modal
+
+      <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         messageType={messageType}

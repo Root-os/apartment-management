@@ -48,13 +48,13 @@ const TenantInventoryTable = () => {
       key: 'actions',
       render: (row) => (
         <div className="flex space-x-2">
-<button
-  onClick={() => navigate(`/app/see-my-items`, { state: { items: row.items } })}
-  className="px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-400"
-  disabled={loading}
->
-  My Items
-</button>
+          <button
+            onClick={() => navigate(`/app/see-my-items`, { state: { items: row.items } })}
+            className="px-4 py-2 rounded bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-400"
+            disabled={loading}
+          >
+            My Items
+          </button>
         </div>
       ),
     },

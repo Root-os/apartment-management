@@ -27,6 +27,7 @@ const TenantList = () => {
   const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
 
   const [amount, setAmount] = useState("");
+  const [errors, setErrors] = useState({});
 
 
    const {  formatDateForDisplay } = useContext(CalendarContext);
@@ -214,6 +215,14 @@ const handleEditSubmit = async () => {
       formData.set("resetPassword", "true"); 
     }
 
+      const validationErrors = validateEditData(editData);
+
+  if (Object.keys(validationErrors).length > 0) {
+    setErrors(validationErrors);
+    return;
+  }
+
+
     const response = await api.put(
       `tenant/${selectedTenant.id}`,
       formData,
@@ -289,6 +298,40 @@ const handleEditSubmit = async () => {
       navigate("/app/add-tenant-vehicle", { state: { tenantId: tenant.id } });
     }
   };
+  const validateEditData = (data) => {
+  const errors = {};
+
+  // ---- Lease dates ----
+  if (
+    data.leaseStartDate &&
+    data.leaseEndDate &&
+    new Date(data.leaseEndDate) < new Date(data.leaseStartDate)
+  ) {
+    errors.leaseEndDate =
+      "Lease end date cannot be before lease start date";
+  }
+
+  if (
+    data.leaseStartDate &&
+    data.contractEndDate &&
+    new Date(data.contractEndDate) < new Date(data.leaseStartDate)
+  ) {
+    errors.contractEndDate =
+      "Contract end date cannot be before lease start date";
+  }
+
+  // ---- TIN ----
+  if (data.tin) {
+    if (!/^\d+$/.test(data.tin)) {
+      errors.tin = "TIN must contain digits only";
+    } else if (data.tin.length !== 10) {
+      errors.tin = "TIN must be exactly 10 digits";
+    }
+  }
+
+  return errors;
+};
+
 
   return (
     <div>
@@ -424,7 +467,7 @@ const handleEditSubmit = async () => {
                     Rent
                   </button>
                   <button
-                    onClick={() => handleCarClick(row)} // Ensure 'row' is the full tenant object
+                    onClick={() => handleCarClick(row)} 
                     className="bg-yellow-500 text-white py-1 px-2 rounded"
                   >
                     Car
@@ -521,27 +564,42 @@ const handleEditSubmit = async () => {
               <label className="block text-sm font-medium mb-2">
                 Lease End Date
               </label>
-              <SmartDateInput
-                id="editLeaseEndDate"
-                value={editData.leaseEndDate}
-                onChange={(gcDateString) =>
-                  setEditData({ ...editData, leaseEndDate: gcDateString })
-                }
-              />
+           <SmartDateInput
+  value={editData.leaseEndDate}
+  onChange={(date) => {
+    const updated = { ...editData, leaseEndDate: date };
+    setEditData(updated);
+    setErrors(validateEditData(updated));
+  }}
+/>
+
+{errors.leaseEndDate && (
+  <p className="text-red-500 text-sm mt-1">
+    {errors.leaseEndDate}
+  </p>
+)}
+
             </div>
 
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Contract End Date
               </label>
-              <SmartDateInput
-                id="editContractEndDate"
-                value={editData.contractEndDate}
-                min={editData.leaseStartDate} 
-                onChange={(gcDateString) =>
-                  setEditData({ ...editData, contractEndDate: gcDateString })
-                }
-              />
+<SmartDateInput
+  value={editData.contractEndDate}
+  onChange={(date) => {
+    const updated = { ...editData, contractEndDate: date };
+    setEditData(updated);
+    setErrors(validateEditData(updated));
+  }}
+/>
+
+{errors.contractEndDate && (
+  <p className="text-red-500 text-sm mt-1">
+    {errors.contractEndDate}
+  </p>
+)}
+
             </div>
 
             <div className="mb-4">
@@ -626,63 +684,75 @@ const handleEditSubmit = async () => {
               </select>
             </div>
             
-<div className="mb-4">
-  <label className="block text-sm font-medium mb-2">
-    Unit {editData.status === 'active' && <span className="text-red-500">*</span>}
-  </label>
-  <select
-    value={editData.unitId || ""}
-    onChange={async (e) => {
-      const selectedUnitId = e.target.value;
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">
+                Unit {editData.status === 'active' && <span className="text-red-500">*</span>}
+              </label>
+              <select
+                value={editData.unitId || ""}
+                onChange={async (e) => {
+                  const selectedUnitId = e.target.value;
 
-      // Update selected unit
-      setEditData((prev) => ({ ...prev, unitId: selectedUnitId }));
+                  // Update selected unit
+                  setEditData((prev) => ({ ...prev, unitId: selectedUnitId }));
 
-      if (selectedUnitId) {
-        try {
-          // Fetch unit details for rent
-          const response = await api.get(`unit/${selectedUnitId}`);
-          const rent = response.data?.taxedRentAmount || "";
+                  if (selectedUnitId) {
+                    try {
+                      // Fetch unit details for rent
+                      const response = await api.get(`unit/${selectedUnitId}`);
+                      const rent = response.data?.taxedRentAmount || "";
 
-          // Auto-fill rent in editData
-          setEditData((prev) => ({ ...prev, amount: rent }));
-        } catch (err) {
-          console.error("Failed to fetch unit details:", err);
-        }
-      } else {
-        // Clear rent if no unit selected
-        setEditData((prev) => ({ ...prev, amount: "" }));
-      }
-    }}
-    className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-    disabled={isSaving || editData.status === 'inactive'}
-    required={editData.status === 'active'}
-  >
-    <option value="">Select a unit</option>
-    {units.map((unit) => (
-      <option key={unit.id} value={unit.id}>
-        {unit.unitNumber} {unit.status ? `(${unit.status})` : ''}
-      </option>
-    ))}
-  </select>
+                      // Auto-fill rent in editData
+                      setEditData((prev) => ({ ...prev, amount: rent }));
+                    } catch (err) {
+                      console.error("Failed to fetch unit details:", err);
+                    }
+                  } else {
+                    // Clear rent if no unit selected
+                    setEditData((prev) => ({ ...prev, amount: "" }));
+                  }
+                }}
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+                disabled={isSaving || editData.status === 'inactive'}
+                required={editData.status === 'active'}
+              >
+                <option value="">Select a unit</option>
+                {units.map((unit) => (
+                  <option key={unit.id} value={unit.id}>
+                    {unit.unitNumber} {unit.status ? `(${unit.status})` : ''}
+                  </option>
+                ))}
+              </select>
 
-  {editData.status === 'inactive' && editData.unitId && (
-    <p className="text-sm text-gray-500 mt-1">
-      Current unit will be marked as available when saved.
-    </p>
-  )}
-</div>
+              {editData.status === 'inactive' && editData.unitId && (
+                <p className="text-sm text-gray-500 mt-1">
+                  Current unit will be marked as available when saved.
+                </p>
+              )}
+            </div>
           
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">TIN</label>
-              <input
-                type="text"
-                value={editData.tin}
-                onChange={(e) =>
-                  setEditData({ ...editData, tin: e.target.value })
-                }
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              />
+<input
+  type="text"
+  value={editData.tin || ""}
+  onChange={(e) => {
+    const digits = e.target.value.replace(/\D/g, "");
+    if (digits.length > 10) return;
+
+    const updated = { ...editData, tin: digits };
+    setEditData(updated);
+    setErrors(validateEditData(updated));
+  }}
+  className={`border p-2 rounded w-full ${
+    errors.tin ? "border-red-500" : "border-gray-300"
+  }`}
+/>
+
+{errors.tin && (
+  <p className="text-red-500 text-sm mt-1">{errors.tin}</p>
+)}
+
             </div>
             {/* Status select */}
             <div className="mb-4">
@@ -747,12 +817,12 @@ const handleEditSubmit = async () => {
               </button>
               <button
                 onClick={handleEditSubmit}
-                disabled={isSaving}
-                className={`px-4 py-2 rounded text-white ${
-                  isSaving 
-                    ? 'bg-blue-400 cursor-not-allowed' 
-                    : 'bg-blue-500 hover:bg-blue-600'
-                }`}
+  disabled={Object.keys(errors).length > 0}
+  className={`px-4 py-2 rounded ${
+    Object.keys(errors).length > 0
+      ? "bg-gray-400 cursor-not-allowed"
+      : "bg-blue-600 hover:bg-blue-700"
+  }`}
               >
                 {isSaving ? (
                   <span className="flex items-center">

@@ -4,6 +4,7 @@ import TableComponent from '../../components/table';
 import LoadingComponent from '../../components/loading';
 import Modal from '../../components/Modal'; 
 import SmartDateInput from '../../components/Common/smartDatePicker';
+import api from '../../utils/api';
 
 const TenantOrderPage = () => {
   const [orderTypes, setOrderTypes] = useState([]);
@@ -19,11 +20,14 @@ const TenantOrderPage = () => {
   const [message, setMessage] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
 
+  const [orderTime, setOrderTime] = useState(''); // HH:mm
+
+
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}order-type`)
+    api
+      .get(`order-type`)
       .then((response) => {
         setOrderTypes(response.data);
       })
@@ -46,6 +50,7 @@ const TenantOrderPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validation
     if (!selectedOrderType) {
       setMessageType('error');
       setMessage('Order type ID is missing.');
@@ -53,33 +58,71 @@ const TenantOrderPage = () => {
       return;
     }
 
+    if (!orderDate || !orderTime) {
+      setMessageType('error');
+      setMessage('Please select both order date and time.');
+      setModalOpen(true);
+      return;
+    }
+
+    if (!amount || Number(amount) <= 0) {
+      setMessageType('error');
+      setMessage('Amount must be greater than zero.');
+      setModalOpen(true);
+      return;
+    }
+
     setLoading(true);
     setMessage('');
 
-    const formData = new FormData();
-    formData.append('orderDate', orderDate);
-    formData.append('amount', amount);
-    formData.append('notes', notes);
-    formData.append('orderTypeId', selectedOrderType.id);
-    formData.append('receiptImage', receiptImage);
-
     try {
-      await axios.post(`${process.env.REACT_APP_BASE_URL}order`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${token}`,
-        },
-      });
+      // Combine date + time → ISO (Sequelize safe)
+      const orderDateTimeISO = new Date(
+        `${orderDate}T${orderTime}`
+      ).toISOString();
+
+      const formData = new FormData();
+      formData.append('orderDate', orderDateTimeISO);
+      formData.append('amount', amount);
+      formData.append('notes', notes);
+      formData.append('orderTypeId', selectedOrderType.id);
+
+      if (receiptImage) {
+        formData.append('receiptImage', receiptImage);
+      }
+
+      await api.post(
+        `order`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       setMessageType('success');
       setMessage('Order created successfully.');
+
+      // Reset form
+      setOrderDate('');
+      setOrderTime('');
+      setAmount('');
+      setNotes('');
+      setReceiptImage(null);
+
       setIsCreateOrderModalOpen(false);
     } catch (error) {
+      console.error('Create order error:', error);
       setMessageType('error');
-      setMessage('Unable to create order.');
+      setMessage(
+        error?.response?.data?.message ||
+        'Unable to create order.'
+      );
     } finally {
       setLoading(false);
-      setModalOpen(true); // Open the modal after order submission attempt
+      setModalOpen(true);
     }
   };
 
@@ -130,6 +173,19 @@ const TenantOrderPage = () => {
                   required
                 />
               </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-white-700">
+                  Order Time
+                </label>
+                <input
+                  type="time"
+                  value={orderTime}
+                  onChange={(e) => setOrderTime(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
+
               <div className="mb-4">
                 <label htmlFor="amount" className="block text-sm font-medium text-white-700">
                   Amount

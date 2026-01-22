@@ -30,13 +30,13 @@ const BulkSmsSender = () => {
   useEffect(() => {
     if (!token) return;
 
-    axios
-      .get(`${baseUrl}auth/employee`, {
+    api
+      .get(`auth/employee`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setUsers(res.data.users))
       .catch((err) => console.error("Failed to load users", err));
-  }, [token, baseUrl]);
+  }, [token]);
 
   useEffect(() => {
   if (!token) return;
@@ -118,8 +118,8 @@ const BulkSmsSender = () => {
 
     setLoading(true);
     try {
-      const res = await axios.post(
-        `${baseUrl}sms/send-bulk-sms`,
+      const res = await api.post(
+        `sms/send-bulk-sms`,
         { references, msg: message },
         { headers: { Authorization: `Bearer ${token}` } }
       );

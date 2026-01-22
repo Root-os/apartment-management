@@ -119,24 +119,22 @@ const AddBillPayment = () => {
 }, [tenantId, billPaymentTypeId]);
 
 useEffect(() => {
-  const tenantIdFromUrl = searchParams.get("tenantId");
+  const tenantIdFromUrl = Number(searchParams.get("tenantId"));
   if (!tenantIdFromUrl || profiles.length === 0) return;
 
-  profiles.forEach((profile, profileIndex) => {
-    const matchedTenant = profile.tenant.find(
-      (t) => t.tenantId === Number(tenantIdFromUrl)
+  for (let i = 0; i < profiles.length; i++) {
+    const tenant = profiles[i].tenant.find(
+      (t) => t.tenantId === tenantIdFromUrl
     );
 
-    if (matchedTenant) {
-      setSelectedProfileIndex(profileIndex);
-      setTenantId(matchedTenant.tenantId);
-    }else if (profile.tenant.length === 1) {
-      setSelectedProfileIndex(profileIndex);
-      setTenantId(profile.tenant[0].tenantId);
+    if (tenant) {
+      setSelectedProfileIndex(i);
+      setTenantId(tenant.tenantId);
+      break; 
     }
+  }
+}, [profiles, searchParams]);
 
-  });
-}, [searchParams, profiles]);
 
 
   const addOneDay = (dateString) => {
@@ -233,6 +231,17 @@ useEffect(() => {
     }
   };
 
+  useEffect(() => {
+  // Auto-select unit if tenant has only one unit
+  if (
+    selectedProfileIndex !== "" &&
+    profiles[selectedProfileIndex].tenant.length === 1
+  ) {
+    setTenantId(profiles[selectedProfileIndex].tenant[0].tenantId);
+  }
+}, [selectedProfileIndex, profiles]);
+
+
   return (
     <div>
       <TitleCard title={"Add Tenant Payments "} topMargin={"mt-1"}>
@@ -260,24 +269,22 @@ useEffect(() => {
                 ))}
               </select>
           </div>
-          {selectedProfileIndex !== "" && (
-            <select
-              className="bg-base-100 w-full p-3 border rounded mt-2"
-              value={tenantId}
-              onChange={(e) => setTenantId(e.target.value)}
-             
-            >
-          {profiles[selectedProfileIndex].tenant.length > 1 && (
-            <option value="">Select Unit</option>
-          )}
-          {profiles[selectedProfileIndex].tenant.map((t) => (
-            <option key={t.tenantId} value={t.tenantId}>
-              Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
-            </option>
-          ))}
-
-            </select>
-          )}
+{selectedProfileIndex !== "" && (
+  <select
+    className="bg-base-100 w-full p-3 border rounded mt-2"
+    value={tenantId}
+    onChange={(e) => setTenantId(e.target.value)}
+  >
+    {profiles[selectedProfileIndex].tenant.length > 1 && (
+      <option value="">Select Unit</option>
+    )}
+    {profiles[selectedProfileIndex].tenant.map((t) => (
+      <option key={t.tenantId} value={t.tenantId}>
+        Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
+      </option>
+    ))}
+  </select>
+)}
           <div>
             <label
               htmlFor="billPaymentTypeId"
@@ -406,7 +413,6 @@ useEffect(() => {
               <option value="" disabled>
                 Select Payment Method
               </option>
-              <option value="Mobile Banking">Credit Card</option>
               <option value="telebirr">Telebirr</option>
               <option value="Bank Transfer">Bank Transfer</option>
               <option value="Cash">Cash</option>

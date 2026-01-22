@@ -16,21 +16,6 @@ const ItemOutRequestForm = () => {
   const [selectedTenantId, setSelectedTenantId] = useState('');
 
   useEffect(() => {
-    const fetchUnits = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await api.get(`dashboard/for-tenant`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setUnits(response.data.unitsOccupied || []);
-      } catch (err) {
-        console.error("Error fetching units:", err);
-      }
-    };
-    fetchUnits();
-  }, []);
-
-  useEffect(() => {
   const fetchUnits = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -51,6 +36,31 @@ const ItemOutRequestForm = () => {
   };
   fetchUnits();
 }, []);
+
+useEffect(() => {
+  const fetchTenantItems = async () => {
+    if (!selectedTenantId) {
+      setItems([]);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await api.get(
+        `tenant-items/${selectedTenantId}/items`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setItems(response.data.items || []);
+    } catch (error) {
+      console.error("Error fetching tenant items:", error);
+      setItems([]);
+    }
+  };
+
+  fetchTenantItems();
+}, [selectedTenantId]);
 
 
 
@@ -110,7 +120,11 @@ const ItemOutRequestForm = () => {
             <label className="block text-sm font-semibold mb-2">Select Unit</label>
               <select
                 value={selectedTenantId}
-                onChange={(e) => setSelectedTenantId(e.target.value)}
+                onChange={(e) => {
+                  setSelectedTenantId(e.target.value);
+                  setItems([]);
+                  setForm({ tenantItemId: "", name: "", quantity: 1 });
+                }}
                 className="w-full border rounded-lg p-2 bg-base-100"
               >
                 <option value="">-- Select a unit --</option>

@@ -98,10 +98,13 @@ const AddMaintenancePage = () => {
     setMessage('Maintenance data added successfully!');
     window.location.href = '/app/view-maintenance';
   } catch (err) {
+    const errorMessage = err.response?.data?.message || err.message || 'Unknown error';
+
     setModalOpen(true);
     setMessageType('error');
-    setMessage('Unable to add Maintenance data!');
-    console.error('Error adding maintenance data:', err.response ? err.response.data : err);
+     setMessage(errorMessage);
+
+    // console.error('Error adding maintenance data:', err.response ? err.response.data : err);
   } finally {
     setLoading(false);
   }
@@ -199,7 +202,6 @@ const AddMaintenancePage = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="mt-1 p-2 border border-gray-300 rounded-md w-full bg-base-100"
-              required
             />
           </div>
 

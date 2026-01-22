@@ -95,7 +95,7 @@ const TenantLettersPage = () => {
   const columns = [
     { key: "unitNumber", label: "Unit", render: (row) => row.unit?.unitNumber },
     { key: "letterTypeName", label: "Letter Type", render: (row) => row.letterType?.name },
-    { key: "description", label: "Description" },
+    // { key: "description", label: "Description" },
     { key: "formattedDate", label: "Date", isDate: true },
     {
       label: "Actions",
@@ -106,7 +106,7 @@ const TenantLettersPage = () => {
         onClick={() => handleDetailClick(row)}
         className="bg-blue-500 text-white px-3 py-1 rounded-md"
       >
-        View
+        Detail
       </button>
       <button
         onClick={() => handleRespondClick(row)}

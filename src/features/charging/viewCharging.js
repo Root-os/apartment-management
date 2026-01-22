@@ -5,6 +5,7 @@ import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 import SmartDateInput from '../../components/Common/smartDatePicker';
 import { CalendarContext } from '../../context/calendarContext';
+import api from '../../utils/api';
 
 const ChargingPage = () => {
   const [chargingData, setChargingData] = useState([]);
@@ -12,7 +13,7 @@ const ChargingPage = () => {
   const [selectedCharging, setSelectedCharging] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); // New state for detail modal
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); 
   const [carPlate, setCarPlate] = useState('');
   const [carName, setCarName] = useState('');
   const [isTenant, setIsTenant] = useState(true);
@@ -55,7 +56,7 @@ const ChargingPage = () => {
   useEffect(() => {
     const fetchChargingData = async () => {
       try {
-        const response = await axios.get(chargingApiUrl);
+        const response = await api.get('charging');
         setChargingData(response.data);
       } catch (error) {
         setError('Error fetching charging data');
@@ -252,9 +253,6 @@ const ChargingPage = () => {
     },
   ];
 
-  if (error) {
-    return <div>{error}</div>;
-  }
 
   const handleAddClick = () => {
     window.location.href = '/app/charging-add';
@@ -360,54 +358,56 @@ const ChargingPage = () => {
               </div>
 
               {/* Charging Start Time (Read-only) */}
-<div className="mb-4">
-  <label htmlFor="chargingStartTime" className="block text-sm font-medium text-white-700">
-    Charging Start Time
-  </label>
-  <input
-    type="text"
-    id="chargingStartTime"
-    value={formatDateTimeForDisplay(chargingStartTime)}
-    readOnly
-    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-  <input
-    type="hidden"
-    value={chargingStartTime}
-  />
-</div>
+              <div className="mb-4">
+                <label htmlFor="chargingStartTime" className="block text-sm font-medium text-white-700">
+                  Charging Start Time
+                </label>
+                <input
+                  type="text"
+                  id="chargingStartTime"
+                  value={formatDateTimeForDisplay(chargingStartTime)}
+                  readOnly
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <input
+                  type="hidden"
+                  value={chargingStartTime}
+                />
+              </div>
 
-{/* Charging End Time (Editable) */}
-<div className="mb-4">
-  <label htmlFor="chargingEndDate" className="block text-sm font-medium text-white-700">
-    Charging End Date
-  </label>
-  <SmartDateInput
-    id="chargingEndDate"
-    value={chargingEndTime.split('T')[0]}
-    onChange={(gcDate) => {
-      const timePart = chargingEndTime.split('T')[1] || '00:00';
-      setChargingEndTime(`${gcDate}T${timePart}`);
-    }}
-    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-</div>
+              {/* Charging End Time (Editable) */}
+              <div className="mb-4">
+                <label htmlFor="chargingEndDate" className="block text-sm font-medium text-white-700">
+                  Charging End Date
+                </label>
+                <SmartDateInput
+                  id="chargingEndDate"
+                  value={chargingEndTime.split('T')[0]}
+                  onChange={(gcDate) => {
+                    const timePart = chargingEndTime.split('T')[1] || '00:00';
+                    setChargingEndTime(`${gcDate}T${timePart}`);
+                  }}
+                  required
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
 
-<div className="mb-4">
-  <label htmlFor="chargingEndTimeInput" className="block text-sm font-medium text-white-700">
-    Charging End Time (Hour & Minute)
-  </label>
-  <input
-    type="time"
-    id="chargingEndTimeInput"
-    value={chargingEndTime.split('T')[1] || ''}
-    onChange={(e) => {
-      const datePart = chargingEndTime.split('T')[0] || new Date().toISOString().split('T')[0];
-      setChargingEndTime(`${datePart}T${e.target.value}`);
-    }}
-    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-</div>
+              <div className="mb-4">
+                <label htmlFor="chargingEndTimeInput" className="block text-sm font-medium text-white-700">
+                  Charging End Time (Hour & Minute)
+                </label>
+                <input
+                  type="time"
+                  id="chargingEndTimeInput"
+                  value={chargingEndTime.split('T')[1] || ''}
+                  onChange={(e) => {
+                    const datePart = chargingEndTime.split('T')[0] || new Date().toISOString().split('T')[0];
+                    setChargingEndTime(`${datePart}T${e.target.value}`);
+                  }}
+                  required
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
               <div className="mb-4">
                 <label htmlFor="status" className="block text-sm font-medium text-white-700">
                   Status

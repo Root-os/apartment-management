@@ -18,6 +18,16 @@ const ViewMyRequest = () => {
   const [messageType, setMessageType] = useState('success');
   const [message, setMessage] = useState('');
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [requestToEdit, setRequestToEdit] = useState(null);
+  const [editData, setEditData] = useState({
+    tenantId: '',
+    terminationDate: '',
+    reason: ''
+  });
+  const [floorUnits, setFloorUnits] = useState([]);
+  const [loadingUnits, setLoadingUnits] = useState(true);
+
 
   const fetchData = async () => {
     try {
@@ -42,9 +52,42 @@ const ViewMyRequest = () => {
     }
   };
 
+  const fetchFloorUnits = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error("Authorization token not found.");
+
+    const response = await api.get('tenant/floor-units', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    // Flatten tenant data to map unitNumber -> tenantId
+    const units = [];
+    response.data.forEach(person => {
+      person.tenant.forEach(t => {
+        units.push({
+          tenantId: t.tenantId,
+          unitNumber: t.unit.unitNumber,
+          tenantName: t.fullName,
+        });
+      });
+    });
+
+    setFloorUnits(units);
+    setLoadingUnits(false);
+  } catch (error) {
+    console.error('Failed to fetch floor units:', error);
+    setLoadingUnits(false);
+  }
+};
+
+
   useEffect(() => {
     fetchData();
+    fetchFloorUnits();
   }, []);
+
+  
 
   if (loading) {
     return <LoadingComponent/>;
@@ -108,6 +151,60 @@ const ViewMyRequest = () => {
     }
   };
 
+  const handleEditClick = (request) => {
+  setRequestToEdit(request);
+  setEditData({
+    tenantId: request.tenantId || '',
+    terminationDate: request.terminationDate ? request.terminationDate.split('T')[0] : '',
+    reason: request.reason || ''
+  });
+  setIsEditModalOpen(true);
+};
+
+const handleEditSubmit = async () => {
+  setIsLoading(true);
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error("Authorization token not found.");
+
+    const response = await api.put(
+      `withdrawal-request/update/${requestToEdit.id}`,
+      {
+        tenantId: editData.tenantId || undefined,
+        terminationDate: editData.terminationDate || undefined,
+        reason: editData.reason || undefined
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+
+    if (response.data.message === "Withdrawal request updated successfully.") {
+      setWithdrawalRequests(prev =>
+        prev.map(req =>
+          req.id === requestToEdit.id ? response.data.request : req
+        )
+      );
+      setModalOpen(true);
+      setMessageType('success');
+      setMessage('Withdrawal request updated successfully!');
+      setIsEditModalOpen(false);
+      setRequestToEdit(null);
+    } else {
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Failed to update withdrawal request.');
+    }
+  } catch (error) {
+    console.error(error);
+    setModalOpen(true);
+    setMessageType('error');
+    setMessage('Something went wrong while updating.');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
   const columns = [
     { label: 'Unit Number', key: 'unitNumber',
       render: (row) => row?.Tenant?.Unit?.unitNumber || 'N/A'
@@ -123,26 +220,32 @@ const ViewMyRequest = () => {
     { label: 'Deposit Refund Status', key: 'depositRefundStatus' },
     { label: 'Tenant Feedback', key: 'tenantFeedback' },
     {
-  key: 'actions',
-  label: 'Actions',
-  render: (row) => (
-    <div className="flex space-x-1">
-      <button
-        onClick={() => handleFeedbackClick(row)}
-        className={`py-1 px-4 rounded mr-2 ${
-          row.tenantFeedback
-            ? 'bg-gray-400 cursor-not-allowed text-white'
-            : 'bg-blue-500 text-white hover:bg-blue-600'
-        }`}
-        disabled={!!row.tenantFeedback}
-      >
-        Feedback
-      </button>
-    </div>
-  ),
-}
-
+      key: 'actions',
+      label: 'Actions',
+      render: (row) => (
+        <div className="flex space-x-1">
+          <button
+            onClick={() => handleFeedbackClick(row)}
+            className={`py-1 px-4 rounded ${
+              row.tenantFeedback
+                ? 'bg-gray-400 cursor-not-allowed text-white'
+                : 'bg-blue-500 text-white hover:bg-blue-600'
+            }`}
+            disabled={!!row.tenantFeedback}
+          >
+            Feedback
+          </button>
+          <button
+            onClick={() => handleEditClick(row)}
+            className="py-1 px-4 rounded bg-green-500 text-white hover:bg-green-600"
+          >
+            Edit
+          </button>
+        </div>
+      ),
+    }
   ];
+
 
   const handleAddClick = () => {
     window.location.href = '/app/withdraw-request-add';
@@ -181,6 +284,68 @@ const ViewMyRequest = () => {
           </div>
         </div>
       )}
+
+      {isEditModalOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-base-300 p-6 rounded-lg w-96">
+      <h2 className="text-xl mb-4">Edit Withdrawal Request</h2>
+
+      <label className="block mb-2">Unit Number</label>
+        {loadingUnits ? (
+          <p>Loading units...</p>
+        ) : (
+          <select
+            value={editData.tenantId}
+            onChange={(e) =>
+              setEditData(prev => ({ ...prev, tenantId: e.target.value }))
+            }
+            className="w-full p-2 mb-3 border rounded"
+          >
+            <option value="">Select a unit</option>
+            {floorUnits.map((unit) => (
+              <option key={unit.tenantId} value={unit.tenantId}>
+                {unit.unitNumber} 
+              </option>
+            ))}
+          </select>
+        )}
+
+
+      <label className="block mb-2">Termination Date</label>
+      <input
+        type="date"
+        value={editData.terminationDate}
+        onChange={(e) => setEditData(prev => ({ ...prev, terminationDate: e.target.value }))}
+        className="w-full p-2 mb-3 border rounded"
+      />
+
+      <label className="block mb-2">Reason</label>
+      <textarea
+        value={editData.reason}
+        onChange={(e) => setEditData(prev => ({ ...prev, reason: e.target.value }))}
+        rows={3}
+        className="w-full p-2 mb-3 border rounded"
+      />
+
+      <div className="flex justify-end space-x-2 mt-4">
+        <button
+          onClick={() => setIsEditModalOpen(false)}
+          className="bg-gray-400 text-white px-4 py-2 rounded"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleEditSubmit}
+          className="bg-green-500 text-white px-4 py-2 rounded"
+          disabled={isLoading}
+        >
+          {isLoading ? 'Updating...' : 'Update'}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
         <Modal 
         isOpen={modalOpen} 
         onClose={() => setModalOpen(false)} 

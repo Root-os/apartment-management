@@ -3,6 +3,7 @@ import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
+import api from '../../utils/api';
 
 const AllOrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -25,8 +26,8 @@ const AllOrdersPage = () => {
   const token=localStorage.getItem('token')
 
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}order`)
+    api
+      .get(`order`)
       .then((response) => {
         setOrders(response.data);
       })
@@ -58,32 +59,32 @@ const AllOrdersPage = () => {
   // Handle edit request
   const handleApproveStatus = async (orderId, newStatus) => {
     setLoading(true);
-    const token = localStorage.getItem('token');  // Fetch token from localStorage
+    const token = localStorage.getItem('token');  
   
     try {
-      // Send the PUT request to update the status
-      const response = await axios.put(
-        `${process.env.REACT_APP_BASE_URL}order/approve/${orderId}`,
-        { status: newStatus },  // Only the status is updated
+
+      const response = await api.put(
+        `order/approve/${orderId}`,
+        { status: newStatus },  
         {
           headers: {
-            Authorization: `Bearer ${token}`,  // Include the token in the Authorization header
+            Authorization: `Bearer ${token}`, 
           },
         }
       );
   
-      // If the response is successful, update the order list with the new status
+ 
       const updatedOrders = orders.map((order) =>
         order.id === orderId ? response.data : order
       );
       setOrders(updatedOrders);
   
-      // Show success message in a modal
+
       setModalOpen(true);
       setMessageType('success');
       setMessage('Order status updated successfully.');
     } catch (error) {
-      // If an error occurs, show an error message in a modal
+     
       setModalOpen(true);
       setMessageType('error');
       setMessage('Unable to update order status.');
@@ -96,7 +97,7 @@ const AllOrdersPage = () => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}order/${selectedOrder.id}`,{
+      await api.delete(`order/${selectedOrder.id}`,{
         headers: {
           Authorization: `Bearer ${token}`
         },
@@ -121,7 +122,25 @@ const AllOrdersPage = () => {
     { key: 'OrderType.name', label: 'Order Type',render:(row)=>row.OrderType?.name ||'N/A' },
     { key: 'Tenant.fullName', label: 'Full Name',render:(row)=>row.Tenant?.fullName ||'N/A' },
 
-    { key: 'orderDate', label: 'Order Date',isDate: true},
+    {
+  key: 'orderDate',
+  label: 'Order Date & Time',
+  render: (row) => {
+    if (!row.orderDate) return 'N/A';
+
+    const date = new Date(row.orderDate);
+
+    return date.toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true, // change to false if you want 24h
+    });
+  },
+},
+
     { key: 'amount', label: 'Amount', 
       render: (row) => {
         if (row.amount) {
@@ -143,10 +162,10 @@ const AllOrdersPage = () => {
       label: 'Actions',
       key: 'actions',
       render: (row) => (
-        <div className="justify-end space-x-2">
+        <div className="justify-end space-x-1">
           <button
             onClick={() => handleEditClick(row)}
-            className="bg-blue-500 text-white px-3 py-1 rounded-md mr-2"
+            className="bg-blue-500 text-white px-2 py-1 rounded-md mr-2"
           >
             Edit
           </button>

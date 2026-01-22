@@ -75,7 +75,7 @@ const SendNotificationPage = () => {
       
       setModalOpen(true);
       setMessageType('success');  
-      setMessage('Notification sent successfully.');
+      setMessage('SMS sent successfully.');
 
       setReferenceId('');
     } catch (error) {

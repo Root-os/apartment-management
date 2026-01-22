@@ -198,8 +198,9 @@ const SalaryPaymentForm = () => {
               className="mt-1 bg-base-100 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               disabled={loading}
             >
-              <option value="Paid">Paid</option>
-              <option value="Pending">Pending</option>
+            <option value="Pending">Pending</option>
+            <option value="Paid">Paid</option>
+            <option value="Failed">Failed</option>
             </select>
           </div>
 

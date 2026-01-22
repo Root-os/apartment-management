@@ -62,7 +62,7 @@ const EmployeeDashboard = () => {
                 <div>
                   <h3 className="text-2xl font-bold text-white">Notifications</h3>
                   <p className="text-lg font-semibold text-white">
-                    {counts.notifications.totalNotifications} Total | {counts.notifications.unreadNotifications} Unread
+                    {counts.notifications.totalNotifications} Total  | {counts.notifications.unreadNotifications} Unread
                   </p>
                 </div>
               </div>

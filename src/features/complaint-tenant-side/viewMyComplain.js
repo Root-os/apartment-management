@@ -22,6 +22,16 @@ const TenantComplaintsPage = () => {
   const [currentImage, setCurrentImage] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
 
+const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+const [complaintToEdit, setComplaintToEdit] = useState(null);
+const [editDescription, setEditDescription] = useState('');
+const [editUrgency, setEditUrgency] = useState('');
+const [existingImages, setExistingImages] = useState([]); // current images in DB
+const [removeImages, setRemoveImages] = useState([]); // images marked for removal
+const [newImages, setNewImages] = useState([]); // newly selected files
+
+
+
   const token = localStorage.getItem('token');
   const userId = localStorage.getItem('userId');
 
@@ -44,64 +54,153 @@ const TenantComplaintsPage = () => {
 
     fetchComplaints();
   }, [userId]);
+const handleEditClick = (complaint) => {
+  setComplaintToEdit(complaint);
+  setEditDescription(complaint.description);
+  setEditUrgency(complaint.urgency);
+  setExistingImages(complaint.images || []); // important
+  setRemoveImages([]); // reset removed images
+  setNewImages([]);    // reset newly added images
+  setIsEditModalOpen(true);
+};
+
+
+
+const handleFileChange = (e) => {
+  setNewImages(Array.from(e.target.files)); // allow multiple
+};
+
+const toggleRemoveImage = (img) => {
+  setRemoveImages((prev) =>
+    prev.includes(img) ? prev.filter((i) => i !== img) : [...prev, img]
+  );
+};
+
+
+
+const handleEditSave = async () => {
+  if (!complaintToEdit) return;
+  setIsLoading(true);
+
+  try {
+    const formData = new FormData();
+
+    // Only update fields if changed
+    if (editDescription) formData.append('description', editDescription);
+    if (editUrgency) formData.append('urgency', editUrgency);
+
+    // Prepare existing images to keep
+    const imagesToKeep = existingImages
+      .filter(img => !removeImages.includes(img))
+      .map(img => {
+        // Remove full URL prefix if present
+        return img.replace(/^https?:\/\/[^/]+\/uploads\//, 'uploads/');
+      });
+
+    formData.append('existingImages', JSON.stringify(imagesToKeep));
+
+    // Append newly uploaded files
+    newImages.forEach(file => formData.append('images', file));
+
+    // Send PUT request
+    const response = await api.put(
+      `complaints/${complaintToEdit.id}`,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    // Update local state with backend response (full URLs)
+    setComplaints(prev =>
+      prev.map(c =>
+        c.id === complaintToEdit.id ? response.data.complaint : c
+      )
+    );
+
+    // Reset modal state
+    setIsEditModalOpen(false);
+    setComplaintToEdit(null);
+    setExistingImages([]);
+    setRemoveImages([]);
+    setNewImages([]);
+    setModalOpen(true);
+    setMessageType('success');
+    setMessage('Complaint updated successfully');
+  } catch (err) {
+    console.error(err);
+    setModalOpen(true);
+    setMessageType('error');
+    setMessage('Failed to update complaint.');
+  } finally {
+    setIsLoading(false);
+  }
+};
+
+
+
 
   const handleConfirmClick = (complaint) => {
     setComplaintToConfirm(complaint);
     setIsConfirmModalOpen(true);
   };
 
- const handleConfirm = async () => {
-  setIsLoading(true);
-  try {
-    const response = await api.put(
-      `complaints/confirm-resolution`,
-      {
-        complaintId: complaintToConfirm.id,
-        feedback: feedback,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
+  const handleConfirm = async () => {
+    setIsLoading(true);
+    try {
+      const response = await api.put(
+        `complaints/confirm-resolution`,
+        {
+          complaintId: complaintToConfirm.id,
+          feedback: feedback,
         },
-      }
-    );
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    // Find existing complaint before update
-    const existingComplaint = complaints.find(
-      (c) => c.id === complaintToConfirm.id
-    );
+      // Find existing complaint before update
+      const existingComplaint = complaints.find(
+        (c) => c.id === complaintToConfirm.id
+      );
 
-    const updatedComplaint = {
-      ...existingComplaint, // preserve existing
-      ...response.data.complaint, // apply updated data
-      images:
-        response.data.complaint.images && response.data.complaint.images.length > 0
-          ? response.data.complaint.images
-          : existingComplaint.images, // preserve old images if missing or empty
-    };
+      const updatedComplaint = {
+        ...existingComplaint, // preserve existing
+        ...response.data.complaint, // apply updated data
+        images:
+          response.data.complaint.images && response.data.complaint.images.length > 0
+            ? response.data.complaint.images
+            : existingComplaint.images, // preserve old images if missing or empty
+      };
 
-    setComplaints((prevComplaints) =>
-      prevComplaints.map((complaint) =>
-        complaint.id === complaintToConfirm.id ? updatedComplaint : complaint
-      )
-    );
+      setComplaints((prevComplaints) =>
+        prevComplaints.map((complaint) =>
+          complaint.id === complaintToConfirm.id ? updatedComplaint : complaint
+        )
+      );
 
-    setIsConfirmModalOpen(false);
-    setComplaintToConfirm(null);
-    setFeedback('');
-    setLoading(false);
+      setIsConfirmModalOpen(false);
+      setComplaintToConfirm(null);
+      setFeedback('');
+      setLoading(false);
 
-    setModalOpen(true);
-    setMessageType('success');
-    setMessage('Confirmation sent successfully');
-  } catch (error) {
-    setModalOpen(true);
-    setMessageType('error');
-    setMessage('Unable to send confirmation.');
-  } finally {
-    setIsLoading(false);
-  }
-};
+      setModalOpen(true);
+      setMessageType('success');
+      setMessage('Confirmation sent successfully');
+    } catch (error) {
+      setModalOpen(true);
+      setMessageType('error');
+      setMessage('Unable to send confirmation.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const openImageViewer = (image) => {
     setCurrentImage(image);
     setIsImageViewerOpen(true);
@@ -151,18 +250,27 @@ const TenantComplaintsPage = () => {
     { label: 'Status', key: 'status' },
     { label: 'Images', key: 'images', render: (row) => renderImages(row.images) },
     { label: 'Tenant Feedback', key: 'tenantFeedback' },
-    {
-      label: 'Actions',
-      key: 'actions',
-      render: (row) => (
-        <button
-          onClick={() => handleConfirmClick(row)}
-          className="bg-blue-500 text-white px-4 py-2 rounded-md"
-        >
-          Confirm
-        </button>
-      ),
-    },
+{
+  label: 'Actions',
+  key: 'actions',
+  render: (row) => (
+    <div className="flex space-x-2">
+      <button
+        onClick={() => handleConfirmClick(row)}
+        className="bg-blue-500 text-white px-4 py-2 rounded-md"
+      >
+        Confirm
+      </button>
+      <button
+        onClick={() => handleEditClick(row)}
+        className="bg-green-500 text-white px-4 py-2 rounded-md"
+      >
+        Edit
+      </button>
+    </div>
+  ),
+},
+
   ];
 
   const handleAddClick = () => {
@@ -218,6 +326,114 @@ const TenantComplaintsPage = () => {
           </div>
         </div>
       )}
+
+{/* Edit Complaint Modal */}
+{isEditModalOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-white p-6 rounded-lg w-96 max-h-[90vh] overflow-auto border border-gray-300 shadow-lg">
+      <h2 className="text-xl mb-4 font-semibold">Edit Complaint</h2>
+
+      {/* Description */}
+      <div className="mb-4">
+        <label className="block mb-1 font-medium">Description</label>
+        <textarea
+          value={editDescription}
+          onChange={(e) => setEditDescription(e.target.value)}
+          rows={6} // increase height
+          className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+      </div>
+
+      {/* Urgency */}
+      <div className="mb-4">
+        <label className="block mb-1 font-medium">Urgency</label>
+        <select
+          value={editUrgency}
+          onChange={(e) => setEditUrgency(e.target.value)}
+          className="w-full border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        >
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+        </select>
+      </div>
+
+      {/* Existing Images */}
+      <div className="mb-4">
+        <label className="block mb-1 font-medium">Existing Images (click X to remove)</label>
+        <div className="flex flex-wrap gap-2">
+          {existingImages.map((img, i) => (
+            <div key={i} className="relative w-20 h-20">
+              <img
+                src={img}
+                alt={`Existing ${i}`}
+                className={`w-20 h-20 object-cover border ${
+                  removeImages.includes(img)
+                    ? 'opacity-50 border-red-500'
+                    : 'border-gray-300'
+                }`}
+              />
+              <button
+                type="button"
+                className="absolute top-0 right-0 bg-red-600 text-white rounded-full px-1"
+                onClick={() => toggleRemoveImage(img)}
+              >
+                X
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* New Images */}
+      <div className="mb-4">
+        <label className="block mb-1 font-medium">Add Images</label>
+        <input
+          type="file"
+          multiple
+          onChange={(e) => {
+            const files = Array.from(e.target.files);
+            setNewImages((prev) => [...prev, ...files]); // append new files
+          }}
+          className="w-full border border-gray-300 rounded p-2"
+        />
+        {newImages.length > 0 && (
+          <div className="flex flex-wrap gap-2 mt-2">
+            {newImages.map((file, idx) => (
+              <div key={idx} className="w-20 h-20 relative">
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt={`New ${idx}`}
+                  className="w-20 h-20 object-cover border border-gray-300"
+                />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Buttons */}
+      <div className="flex justify-end space-x-2 mt-4">
+        <button
+          onClick={() => setIsEditModalOpen(false)}
+          className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleEditSave}
+          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          disabled={isLoading}
+        >
+          {isLoading ? 'Saving...' : 'Save'}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
+
+
 
       {/* Image Viewer Modal */}
       {isImageViewerOpen && (

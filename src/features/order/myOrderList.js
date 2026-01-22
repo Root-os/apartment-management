@@ -6,6 +6,7 @@ import LoadingComponent from '../../components/loading';
 import { isDate } from 'date-fns';
 import { CalendarContext } from '../../context/calendarContext';
 import SmartDateInput from '../../components/Common/smartDatePicker';
+import api from '../../utils/api';
 
 const MyOrdersPage = () => {
   const [orders, setOrders] = useState([]);
@@ -27,8 +28,8 @@ const MyOrdersPage = () => {
   const {formatDateForDisplay} = useContext(  CalendarContext);
 
   useEffect(() => {
-    axios
-      .get(`${process.env.REACT_APP_BASE_URL}order/myorders`,{
+    api
+      .get(`order/myorders`,{
         headers:{
             Authorization:`Bearer ${token}`
         }
@@ -85,7 +86,7 @@ const MyOrdersPage = () => {
         formData.append('receiptImage', receiptImage);
       }
 
-      const response = await axios.put(`${process.env.REACT_APP_BASE_URL}order/${selectedOrder.id}`, formData, {
+      const response = await api.put(`order/${selectedOrder.id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`
@@ -114,7 +115,7 @@ const MyOrdersPage = () => {
   const handleDelete = async () => {
     setLoading(true);
     try {
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}order/${selectedOrder.id}`,{
+      await api.delete(`order/${selectedOrder.id}`,{
         headers:{
             Authorization:`Bearer ${token}`
         }
@@ -137,7 +138,25 @@ const MyOrdersPage = () => {
 
   const columns = [
     { key: 'OrderType.name', label: 'Order Name', render: (row) => row.OrderType?.name || 'N/A' },
-    { key: 'orderDate', label: 'Order Date', isDate: true },
+    {
+  key: 'orderDate',
+  label: 'Order Date & Time',
+  render: (row) => {
+    if (!row.orderDate) return 'N/A';
+
+    const date = new Date(row.orderDate);
+
+    return date.toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true, // change to false if you want 24h
+    });
+  },
+},
+
     { key: 'amount', label: 'Amount',
       render: (row) => row.amount ? Math.round(row.amount) : 'N/A'
      },

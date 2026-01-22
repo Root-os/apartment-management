@@ -267,7 +267,7 @@ const EmployeeList = () => {
             <p><strong>Hire Date:</strong> {formatDateForDisplay(selectedEmployee.EmployeeDetail?.hireDate) ?? '-'}</p>
             <p><strong>Employment Type:</strong>{selectedEmployee.EmployeeDetail?.employeementType || 'N/A'}</p>
             <p><strong>Bank Account:</strong>{selectedEmployee.EmployeeDetail?.bankAccount || 'N/A'}</p>
-            <p><strong>Emergency Contact</strong>{selectedEmployee.EmployeeDetail?.emergencyContact || 'N/A'}</p>
+            <p><strong>Emergency Contact:</strong>{selectedEmployee.EmployeeDetail?.emergencyContact || 'N/A'}</p>
 
             <div className="mt-4">
               <button
@@ -342,6 +342,17 @@ const EmployeeList = () => {
                   placeholder="Salary"
                 />
               </div>
+              <div className="mb-2">
+                <label className="block text-sm font-medium">Bank Acct</label>
+                <input
+                  type="text"
+                  className="w-full p-2 border border-gray-100 rounded mt-1"
+                  value={editEmployeeData.bankAccount}
+                  onChange={(e) => setEditEmployeeData({ ...editEmployeeData, bankAccount: e.target.value })}
+                  onWheel={(e) => e.target.blur()}
+                  placeholder="bank account"
+                />
+              </div>
 
               <div className="mb-2">
                 <label className="block text-sm font-medium">Position</label>
@@ -353,7 +364,7 @@ const EmployeeList = () => {
                   placeholder="Position"
                 />
               </div>
-{/* 
+              {/* 
               <div className="mb-2">
                 <label className="block text-sm font-medium">Department</label>
                 <input
@@ -412,6 +423,17 @@ const EmployeeList = () => {
                 />
               </div>
               <div className="mb-2">
+                <label className="block text-sm font-medium">Emergency Contact</label>
+                <input
+                  type="text"
+                  className="w-full p-2 border border-gray-100 rounded mt-1"
+                  value={editEmployeeData.emergencyContact}
+                  onChange={(e) => setEditEmployeeData({ ...editEmployeeData, emergencyContact: e.target.value })}
+                  onWheel={(e) => e.target.blur()}
+                  placeholder="emergency contact"
+                />
+              </div>
+              <div className="mb-2">
                 <label className="block text-sm font-medium">Role</label>
                 <select
                   className="w-full p-2 border border-gray-100 rounded mt-1"
@@ -429,27 +451,27 @@ const EmployeeList = () => {
               </div>
 
               <div className="mb-2 flex items-center">
-  <input
-    type="checkbox"
-    id="changePassword"
-    checked={changePassword}
-    onChange={(e) => setChangePassword(e.target.checked)}
-    className="mr-2"
-  />
-  <label htmlFor="changePassword" className="text-sm font-medium">Change Password</label>
-</div>
-{changePassword && (
-  <div className="mb-2">
-    <label className="block text-sm font-medium">New Password</label>
-    <input
-      type="password"
-      className="w-full p-2 border border-gray-100 rounded mt-1"
-      value={editEmployeeData.password}
-      onChange={(e) => setEditEmployeeData({ ...editEmployeeData, password: e.target.value })}
-      placeholder="Enter new password"
-    />
-  </div>
-)}
+                <input
+                  type="checkbox"
+                  id="changePassword"
+                  checked={changePassword}
+                  onChange={(e) => setChangePassword(e.target.checked)}
+                  className="mr-2"
+                />
+                <label htmlFor="changePassword" className="text-sm font-medium">Change Password</label>
+              </div>
+              {changePassword && (
+                <div className="mb-2">
+                  <label className="block text-sm font-medium">New Password</label>
+                  <input
+                    type="password"
+                    className="w-full p-2 border border-gray-100 rounded mt-1"
+                    value={editEmployeeData.password}
+                    onChange={(e) => setEditEmployeeData({ ...editEmployeeData, password: e.target.value })}
+                    placeholder="Enter new password"
+                  />
+                </div>
+              )}
 
               <div className="mt-4 flex justify-end space-x-2">
                 <button

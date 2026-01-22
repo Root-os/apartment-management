@@ -44,12 +44,12 @@ function Login() {
             localStorage.setItem('userId', decodedToken.id);
             localStorage.setItem('fname', decodedToken.fname);
             localStorage.setItem('lname', decodedToken.lname);
-            localStorage.setItem('role', decodedToken.role); // Set new role
+            localStorage.setItem('role', decodedToken.role); 
             localStorage.setItem('email', decodedToken.email);
             localStorage.setItem('phone', decodedToken.phone);
 
             setLoading(false);
-            window.location.href = "/app";  // Redirect to dashboard
+            window.location.href = "/app";  
         }
     } catch (error) {
         setLoading(false);
@@ -74,9 +74,6 @@ function Login() {
     >
       <div className="card mx-auto w-full max-w-xl shadow-xl">
         <div className="  rounded-xl">
-          {/* <div>
-            <LandingIntro />
-          </div> */}
           <div className="py-24 px-10">
             <h2 className="text-white font-bold mb-2 text-center">Login</h2>
             <form onSubmit={submitForm}>
@@ -103,14 +100,6 @@ function Login() {
                 />
               </div>
 
-              {/* <div className="text-right text-primary">
-                <Link to="/forgot-password">
-                  <span className="text-sm inline-block hover:text-primary hover:underline hover:cursor-pointer transition duration-200">
-                    Forgot Password?
-                  </span>
-                </Link>
-              </div> */}
-
               <ErrorText styleClass="mt-8">{errorMessage}</ErrorText>
 
               <button
@@ -125,16 +114,6 @@ function Login() {
                   'Login'
                 )}
               </button>
-
-
-              {/* <div className="text-center mt-4">
-                Don't have an account yet?{' '}
-                <Link to="/register">
-                  <span className="inline-block hover:text-primary hover:underline hover:cursor-pointer transition duration-200">
-                    Register
-                  </span>
-                </Link>
-              </div> */}
             </form>
           </div>
         </div>

@@ -179,7 +179,7 @@ function Header() {
             )}
             {role === "tenant" && (
               <li className="justify-between">
-                <Link to={"/app/tenant-profile"}>
+                <Link to={"/app/Profile"}>
                   Profile Settings
                   <span className="badge">New</span>
                 </Link>

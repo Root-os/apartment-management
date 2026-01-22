@@ -18,48 +18,109 @@ const AddChargingData = () => {
   const [tenantCar, setTenantCar] = useState(null); 
   const [messageType, setMessageType] = useState('success');
   const [modalOpen, setModalOpen] = useState(false);
+  const [persons, setPersons] = useState([]);
+  const [selectedPersonIndex, setSelectedPersonIndex] = useState('');
+  const [vehicles, setVehicles] = useState([]);
+  const [selectedVehicleIndex, setSelectedVehicleIndex] = useState('');
+  const [hasVehicles, setHasVehicles] = useState(false);
+  const [inlineMessage, setInlineMessage] = useState('');
+  
 
     const { isGregorian } = useContext(CalendarContext);
 
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}tenant`);
-        setTenants(response.data);
-      } catch (error) {
-        console.error('There was an error fetching the tenants:', error);
+        const res = await axios.get(
+          `${process.env.REACT_APP_BASE_URL}tenant/floor-units`
+        );
+        setPersons(res.data);
+      } catch (err) {
+        console.error(err);
       }
     };
 
     fetchTenants();
   }, []);
 
-  // Handle when a tenant is selected
   useEffect(() => {
-    if (tenantId) {
-      const selectedTenant = tenants.find(tenant => tenant.id === Number(tenantId));
-      if (selectedTenant) {
-        // Check if the tenant has a car
-        if (selectedTenant.TenantVehicles && selectedTenant.TenantVehicles.length > 0) {
-          const car = selectedTenant.TenantVehicles[0]; // Assuming only one car is registered per tenant
-          setCarPlate(car.carPlate);
-          setCarName(car.carName);
-          setTenantCar(car); // Store car details
-          setMessage(''); // Clear any previous "no car" message
-        } else {
-          setCarPlate('');
-          setCarName('');
-          setTenantCar(null); // Clear car details
-          setMessage('This tenant has no registered car'); // Display the message
-        }
-      }
-    } else {
+    if (selectedPersonIndex === '') {
+      setVehicles([]);
+      setSelectedVehicleIndex('');
       setCarPlate('');
       setCarName('');
-      setTenantCar(null); // Clear car details
-      setMessage(''); // Clear message if no tenant is selected
+      setHasVehicles(false);
+      setTenantId(''); // clear tenantId
+      return;
     }
-  }, [tenantId, tenants]);
+
+    const person = persons[selectedPersonIndex];
+
+    // Gather all vehicles from all tenantIds
+    const allVehicles = person.tenant.flatMap(t =>
+      t.vehicles.map(v => ({
+        ...v,
+        tenantId: t.tenantId
+      }))
+    );
+
+    setVehicles(allVehicles);
+    setSelectedVehicleIndex('');
+
+    if (allVehicles.length > 0) {
+      setHasVehicles(true);
+      setInlineMessage('');
+      // setCarPlate(allVehicles[0].carPlate);
+      // setCarName(allVehicles[0].carName);
+      // setTenantId(allVehicles[0].tenantId);
+    } else {
+      // Tenant has no vehicles → manual input
+      setHasVehicles(false);
+      setCarPlate('');
+      setCarName('');
+      // IMPORTANT: assign tenantId from the **first tenant record**
+      setTenantId(person.tenant[0].tenantId);
+      setInlineMessage('This tenant has no registered vehicles. Please enter details manually.');
+    }
+  }, [selectedPersonIndex, persons]);
+
+  useEffect(() => {
+    if (!hasVehicles || selectedVehicleIndex === '') return;
+
+    const vehicle = vehicles[selectedVehicleIndex];
+    setCarPlate(vehicle.carPlate);
+    setCarName(vehicle.carName);
+    setTenantId(vehicle.tenantId);
+  }, [selectedVehicleIndex, vehicles, hasVehicles]);
+
+  const handleCarPlateChange = (value) => {
+    setCarPlate(value);
+    if (inlineMessage) setInlineMessage('');
+  };
+
+  const handleCarNameChange = (value) => {
+    setCarName(value);
+    if (inlineMessage) setInlineMessage('');
+  };
+
+  const getCurrentDateTime = () => {
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+
+  useEffect(() => {
+    setChargingStartTime(getCurrentDateTime());
+  }, []);
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,7 +129,7 @@ const AddChargingData = () => {
 
     // Convert chargingStartTime to ISO format if it's not already in that format
     const chargingStartDate = new Date(chargingStartTime);
-    const chargingStartTimeInUTC = chargingStartDate.toISOString(); // Convert to ISO 8601 string
+    const chargingStartTimeInUTC = chargingStartDate.toISOString(); 
 
     const payload = {
       carPlate,
@@ -84,21 +145,23 @@ const AddChargingData = () => {
       setCarPlate('');
       setCarName('');
       setTenantId('');
-      setChargingStartTime('');
+      setChargingStartTime(getCurrentDateTime());
       setDriverName('');
 
       setModalOpen(true);
       setMessageType('success');
       setMessage(`Charging data added successfully!`);
-      window.location.href = '/app/charging-view'; // Navigate to view page
+      // window.location.href = '/app/charging-view'; 
     } catch (error) {
+      const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Failed to add charging data.');
+      setMessage(errorMessage);
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div>
@@ -116,24 +179,46 @@ const AddChargingData = () => {
             </div>
             {isTenant && ( 
             <div className="flex flex-col">
-            <label htmlFor="tenantId" className="font-medium">Tenant </label>
-            <select
-              id="tenantId"
-              value={tenantId}
-              onChange={(e) => setTenantId(e.target.value)}
-              className="bg-base-100 px-4 py-2 border rounded-md"
-              disabled={!isTenant}
-              required={isTenant}
-            >
-              <option value="">Select Tenant</option>
-              {tenants.map((tenant) => (
-                <option key={tenant.id} value={tenant.id}>
-                  {tenant.fullName} — Unit {tenant.Unit?.unitNumber ?? "N/A"}
-                </option>
-              ))}
-            </select>
-          </div>
+              <label className="font-medium">Tenant</label>
+              <select
+                value={selectedPersonIndex}
+                onChange={(e) => setSelectedPersonIndex(e.target.value)}
+                className="bg-base-100 px-4 py-2 border rounded-md"
+                required
+              >
+                <option value="">Select Tenant</option>
+                {persons.map((p, index) => (
+                  <option key={index} value={index}>
+                    {p.fullName} — {p.phoneNumber}
+                  </option>
+                ))}
+              </select>
+            </div>
             )}
+
+            {hasVehicles && vehicles.length > 0 && (
+              <div className="flex flex-col">
+                <label className="font-medium">Vehicle</label>
+                <select
+                  value={selectedVehicleIndex}
+                  onChange={(e) => setSelectedVehicleIndex(e.target.value)}
+                  className="bg-base-100 px-4 py-2 border rounded-md"
+                >
+                  <option value="">Select Vehicle</option>
+                  {vehicles.map((v, index) => (
+                    <option key={index} value={index}>
+                      {v.carPlate} — {v.carName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Inline message */}
+            {inlineMessage && (
+              <p className="mt-2 text-red-500">{inlineMessage}</p>
+            )}
+
             {!isTenant && (
             <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Driver Name</label>
@@ -144,60 +229,59 @@ const AddChargingData = () => {
               className="bg-base-100 w-full p-2 border border-gray-300 rounded"
             />
           </div>)}
+         <div className="flex flex-col">
+          <label htmlFor="carPlate" className="font-medium">Car Plate</label>
+          <input
+            type="text"
+            id="carPlate"
+            value={carPlate}
+            onChange={(e) => handleCarPlateChange(e.target.value)}
+            className="bg-base-100 px-4 py-2 border rounded-md"
+            required
+          />
+        </div>
+
+        <div className="flex flex-col">
+          <label htmlFor="carName" className="font-medium">Car Name</label>
+          <input
+            type="text"
+            id="carName"
+            value={carName}
+            onChange={(e) => handleCarNameChange(e.target.value)}
+            className="bg-base-100 px-4 py-2 border rounded-md"
+            required
+          />
+        </div>
           <div className="flex flex-col">
-            <label htmlFor="carPlate" className="font-medium">Car Plate</label>
-            <input
-              type="text"
-              id="carPlate"
-              value={carPlate}
-              onChange={(e) => setCarPlate(e.target.value)}
+            <label htmlFor="chargingStartDate" className="font-medium">Charging Start Date</label>
+            <SmartDateInput
+              id="chargingStartDate"
+              value={chargingStartTime.split('T')[0]} // Extract date part
+              onChange={(gcDate) => {
+                // Combine new date with existing time
+                const timePart = chargingStartTime.split('T')[1] || '00:00';
+                setChargingStartTime(`${gcDate}T${timePart}`);
+              }}
               className="bg-base-100 px-4 py-2 border rounded-md"
               required
             />
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="carName" className="font-medium">Car Name</label>
+            <label htmlFor="chargingStartTimeInput" className="font-medium">Charging Start Time (Hour & Minute)</label>
             <input
-              type="text"
-              id="carName"
-              value={carName}
-              onChange={(e) => setCarName(e.target.value)}
+              type="time"
+              id="chargingStartTimeInput"
+              value={chargingStartTime.split('T')[1] || ''}
+              onChange={(e) => {
+                // Combine existing date with new time
+                const datePart = chargingStartTime.split('T')[0] || new Date().toISOString().split('T')[0];
+                setChargingStartTime(`${datePart}T${e.target.value}`);
+              }}
               className="bg-base-100 px-4 py-2 border rounded-md"
               required
             />
-          </div>
-
-<div className="flex flex-col">
-  <label htmlFor="chargingStartDate" className="font-medium">Charging Start Date</label>
-  <SmartDateInput
-    id="chargingStartDate"
-    value={chargingStartTime.split('T')[0]} // Extract date part
-    onChange={(gcDate) => {
-      // Combine new date with existing time
-      const timePart = chargingStartTime.split('T')[1] || '00:00';
-      setChargingStartTime(`${gcDate}T${timePart}`);
-    }}
-    className="bg-base-100 px-4 py-2 border rounded-md"
-    required
-  />
-</div>
-
-<div className="flex flex-col">
-  <label htmlFor="chargingStartTimeInput" className="font-medium">Charging Start Time (Hour & Minute)</label>
-  <input
-    type="time"
-    id="chargingStartTimeInput"
-    value={chargingStartTime.split('T')[1] || ''}
-    onChange={(e) => {
-      // Combine existing date with new time
-      const datePart = chargingStartTime.split('T')[0] || new Date().toISOString().split('T')[0];
-      setChargingStartTime(`${datePart}T${e.target.value}`);
-    }}
-    className="bg-base-100 px-4 py-2 border rounded-md"
-    required
-  />
-</div>
+          </div>                         
           <button
             type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
@@ -206,11 +290,6 @@ const AddChargingData = () => {
             {loading ? 'Submitting...' : 'Add Charging Data'}
           </button>
         </form>
-
-        {/* Conditionally render the "no registered car" message */}
-        {message && (
-          <div className="mt-4 text-red-500">{message}</div>
-        )}
       </TitleCard>
 
       <Modal

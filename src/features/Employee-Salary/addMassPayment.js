@@ -125,7 +125,8 @@ setMessage(errorMessage);
           >
             <option value="">select</option>
             <option value="pending">Pending</option>
-            <option value="completed">Completed</option>
+            <option value="paid">Paid</option>
+            <option value="failed">Failed</option>
           </select>
         </div>
 

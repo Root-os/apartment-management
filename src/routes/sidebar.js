@@ -189,10 +189,15 @@ const tenantRoutes = [
       },
     ],
   },
-    {
+  {
     path: "/app/law-letter",
     icon: <EyeIcon className={submenuIconClasses} />,
     name: "Building Law ",
+  },
+  {
+    path: "/app/units",
+    icon: <EyeIcon className={submenuIconClasses} />,
+    name: "My Rooms ",
   },
 
 ];

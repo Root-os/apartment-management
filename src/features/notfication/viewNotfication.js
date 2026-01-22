@@ -147,22 +147,38 @@ const handleDeleteConfirm = async () => {
         return 'N/A';
       }
     },
-    { 
-      key: 'isRead', 
-      label: 'Status', 
-      render: (notification) => notification.isRead ? "Read" : "Sent" 
+    {
+      key: 'isRead',
+      label: 'Status',
+      render: (notification) => (
+        notification.isRead ? (
+          <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium flex items-center gap-1">
+            Read
+          </span>
+        ) : (
+          <span className="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-sm font-medium">
+            Sent
+          </span>
+        )
+      )
     },
-    { 
-      key: 'actions', 
-      label: 'Actions', 
+    {
+      key: 'actions',
+      label: 'Actions',
       render: (notification) => (
         <div className="flex space-x-2">
           <button
-            onClick={() => handleEditClick(notification)}
-            className="bg-blue-500 text-white py-1 px-2 rounded hover:bg-blue-700"
+            onClick={() => !notification.isRead && handleEditClick(notification)}
+            disabled={notification.isRead}
+            className={`py-1 px-2 rounded text-white
+              ${notification.isRead
+                ? 'bg-blue-200 cursor-not-allowed'
+                : 'bg-blue-500 hover:bg-blue-700'}
+            `}
           >
             Edit
           </button>
+
           <button
             onClick={() => handleDeleteClick(notification)}
             className="bg-red-500 text-white py-1 px-2 rounded hover:bg-red-700"
@@ -172,6 +188,7 @@ const handleDeleteConfirm = async () => {
         </div>
       )
     }
+
   ];
 
   return (
@@ -197,8 +214,8 @@ const handleDeleteConfirm = async () => {
 
       {/* Edit Form */}
       {isEditModalOpen && selectedNotification && (
-        <div className="fixed inset-0 mt-10 flex justify-center items-center">
-          <div className="bg-white dark:bg-gray-900 p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
+        <div className="fixed inset-0 mt-10 z-50 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-base-100 text-base-content p-6 rounded-lg w-full max-w-lg mx-4 max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl mb-4">Edit Notification</h2>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div>
@@ -239,7 +256,7 @@ const handleDeleteConfirm = async () => {
                 {errors.type_id && <p className="text-red-500">{errors.type_id.message}</p>}
               </div>
 
-              <div>
+              {/* <div>
                 <label className="block text-white-700" htmlFor="isRead">Read Status</label>
                 <select
                   id="isRead"
@@ -251,7 +268,7 @@ const handleDeleteConfirm = async () => {
                   <option value={false}>Unread</option>
                 </select>
                 {errors.isRead && <p className="text-red-500">{errors.isRead.message}</p>}
-              </div>
+              </div> */}
 
               <div className="flex justify-between">
                 <button

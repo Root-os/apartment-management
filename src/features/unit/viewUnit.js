@@ -674,31 +674,29 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
                   {problems.map((prob, i) => <li key={i}>{prob}</li>)}
                 </ul>
               </div>
-
-{unitDetails.images && unitDetails.images.length > 0 && (
-  <div className="mt-4">
-    <strong>Images:</strong>
-    <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-      {unitDetails.images.map((imgUrl, idx) => {
-        const url = typeof imgUrl === "string" ? imgUrl : imgUrl?.url || null;
-        if (!url) return null;
-        const cleanUrl = url.replace(/\\/g, "/");
-        return (
-          <img
-            key={idx}
-            src={cleanUrl}
-            alt={`Unit ${unitDetails.unitNumber} Image ${idx + 1}`}
-            className="w-full h-24 object-cover rounded shadow-md border cursor-pointer"
-            loading="lazy"
-            onClick={() => openImageViewer(cleanUrl)} // <-- Add this
-          />
-        );
-      })}
-    </div>
-  </div>
-)}
-
-
+              
+                {unitDetails.images && unitDetails.images.length > 0 && (
+                  <div className="mt-4">
+                    <strong>Images:</strong>
+                    <div className="mt-2 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                      {unitDetails.images.map((imgUrl, idx) => {
+                        const url = typeof imgUrl === "string" ? imgUrl : imgUrl?.url || null;
+                        if (!url) return null;
+                        const cleanUrl = url.replace(/\\/g, "/");
+                        return (
+                          <img
+                            key={idx}
+                            src={cleanUrl}
+                            alt={`Unit ${unitDetails.unitNumber} Image ${idx + 1}`}
+                            className="w-full h-24 object-cover rounded shadow-md border cursor-pointer"
+                            loading="lazy"
+                            onClick={() => openImageViewer(cleanUrl)} // <-- Add this
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               <div className="mt-6 text-right">
                 <button
                   onClick={() => setIsDetailModalOpen(false)}
@@ -712,27 +710,27 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
         );
       })()}
       {isImageViewerOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
-    <div className="relative bg-white p-4 rounded-lg max-w-[95vw] max-h-[95vh] flex flex-col">
-      <div className="flex justify-between items-center mb-4 z-10">
-        <div className="flex space-x-2">
-          <button onClick={zoomOut} className="text-white bg-gray-800 px-4 py-2 rounded-full">Zoom Out</button>
-          <button onClick={zoomIn} className="text-white bg-gray-800 px-4 py-2 rounded-full">Zoom In</button>
-        </div>
-        <button onClick={closeImageViewer} className="text-white bg-gray-800 px-2 py-1 rounded-full">X</button>
-      </div>
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
+          <div className="relative bg-white p-4 rounded-lg max-w-[95vw] max-h-[95vh] flex flex-col">
+            <div className="flex justify-between items-center mb-4 z-10">
+              <div className="flex space-x-2">
+                <button onClick={zoomOut} className="text-white bg-gray-800 px-4 py-2 rounded-full">Zoom Out</button>
+                <button onClick={zoomIn} className="text-white bg-gray-800 px-4 py-2 rounded-full">Zoom In</button>
+              </div>
+              <button onClick={closeImageViewer} className="text-white bg-gray-800 px-2 py-1 rounded-full">X</button>
+            </div>
 
-      <div className="flex-1 overflow-auto">
-        <img
-          src={currentImage}
-          alt="Zoomed"
-          style={{ transform: `scale(${zoomLevel})`, transition: 'transform 0.3s ease', transformOrigin: 'center' }}
-          className="max-w-full max-h-[80vh] object-contain"
-        />
-      </div>
-    </div>
-  </div>
-)}
+            <div className="flex-1 overflow-auto">
+              <img
+                src={currentImage}
+                alt="Zoomed"
+                style={{ transform: `scale(${zoomLevel})`, transition: 'transform 0.3s ease', transformOrigin: 'center' }}
+                className="max-w-full max-h-[80vh] object-contain"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
 
       <Modal

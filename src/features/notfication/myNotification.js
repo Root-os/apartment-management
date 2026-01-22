@@ -36,6 +36,27 @@ const TenantNotificationPage = () => {
   }, []);
 
 
+  const handleMarkAsRead = async (notificationId) => {
+  try {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No authentication token found');
+
+    await api.put(`notification/mark-as-read/${notificationId}`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    setNotifications((prev) =>
+      prev.map((notif) =>
+        notif.id === notificationId ? { ...notif, isRead: true } : notif
+      )
+    );
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || 'Failed to mark notification as read');
+  }
+};
+
+
   const columns = [
     {
       label: 'Title',
@@ -60,6 +81,25 @@ const TenantNotificationPage = () => {
       key: 'createdAt',
       render: (row) => new Date(row.createdAt).toLocaleString(),
     },
+    {
+      label: 'Status',
+      key: 'status',
+      render: (row) => (
+        row.isRead ? (
+          <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium flex items-center gap-1">
+            Read
+          </span>
+        ) : (
+          <button
+            className="px-3 py-1 bg-blue-500 text-white rounded-full text-sm font-medium hover:bg-blue-600 transition flex items-center gap-1"
+            onClick={() => handleMarkAsRead(row.id)}
+          >
+            Mark as Read
+          </button>
+        )
+      ),
+    }
+
   ];
 
   

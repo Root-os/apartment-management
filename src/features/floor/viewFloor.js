@@ -64,10 +64,11 @@ const FloorManagement = () => {
       })
       .catch(error => {
         console.error("Error updating floor:", error);
+        const errorMessage = error.response?.data?.message || error.message || 'Unknown error';
 
         setModalOpen(true);
         setMessageType('error');
-        setMessage('Unable to update, please try again');
+        setMessage(errorMessage);
       })
       .finally(() => {
         setButtonLoading(false); 

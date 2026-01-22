@@ -64,12 +64,21 @@ const handleProfileChange = (e) => {
   const index = e.target.value;
   setSelectedProfileIndex(index);
 
-  // reset tenantId (unit) when tenant changes
-  setFormData((prev) => ({
-    ...prev,
-    tenantId: "",
-  }));
+  const selectedProfile = profiles[index];
+
+  if (selectedProfile?.tenant.length === 1) {
+    setFormData((prev) => ({
+      ...prev,
+      tenantId: selectedProfile.tenant[0].tenantId,
+    }));
+  } else {
+    setFormData((prev) => ({
+      ...prev,
+      tenantId: "",
+    }));
+  }
 };
+
 
 const handleUnitChange = (e) => {
   const tenantId = e.target.value;
@@ -151,20 +160,20 @@ const handleUnitChange = (e) => {
     }
   };
 
-  useEffect(() => {
-  if (profiles.length === 0) return;
+// useEffect(() => {
+//   if (profiles.length === 0) return;
 
-  profiles.forEach((profile, index) => {
-    // If profile has exactly 1 unit and no tenantId set yet
-    if (profile.tenant.length === 1 && !formData.tenantId) {
-      setSelectedProfileIndex(index);
-      setFormData((prev) => ({
-        ...prev,
-        tenantId: profile.tenant[0].tenantId,
-      }));
-    }
-  });
-}, [profiles]);
+//   profiles.forEach((profile, index) => {
+//     if (profile.tenant.length === 1 && !formData.tenantId) {
+//       setSelectedProfileIndex(index);
+//       setFormData((prev) => ({
+//         ...prev,
+//         tenantId: profile.tenant[0].tenantId,
+//       }));
+//     }
+//   });
+// }, [profiles]);
+
 
 
   return (
@@ -173,47 +182,43 @@ const handleUnitChange = (e) => {
       <TitleCard title={'Request Tenant Paymentt'} topMargin={'mt-1'}>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Tenant Dropdown */}
-<div>
-  <label className="block text-sm font-medium mb-1">Tenant</label>
-  <select
-    value={selectedProfileIndex}
-    onChange={handleProfileChange}
-    className="w-full bg-base-100 p-2 border rounded-md"
-  >
-    <option value="">Select Tenant</option>
-    {profiles.map((profile, index) => (
-      <option key={profile.phoneNumber} value={index}>
-        {profile.fullName} ({profile.phoneNumber})
-      </option>
-    ))}
-  </select>
-</div>
+          <div>
+            <label className="block text-sm font-medium mb-1">Tenant</label>
+            <select
+              value={selectedProfileIndex}
+              onChange={handleProfileChange}
+              className="w-full bg-base-100 p-2 border rounded-md"
+            >
+              <option value="">Select Tenant</option>
+              {profiles.map((profile, index) => (
+                <option key={profile.phoneNumber} value={index}>
+                  {profile.fullName} ({profile.phoneNumber})
+                </option>
+              ))}
+            </select>
+          </div>
 
-{selectedProfileIndex !== "" &&
-  profiles[selectedProfileIndex] &&
-  Array.isArray(profiles[selectedProfileIndex].tenant) && (
-    <div>
-      <label className="block text-sm font-medium mb-1">Unit</label>
-      <select
-        value={formData.tenantId}
-        onChange={handleUnitChange}
-        className="w-full bg-base-100 p-2 border rounded-md"
-      >
-        {profiles[selectedProfileIndex].tenant.length > 1 && (
-          <option value="">Select Unit</option>
-        )}
-        {profiles[selectedProfileIndex].tenant.map((t) => (
-          <option key={t.tenantId} value={t.tenantId}>
-            Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
-          </option>
-        ))}
-      </select>
-    </div>
-)}
-
-
-
-
+          {selectedProfileIndex !== "" &&
+            profiles[selectedProfileIndex] &&
+            Array.isArray(profiles[selectedProfileIndex].tenant) && (
+              <div>
+                <label className="block text-sm font-medium mb-1">Unit</label>
+                <select
+                  value={formData.tenantId}
+                  onChange={handleUnitChange}
+                  className="w-full bg-base-100 p-2 border rounded-md"
+                >
+                  {profiles[selectedProfileIndex].tenant.length > 1 && (
+                    <option value="">Select Unit</option>
+                  )}
+                  {profiles[selectedProfileIndex].tenant.map((t) => (
+                    <option key={t.tenantId} value={t.tenantId}>
+                      Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
+                    </option>
+                  ))}
+                </select>
+              </div>
+          )}
           {/* Payment Type Dropdown */}
           <div>
             <label className="block text-sm font-medium mb-1">Payment Type</label>

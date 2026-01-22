@@ -32,10 +32,10 @@ const AddTenant = () => {
   const [messageType, setMessageType] = useState("success");
   const [message, setMessage] = useState("");
 
-const [tenantType, setTenantType] = useState("new"); // "new" | "existing"
-const [existingTenants, setExistingTenants] = useState([]);
-const [selectedTenantId, setSelectedTenantId] = useState("");
-const [profiles, setProfiles] = useState([]);
+  const [tenantType, setTenantType] = useState("new"); // "new" | "existing"
+  const [existingTenants, setExistingTenants] = useState([]);
+  const [selectedTenantId, setSelectedTenantId] = useState("");
+  const [profiles, setProfiles] = useState([]);
 
   // State for individual field errors
   const [errors, setErrors] = useState({
@@ -440,7 +440,7 @@ const handleTenantSelect = async (tenantId) => {
             </div>
           </div>
 
-            {tenantType === "existing" && (
+          {tenantType === "existing" && (
             <div>
               <label className="block text-sm font-semibold mb-2">
                 Select Existing Tenant <span className="text-red-500">*</span>
