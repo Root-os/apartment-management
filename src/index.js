@@ -1,24 +1,34 @@
-import React,  { Suspense } from 'react';
-import ReactDOM from 'react-dom/client';
+import React, { Suspense, useEffect } from "react";
+import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import { Provider } from "react-redux";
 import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import store from './app/store'
-import { Provider } from 'react-redux'
-import SuspenseContent from './containers/SuspenseContent';
+import App from "./App";
+import store from "./app/store";
+import SuspenseContent from "./containers/SuspenseContent";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import { registerLogout } from "./utils/api";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const AuthBridge = () => {
+  const { logout } = useAuth();
+
+  useEffect(() => {
+    registerLogout(logout);
+  }, [logout]);
+
+  return null;
+};
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  // <React.StrictMode>
-    <Suspense fallback={<SuspenseContent />}>
-        <Provider store={store}>
-            <App />
-        </Provider>
-    </Suspense>
-  // </React.StrictMode>
+  <Suspense fallback={<SuspenseContent />}>
+    <Provider store={store}>
+      <BrowserRouter> 
+        <AuthProvider>
+          <AuthBridge />
+          <App />
+        </AuthProvider>
+      </BrowserRouter>
+    </Provider>
+  </Suspense>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

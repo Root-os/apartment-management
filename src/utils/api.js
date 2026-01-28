@@ -1,5 +1,11 @@
 import axios from "axios";
 
+let logoutHandler = null;
+
+export const registerLogout = (handler) => {
+  logoutHandler = handler;
+};
+
 const api = axios.create({
   baseURL: process.env.REACT_APP_BASE_URL,
   headers: {
@@ -9,11 +15,11 @@ const api = axios.create({
 });
 
 /* ==============================
-   REQUEST INTERCEPTOR (ADD TOKEN)
+   REQUEST INTERCEPTOR
    ============================== */
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // 🔴 MUST match login storage key
+    const token = localStorage.getItem("token");
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -25,26 +31,17 @@ api.interceptors.request.use(
 );
 
 /* ==============================
-   RESPONSE INTERCEPTOR (ERRORS)
+   RESPONSE INTERCEPTOR
    ============================== */
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    console.error("🌐 Global Axios Error:", error);
+    const status = error.response?.status;
 
-    let message = "Something went wrong. Please try again.";
-
-    if (error.response) {
-      message =
-        error.response.data?.message ||
-        `Server Error: ${error.response.status}`;
-    } else if (error.request) {
-      message = "No response from server. Possible network or CORS issue.";
-    } else {
-      message = "Unexpected error occurred.";
+    if ((status === 401 || status === 403) && logoutHandler) {
+      logoutHandler(true);
     }
 
-    error.customMessage = message;
     return Promise.reject(error);
   }
 );

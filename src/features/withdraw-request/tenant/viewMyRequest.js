@@ -309,8 +309,6 @@ const handleEditSubmit = async () => {
             ))}
           </select>
         )}
-
-
       <label className="block mb-2">Termination Date</label>
       <input
         type="date"

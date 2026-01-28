@@ -62,6 +62,7 @@ const PaymentRequestView = lazy(() =>
 const TenantViewRequest = lazy(() =>
   import("../pages/protected/PaymentRequest/TenantViewRequest")
 );
+const ViewReciept = lazy(()=> import("../pages/protected/PaymentRequest/ViewReciept"))
 
 // Notification
 const notficationAdd = lazy(() => import("../pages/protected/Notfication/add"));
@@ -167,6 +168,9 @@ const ViewWithdrawRequests = lazy(() =>
 // Setting
 const SettingAdd = lazy(() => import("../pages/protected/SettingAdd"));
 const SettingView = lazy(() => import("../pages/protected/SettingView"));
+
+const ViewPaymentSetting = lazy(() => import("../pages/protected/PaymentSetting/ViewPaymentSetting"));
+const CreatePaymentsetting = lazy(() => import("../pages/protected/PaymentSetting/CreatePaymentSetting"));
 
 const CalendarToggle = lazy(() =>
   import("../pages/protected/setting/CalendarToggle")
@@ -368,6 +372,7 @@ const tenantRoutes = [
   { path: "/tenant-rent-collection", component: TenantViewRent },
   { path: "/tenant-payment-history", component: TenantViewBills },
   { path: "/payment-request-history", component: TenantViewRequest },
+  { path: "/view-reciept/:paymentRequestId", component: ViewReciept },
   { path: "/item-out-request", component: SendOutRequest },
   { path: "/out-requests", component: ViewOutRequests },
   { path: "/see-my-items", component: SeeMyItems },
@@ -429,6 +434,7 @@ const adminRoutes = [
       { path: "/view-payments", component: PaymentView },
       { path: "/payment-request-add", component: PaymentRequestAdd },
       { path: "/payment-request-view", component: PaymentRequestView },
+      { path: "/view-reciept/:paymentRequestId", component: ViewReciept },
       { path: "/add-mass-salary", component: MassSalary },
       { path: "/add-single-salary", component: SinglePayment },
       { path: "/view-all-salary", component: ViewAllPayment },
@@ -572,6 +578,8 @@ const adminRoutes = [
     routes: [
       { path: "/add-setting", component: SettingAdd },
       { path: "/view-settings", component: SettingView },
+      { path: "/view-payment-setting", component: ViewPaymentSetting},
+      { path: "/add-account", component: CreatePaymentsetting },
       { path: "/calendar-settings", component: CalendarToggle },
       { path: "/apply-punishment", component: ApplyPunishment },
       { path: "/All-User", component: ALlUser },

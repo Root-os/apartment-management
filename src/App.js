@@ -1,7 +1,6 @@
 import React, { lazy, useEffect, useState } from "react";
 import "./App.css";
 import {
-  BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
@@ -42,6 +41,11 @@ function App() {
     setLoading(false);
   }, []);
 
+  //   useEffect(() => {
+  //   themeChange(false);
+  //   setIsAuthenticated(!!localStorage.getItem("token")); // presence only
+  // }, []);
+
   if (loading) {
     return <LoadingComponent />;
   }
@@ -49,7 +53,6 @@ function App() {
 
   return (
     <CalendarProvider>
-      <Router>
         <Routes>
           {/* Public routes */}
           {/* <Route path="/" element={<Choice />} /> */}
@@ -97,7 +100,6 @@ function App() {
             }
           />
         </Routes>
-      </Router>
     </CalendarProvider>
   );
 }

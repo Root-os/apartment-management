@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
@@ -26,6 +27,8 @@ const PaymentRequestsPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('status');
   const [modalMessage, setModalMessage] = useState('');
+
+  const navigate = useNavigate();
 
   
   const fetchData = () => {
@@ -189,19 +192,30 @@ const PaymentRequestsPage = () => {
       label: 'Actions',
       key: 'actions',
       render: (row) => (
-        <div className="flex justify-end space-x-2">
+        <div className="flex justify-end space-x-1">
           <button
             onClick={() => handleEditClick(row)}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+            className={`bg-blue-500 text-white px-2 py-1 rounded-md mr-2 ${
+              row.status === 'approved' ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'
+            }`}
+            disabled={row.status === 'approved'}
           >
             Edit
           </button>
           <button
             onClick={() => handleDeleteClick(row)}
-            className="bg-red-500 text-white px-4 py-2 rounded-md"
+            className="bg-red-500 text-white px-2 py-1 rounded-md"
           >
             Delete
           </button>
+          {row.status === 'approved' && (
+            <button
+              onClick={() => navigate(`/app/view-receipt/${row.id}`)}
+              className="px-2 py-1 rounded bg-green-600 text-white text-sm"
+            >
+              View Receipt
+            </button>
+          )}
         </div>
       ),
     },
@@ -213,124 +227,124 @@ const PaymentRequestsPage = () => {
 
   return (
     <div>
-       {pageLoading ? (<LoadingComponent/>):(
-      <TableComponent
-        title="Tenant Payment Requests"
-        data={paymentRequests}
-        columns={columns}
-        exportable={true}
-        showSearch={true}
-        onAdd={handleAddClick}
-      />
-    )}
+      {pageLoading ? (<LoadingComponent/>):(
+        <TableComponent
+          title="Tenant Payment Requests"
+          data={paymentRequests}
+          columns={columns}
+          exportable={true}
+          showSearch={true}
+          onAdd={handleAddClick}
+        />
+      )}
       
       {isEditModalOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
-    <div className="bg-base-100 p-6 rounded-md w-full sm:w-1/2 md:w-1/3 lg:w-1/4 max-h-[80vh] overflow-y-auto">
-      <h2 className="text-2xl font-bold mb-4">Edit Payment Request</h2>
-      <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
-        
-        {/* Message Input */}
-        <div className="mb-4">
-          <label htmlFor="message" className="block text-sm font-medium text-white-700">
-            Message
-          </label>
-          <input
-            type="text"
-            id="message"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
+        <div className="bg-base-100 p-6 rounded-md w-full sm:w-1/2 md:w-1/3 lg:w-1/4 max-h-[80vh] overflow-y-auto">
+          <h2 className="text-2xl font-bold mb-4">Edit Payment Request</h2>
+          <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
+            
+            {/* Message Input */}
+            <div className="mb-4">
+              <label htmlFor="message" className="block text-sm font-medium text-white-700">
+                Message
+              </label>
+              <input
+                type="text"
+                id="message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-        {/* Level Dropdown */}
-        <div className="mb-4">
-          <label htmlFor="level" className="block text-sm font-medium text-white-700">
-            Level
-          </label>
-          <select
-            id="level"
-            value={level}
-            onChange={(e) => setLevel(e.target.value)}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Select Level</option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </select>
-        </div>
+            {/* Level Dropdown */}
+            <div className="mb-4">
+              <label htmlFor="level" className="block text-sm font-medium text-white-700">
+                Level
+              </label>
+              <select
+                id="level"
+                value={level}
+                onChange={(e) => setLevel(e.target.value)}
+                className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select Level</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+            </div>
 
-        {/* Amount Input */}
-        <div className="mb-4">
-          <label htmlFor="amount" className="block text-sm font-medium text-white-700">
-            Amount
-          </label>
-          <input
-            type="number"
-            id="amount"
-            min="0"
-            step="1"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            onWheel={(e)=> e.target.blur()}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+            {/* Amount Input */}
+            <div className="mb-4">
+              <label htmlFor="amount" className="block text-sm font-medium text-white-700">
+                Amount
+              </label>
+              <input
+                type="number"
+                id="amount"
+                min="0"
+                step="1"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                onWheel={(e)=> e.target.blur()}
+                className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-        {/* Due Date Input */}
-        <div className="mb-4">
-          <label htmlFor="dueDate" className="block text-sm font-medium text-white-700">
-            Due Date
-          </label>
-          <SmartDateInput
-            id="dueDate"
-            value={dueDate}
-            onChange={(gcDate) => setDueDate(gcDate)}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+            {/* Due Date Input */}
+            <div className="mb-4">
+              <label htmlFor="dueDate" className="block text-sm font-medium text-white-700">
+                Due Date
+              </label>
+              <SmartDateInput
+                id="dueDate"
+                value={dueDate}
+                onChange={(gcDate) => setDueDate(gcDate)}
+                className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-        {/* Status Dropdown */}
-        <div className="mb-4">
-          <label htmlFor="status" className="block text-sm font-medium text-white-700">
-            Status
-          </label>
-          <select
-            id="status"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">Select status</option>
-            <option value="pending">Pending</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
-          </select>
-        </div>
+            {/* Status Dropdown */}
+            <div className="mb-4">
+              <label htmlFor="status" className="block text-sm font-medium text-white-700">
+                Status
+              </label>
+              <select
+                id="status"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Select status</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="rejected">Rejected</option>
+              </select>
+            </div>
 
-        {/* Action Buttons */}
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-            disabled={loading}
-          >
-            {loading ? 'Saving...' : 'Save'}
-          </button>
-          <button
-            type="button"
-            onClick={() => setIsEditModalOpen(false)}
-            className="bg-gray-400 text-white px-4 py-2 rounded-md"
-          >
-            Cancel
-          </button>
+            {/* Action Buttons */}
+            <div className="flex justify-end">
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                disabled={loading}
+              >
+                {loading ? 'Saving...' : 'Save'}
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(false)}
+                className="bg-gray-400 text-white px-4 py-2 rounded-md"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
         </div>
-      </form>
-    </div>
-  </div>
-)}
+      </div>
+    )}
       {/* Delete Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

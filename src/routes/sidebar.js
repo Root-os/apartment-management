@@ -935,6 +935,16 @@ const adminRoutes = [
         icon: <CogIcon className={submenuIconClasses} />,
         name: 'Apply Punishment   ',
       },
+      {
+        path: '/app/add-account',
+        icon: <PlusIcon className={submenuIconClasses} />,
+        name: 'Add Account   ',
+      },
+      {
+        path: '/app/view-payment-setting',
+        icon: <EyeIcon className={submenuIconClasses} />,
+        name: 'View Accounts   ',
+      },
     ],
   },
 ];
