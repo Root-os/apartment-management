@@ -353,6 +353,10 @@ const SeeMyItems = lazy(() =>
   import("../pages/protected/ItemOutRequest/SeeMyItems")
 );
 
+const Gallery = lazy(() => import("../pages/protected/setting/Gallery"));
+
+
+
 const token = localStorage.getItem("token");
 
 const tenantRoutes = [
@@ -590,6 +594,7 @@ const adminRoutes = [
       { path: "/assign-permission", component: AssignPermission },
       { path: "/revoke-permission", component: RevokePermission },
       { path: "/register-user", component: UserRegister },
+      { path: "/gallery", component: Gallery},
     ],
   },
 ];

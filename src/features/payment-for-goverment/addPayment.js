@@ -162,7 +162,6 @@ const AddGovBillPayment = () => {
               onChange={(e) => validateDescription(e.target.value)}
               className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows="4"
-              required
             />
           </div>
 

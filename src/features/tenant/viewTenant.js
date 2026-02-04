@@ -55,7 +55,7 @@ const TenantList = () => {
     description: "",
     carName: "", 
     carPlate: "", 
-    color: "", 
+    // color: "", 
   });
 
   // Loading and Saving States
@@ -492,6 +492,27 @@ const handleEditSubmit = async () => {
               ),
             },
           ]}
+exportConfig={[
+  { label: "Full Name", getValue: r => r.fullName },
+  { label: "Phone Number", getValue: r => r.phoneNumber },
+
+  { label: "Email", getValue: r => r.email ?? "N/A" },
+  { label: "National ID", getValue: r => r.nationalId ?? "N/A" },
+  { label: "TIN", getValue: r => r.tin ?? "N/A" },
+
+  { label: "Rent", getValue: r => r.amount },
+  { label: "Advance", getValue: r => r.advance },
+
+  { label: "Unit Number", getValue: r => r.Unit?.unitNumber ?? "N/A" },
+  { label: "Floor", getValue: r => r.Floor?.floorNumber ?? "N/A" },
+
+  { label: "Additional Notes", getValue: r => r.additionalNotes ?? "" },
+
+  { label: "Lease Start Date", getValue: r => r.leaseStartDate },
+  { label: "Lease End Date", getValue: r => r.leaseEndDate },
+  { label: "Contract End Date", getValue: r => r.contractEndDate },
+]}
+
         />
       )}
 
@@ -733,25 +754,25 @@ const handleEditSubmit = async () => {
           
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">TIN</label>
-<input
-  type="text"
-  value={editData.tin || ""}
-  onChange={(e) => {
-    const digits = e.target.value.replace(/\D/g, "");
-    if (digits.length > 10) return;
+              <input
+                type="text"
+                value={editData.tin || ""}
+                onChange={(e) => {
+                  const digits = e.target.value.replace(/\D/g, "");
+                  if (digits.length > 10) return;
 
-    const updated = { ...editData, tin: digits };
-    setEditData(updated);
-    setErrors(validateEditData(updated));
-  }}
-  className={`border p-2 rounded w-full ${
-    errors.tin ? "border-red-500" : "border-gray-300"
-  }`}
-/>
+                  const updated = { ...editData, tin: digits };
+                  setEditData(updated);
+                  setErrors(validateEditData(updated));
+                }}
+                className={`border p-2 rounded w-full ${
+                  errors.tin ? "border-red-500" : "border-gray-300"
+                }`}
+              />
 
-{errors.tin && (
-  <p className="text-red-500 text-sm mt-1">{errors.tin}</p>
-)}
+              {errors.tin && (
+                <p className="text-red-500 text-sm mt-1">{errors.tin}</p>
+              )}
 
             </div>
             {/* Status select */}
@@ -817,12 +838,12 @@ const handleEditSubmit = async () => {
               </button>
               <button
                 onClick={handleEditSubmit}
-  disabled={Object.keys(errors).length > 0}
-  className={`px-4 py-2 rounded ${
-    Object.keys(errors).length > 0
-      ? "bg-gray-400 cursor-not-allowed"
-      : "bg-blue-600 hover:bg-blue-700"
-  }`}
+                disabled={Object.keys(errors).length > 0}
+                className={`px-4 py-2 rounded ${
+                  Object.keys(errors).length > 0
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-blue-600 hover:bg-blue-700"
+                }`}
               >
                 {isSaving ? (
                   <span className="flex items-center">
@@ -962,9 +983,9 @@ const handleEditSubmit = async () => {
                         <p>
                           <strong>Car Plate:</strong> {vehicle.carPlate}
                         </p>
-                        <p>
+                        {/* <p>
                           <strong>Color:</strong> {vehicle.color}
-                        </p>
+                        </p> */}
                       </div>
                     ))}
                   </div>

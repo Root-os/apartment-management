@@ -16,7 +16,7 @@ const TenantVehicles = () => {
   const [formData, setFormData] = useState({
     carPlate: '',
     carName: '',
-    color: ''
+    // color: ''
   });
 
   useEffect(() => {
@@ -41,7 +41,7 @@ const TenantVehicles = () => {
     setFormData({
       carPlate: vehicle.carPlate,
       carName: vehicle.carName,
-      color: vehicle.color
+      // color: vehicle.color
     });
     setModalOpen(true);
   };
@@ -118,7 +118,7 @@ const TenantVehicles = () => {
               <tr className="bg-base-100 text-left">
                 <th className="py-2 px-4 border-b">Car Plate</th>
                 <th className="py-2 px-4 border-b">Car Name</th>
-                <th className="py-2 px-4 border-b">Color</th>
+                {/* <th className="py-2 px-4 border-b">Color</th> */}
                 {/* <th className="py-2 px-4 border-b">Created At</th> */}
                 <th className="py-2 px-4 border-b">Actions</th>
               </tr>
@@ -128,7 +128,7 @@ const TenantVehicles = () => {
                 <tr key={vehicle.id}>
                   <td className="py-2 px-4 border-b">{vehicle.carPlate}</td>
                   <td className="py-2 px-4 border-b">{vehicle.carName}</td>
-                  <td className="py-2 px-4 border-b">{vehicle.color}</td>
+                  {/* <td className="py-2 px-4 border-b">{vehicle.color}</td> */}
                   {/* <td className="py-2 px-4 border-b">
                     {new Date(vehicle.createdAt).toLocaleDateString()}
                   </td> */}
@@ -180,16 +180,16 @@ const TenantVehicles = () => {
               />
             </div>
 
-            <div className="mb-4">
+            {/* <div className="mb-4">
               <label className="block mb-1">Color</label>
               <input
                 type="text"
                 name="color"
-                value={formData.color}
+                
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border rounded bg-base-100"
               />
-            </div>
+            </div> */}
 
             <div className="flex justify-end space-x-2">
               <button

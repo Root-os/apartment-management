@@ -195,8 +195,8 @@ const routeMapping = {
   emails: '/app/send-bulk-email',
   employees: '/app/view-employee',
   stockouts: '/app/see-out-requests',
-  // tenantPayments: '/app/tenant-payments',
-  tenantBillPayments: '/app/tenant-bill-view',
+  tenantPayments: '/app/tenant-bill-view',
+  billPayments: '/app/view-payment-for-goverment',
   rentCollections: '/app/rent-collection-view',
 };
 

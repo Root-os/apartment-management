@@ -208,14 +208,15 @@ const PaymentRequestsPage = () => {
           >
             Delete
           </button>
-          {row.status === 'approved' && (
-            <button
-              onClick={() => navigate(`/app/view-receipt/${row.id}`)}
-              className="px-2 py-1 rounded bg-green-600 text-white text-sm"
-            >
-              View Receipt
-            </button>
-          )}
+{row.status === 'approved' && (
+  <button
+    onClick={() => navigate(`/app/view-reciept/${row.id}`)} 
+    className="px-2 py-1 rounded bg-green-600 text-white text-sm"
+  >
+    View Receipt
+  </button>
+)}
+
         </div>
       ),
     },

@@ -165,7 +165,7 @@ const handleDetailClick = (floor) => {
         columns={columns}
 
         showSearch={true}
-        exportable={true}
+        // exportable={true}
         onAdd={handleAddClick}
       />
     )}

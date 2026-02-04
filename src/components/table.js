@@ -5,6 +5,8 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { CalendarContext } from '../context/calendarContext';
 
+
+
 const TableComponent = ({ 
   title, 
   data, 
@@ -14,7 +16,8 @@ const TableComponent = ({
   exportable = true, 
   onAdd,
   customHeader,
-  statusFilter
+  statusFilter,
+  exportConfig
 }) => {
   const [search, setSearch] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: columns[0]?.key, direction: 'asc' });
@@ -51,17 +54,79 @@ const TableComponent = ({
     setSearch(e.target.value);
   };
 
-  const handleExportPDF = () => {
-    const doc = new jsPDF();
-    doc.text(title, 10, 10);
-    const tableColumn = columns.map(col => col.label);
-    const tableRows = data.map(row => columns.map(col => row[col.key]));
-    doc.autoTable({
-      head: [tableColumn],
-      body: tableRows,
+  const getExportRows = () => {
+  if (!exportConfig?.length) return [];
+
+  return data.map(row => {
+    const obj = {};
+    exportConfig.forEach(col => {
+      let value = col.getValue(row);
+
+      // format dates like PDF
+      if (typeof value === 'string' && value.includes('T')) {
+        value = formatDateForDisplay(normalizeDateString(value));
+      }
+
+      obj[col.label] = value ?? '';
     });
-    doc.save(`${title}.pdf`);
-  };
+
+    return obj;
+  });
+};
+
+
+const handleExportPDF = () => {
+  if (!exportConfig?.length) return;
+
+  const doc = new jsPDF({
+    orientation: 'landscape', // wider table
+    unit: 'pt',               // points (better control)
+    format: 'a4',             // A4 page
+  });
+
+  doc.setFontSize(12);       // increase default font size
+  doc.text(title, 40, 40);   // adjust title position
+
+  const headers = exportConfig.map(col => col.label);
+
+  const rows = data.map(row =>
+    exportConfig.map(col => {
+      let value = col.getValue(row);
+
+      if (typeof value === 'string' && value.includes('T')) {
+        value = formatDateForDisplay(normalizeDateString(value));
+      }
+
+      return value ?? '';
+    })
+  );
+
+  doc.autoTable({
+    startY: 60,              // space below title
+    head: [headers],
+    body: rows,
+    styles: {
+      fontSize: 11,          // font size for table
+      cellPadding: 6,        // more padding for clarity
+    },
+    headStyles: {
+      fillColor: [41, 128, 185], // blue header
+      textColor: 255,
+      fontStyle: 'bold',
+    },
+    columnStyles: {
+      // auto-width or you can fix widths for specific columns
+      0: { cellWidth: 100 },  // first column
+      1: { cellWidth: 80 },   // second column
+    },
+    margin: { top: 60, left: 40, right: 40 }, // page margins
+    pageBreak: 'auto',       // auto handle multi-page
+  });
+
+  doc.save(`${title}.pdf`);
+};
+
+
 
   const handlePrint = () => {
     window.print();
@@ -118,13 +183,13 @@ const TableComponent = ({
           )}
           {exportable && (
             <>
-              <CSVLink
-                data={data}
-                filename={`${title}.csv`}
-                className="flex items-center space-x-1 px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm transition-all duration-300"
-              >
-                <FaDownload className="text-lg" /> <span>Export CSV</span>
-              </CSVLink>
+    <CSVLink
+      data={getExportRows()} 
+      filename={`${title}.csv`}
+      className="flex items-center space-x-1 px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm transition-all duration-300"
+    >
+      <FaDownload className="text-lg" /> <span>Export CSV</span>
+    </CSVLink>
               <button
                 className="flex items-center space-x-1 px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm transition-all duration-300"
                 onClick={handleExportPDF}

@@ -12,32 +12,34 @@ const TenantInventoryTable = () => {
 
   // Fetch data from the API
   useEffect(() => {
-    const fetchData = async () => {
-      const token = localStorage.getItem('token'); 
-      try {
-        const response = await api.get(`tenant-inventory/tenant`, {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
+   const fetchData = async () => {
+  const token = localStorage.getItem('token');
 
-        // Backend now returns items as array, no need to parse
-        const transformedData = response.data.inventories.map(item => ({
-          ...item,
-          // Keep items as they are
-          items: item.items,
-        }));
+  try {
+    const response = await api.get(`tenant-inventory/tenant`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
 
-        setData(transformedData);
-        setLoading(false);
-      } catch (error) {
-        setError(error.message || 'Something went wrong');
-        setLoading(false);
-      }
-    };
+    const inventories = response.data.inventories || [];
+
+    const transformedData = inventories.map(item => ({
+      ...item,
+      items: item.items,
+    }));
+
+    setData(transformedData);
+    setLoading(false);
+
+  } catch (error) {
+    setError(error.message || 'Something went wrong');
+    setLoading(false);
+  }
+};
 
     fetchData();
   }, []);
 
-  // Define columns for TableComponent, including Unit and Floor
+
   const columns = [
     { label: 'Type', key: 'type' },
     { label: 'Notes', key: 'notes' },

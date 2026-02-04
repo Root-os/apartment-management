@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import axios from "axios";
 import TitleCard from "../../../components/Cards/TitleCard";
 import { showNotification } from "../../common/headerSlice";
 import InputText from "../../../components/Input/InputText";
 import Modal from "../../../components/Modal";
+import api from "../../../utils/api";
 
 function ProfileSettings() {
     const dispatch = useDispatch();
@@ -20,54 +22,77 @@ function ProfileSettings() {
     const [modalMessage, setModalMessage] = useState("");
     const [modalMessageType, setModalMessageType] = useState("");
 
+    const token = localStorage.getItem("token");
+
+    // Fetch user profile from /auth/me
     useEffect(() => {
-        const fetchProfileFromLocalStorage = () => {
-            const storedProfile = {
-                fname: localStorage.getItem("fname") || "",
-                lname: localStorage.getItem("lname") || "",
-                email: localStorage.getItem("email") || "",
-                role: localStorage.getItem("role") || "",
-                phone: localStorage.getItem("phone") || "",
-            };
-            setProfile(storedProfile);
+        const fetchProfile = async () => {
+            try {
+                const { data } = await api.get(
+                    `/auth/me`,
+                    {
+                        headers: { Authorization: `Bearer ${token}` },
+                    }
+                );
+
+                if (data.success) {
+                    const user = data.user;
+                    setProfile({
+                        fname: user.fname,
+                        lname: user.lname,
+                        email: user.email,
+                        role: user.roleId === 1 ? "admin" : "employee",
+                        phone: user.phone,
+                    });
+                } else {
+                    setModalMessageType("error");
+                    setModalMessage("Failed to fetch profile");
+                }
+            } catch (error) {
+                console.error("Error fetching profile:", error);
+                setModalMessageType("error");
+                setModalMessage("Failed to fetch profile");
+            }
         };
-        fetchProfileFromLocalStorage();
+
+        fetchProfile();
     }, []);
 
     const updateProfile = async () => {
         try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(`${process.env.REACT_APP_BASE_URL}/auth/update`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                },
-                body: JSON.stringify({
+            const { data } = await api.put(
+                `/auth/update`,
+                {
                     fname: profile.fname,
                     lname: profile.lname,
                     phone: profile.phone,
                     role: profile.role,
-                }),
-            });
+                    email: profile.email,
+                },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
 
-            const data = await response.json();
             if (data.success) {
                 dispatch(showNotification({ message: "Profile Updated", status: 1 }));
-                localStorage.setItem("fname", profile.fname);
-                localStorage.setItem("lname", profile.lname);
-                localStorage.setItem("phone", profile.phone);
-                localStorage.setItem("role", profile.role);
                 setModalMessageType("success");
                 setModalMessage("Profile updated successfully.");
+
+                const user = data.user;
+                setProfile({
+                    fname: user.fname,
+                    lname: user.lname,
+                    email: user.email,
+                    role: user.roleId === 1 ? "admin" : "employee",
+                    phone: user.phone,
+                });
             } else {
                 setModalMessageType("error");
-                setModalMessage("Failed to update profile.");
+                setModalMessage(data.message || "Failed to update profile.");
             }
         } catch (error) {
             console.error("Error updating profile:", error);
             setModalMessageType("error");
-            setModalMessage("Failed to update profile.");
+            setModalMessage(error.response?.data?.message || "Failed to update profile.");
         }
     };
 
@@ -78,20 +103,12 @@ function ProfileSettings() {
         }
 
         try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(`${process.env.REACT_APP_BASE_URL}auth/change-password`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    currentPassword,
-                    newPassword,
-                }),
-            });
+            const { data } = await api.put(
+                `/auth/change-password`,
+                { currentPassword, newPassword },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
 
-            const data = await response.json();
             if (data.success) {
                 setCurrentPassword("");
                 setNewPassword("");
@@ -103,7 +120,7 @@ function ProfileSettings() {
             }
         } catch (error) {
             console.error("Error changing password:", error);
-            setPasswordError("Failed to change password.");
+            setPasswordError(error.response?.data?.message || "Failed to change password.");
         }
     };
 
@@ -120,23 +137,23 @@ function ProfileSettings() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <InputText
                         labelTitle="First Name"
-                        placeholder={profile.fname}
+                        value={profile.fname}
                         updateFormValue={({ value }) => updateFormValue({ updateType: "fname", value })}
                     />
                     <InputText
                         labelTitle="Last Name"
-                        placeholder={profile.lname}
+                        value={profile.lname}
                         updateFormValue={({ value }) => updateFormValue({ updateType: "lname", value })}
                     />
                     <InputText
                         labelTitle="Email Id"
-                        placeholder={profile.email}
+                        value={profile.email}
                         updateFormValue={({ value }) => updateFormValue({ updateType: "email", value })}
-                        disabled={true}
+                        // disabled={true}
                     />
                     <InputText
                         labelTitle="Phone"
-                        placeholder={profile.phone}
+                        value={profile.phone}
                         updateFormValue={({ value }) => updateFormValue({ updateType: "phone", value })}
                     />
                     <div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import TableComponent from "../../components/table";
 import {FaSearch} from 'react-icons/fa';
@@ -26,44 +26,79 @@ const UnitList = () => {
   const [filteredUnits, setFilteredUnits] = useState([]);
 
   // Image viewer state
-const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
-const [currentImage, setCurrentImage] = useState(null);
-const [zoomLevel, setZoomLevel] = useState(1);
+  const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
+  const [currentImage, setCurrentImage] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
 
 
   const BASE_URL = api.defaults.baseURL;
+  const isInitialEditLoad = useRef(true);
 
-const [newUnitData, setNewUnitData] = useState({
-    unitNumber: '',
-    size: '',
-    status: '',
-    availableEquipments: [],
-    problems: [],
-    rentedDate: '',
-    vacatedDate: '',
-    floorId: '',
-    images: [],
-    pricePerSquare: '',
-    rentAmount: '',
-    taxedRentAmount: '',
-});
+  const [newUnitData, setNewUnitData] = useState({
+      unitNumber: '',
+      size: '',
+      status: '',
+      availableEquipments: [],
+      problems: [],
+      rentedDate: '',
+      vacatedDate: '',
+      floorId: '',
+      images: [],
+      pricePerSquare: '',
+      rentAmount: '',
+      taxedRentAmount: '',
+  });
 
   const [newEquipment, setNewEquipment] = useState("");
   const [newProblem, setNewProblem] = useState("");
   const [imagesChanged, setImagesChanged] = useState(false);
 
+  const [editMode, setEditMode] = useState('sizePerSquare'); 
 
   useEffect(() => {
-    const fetchUnitData = async () => {
-      try {
-        const response = await api.get(`unit`);
-        setUnits(response.data); 
-        setLoading(false); 
-      } catch (err) {
-        setError("Failed to fetch data.");
-        setLoading(false); 
-      }
-    };
+  if (isEditModalOpen) {
+    isInitialEditLoad.current = true;
+  }
+}, [isEditModalOpen]);
+
+
+useEffect(() => {
+  if (!isEditModalOpen) return;
+
+  const hasSize =
+    newUnitData.size !== null &&
+    newUnitData.size !== undefined &&
+    newUnitData.size !== '';
+
+  const hasPrice =
+    newUnitData.pricePerSquare !== null &&
+    newUnitData.pricePerSquare !== undefined &&
+    newUnitData.pricePerSquare !== '';
+
+  if (hasSize && hasPrice) {
+    setEditMode('sizePerSquare');
+  } else {
+    setEditMode('normal');
+  }
+}, [isEditModalOpen]);
+
+
+  useEffect(() => {
+  const fetchUnitData = async () => {
+    try {
+      const response = await api.get(`unit`);
+      const updatedUnits = response.data.map(unit => ({
+        ...unit,
+        size: unit.size === 0 ? null : unit.size,
+        pricePerSquare: unit.pricePerSquare === 0 ? null : unit.pricePerSquare,
+      }));
+      setUnits(updatedUnits); 
+      setLoading(false); 
+    } catch (err) {
+      setError("Failed to fetch data.");
+      setLoading(false); 
+    }
+  };
 
     const fetchFloorData = async () => {
       try {
@@ -79,97 +114,153 @@ const [newUnitData, setNewUnitData] = useState({
   }, []);
 
   useEffect(() => {
+  if (editMode === 'sizePerSquare') {
     const size = parseFloat(newUnitData.size) || 0;
     const price = parseFloat(newUnitData.pricePerSquare) || 0;
+
     const rent = size * price;
-    const taxedRent = rent * 1.15; 
+    const taxedRent = rent * 1.15;
+
     setNewUnitData(prev => ({
-        ...prev,
-        rentAmount: rent.toFixed(2),
-        taxedRentAmount: taxedRent.toFixed(2)
+      ...prev,
+      rentAmount: rent.toFixed(2),
+      taxedRentAmount: taxedRent.toFixed(2)
     }));
-  }, [newUnitData.size, newUnitData.pricePerSquare]);
+  }
+
+  if (editMode === 'normal') {
+    const rent = parseFloat(newUnitData.rentAmount) || 0;
+    const taxedRent = rent * 1.15;
+
+    setNewUnitData(prev => ({
+      ...prev,
+      taxedRentAmount: taxedRent.toFixed(2)
+    }));
+  }
+}, [editMode, newUnitData.size, newUnitData.pricePerSquare, newUnitData.rentAmount]);
 
 
-const handleEditClick = (unit) => {
+  const handleEditClick = (unit) => {
   setSelectedUnit(unit);
 
   setNewUnitData({
     unitNumber: unit.unitNumber,
-    size: unit.size,
+    size: unit.size ?? '',                  // keep 0 if 0
     status: unit.status,
     availableEquipments: Array.isArray(unit.availableEquipments)
       ? unit.availableEquipments
-      : JSON.parse(unit.availableEquipments),
+      : JSON.parse(unit.availableEquipments || "[]"),
     problems: Array.isArray(unit.problems)
       ? unit.problems
-      : JSON.parse(unit.problems),
+      : JSON.parse(unit.problems || "[]"),
     floorId: unit.floorId,
-    images: [...(unit.images || [])], // keep full URLs, don't strip here
-    pricePerSquare: unit.pricePerSquare || '',
-    rentAmount: unit.rentAmount || '',
-    taxedRentAmount: unit.taxedRentAmount || '',
+    images: [...(unit.images || [])],
+    pricePerSquare: unit.pricePerSquare ?? '', // keep 0
+    rentAmount: unit.rentAmount ?? '',         // keep 0
+    taxedRentAmount: unit.taxedRentAmount ?? '', // keep 0
   });
 
-  setImagesChanged(false); // reset flag
+  // Determine edit mode immediately based on unit
+// When opening the edit modal
+if (
+  unit.size != null &&
+  unit.size !== '' &&
+  parseFloat(unit.size) > 0 &&
+  unit.pricePerSquare != null &&
+  unit.pricePerSquare !== '' &&
+  parseFloat(unit.pricePerSquare) > 0
+) {
+  setEditMode('sizePerSquare');
+} else {
+  // Clear size & price to prevent accidental display
+setNewUnitData(prev => ({
+  ...prev,
+  size: null,
+  pricePerSquare: null
+}));
+  setEditMode('normal');
+}
+
+
+  setImagesChanged(false);
   setIsEditModalOpen(true);
 };
 
 
-
-const handleEditSubmit = () => {
+const handleEditSubmit = async () => {
   setBtnLoading(true);
 
-  const formData = new FormData();
+  try {
+    // Prepare data object to send
+    const payload = { ...newUnitData };
 
-  // Append all fields except images
-  for (const key in newUnitData) {
-    if (key !== 'images') {
-      const value = newUnitData[key];
-      // For arrays like availableEquipments or problems, stringify them
-      if (Array.isArray(value)) {
-        formData.append(key, JSON.stringify(value));
-      } else {
-        formData.append(key, value);
-      }
+    if (editMode === 'normal') {
+      payload.size = null;
+      payload.pricePerSquare = null;
+    } else {
+      // Ensure numbers are numbers
+      payload.size = payload.size ? Number(payload.size) : null;
+      payload.pricePerSquare = payload.pricePerSquare ? Number(payload.pricePerSquare) : null;
     }
-  }
 
-  // Only send existingImages if user changed images
-  if (imagesChanged) {
-    const existingImages = newUnitData.images.filter(img => typeof img === 'string');
-    formData.append('existingImages', JSON.stringify(existingImages));
-  }
+    // Arrays as JSON
+    payload.availableEquipments = JSON.stringify(payload.availableEquipments || []);
+    payload.problems = JSON.stringify(payload.problems || []);
 
-  // Append new uploaded files
-  const newFiles = newUnitData.images.filter(img => img instanceof File);
-  newFiles.forEach(file => formData.append('images', file));
+    // Images
+    const formData = new FormData();
+    for (const key in payload) {
+      if (key !== 'images') formData.append(key, payload[key]);
+    }
 
-  // Call API
-  api.put(`unit/${selectedUnit.id}`, formData, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`,
-    },
-  })
-  .then(() => {
-    // Update local state
-    setUnits(units.map(unit => unit.id === selectedUnit.id ? { ...unit, ...newUnitData } : unit));
+    if (imagesChanged) {
+      const existingImages = newUnitData.images.filter(img => typeof img === 'string');
+      formData.append('existingImages', JSON.stringify(existingImages));
+    }
+
+    const newFiles = newUnitData.images.filter(img => img instanceof File);
+    newFiles.forEach(file => formData.append('images', file));
+
+    // Send to backend
+    await api.put(`unit/${selectedUnit.id}`, formData, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    });
+
+    // Update frontend state
+    setUnits(units.map(unit =>
+      unit.id === selectedUnit.id
+        ? { ...unit, ...payload, size: payload.size, pricePerSquare: payload.pricePerSquare }
+        : unit
+    ));
+
     setIsEditModalOpen(false);
     setModalOpen(true);
     setMessageType('success');
     setMessage('Unit updated successfully');
-    setImagesChanged(false); // Reset flag after successful update
-  })
-  .catch(error => {
+    setImagesChanged(false);
+  } catch (error) {
     const backendMessage = error.response?.data?.message || 'Unable to update, please try again';
     setModalOpen(true);
     setMessageType('error');
     setMessage(backendMessage);
-  })
-  .finally(() => setBtnLoading(false));
+  } finally {
+    setBtnLoading(false);
+  }
 };
 
 
+
+
+const handleModeChange = (mode) => {
+  if (mode === 'normal') {
+    setNewUnitData(prev => ({
+      ...prev,
+      size: null,
+      pricePerSquare: null
+    }));
+  }
+  setEditMode(mode);
+};
 
   const handleDeleteClick = (unit) => {
     setSelectedUnit(unit);
@@ -237,11 +328,10 @@ const handleEditSubmit = () => {
     setNewUnitData({ ...newUnitData, problems: updatedProblems });
   };
 
-const handleDetailClick = (unit) => {
-  setUnitDetails(unit);  // set the clicked unit object directly
-  setIsDetailModalOpen(true);
-};
-
+  const handleDetailClick = (unit) => {
+    setUnitDetails(unit);  // set the clicked unit object directly
+    setIsDetailModalOpen(true);
+  };
 
   const handleStatusChange = (status) => {
     setSelectedStatus((prevStatus) => {
@@ -257,6 +347,7 @@ const handleDetailClick = (unit) => {
     acc[floor.id] = floor.floorNumber;
     return acc;
   }, {});
+
   const handleSearchClick = async () => {
     try {
       let response;
@@ -299,20 +390,20 @@ const handleDetailClick = (unit) => {
   );
 
   // Open image viewer
-const openImageViewer = (image) => {
-  setCurrentImage(image);
-  setIsImageViewerOpen(true);
-};
+  const openImageViewer = (image) => {
+    setCurrentImage(image);
+    setIsImageViewerOpen(true);
+  };
 
-// Close image viewer
-const closeImageViewer = () => {
-  setIsImageViewerOpen(false);
-  setZoomLevel(1); // reset zoom
-};
+  // Close image viewer
+  const closeImageViewer = () => {
+    setIsImageViewerOpen(false);
+    setZoomLevel(1); // reset zoom
+  };
 
-// Zoom functions
-const zoomIn = () => setZoomLevel(prev => Math.min(prev + 0.1, 3));
-const zoomOut = () => setZoomLevel(prev => Math.max(prev - 0.1, 1));
+  // Zoom functions
+  const zoomIn = () => setZoomLevel(prev => Math.min(prev + 0.1, 3));
+  const zoomOut = () => setZoomLevel(prev => Math.max(prev - 0.1, 1));
 
 
   const columns = [
@@ -385,7 +476,7 @@ const zoomOut = () => setZoomLevel(prev => Math.max(prev - 0.1, 1));
     },
   ];
 
-const handleAddClick = () => {  window.location.href = '/app/add-unit';};
+  const handleAddClick = () => {  window.location.href = '/app/add-unit';};
 
   return (
     <div>
@@ -415,6 +506,34 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
           <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl mb-4">Edit Unit</h2>
             <div className="mb-4">
+            <label className="block text-sm font-semibold mb-2">Calculation Mode</label>
+            <div className="flex items-center space-x-4">
+<label>
+  <input
+    type="radio"
+    name="editMode"
+    value="normal"
+    checked={editMode === 'normal'}
+    onChange={() => handleModeChange('normal')}
+    className="mr-2"
+  />
+  Normal
+</label>
+    <label>
+  <input
+    type="radio"
+    name="editMode"
+    value="sizePerSquare"
+    checked={editMode === 'sizePerSquare'}
+    onChange={() => handleModeChange('sizePerSquare')}
+    className="mr-2"
+  />
+  Size per Square
+</label>
+            </div>
+          </div>
+
+            <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Unit Number</label>
               <input
                 type="text"
@@ -423,39 +542,45 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Size (m²)</label>
-              <input
-                type="number"
-                value={newUnitData.size}
-                onChange={(e) => setNewUnitData({ ...newUnitData, size: e.target.value })}
-                onWheel={(e)=>e.target.blur()}
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-                min="1"
-                step="1"
-              />
-            </div>
+
+            {editMode === 'sizePerSquare' && (
+              <>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2">Size (m²)</label>
+                  <input
+                    type="number"
+                    value={newUnitData.size}
+                    onChange={(e) => setNewUnitData({ ...newUnitData, size: e.target.value })}
+                    onWheel={(e) => e.target.blur()}
+                    className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+                    min="1"
+                    step="1"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-sm font-medium mb-2">Price per (m²)</label>
+                  <input
+                    type="number"
+                    value={newUnitData.pricePerSquare}
+                    onChange={(e) => setNewUnitData({ ...newUnitData, pricePerSquare: e.target.value })}
+                    onWheel={(e) => e.target.blur()}
+                    className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+              </>
+            )}
 
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Price per (m²)</label>
-              <input
-                type="number"
-                value={newUnitData.pricePerSquare}
-                onChange={(e) => setNewUnitData({ ...newUnitData, pricePerSquare: e.target.value })}
-                onWheel={(e)=>e.target.blur()}
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-                min="0"
-                step="0.01"
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Base Rent </label>
+              <label className="block text-sm font-medium mb-2">Base Rent</label>
               <input
                 type="number"
                 value={newUnitData.rentAmount}
-                readOnly
-                className="bg-gray-100 w-full p-2 border border-gray-300 rounded"
+                onChange={(e) => editMode === 'normal' && setNewUnitData({ ...newUnitData, rentAmount: e.target.value })}
+                readOnly={editMode === 'sizePerSquare'}
+                className={`w-full p-2 border rounded ${editMode === 'sizePerSquare' ? 'bg-gray-100' : 'bg-base-100'}`}
               />
             </div>
 
@@ -579,39 +704,36 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
                     alt={`Unit Image ${index + 1}`}
                     className="w-full h-20 object-cover rounded"
                   />
-<button
-  type="button"
-  onClick={() => {
-    const updatedImages = [...newUnitData.images];
-    updatedImages.splice(index, 1);
-    setNewUnitData({...newUnitData, images: updatedImages});
-    setImagesChanged(true); // <-- add this
-  }}
-  className="absolute top-0 right-0 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center"
->
-  &times;
-</button>
-
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updatedImages = [...newUnitData.images];
+                      updatedImages.splice(index, 1);
+                      setNewUnitData({...newUnitData, images: updatedImages});
+                      setImagesChanged(true); // <-- add this
+                    }}
+                    className="absolute top-0 right-0 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                  >
+                    &times;
+                  </button>
                 </div>
               ))}
             </div>
 
-<input
-  type="file"
-  multiple
-  accept="image/*"
-  onChange={(e) => {
-    const files = Array.from(e.target.files);
-    setNewUnitData(prev => ({
-      ...prev,
-      images: [...(prev.images || []), ...files]
-    }));
-    setImagesChanged(true); // <-- add this
-  }}
-  className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-/>
-
-
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={(e) => {
+                const files = Array.from(e.target.files);
+                setNewUnitData(prev => ({
+                  ...prev,
+                  images: [...(prev.images || []), ...files]
+                }));
+                setImagesChanged(true); // <-- add this
+              }}
+              className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+            />
             </div>
             <div className="flex justify-end space-x-2">
               <button onClick={() => setIsEditModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
@@ -655,8 +777,15 @@ const handleAddClick = () => {  window.location.href = '/app/add-unit';};
 
               <h3 className="text-xl font-bold mb-2 text-blue-700">{unitDetails.unitNumber}</h3>
               <p><strong>Floor Number:</strong> {unitDetails.Floor?.floorNumber || "N/A"}</p>
-              <p><strong>Size (m²):</strong> {unitDetails.size} sq ft</p>
-              <p><strong>Price per (m²):</strong>{unitDetails.pricePerSquare} ETB</p>
+              {unitDetails.size && unitDetails.pricePerSquare ? (
+  <>
+    <p><strong>Size (m²):</strong> {unitDetails.size}</p>
+    <p><strong>Price per (m²):</strong> {unitDetails.pricePerSquare}</p>
+  </>
+) : (
+  <p><strong>Rent Type:</strong> Normal</p>
+)}
+
               <p><strong>Rent Amount:</strong>{unitDetails.rentAmount} ETB</p>
               <p><strong>Taxed Rent (vat):</strong>{unitDetails.taxedRentAmount} ETB</p>
               <p><strong>Status:</strong> {unitDetails.status}</p>

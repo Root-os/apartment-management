@@ -945,6 +945,11 @@ const adminRoutes = [
         icon: <EyeIcon className={submenuIconClasses} />,
         name: 'View Accounts   ',
       },
+      {
+        path: '/app/gallery',
+        icon: <EyeIcon className={submenuIconClasses} />,
+        name: 'View Gallery   ',
+      }
     ],
   },
 ];

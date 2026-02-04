@@ -220,8 +220,8 @@ const PaymentSettings = () => {
             <p><strong>Payment Method:</strong> {paymentDetails.paymentMethod}</p>
             <p><strong>Receiver Name:</strong> {paymentDetails.receiverName}</p>
             <p><strong>Account Number:</strong> {paymentDetails.receiverAccountNumber}</p>
-            <p><strong>Created At:</strong> {new Date(paymentDetails.createdAt).toLocaleString()}</p>
-            <p><strong>Updated At:</strong> {new Date(paymentDetails.updatedAt).toLocaleString()}</p>
+            {/* <p><strong>Created At:</strong> {new Date(paymentDetails.createdAt).toLocaleString()}</p>
+            <p><strong>Updated At:</strong> {new Date(paymentDetails.updatedAt).toLocaleString()}</p> */}
             <div className="flex justify-end mt-4">
               <button onClick={() => setIsDetailModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">
                 Close

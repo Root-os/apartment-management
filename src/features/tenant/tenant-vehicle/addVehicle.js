@@ -15,7 +15,7 @@ const AddVehicleForm = () => {
   const [formData, setFormData] = useState({
     carPlate: '',
     carName: '',
-    color: ''
+    // color: ''
   });
 
   const [loading, setLoading] = useState(false);
@@ -42,11 +42,11 @@ const AddVehicleForm = () => {
         tenantId,
         carPlate: formData.carPlate,
         carName: formData.carName,
-        color: formData.color
+        // color: formData.color
       });
 
       toast.success(response.data.message || 'Vehicle added successfully');
-      setFormData({ carPlate: '', carName: '', color: '' });
+      setFormData({ carPlate: '', carName: '',  });
 
       // Redirect after short delay
       setTimeout(() => {
@@ -109,7 +109,7 @@ const AddVehicleForm = () => {
           </div>
 
           {/* Color */}
-          <div>
+          {/* <div>
             <label htmlFor="color" className="block text-sm font-medium ">
               Color
             </label>
@@ -123,7 +123,7 @@ const AddVehicleForm = () => {
               className="bg-base-100 w-full px-4 py-2 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />
-          </div>
+          </div> */}
 
           <button
             type="submit"

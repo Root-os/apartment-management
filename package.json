@@ -103,6 +103,7 @@
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.8",
     "autoprefixer": "^10.4.13",
+    "cross-env": "^10.1.0",
     "daisyui": "^4.4.19",
     "html-webpack-plugin": "^5.6.3",
     "postcss": "^8.4.19",

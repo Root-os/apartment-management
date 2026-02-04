@@ -34,7 +34,7 @@ const FloorForm = () => {
       setFormData({
         floorNumber: '',
         // noUnits: '',
-        status: 'available',
+        status: 'active',
       });
 
       setModalOpen(true);

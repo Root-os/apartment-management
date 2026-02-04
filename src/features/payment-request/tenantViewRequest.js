@@ -18,9 +18,11 @@ const TenantPaymentRequestsPage = () => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [verifyPaymentMethod, setVerifyPaymentMethod] = useState('cbe');
   const [transactionNumber, setTransactionNumber] = useState('');
-
   const [verifyLoading, setVerifyLoading] = useState(false);
-  const [apiPaymentMethods, setApiPaymentMethods] = useState([]);
+
+  const [apiPaymentSettings, setApiPaymentSettings] = useState([]); // full objects
+  const [receiverInfo, setReceiverInfo] = useState({ name: '', account: '' });
+  
 
 
   const navigate = useNavigate();
@@ -30,7 +32,7 @@ const TenantPaymentRequestsPage = () => {
   useEffect(() => {
     fetchRequests();
     fetchPaymentTypes();
-    fetchPaymentMethods();
+    fetchPaymentSettings();
   }, []);
 
   const fetchRequests = async () => {
@@ -60,6 +62,25 @@ const TenantPaymentRequestsPage = () => {
       console.error('Error fetching payment types', error);
     }
   };
+
+  const fetchPaymentSettings = async () => {
+  try {
+    const response = await api.get('payment-settings');
+    setApiPaymentSettings(response.data.data);
+
+    // optional: set default selected method
+    if (response.data.data.length > 0) {
+      const firstMethod = response.data.data[0];
+      setVerifyPaymentMethod(firstMethod.paymentMethod);
+      setReceiverInfo({
+        name: firstMethod.receiverName,
+        account: firstMethod.receiverAccountNumber,
+      });
+    }
+  } catch (error) {
+    console.error('Failed to fetch payment settings', error);
+  }
+};
 
   const handleReceiptUpload = async (event) => {
     const file = event.target.files[0];
@@ -92,33 +113,23 @@ const TenantPaymentRequestsPage = () => {
     }
   };
 
-  const fetchPaymentMethods = async () => {
-  try {
-    const response = await api.get(`payment-settings/payment-methods`);
-    setApiPaymentMethods(response.data.data);
-  } catch (error) {
-    console.error('Error fetching payment methods from API', error);
-  }
-};
-
-
   const handleVerifyPayment = async () => {
   if (!selectedRequest) return;
   
   setVerifyLoading(true);
   try {
-const response = await api.post(
-  `payment-requests/${selectedRequest.id}/verify`,
-  {
-    paymentMethod: verifyPaymentMethod,
-    transactionNumber,
-  },
-  {
-    params: {
-      amount: selectedRequest.amount,
+  const response = await api.post(
+    `payment-requests/${selectedRequest.id}/verify`,
+    {
+      paymentMethod: verifyPaymentMethod,
+      transactionNumber,
     },
-  }
-);
+    {
+      params: {
+        amount: selectedRequest.amount,
+      },
+    }
+  );
 
     setMessageType(response.data.success ? 'success' : 'error');
     setMessage(response.data.message || 'Verification complete');
@@ -253,24 +264,42 @@ const response = await api.post(
                 <span>{Math.round(selectedRequest.amount)}</span>
               </div>
 
+              {receiverInfo.name && (
+                <div className="p-3 bg-gray-50 rounded border border-gray-200">
+                  <p><strong>Receiver Name:</strong> {receiverInfo.name}</p>
+                  <p><strong>Account Number:</strong> {receiverInfo.account}</p>
+                </div>
+              )}
+
+
               {/* Payment Method */}
               <div>
                 <label className="block mb-1 font-medium">Payment Method</label>
                 <select
-                  value={verifyPaymentMethod}
-                  onChange={(e) => setVerifyPaymentMethod(e.target.value)}
-                  className="w-full border rounded px-2 py-1"
-                >
-                  {apiPaymentMethods.length > 0 ? (
-                    apiPaymentMethods.map((method, index) => (
-                      <option key={index} value={method}>
-                        {method}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="">No payment methods available</option>
-                  )}
-                </select>
+  value={verifyPaymentMethod}
+  onChange={(e) => {
+    setVerifyPaymentMethod(e.target.value);
+    const selected = apiPaymentSettings.find(
+      (m) => m.paymentMethod === e.target.value
+    );
+    if (selected) {
+      setReceiverInfo({
+        name: selected.receiverName,
+        account: selected.receiverAccountNumber,
+      });
+    } else {
+      setReceiverInfo({ name: '', account: '' });
+    }
+  }}
+  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+>
+  {apiPaymentSettings.map((method) => (
+    <option key={method.id} value={method.paymentMethod}>
+      {method.paymentMethod}
+    </option>
+  ))}
+</select>
+
               </div>
 
               {/* Transaction Number */}

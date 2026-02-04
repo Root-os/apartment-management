@@ -24,7 +24,7 @@ const AddTenant = () => {
   const [amount, setAmount] = useState("");
   const [additionalNotes, setAdditionalNotes] = useState("");
   const [advance, setAdvance] = useState("");
-  const [color, setColor] = useState("");
+  // const [color, setColor] = useState("");
   const [floors, setFloors] = useState([]);
   const [freeUnits, setFreeUnits] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -53,7 +53,7 @@ const AddTenant = () => {
     advance: "",
     carName: "",
     carPlate: "",
-    color: "",
+    // color: "",
     document: "",
     api: "",
   });
@@ -63,11 +63,10 @@ const AddTenant = () => {
       try {
         const res = await api.get("/tenant/floor-units");
 
-        // Deduplicated list of tenants
         const tenants = res.data
           .filter((person) => person.tenant && person.tenant.length > 0)
           .map((person) => ({
-            id: person.tenant[0].tenantId, // one valid tenantId
+            id: person.tenant[0].tenantId, 
             fullName: person.fullName,
             phoneNumber: person.phoneNumber,
           }));
@@ -225,10 +224,10 @@ const AddTenant = () => {
     return "";
   };
 
-  const validateCarColor = (value, hasCar) => {
-    if (hasCar && !value) return "Car Color is required if tenant has a car.";
-    return "";
-  };
+  // const validateCarColor = (value, hasCar) => {
+  //   if (hasCar && !value) return "Car Color is required if tenant has a car.";
+  //   return "";
+  // };
 
   const validateDocument = (value) => {
     if (value && value.size > 20 * 1024 * 1024)
@@ -257,7 +256,7 @@ const AddTenant = () => {
       advance: validateAdvance(advance),
       carName: validateCarName(carName, hasCar),
       carPlate: validateCarPlate(carPlate, hasCar),
-      color: validateCarColor(color, hasCar),
+      // color: validateCarColor(color, hasCar),
       document: validateDocument(document),
       api: "",
     };
@@ -276,7 +275,9 @@ const AddTenant = () => {
       newErrors.amount,
       newErrors.advance,
       ...(hasCar
-        ? [newErrors.carName, newErrors.carPlate, newErrors.color]
+        ? [newErrors.carName, newErrors.carPlate
+          // newErrors.color
+        ]
         : []),
     ].some((error) => error !== "");
 
@@ -315,9 +316,16 @@ const AddTenant = () => {
     if (hasCar) {
       formData.append("carName", carName);
       formData.append("carPlate", carPlate);
-      formData.append("color", color);
+      // formData.append("color", color);
     }
     if (document) formData.append("document", document);
+
+ if (tenantType === "existing") {
+  formData.append("isExisting", "true"); 
+} else {
+  formData.append("isExisting", "false");
+}
+
 
     try {
   const response = await api.post(
@@ -335,7 +343,7 @@ const AddTenant = () => {
   setHasCar(false);
   setCarName("");
   setCarPlate("");
-  setColor("");
+  // setColor("");
   setNationalId("");
   setTin("");
   setFloorId("");
@@ -774,12 +782,12 @@ const handleTenantSelect = async (tenantId) => {
                 if (!e.target.checked) {
                   setCarName("");
                   setCarPlate("");
-                  setColor("");
+                  // setColor("");
                   setErrors((prev) => ({
                     ...prev,
                     carName: "",
                     carPlate: "",
-                    color: "",
+                    // color: "",
                   }));
                 }
               }}
@@ -835,7 +843,7 @@ const handleTenantSelect = async (tenantId) => {
                   <p className="text-red-500 text-sm mt-1">{errors.carPlate}</p>
                 )}
               </div>
-              <div>
+              {/* <div>
                 <label className="block text-sm font-semibold mb-2">
                   Car Color <span className="text-red-500">*</span>
                 </label>
@@ -856,7 +864,7 @@ const handleTenantSelect = async (tenantId) => {
                 {errors.color && (
                   <p className="text-red-500 text-sm mt-1">{errors.color}</p>
                 )}
-              </div>
+              </div> */}
             </>
           )}
 

@@ -29,6 +29,9 @@ const AddFloorUnit = () => {
   const [rent, setRent] = useState(null);
   const [taxedRent, setTaxedRent] = useState(null);
 
+  const [mode, setMode] = useState('sizePerSquare'); // default
+
+
 
   useEffect(() => {
     const fetchFloors = async () => {
@@ -97,7 +100,6 @@ useEffect(() => {
       const formData = new FormData();
 
       formData.append('unitNumber', unitNumber);
-      formData.append('size', parseFloat(size));
       // formData.append('status', status);
       formData.append('floorId', parseInt(floorId));
 
@@ -109,8 +111,13 @@ useEffect(() => {
       images.forEach((image, index) => {
         formData.append('images', image);
       });
+if (mode === 'sizePerSquare') {
+  formData.append('size', size);
+  formData.append('pricePerSquare', price);
+}
 
-      formData.append('pricePerSquare', parseFloat(price));
+
+
       formData.append('rentAmount', parseFloat(rent));
       formData.append('taxedRentAmount', parseFloat(taxedRent));
 
@@ -185,6 +192,35 @@ useEffect(() => {
     <>
       <TitleCard title="Add Floor Unit" topMargin={"mt-1"}>
 
+      <div className="mb-4">
+  <label className="block text-sm font-semibold mb-2">Calculation Mode</label>
+  <div className="flex items-center space-x-4">
+    <label>
+      <input
+        type="radio"
+        name="mode"
+        value="normal"
+        checked={mode === 'normal'}
+        onChange={() => setMode('normal')}
+        className="mr-2"
+      />
+      Normal
+    </label>
+    <label>
+      <input
+        type="radio"
+        name="mode"
+        value="sizePerSquare"
+        checked={mode === 'sizePerSquare'}
+        onChange={() => setMode('sizePerSquare')}
+        className="mr-2"
+      />
+      Size per Square
+    </label>
+  </div>
+</div>
+
+
       {error && <div className="bg-red-300 p-3 mb-4 text-red-800">{error}</div>}
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -200,44 +236,63 @@ useEffect(() => {
           />
         </div>
 
-        {/* Size */}
-        <div>
-          <label className="block text-sm font-semibold mb-2">Size (m²)</label>
-          <input
-            type="number"
-            value={size}
-            onChange={(e) => setSize(e.target.value)}
-            onWheel = {(e) => e.target.blur()}
-            required
-            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-             min="1"                
-             step="0.01"
-          />
-        </div>
+        {mode === 'sizePerSquare' && (
+  <>
+    {/* Size */}
+    <div>
+      <label className="block text-sm font-semibold mb-2">Size (m²)</label>
+      <input
+        type="number"
+        value={size}
+        onChange={(e) => setSize(e.target.value)}
+        onWheel={(e) => e.target.blur()}
+        className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+        min="1"
+        step="0.01"
+       
+      />
+    </div>
 
-        <div>
-          <label>Price per square</label>
-          <input 
-            type='number'
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            onWheel = {(e) => e.target.blur()}
-            required
-            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-             min="1"                
-             step="0.01"
-          />
-        </div>
-        <div>
-          <label>Rent Amount</label>
-          <input
-            type="number"
-            value={rent || ''}
-            readOnly
-            className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-            step="0.01"
-          />
-        </div>
+    {/* Price per square */}
+    <div>
+      <label>Price per square</label>
+      <input
+        type="number"
+        value={price}
+        onChange={(e) => setPrice(e.target.value)}
+        onWheel={(e) => e.target.blur()}
+        className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+        min="1"
+        step="0.01"
+      />
+    </div>
+  </>
+)}
+
+<div>
+  <label>Rent Amount</label>
+  <input
+    type="number"
+    value={rent || ''}
+    onChange={(e) => {
+      if (mode === 'normal') {
+        const value = e.target.value;
+        setRent(value);
+
+        // auto-calc tax in normal mode
+        const taxed = parseFloat(value || 0) * 1.15;
+        setTaxedRent(Math.round(taxed * 100) / 100);
+      }
+    }}
+    readOnly={mode === 'sizePerSquare'}
+    className={`w-full p-3 border border-gray-300 rounded-md ${
+      mode === 'sizePerSquare' ? 'bg-gray-100' : 'bg-base-100'
+    }`}
+    step="0.01"
+    onWheel={(e) => e.target.blur()} 
+  />
+</div>
+
 
         <div>
           <label>Taxed Rent (15%)</label>

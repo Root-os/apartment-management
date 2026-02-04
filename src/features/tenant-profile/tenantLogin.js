@@ -1,14 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
+import api from '../../utils/api';
 
 const TenantLoginPage = () => {
   const [phoneNumberOrEmail, setPhoneNumberOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [backgroundImage, setBackgroundImage] = useState(null);
+
 
   const isEmail = (input) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
+
+  useEffect(() => {
+  const fetchBackground = async () => {
+    try {
+      const res = await api.get(
+        `gallery`
+      );
+
+      if (res.data.selectedBackground) {
+        setBackgroundImage(res.data.selectedBackground);
+      }
+    } catch (err) {
+      console.error("Failed to load background image", err);
+    }
+  };
+
+  fetchBackground();
+}, []);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,13 +75,20 @@ const TenantLoginPage = () => {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center relative"
-      style={{
-        backgroundImage: 'url(/solo.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-      }}
-    >
+  className="min-h-screen flex items-center justify-center relative"
+  style={
+    backgroundImage
+      ? {
+          backgroundImage: `url(${backgroundImage})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }
+      : {
+          background: 'linear-gradient(135deg, #4f46e5, #0ea5e9)',
+        }
+  }
+>
       {/* Optional dark overlay for readability */}
       <div className="absolute inset-0 bg-black/50 z-0" />
 
