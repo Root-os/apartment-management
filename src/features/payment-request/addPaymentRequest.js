@@ -144,7 +144,7 @@ const handleUnitChange = (e) => {
       // Check if error response contains useful information
       setModalOpen(true);
       setMessageType('error');
-      setMessage('Due date must be in the future' || error.response.data.message);
+      setMessage( error.response.data.message);
       // if (error.response) {
       //   console.error("API Error:", error.response.data);
       //   setModalOpen(true);

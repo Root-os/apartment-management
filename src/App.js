@@ -15,6 +15,7 @@ import { CalendarProvider } from "./context/calendarContext";
 
 const Layout = lazy(() => import("./containers/Layout"));
 const Login = lazy(() => import("./pages/Login"));
+const PaymnetRequestLink = lazy(() => import("./pages/PaymentRequestLink"));
 
 const TenantLogin = lazy(() => import("./pages/TenantLogin"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
@@ -60,8 +61,9 @@ function App() {
           <Route path="/tenant-login" element={<TenantLogin />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/tenant/r/:token" element={<PaymnetRequestLink />} />
           {/* Test route for SmartDateInput */}
-<Route path="/test-date-picker" element={<TestDatePickerPage />} />
+          <Route path="/test-date-picker" element={<TestDatePickerPage />} />
 
 
           {/* Protected route */}

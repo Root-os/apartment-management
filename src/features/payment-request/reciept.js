@@ -138,13 +138,27 @@ const PaymentReceiptPage = () => {
             Back
           </button>
 
-          <button
-            onClick={() => window.print()}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-          >
-            Print Receipt
-          </button>
+          <div className="flex gap-2">
+            {metadata.receiptUrl && (
+              <button
+                onClick={() =>
+                  window.open(metadata.receiptUrl, '_blank', 'noopener,noreferrer')
+                }
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded"
+              >
+                View Bank Receipt
+              </button>
+            )}
+
+            <button
+              onClick={() => window.print()}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+            >
+              Print Receipt
+            </button>
+          </div>
         </div>
+
 
       </div>
     </div>

@@ -388,15 +388,23 @@ const handleEditSubmit = async () => {
                 let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
                 if (diffDays >= 0) {
-                  // ✅ inclusive: count today + end date
+                  // inclusive: count today + end date
                   diffDays += 1;
+
                   const daysText = diffDays === 1 ? "day" : "days";
-                  return `${diffDays} ${daysText} remaining`;
+                  const text = `${diffDays} ${daysText} remaining`;
+
+                  return (
+                    <span style={{ color: diffDays <= 10 ? "red" : "inherit" }}>
+                      {text}
+                    </span>
+                  );
                 }
 
                 // Past
                 const passedDays = Math.abs(diffDays);
                 const daysText = passedDays === 1 ? "day" : "days";
+
                 return `${passedDays} ${daysText} passed`;
               }
             },
@@ -453,7 +461,7 @@ const handleEditSubmit = async () => {
                     Details
                   </button>
                   <button
-                    onClick={() => handleUnitClick(row.unitId)}
+                    onClick={() => handleUnitClick(row.Unit.id)}
                     className="bg-green-500 text-white py-1 px-2 rounded"
                   >
                     Units
@@ -492,26 +500,26 @@ const handleEditSubmit = async () => {
               ),
             },
           ]}
-exportConfig={[
-  { label: "Full Name", getValue: r => r.fullName },
-  { label: "Phone Number", getValue: r => r.phoneNumber },
+          exportConfig={[
+            { label: "Full Name", getValue: r => r.fullName },
+            { label: "Phone Number", getValue: r => r.phoneNumber },
 
-  { label: "Email", getValue: r => r.email ?? "N/A" },
-  { label: "National ID", getValue: r => r.nationalId ?? "N/A" },
-  { label: "TIN", getValue: r => r.tin ?? "N/A" },
+            { label: "Email", getValue: r => r.email ?? "N/A" },
+            { label: "National ID", getValue: r => r.nationalId ?? "N/A" },
+            { label: "TIN", getValue: r => r.tin ?? "N/A" },
 
-  { label: "Rent", getValue: r => r.amount },
-  { label: "Advance", getValue: r => r.advance },
+            { label: "Rent", getValue: r => r.amount },
+            { label: "Advance", getValue: r => r.advance },
 
-  { label: "Unit Number", getValue: r => r.Unit?.unitNumber ?? "N/A" },
-  { label: "Floor", getValue: r => r.Floor?.floorNumber ?? "N/A" },
+            { label: "Unit Number", getValue: r => r.Unit?.unitNumber ?? "N/A" },
+            { label: "Floor", getValue: r => r.Floor?.floorNumber ?? "N/A" },
 
-  { label: "Additional Notes", getValue: r => r.additionalNotes ?? "" },
+            { label: "Additional Notes", getValue: r => r.additionalNotes ?? "" },
 
-  { label: "Lease Start Date", getValue: r => r.leaseStartDate },
-  { label: "Lease End Date", getValue: r => r.leaseEndDate },
-  { label: "Contract End Date", getValue: r => r.contractEndDate },
-]}
+            { label: "Lease Start Date", getValue: r => r.leaseStartDate },
+            { label: "Lease End Date", getValue: r => r.leaseEndDate },
+            { label: "Contract End Date", getValue: r => r.contractEndDate },
+          ]}
 
         />
       )}

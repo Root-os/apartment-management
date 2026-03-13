@@ -5,6 +5,7 @@ import TableComponent from '../../components/table';
 import Modal from '../../components/Modal';
 import LoadingComponent from '../../components/loading';
 import SmartDateInput from '../../components/Common/smartDatePicker';
+import api from '../../utils/api';
 
 
 const PaymentRequestsPage = () => {
@@ -27,6 +28,13 @@ const PaymentRequestsPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('status');
   const [modalMessage, setModalMessage] = useState('');
+   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
+    const [verifyPaymentMethod, setVerifyPaymentMethod] = useState('cbe');
+    const [transactionNumber, setTransactionNumber] = useState('');
+    const [verifyLoading, setVerifyLoading] = useState(false);
+  
+    const [apiPaymentSettings, setApiPaymentSettings] = useState([]); // full objects
+    const [receiverInfo, setReceiverInfo] = useState({ name: '', account: '' });
 
   const navigate = useNavigate();
 
@@ -55,9 +63,29 @@ const PaymentRequestsPage = () => {
         setPageLoading(false); // Set loading to false when all requests have finished
       });
   };
+
+    const fetchPaymentSettings = async () => {
+  try {
+    const response = await api.get('payment-settings');
+    setApiPaymentSettings(response.data.data);
+
+    // optional: set default selected method
+    if (response.data.data.length > 0) {
+      const firstMethod = response.data.data[0];
+      setVerifyPaymentMethod(firstMethod.paymentMethod);
+      setReceiverInfo({
+        name: firstMethod.receiverName,
+        account: firstMethod.receiverAccountNumber,
+      });
+    }
+  } catch (error) {
+    console.error('Failed to fetch payment settings', error);
+  }
+};
   
   useEffect(() => {
     fetchData();
+    fetchPaymentSettings();
   }, []);
   
 
@@ -135,6 +163,43 @@ const PaymentRequestsPage = () => {
     }
   };
 
+    const handleVerifyPayment = async () => {
+  if (!selectedRequest) return;
+  
+  setVerifyLoading(true);
+  try {
+  const response = await api.post(
+    `payment-requests/${selectedRequest.id}/verify`,
+    {
+      paymentMethod: verifyPaymentMethod,
+      transactionNumber,
+    },
+    {
+      params: {
+        amount: selectedRequest.amount,
+      },
+    }
+  );
+
+      setModalOpen(true);
+      setMessageType('success');
+      //  setMessage(response.data.message || 'Verification complete');
+      setModalMessage(response.data.message || 'Verification complete');
+    fetchData();
+  } catch (error) {
+    const backendMessage =
+      error.response?.data?.message || error.message || 'An unknown error occurred';
+      
+    setModalOpen(true);
+    setModalMessage(backendMessage);
+    setMessageType('error');
+    // setVerifyModalOpen(false);
+  } finally {
+    setModalOpen(true);
+    setVerifyLoading(false);
+  }
+};
+
   // Columns configuration for TableComponent
   const columns = [
     {
@@ -208,14 +273,38 @@ const PaymentRequestsPage = () => {
           >
             Delete
           </button>
-{row.status === 'approved' && (
-  <button
-    onClick={() => navigate(`/app/view-reciept/${row.id}`)} 
-    className="px-2 py-1 rounded bg-green-600 text-white text-sm"
-  >
-    View Receipt
-  </button>
-)}
+            {row.status === 'approved' && (
+              <button
+                onClick={() => navigate(`/app/view-reciept/${row.id}`)} 
+                className="px-2 py-1 rounded bg-green-600 text-white text-sm"
+              >
+                View Receipt
+              </button>
+            )}
+
+                {/* Conditional Verify or View Receipt */}
+          {row.status === 'pending' ? (
+            <button
+              onClick={() => {
+                setSelectedRequest(row);
+                setVerifyPaymentMethod('cbe');
+                setTransactionNumber('');
+                setVerifyModalOpen(true);
+              }}
+              className={`px-2 py-1 rounded text-white bg-blue-600 
+              `}
+              disabled={verifyLoading}
+            >
+              Verify
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate(`/app/view-reciept/${row.id}`)}
+              className="px-2 py-1 rounded bg-indigo-600 hover:bg-indigo-700 text-white text-sm"
+            >
+              View Receipt
+            </button>
+          )}
 
         </div>
       ),
@@ -354,6 +443,93 @@ const PaymentRequestsPage = () => {
             <div className="flex justify-end space-x-2">
               <button onClick={() => setIsDeleteModalOpen(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
               <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded">Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Verify Payment Modal */}
+            {verifyModalOpen && selectedRequest && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
+          <div className="bg-base-100 p-6 rounded shadow-lg w-full max-w-md">
+            <h2 className="text-lg font-bold mb-4">Verify Payment</h2>
+            <div className="space-y-4">
+
+              {/* Amount - display only, above Payment Method */}
+              <div>
+                <label className="block mb-1 font-medium">Amount</label>
+                <span>{Math.round(selectedRequest.amount)}</span>
+              </div>
+
+              {receiverInfo.name && (
+                <div className="p-3 bg-gray-50 rounded border border-gray-200">
+                  <p><strong>Receiver Name:</strong> {receiverInfo.name}</p>
+                  <p><strong>Account Number:</strong> {receiverInfo.account}</p>
+                </div>
+              )}
+
+
+              {/* Payment Method */}
+              <div>
+                <label className="block mb-1 font-medium">Payment Method</label>
+                <select
+                  value={verifyPaymentMethod}
+                  onChange={(e) => {
+                    setVerifyPaymentMethod(e.target.value);
+                    const selected = apiPaymentSettings.find(
+                      (m) => m.paymentMethod === e.target.value
+                    );
+                    if (selected) {
+                      setReceiverInfo({
+                        name: selected.receiverName,
+                        account: selected.receiverAccountNumber,
+                      });
+                    } else {
+                      setReceiverInfo({ name: '', account: '' });
+                    }
+                  }}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {apiPaymentSettings.map((method) => (
+                    <option key={method.id} value={method.paymentMethod}>
+                      {method.paymentMethod}
+                    </option>
+                  ))}
+                </select>   
+
+              </div>
+
+              {/* Transaction Number */}
+              <div>
+                <label className="block mb-1 font-medium">Transaction Number</label>
+                <input
+                  type="text"
+                  value={transactionNumber}
+                  onChange={(e) => setTransactionNumber(e.target.value)}
+                  className="w-full border rounded px-2 py-1"
+                />
+              </div>
+
+              {/* Buttons */}
+              <div className="flex justify-end gap-2">
+                <button
+                  onClick={() => setVerifyModalOpen(false)}
+                  className="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleVerifyPayment}
+                  className={`px-2 py-1 rounded text-white ${
+                    verifyLoading
+                      ? 'bg-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700'
+                  }`}
+                  disabled={verifyLoading}
+                >
+                  {verifyLoading ? 'Verifying...' : 'Verify'}
+                </button>
+              </div>
             </div>
           </div>
         </div>

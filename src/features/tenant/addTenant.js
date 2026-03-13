@@ -4,6 +4,8 @@ import TitleCard from "../../components/Cards/TitleCard";
 import Modal from "../../components/Modal";
 import SmartDateInput from "../../components/Common/smartDatePicker";
 import api from '../../utils/api';
+import ImportTenantsModal from "../tenant/importExcelModal";
+
 
 const AddTenant = () => {
   // State variables for form fields
@@ -36,6 +38,8 @@ const AddTenant = () => {
   const [existingTenants, setExistingTenants] = useState([]);
   const [selectedTenantId, setSelectedTenantId] = useState("");
   const [profiles, setProfiles] = useState([]);
+  const [importModalOpen, setImportModalOpen] = useState(false);
+
 
   // State for individual field errors
   const [errors, setErrors] = useState({
@@ -414,6 +418,16 @@ const handleTenantSelect = async (tenantId) => {
   return (
     <>
       <TitleCard title={"Add Tenant"} topMargin={"mt-2"}>
+      <div className="flex justify-between items-center mb-4"> 
+        <h5 className="text-md font-semibold italic text-blue-400"> Register manualy or import excel</h5>
+
+        <button
+          onClick={() => setImportModalOpen(true)}
+          className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+        >
+          Import Excel
+        </button>
+      </div>
         <form onSubmit={handleSubmit} className="space-y-4">
 
           {/* Tenant Type */}
@@ -914,6 +928,11 @@ const handleTenantSelect = async (tenantId) => {
         message={message}
         messageType={messageType}
       />
+
+    <ImportTenantsModal
+      isOpen={importModalOpen}
+      onClose={() => setImportModalOpen(false)}
+    />
     </>
   );
 };

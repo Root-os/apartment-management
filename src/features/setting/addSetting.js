@@ -15,7 +15,7 @@ const SettingForm = () => {
   const [qrImage, setQrImage] = useState(null); 
   const [chargingCost, setChargingCost] = useState('');  
   const [parkingCost, setParkingCost] = useState('');  
-  const [punishmentPercentage, setPunishmentPercentage] = useState('');
+  // const [punishmentPercentage, setPunishmentPercentage] = useState('');
   
   // UI state
   const [loading, setLoading] = useState(false);
@@ -39,8 +39,8 @@ const SettingForm = () => {
       !seal ||
       !qrImage ||
       !chargingCost.trim() ||
-      !parkingCost.trim()  ||
-      !punishmentPercentage.trim()
+      !parkingCost.trim()  
+      // !punishmentPercentage.trim()
     ) {
       setLoading(false);
       setModalOpen(true);
@@ -55,7 +55,7 @@ const SettingForm = () => {
     formData.append('email', email);
     formData.append('chargingCost', chargingCost); 
     formData.append('parkingCost', parkingCost);   
-    formData.append('punishmentPercentage', punishmentPercentage); 
+    // formData.append('punishmentPercentage', punishmentPercentage); 
     formData.append('phoneNumber', phoneNumber);
     formData.append('postOfficeAddress', postOfficeAddress);
     formData.append('logos', logos);
@@ -92,7 +92,7 @@ const SettingForm = () => {
       setSeal(null);
       setChargingCost('');
       setParkingCost('');
-      setPunishmentPercentage('');
+      // setPunishmentPercentage('');
     } catch (error) {
       setLoading(false);
       setModalOpen(true);
@@ -215,7 +215,7 @@ const SettingForm = () => {
             />
           </div>
           
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <label htmlFor="punishmentPercentage" className="block text-sm font-medium text-white-700">
               Punishment Percentage
             </label>
@@ -230,7 +230,7 @@ const SettingForm = () => {
               disabled={loading}
               className="bg-base-100 mt-1 block w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div>
+          </div> */}
 
           <div className="mb-4">
             <label htmlFor="logos" className="block text-sm font-medium text-white-700">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import api from '../../utils/api';
@@ -9,6 +10,12 @@ const TenantLoginPage = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const redirectTo = location.state?.redirectTo || "/app";
+
+
 
 
   const isEmail = (input) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
@@ -51,15 +58,18 @@ const TenantLoginPage = () => {
         { timeout: 10000 }
       );
 
-      if (response.data.success) {
-        localStorage.removeItem('role');
-        localStorage.setItem('token', response.data.token);
-        const decodedToken = jwtDecode(response.data.token);
-        localStorage.setItem('fullName', decodedToken.fullName);
-        localStorage.setItem('role', decodedToken.role);
-        localStorage.setItem('userId', decodedToken.id);
-        window.location.href = '/app';
-      } else {
+    if (response.data.success) {
+  localStorage.removeItem("role");
+  localStorage.setItem("token", response.data.token);
+
+  const decodedToken = jwtDecode(response.data.token);
+  localStorage.setItem("fullName", decodedToken.fullName);
+  localStorage.setItem("role", decodedToken.role);
+  localStorage.setItem("userId", decodedToken.id);
+
+  navigate(redirectTo, { replace: true });
+}
+ else {
         setError('Login failed. Please check your credentials.');
       }
     } catch (err) {
@@ -75,20 +85,20 @@ const TenantLoginPage = () => {
 
   return (
     <div
-  className="min-h-screen flex items-center justify-center relative"
-  style={
-    backgroundImage
-      ? {
-          backgroundImage: `url(${backgroundImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
+        className="min-h-screen flex items-center justify-center relative"
+        style={
+          backgroundImage
+            ? {
+                backgroundImage: `url(${backgroundImage})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+              }
+            : {
+                background: 'linear-gradient(135deg, #4f46e5, #0ea5e9)',
+              }
         }
-      : {
-          background: 'linear-gradient(135deg, #4f46e5, #0ea5e9)',
-        }
-  }
->
+      >
       {/* Optional dark overlay for readability */}
       <div className="absolute inset-0 bg-black/50 z-0" />
 

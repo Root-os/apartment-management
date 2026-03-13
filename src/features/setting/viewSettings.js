@@ -213,11 +213,6 @@ const CurrencySettingsPage = () => {
       render: (setting) => setting.parkingCost || "N/A", // Render parking cost
     },
     {
-      key: "punishmentPercentage",
-      label: "Punishment(%)",
-      formatter: (value) => `${value}%`,
-    },
-    {
       key: "logos",
       label: "Logo",
       render: (setting) => {

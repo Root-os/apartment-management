@@ -449,6 +449,10 @@ const handleModeChange = (mode) => {
       Cell: ({ value }) => floorLookup[value] || "N/A",
     },
     {
+      Header: "Owner",
+      accessor: "owner",
+    },
+    {
       Header: "Actions",
       accessor: "actions",
       Cell: ({ row }) => (

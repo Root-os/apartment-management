@@ -276,29 +276,29 @@ const TenantPaymentRequestsPage = () => {
               <div>
                 <label className="block mb-1 font-medium">Payment Method</label>
                 <select
-  value={verifyPaymentMethod}
-  onChange={(e) => {
-    setVerifyPaymentMethod(e.target.value);
-    const selected = apiPaymentSettings.find(
-      (m) => m.paymentMethod === e.target.value
-    );
-    if (selected) {
-      setReceiverInfo({
-        name: selected.receiverName,
-        account: selected.receiverAccountNumber,
-      });
-    } else {
-      setReceiverInfo({ name: '', account: '' });
-    }
-  }}
-  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
->
-  {apiPaymentSettings.map((method) => (
-    <option key={method.id} value={method.paymentMethod}>
-      {method.paymentMethod}
-    </option>
-  ))}
-</select>
+                  value={verifyPaymentMethod}
+                  onChange={(e) => {
+                    setVerifyPaymentMethod(e.target.value);
+                    const selected = apiPaymentSettings.find(
+                      (m) => m.paymentMethod === e.target.value
+                    );
+                    if (selected) {
+                      setReceiverInfo({
+                        name: selected.receiverName,
+                        account: selected.receiverAccountNumber,
+                      });
+                    } else {
+                      setReceiverInfo({ name: '', account: '' });
+                    }
+                  }}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {apiPaymentSettings.map((method) => (
+                    <option key={method.id} value={method.paymentMethod}>
+                      {method.paymentMethod}
+                    </option>
+                  ))}
+                </select>   
 
               </div>
 
