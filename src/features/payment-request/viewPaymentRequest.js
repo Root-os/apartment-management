@@ -11,7 +11,7 @@ import api from '../../utils/api';
 const PaymentRequestsPage = () => {
   const [paymentRequests, setPaymentRequests] = useState([]);
   const [tenants, setTenants] = useState([]);
-  const [paymentTypes, setPaymentTypes] = useState([]); 
+  const [billTypes, setbillTypes] = useState([]); 
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -28,13 +28,13 @@ const PaymentRequestsPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState('status');
   const [modalMessage, setModalMessage] = useState('');
-   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
-    const [verifyPaymentMethod, setVerifyPaymentMethod] = useState('cbe');
-    const [transactionNumber, setTransactionNumber] = useState('');
-    const [verifyLoading, setVerifyLoading] = useState(false);
-  
-    const [apiPaymentSettings, setApiPaymentSettings] = useState([]); // full objects
-    const [receiverInfo, setReceiverInfo] = useState({ name: '', account: '' });
+  const [verifyModalOpen, setVerifyModalOpen] = useState(false);
+  const [verifyPaymentMethod, setVerifyPaymentMethod] = useState('cbe');
+  const [transactionNumber, setTransactionNumber] = useState('');
+  const [verifyLoading, setVerifyLoading] = useState(false);
+
+  const [apiPaymentSettings, setApiPaymentSettings] = useState([]); // full objects
+  const [receiverInfo, setReceiverInfo] = useState({ name: '', account: '' });
 
   const navigate = useNavigate();
 
@@ -48,40 +48,40 @@ const PaymentRequestsPage = () => {
       axios.get(`${process.env.REACT_APP_BASE_URL}tenant`),
       axios.get(`${process.env.REACT_APP_BASE_URL}payment-types`)
     ])
-      .then((responses) => {
-        // Destructure the responses and set the state accordingly
-        const [paymentRequestsResponse, tenantsResponse, paymentTypesResponse] = responses;
-  
-        setPaymentRequests(paymentRequestsResponse.data);
-        setTenants(tenantsResponse.data);
-        setPaymentTypes(paymentTypesResponse.data);
-      })
-      .catch((error) => {
-        console.error('There was an error fetching the data:', error);
-      })
-      .finally(() => {
-        setPageLoading(false); // Set loading to false when all requests have finished
-      });
-  };
+    .then((responses) => {
+      // Destructure the responses and set the state accordingly
+      const [paymentRequestsResponse, tenantsResponse, billTypesResponse] = responses;
 
-    const fetchPaymentSettings = async () => {
-  try {
-    const response = await api.get('payment-settings');
-    setApiPaymentSettings(response.data.data);
+      setPaymentRequests(paymentRequestsResponse.data);
+      setTenants(tenantsResponse.data);
+      setbillTypes(billTypesResponse.data);
+    })
+    .catch((error) => {
+      console.error('There was an error fetching the data:', error);
+    })
+    .finally(() => {
+      setPageLoading(false); // Set loading to false when all requests have finished
+    });
+   };
 
-    // optional: set default selected method
-    if (response.data.data.length > 0) {
-      const firstMethod = response.data.data[0];
-      setVerifyPaymentMethod(firstMethod.paymentMethod);
-      setReceiverInfo({
-        name: firstMethod.receiverName,
-        account: firstMethod.receiverAccountNumber,
-      });
+  const fetchPaymentSettings = async () => {
+    try {
+      const response = await api.get('payment-settings');
+      setApiPaymentSettings(response.data.data);
+
+      // optional: set default selected method
+      if (response.data.data.length > 0) {
+        const firstMethod = response.data.data[0];
+        setVerifyPaymentMethod(firstMethod.paymentMethod);
+        setReceiverInfo({
+          name: firstMethod.receiverName,
+          account: firstMethod.receiverAccountNumber,
+        });
+      }
+    } catch (error) {
+      console.error('Failed to fetch payment settings', error);
     }
-  } catch (error) {
-    console.error('Failed to fetch payment settings', error);
-  }
-};
+  };
   
   useEffect(() => {
     fetchData();
@@ -95,10 +95,10 @@ const PaymentRequestsPage = () => {
     setMessage(request.message);
     setLevel(request.level);
     setAmount(request.amount);
-    setDueDate(new Date(request.dueDate).toISOString().split('T')[0]); // Convert date to YYYY-MM-DD format
+    setDueDate(new Date(request.dueDate).toISOString().split('T')[0]); 
     setRepeatedFor(request.repeatedFor);
     setTenantId(request.tenantId);
-    setPaymentTypeId(request.paymentTypeId);  // Updated field
+    setPaymentTypeId(request.paymentTypeId);  
     setIsEditModalOpen(true);
   };
 
@@ -163,7 +163,7 @@ const PaymentRequestsPage = () => {
     }
   };
 
-    const handleVerifyPayment = async () => {
+  const handleVerifyPayment = async () => {
   if (!selectedRequest) return;
   
   setVerifyLoading(true);
@@ -179,12 +179,12 @@ const PaymentRequestsPage = () => {
         amount: selectedRequest.amount,
       },
     }
-  );
+    );
 
-      setModalOpen(true);
-      setMessageType('success');
-      //  setMessage(response.data.message || 'Verification complete');
-      setModalMessage(response.data.message || 'Verification complete');
+    setModalOpen(true);
+    setMessageType('success');
+    //  setMessage(response.data.message || 'Verification complete');
+    setModalMessage(response.data.message || 'Verification complete');
     fetchData();
   } catch (error) {
     const backendMessage =
@@ -210,15 +210,12 @@ const PaymentRequestsPage = () => {
         return tenant ? tenant.fullName : 'Unknown';
       },
     },
-    {key: "floorNumber", label: "Floor", render: (row) => row.Tenant.Floor?. floorNumber || "N/A" },
-    {key: "unitNumber", label: "Unit", render: (row) => row.Tenant.Unit?. unitNumber || "N/A" },
+    {key: "floorNumber", label: "Floor", render: (row) => row.Tenant.Floor?.floorNumber || "N/A" },
+    {key: "unitNumber", label: "Unit", render: (row) => row.Tenant.Unit?.unitNumber || "N/A" },
     {
-      key: 'paymentTypeId',  // Updated key
-      label: 'Payment Type',  // Updated label
-      render: (row) => {
-        const paymentType = paymentTypes.find((type) => type.id === row.paymentTypeId);  // Updated field
-        return paymentType ? paymentType.name : 'Unknown';  // Updated field
-      },
+      key: 'billTypeId',
+      label: 'Payment Type',
+      render: (row) => row.BillType?.typeName || 'Unknown',
     },
     { key: 'message', label: 'Message' },
     { key: 'level', label: 'Level' },
@@ -329,112 +326,113 @@ const PaymentRequestsPage = () => {
       )}
       
       {isEditModalOpen && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
-        <div className="bg-base-100 p-6 rounded-md w-full sm:w-1/2 md:w-1/3 lg:w-1/4 max-h-[80vh] overflow-y-auto">
-          <h2 className="text-2xl font-bold mb-4">Edit Payment Request</h2>
-          <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
-            
-            {/* Message Input */}
-            <div className="mb-4">
-              <label htmlFor="message" className="block text-sm font-medium text-white-700">
-                Message
-              </label>
-              <input
-                type="text"
-                id="message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
+          <div className="bg-base-100 p-6 rounded-md w-full sm:w-1/2 md:w-1/3 lg:w-1/4 max-h-[80vh] overflow-y-auto">
+            <h2 className="text-2xl font-bold mb-4">Edit Payment Request</h2>
+            <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
+              
+              {/* Message Input */}
+              <div className="mb-4">
+                <label htmlFor="message" className="block text-sm font-medium text-white-700">
+                  Message
+                </label>
+                <input
+                  type="text"
+                  id="message"
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
 
-            {/* Level Dropdown */}
-            <div className="mb-4">
-              <label htmlFor="level" className="block text-sm font-medium text-white-700">
-                Level
-              </label>
-              <select
-                id="level"
-                value={level}
-                onChange={(e) => setLevel(e.target.value)}
-                className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Select Level</option>
-                <option value="high">High</option>
-                <option value="medium">Medium</option>
-                <option value="low">Low</option>
-              </select>
-            </div>
+              {/* Level Dropdown */}
+              <div className="mb-4">
+                <label htmlFor="level" className="block text-sm font-medium text-white-700">
+                  Level
+                </label>
+                <select
+                  id="level"
+                  value={level}
+                  onChange={(e) => setLevel(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select Level</option>
+                  <option value="high">High</option>
+                  <option value="medium">Medium</option>
+                  <option value="low">Low</option>
+                </select>
+              </div>
 
-            {/* Amount Input */}
-            <div className="mb-4">
-              <label htmlFor="amount" className="block text-sm font-medium text-white-700">
-                Amount
-              </label>
-              <input
-                type="number"
-                id="amount"
-                min="0"
-                step="1"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                onWheel={(e)=> e.target.blur()}
-                className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+              {/* Amount Input */}
+              <div className="mb-4">
+                <label htmlFor="amount" className="block text-sm font-medium text-white-700">
+                  Amount
+                </label>
+                <input
+                  type="number"
+                  id="amount"
+                  min="0"
+                  step="1"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  onWheel={(e)=> e.target.blur()}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
 
-            {/* Due Date Input */}
-            <div className="mb-4">
-              <label htmlFor="dueDate" className="block text-sm font-medium text-white-700">
-                Due Date
-              </label>
-              <SmartDateInput
-                id="dueDate"
-                value={dueDate}
-                onChange={(gcDate) => setDueDate(gcDate)}
-                className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+              {/* Due Date Input */}
+              <div className="mb-4">
+                <label htmlFor="dueDate" className="block text-sm font-medium text-white-700">
+                  Due Date
+                </label>
+                <SmartDateInput
+                  id="dueDate"
+                  value={dueDate}
+                  onChange={(gcDate) => setDueDate(gcDate)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
 
-            {/* Status Dropdown */}
-            <div className="mb-4">
-              <label htmlFor="status" className="block text-sm font-medium text-white-700">
-                Status
-              </label>
-              <select
-                id="status"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Select status</option>
-                <option value="pending">Pending</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-              </select>
-            </div>
+              {/* Status Dropdown */}
+              <div className="mb-4">
+                <label htmlFor="status" className="block text-sm font-medium text-white-700">
+                  Status
+                </label>
+                <select
+                  id="status"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Select status</option>
+                  <option value="pending">Pending</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
 
-            {/* Action Buttons */}
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
-                disabled={loading}
-              >
-                {loading ? 'Saving...' : 'Save'}
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsEditModalOpen(false)}
-                className="bg-gray-400 text-white px-4 py-2 rounded-md"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
+              {/* Action Buttons */}
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                  disabled={loading}
+                >
+                  {loading ? 'Saving...' : 'Save'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="bg-gray-400 text-white px-4 py-2 rounded-md"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
-    )}
+      )}
+
       {/* Delete Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -449,7 +447,7 @@ const PaymentRequestsPage = () => {
       )}
 
       {/* Verify Payment Modal */}
-            {verifyModalOpen && selectedRequest && (
+      {verifyModalOpen && selectedRequest && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex justify-center items-center z-50">
           <div className="bg-base-100 p-6 rounded shadow-lg w-full max-w-md">
             <h2 className="text-lg font-bold mb-4">Verify Payment</h2>
@@ -467,7 +465,6 @@ const PaymentRequestsPage = () => {
                   <p><strong>Account Number:</strong> {receiverInfo.account}</p>
                 </div>
               )}
-
 
               {/* Payment Method */}
               <div>
@@ -534,6 +531,7 @@ const PaymentRequestsPage = () => {
           </div>
         </div>
       )}
+
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

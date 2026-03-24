@@ -448,10 +448,10 @@ const handleModeChange = (mode) => {
       accessor: "floorId",
       Cell: ({ value }) => floorLookup[value] || "N/A",
     },
-    {
-      Header: "Owner",
-      accessor: "owner",
-    },
+    // {
+    //   Header: "Owner",
+    //   accessor: "owner",
+    // },
     {
       Header: "Actions",
       accessor: "actions",

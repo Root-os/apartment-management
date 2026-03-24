@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import TitleCard from '../../components/Cards/TitleCard';
-import Modal from '../../components/Modal';
-import SmartDateInput from '../../components/Common/smartDatePicker';
-import api from '../../utils/api';
+import TitleCard from "../../components/Cards/TitleCard";
+import Modal from "../../components/Modal";
+import SmartDateInput from "../../components/Common/smartDatePicker";
+import api from "../../utils/api";
 
 const AddPaymentRequest = () => {
   const [formData, setFormData] = useState({
     tenantId: "",
     message: "",
-    paymentTypeId: "",
+    billTypeId: "",
     level: "high",
     amount: "",
     dueDate: "",
     repeatedFor: "monthly",
+    startDate: "",
+    endDate: "",
+    paidDays: "",
   });
 
   const [paymentTypes, setPaymentTypes] = useState([]);
@@ -22,29 +25,84 @@ const AddPaymentRequest = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [modalOpen, setModalOpen] = useState(false);
-  const [messageType, setMessageType] = useState('success');
-  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState("success");
+  const [message, setMessage] = useState("");
 
   const [profiles, setProfiles] = useState([]);
   const [selectedProfileIndex, setSelectedProfileIndex] = useState("");
   const [tenantId, setTenantId] = useState("");
 
+  const [startDate, setStartDate] = useState("");
+const [endDate, setEndDate] = useState("");
+const [monthsCount, setMonthsCount] = useState("");
+const [daysCount, setDaysCount] = useState("");
+const [paidDays, setPaidDays] = useState("");
 
-  
+const [isRentType, setIsRentType] = useState(false);
+const [tenantRent, setTenantRent] = useState("");
 
   useEffect(() => {
     // Fetch payment types
     api
-      .get(`payment-types`)
+      .get(`bill-type`)
       .then((response) => setPaymentTypes(response.data))
       .catch((error) => console.error("Error fetching payment types:", error));
 
     // Fetch tenants
     api
       .get(`tenant/floor-units`)
-       .then((response) => setProfiles(response.data))
+      .then((response) => setProfiles(response.data))
       .catch((error) => console.error("Error fetching tenants:", error));
   }, []);
+
+  useEffect(() => {
+  if (startDate && (monthsCount || daysCount)) {
+    let result = new Date(startDate);
+
+    if (monthsCount) {
+      result.setDate(result.getDate() + parseInt(monthsCount) * 30);
+    }
+
+    if (daysCount) {
+      result.setDate(result.getDate() + parseInt(daysCount));
+    }
+
+    result.setDate(result.getDate() - 1);
+
+    setEndDate(result.toISOString().split("T")[0]);
+  }
+}, [startDate, monthsCount, daysCount]);
+
+useEffect(() => {
+  if (startDate && endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    start.setHours(0,0,0,0);
+    end.setHours(0,0,0,0);
+
+    const diffTime = end - start;
+
+    const calendarDays =
+      Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
+
+    setPaidDays(calendarDays);
+  } else {
+    setPaidDays("");
+  }
+}, [startDate, endDate]);
+
+useEffect(() => {
+  if (isRentType && tenantRent && paidDays) {
+    const monthly = parseFloat(tenantRent);
+    const days = parseInt(paidDays);
+    if (!isNaN(monthly) && !isNaN(days)) {
+      const calculatedAmount = ((monthly / 30) * days).toFixed(2);
+      setFormData((prev) => ({ ...prev, amount: calculatedAmount }));
+    }
+  }
+}, [isRentType, tenantRent, paidDays]);
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -53,42 +111,49 @@ const AddPaymentRequest = () => {
       [name]: value,
     }));
   };
-const handleDateChange = (name) => (value) => {
-  setFormData((prevData) => ({
-    ...prevData,
-    [name]: value,
-  }));
-};
+  const handleDateChange = (name) => (value) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
-const handleProfileChange = (e) => {
+  const handleProfileChange = (e) => {
   const index = e.target.value;
   setSelectedProfileIndex(index);
-
   const selectedProfile = profiles[index];
 
   if (selectedProfile?.tenant.length === 1) {
-    setFormData((prev) => ({
-      ...prev,
-      tenantId: selectedProfile.tenant[0].tenantId,
-    }));
+    const tenant = selectedProfile.tenant[0];
+    setTenantRent(tenant.amount || ""); // set tenantRent
+    setFormData((prev) => ({ ...prev, tenantId: tenant.tenantId }));
   } else {
-    setFormData((prev) => ({
-      ...prev,
-      tenantId: "",
-    }));
+    setTenantRent("");
+    setFormData((prev) => ({ ...prev, tenantId: "" }));
   }
 };
 
-
 const handleUnitChange = (e) => {
   const tenantId = e.target.value;
+  const profile = profiles[selectedProfileIndex];
+  const tenant = profile?.tenant?.find((t) => t.tenantId.toString() === tenantId);
+  setTenantRent(tenant?.amount || "");
+  setFormData((prev) => ({ ...prev, tenantId }));
+};
+
+const handleBillTypeChange = (e) => {
+  const value = e.target.value;
+  const selectedType = paymentTypes.find((type) => type.id.toString() === value);
+  const hasRentWord = selectedType?.typeName?.toLowerCase().includes("rent");
+
+  setIsRentType(hasRentWord);
 
   setFormData((prev) => ({
     ...prev,
-    tenantId: tenantId,
+    billTypeId: value,
+    amount: hasRentWord ? prev.amount : "", // clear amount if not rent
   }));
 };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,8 +163,8 @@ const handleUnitChange = (e) => {
     const validationErrors = {};
     if (!formData.tenantId) validationErrors.tenantId = "Tenant is required";
     if (!formData.message) validationErrors.message = "Message is required";
-    if (!formData.paymentTypeId)
-      validationErrors.paymentTypeId = "Payment Type is required";
+    if (!formData.billTypeId)
+      validationErrors.billTypeId = "Payment Type is required";
     if (!formData.amount || isNaN(formData.amount))
       validationErrors.amount = "Amount must be a valid number";
     if (!formData.dueDate) validationErrors.dueDate = "Due Date is required";
@@ -116,35 +181,38 @@ const handleUnitChange = (e) => {
     const requestData = {
       tenantId: formData.tenantId,
       message: formData.message,
-      paymentTypeId: formData.paymentTypeId,
+       billTypeId: formData.billTypeId,
       level: formData.level,
       amount: parseFloat(formData.amount), // Ensure amount is a number
       dueDate: formData.dueDate, // Ensure this is a valid date string
       repeatedFor: formData.repeatedFor,
+        startDate,
+  endDate,
+  paidDays
     };
-      console.log('Final data being sent:', requestData);
+    console.log("Final data being sent:", requestData);
 
     // Send POST request
     try {
       setIsLoading(true);
       const response = await axios.post(
         `${process.env.REACT_APP_BASE_URL}payment-requests`,
-        requestData
+        requestData,
       );
 
       // Successfully created payment request
       setModalOpen(true);
-      setMessageType('success');
-      setMessage('Payment request created successfully');
+      setMessageType("success");
+      setMessage("Payment request created successfully");
       setTimeout(() => {
-        window.location.href = '/app/payment-request-view'; // Redirect after success
+        window.location.href = "/app/payment-request-view"; // Redirect after success
       }, 1500);
     } catch (error) {
       // console.error("Error creating payment request:", error);
       // Check if error response contains useful information
       setModalOpen(true);
-      setMessageType('error');
-      setMessage( error.response.data.message);
+      setMessageType("error");
+      setMessage(error.response.data.message);
       // if (error.response) {
       //   console.error("API Error:", error.response.data);
       //   setModalOpen(true);
@@ -160,26 +228,30 @@ const handleUnitChange = (e) => {
     }
   };
 
-// useEffect(() => {
-//   if (profiles.length === 0) return;
+  // useEffect(() => {
+  //   if (profiles.length === 0) return;
 
-//   profiles.forEach((profile, index) => {
-//     if (profile.tenant.length === 1 && !formData.tenantId) {
-//       setSelectedProfileIndex(index);
-//       setFormData((prev) => ({
-//         ...prev,
-//         tenantId: profile.tenant[0].tenantId,
-//       }));
-//     }
-//   });
-// }, [profiles]);
+  //   profiles.forEach((profile, index) => {
+  //     if (profile.tenant.length === 1 && !formData.tenantId) {
+  //       setSelectedProfileIndex(index);
+  //       setFormData((prev) => ({
+  //         ...prev,
+  //         tenantId: profile.tenant[0].tenantId,
+  //       }));
+  //     }
+  //   });
+  // }, [profiles]);
 
-
+  useEffect(() => {
+  if (!isRentType) {
+    setPaidDays("");
+  }
+}, [isRentType]);
 
   return (
     <>
-    {/* Request Tenant Payment */}
-      <TitleCard title={'Request Tenant Paymentt'} topMargin={'mt-1'}>
+      {/* Request Tenant Payment */}
+      <TitleCard title={"Request Tenant Paymentt"} topMargin={"mt-1"}>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Tenant Dropdown */}
           <div>
@@ -218,41 +290,84 @@ const handleUnitChange = (e) => {
                   ))}
                 </select>
               </div>
-          )}
+            )}
           {/* Payment Type Dropdown */}
           <div>
-            <label className="block text-sm font-medium mb-1">Payment Type</label>
-            <select
-              name="paymentTypeId"
-              value={formData.paymentTypeId}
-              onChange={handleInputChange}
-              className="w-full bg-base-100 p-2 border rounded-md"
-            >
+            <label className="block text-sm font-medium mb-1">
+              Payment Type
+            </label>
+<select
+  name="billTypeId"
+  value={formData.billTypeId}
+  onChange={handleBillTypeChange}
+  className="w-full bg-base-100 p-2 border rounded-md"
+>
               <option value="">Select Payment Type</option>
               {paymentTypes.map((type) => (
                 <option key={type.id} value={type.id}>
-                  {type.name}
+                  {type.typeName}
                 </option>
               ))}
             </select>
-            {errors.paymentTypeId && (
-              <p className="text-red-500">{errors.paymentTypeId}</p>
+            {errors.billTypeId && (
+              <p className="text-red-500">{errors.billTypeId}</p>
             )}
           </div>
 
-          {/* Message */}
-          <div>
-            <label className="block text-sm font-medium mb-1">Message</label>
-            <input
-              type="text"
-              name="message"
-              value={formData.message}
-              onChange={handleInputChange}
-              className="w-full bg-base-100 p-2 border rounded-md"
-              placeholder="Message"
-            />
-            {errors.message && <p className="text-red-500">{errors.message}</p>}
-          </div>
+          <div className="flex space-x-4">
+  <div className="flex-1">
+    <label>Months</label>
+    <input
+      type="number"
+      value={monthsCount}
+      onChange={(e)=>setMonthsCount(e.target.value)}
+      className="w-full p-2 border rounded"
+    />
+  </div>
+
+  <div className="flex-1">
+    <label>Days</label>
+    <input
+      type="number"
+      value={daysCount}
+      onChange={(e)=>setDaysCount(e.target.value)}
+      className="w-full p-2 border rounded"
+    />
+  </div>
+</div>
+
+          <div className="grid grid-cols-2 gap-4">
+
+<div>
+<label>Rent From</label>
+<SmartDateInput
+ value={startDate}
+ onChange={setStartDate}
+/>
+</div>
+
+<div>
+<label>Rent To</label>
+<SmartDateInput
+ value={endDate}
+ onChange={setEndDate}
+/>
+</div>
+
+</div>
+
+{isRentType && (
+<div>
+<label>Paid Days</label>
+<input
+ type="text"
+ value={paidDays}
+ readOnly
+ className="w-full p-2 border rounded text-gray-400"
+/>
+</div>
+)}
+
 
           {/* Amount */}
           <div>
@@ -262,7 +377,8 @@ const handleUnitChange = (e) => {
               name="amount"
               value={formData.amount}
               onChange={handleInputChange}
-              onWheel={(e)=>e.target.blur()}
+              disabled={isRentType}
+              onWheel={(e) => e.target.blur()}
               className="w-full bg-base-100 p-2 border rounded-md"
               placeholder="Amount"
               min="0"
@@ -301,7 +417,9 @@ const handleUnitChange = (e) => {
 
           {/* Repeated For Dropdown */}
           <div>
-            <label className="block text-sm font-medium mb-1">Repeated For</label>
+            <label className="block text-sm font-medium mb-1">
+              Repeated For
+            </label>
             <select
               name="repeatedFor"
               value={formData.repeatedFor}
@@ -315,6 +433,20 @@ const handleUnitChange = (e) => {
             {errors.repeatedFor && (
               <p className="text-red-500">{errors.repeatedFor}</p>
             )}
+          </div>
+
+                    {/* Message */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Message</label>
+            <input
+              type="text"
+              name="message"
+              value={formData.message}
+              onChange={handleInputChange}
+              className="w-full bg-base-100 p-2 border rounded-md"
+              placeholder="Message"
+            />
+            {errors.message && <p className="text-red-500">{errors.message}</p>}
           </div>
 
           <button
