@@ -33,16 +33,18 @@ const AddPaymentRequest = () => {
   const [tenantId, setTenantId] = useState("");
 
   const [startDate, setStartDate] = useState("");
-const [endDate, setEndDate] = useState("");
-const [monthsCount, setMonthsCount] = useState("");
-const [daysCount, setDaysCount] = useState("");
-const [paidDays, setPaidDays] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [monthsCount, setMonthsCount] = useState("");
+  const [daysCount, setDaysCount] = useState("");
+  const [paidDays, setPaidDays] = useState("");
 
-const [isRentType, setIsRentType] = useState(false);
-const [tenantRent, setTenantRent] = useState("");
+  const [isRentType, setIsRentType] = useState(false);
+  const [tenantRent, setTenantRent] = useState("");
+  const [leaseStartDate, setLeaseStartDate] = useState("");
+  const [leaseEndDate, setLeaseEndDate] = useState("");
+  const [tenantPayments, setTenantPayments] = useState([]);
 
   useEffect(() => {
-    // Fetch payment types
     api
       .get(`bill-type`)
       .then((response) => setPaymentTypes(response.data))
@@ -56,53 +58,82 @@ const [tenantRent, setTenantRent] = useState("");
   }, []);
 
   useEffect(() => {
-  if (startDate && (monthsCount || daysCount)) {
-    let result = new Date(startDate);
-
-    if (monthsCount) {
-      result.setDate(result.getDate() + parseInt(monthsCount) * 30);
+    if (!formData.tenantId) return;
+    if (isRentType) {
+      setTenantPayments([]); // clear payments for rent
+      return;
     }
 
-    if (daysCount) {
-      result.setDate(result.getDate() + parseInt(daysCount));
+    // Fetch tenant payments
+    api
+      .get(`tenant-payments?tenantId=${formData.tenantId}`)
+      .then((response) => {
+        const payments = response.data;
+
+        // Keep only the latest payment for each bill type
+        const latestPaymentsMap = {};
+        payments.forEach((p) => {
+          const billTypeId = p.billTypeId;
+          if (
+            !latestPaymentsMap[billTypeId] ||
+            new Date(p.createdAt) >
+              new Date(latestPaymentsMap[billTypeId].createdAt)
+          ) {
+            latestPaymentsMap[billTypeId] = p;
+          }
+        });
+
+        setTenantPayments(Object.values(latestPaymentsMap));
+      })
+      .catch((err) => console.error("Error fetching tenant payments:", err));
+  }, [formData.tenantId, isRentType]);
+
+  useEffect(() => {
+    if (startDate && (monthsCount || daysCount)) {
+      let result = new Date(startDate);
+
+      if (monthsCount) {
+        result.setDate(result.getDate() + parseInt(monthsCount) * 30);
+      }
+
+      if (daysCount) {
+        result.setDate(result.getDate() + parseInt(daysCount));
+      }
+
+      result.setDate(result.getDate() - 1);
+
+      setEndDate(result.toISOString().split("T")[0]);
     }
+  }, [startDate, monthsCount, daysCount]);
 
-    result.setDate(result.getDate() - 1);
+  useEffect(() => {
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
 
-    setEndDate(result.toISOString().split("T")[0]);
-  }
-}, [startDate, monthsCount, daysCount]);
+      start.setHours(0, 0, 0, 0);
+      end.setHours(0, 0, 0, 0);
 
-useEffect(() => {
-  if (startDate && endDate) {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+      const diffTime = end - start;
 
-    start.setHours(0,0,0,0);
-    end.setHours(0,0,0,0);
+      const calendarDays = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
-    const diffTime = end - start;
-
-    const calendarDays =
-      Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
-
-    setPaidDays(calendarDays);
-  } else {
-    setPaidDays("");
-  }
-}, [startDate, endDate]);
-
-useEffect(() => {
-  if (isRentType && tenantRent && paidDays) {
-    const monthly = parseFloat(tenantRent);
-    const days = parseInt(paidDays);
-    if (!isNaN(monthly) && !isNaN(days)) {
-      const calculatedAmount = ((monthly / 30) * days).toFixed(2);
-      setFormData((prev) => ({ ...prev, amount: calculatedAmount }));
+      setPaidDays(calendarDays);
+    } else {
+      setPaidDays("");
     }
-  }
-}, [isRentType, tenantRent, paidDays]);
+  }, [startDate, endDate]);
 
+  useEffect(() => {
+    if (isRentType && tenantRent && paidDays) {
+      const monthly = parseFloat(tenantRent);
+      const days = parseInt(paidDays);
+      if (!isNaN(monthly) && !isNaN(days)) {
+        const calculatedAmount = ((monthly / 30) * days).toFixed(2);
+        setFormData((prev) => ({ ...prev, amount: calculatedAmount }));
+      }
+    }
+  }, [isRentType, tenantRent, paidDays]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -119,41 +150,87 @@ useEffect(() => {
   };
 
   const handleProfileChange = (e) => {
-  const index = e.target.value;
-  setSelectedProfileIndex(index);
-  const selectedProfile = profiles[index];
+    const index = e.target.value;
+    setSelectedProfileIndex(index);
+    const selectedProfile = profiles[index];
 
-  if (selectedProfile?.tenant.length === 1) {
-    const tenant = selectedProfile.tenant[0];
-    setTenantRent(tenant.amount || ""); // set tenantRent
-    setFormData((prev) => ({ ...prev, tenantId: tenant.tenantId }));
-  } else {
-    setTenantRent("");
-    setFormData((prev) => ({ ...prev, tenantId: "" }));
-  }
-};
+    if (selectedProfile?.tenant.length === 1) {
+      const tenant = selectedProfile.tenant[0];
+      setTenantRent(tenant.amount || ""); // set tenantRent
+      setFormData((prev) => ({ ...prev, tenantId: tenant.tenantId }));
+    } else {
+      setTenantRent("");
+      setFormData((prev) => ({ ...prev, tenantId: "" }));
+    }
+  };
 
-const handleUnitChange = (e) => {
-  const tenantId = e.target.value;
-  const profile = profiles[selectedProfileIndex];
-  const tenant = profile?.tenant?.find((t) => t.tenantId.toString() === tenantId);
-  setTenantRent(tenant?.amount || "");
-  setFormData((prev) => ({ ...prev, tenantId }));
-};
+  const handleUnitChange = (e) => {
+    const tenantId = e.target.value;
+    const profile = profiles[selectedProfileIndex];
 
-const handleBillTypeChange = (e) => {
-  const value = e.target.value;
-  const selectedType = paymentTypes.find((type) => type.id.toString() === value);
-  const hasRentWord = selectedType?.typeName?.toLowerCase().includes("rent");
+    const tenant = profile?.tenant?.find(
+      (t) => t.tenantId.toString() === tenantId,
+    );
 
-  setIsRentType(hasRentWord);
+    setTenantRent(tenant?.amount || "");
+    setLeaseStartDate(tenant?.leaseStartDate || "");
+    setLeaseEndDate(tenant?.leaseEndDate || "");
 
-  setFormData((prev) => ({
-    ...prev,
-    billTypeId: value,
-    amount: hasRentWord ? prev.amount : "", // clear amount if not rent
-  }));
-};
+    // ✅ AUTO SET startDate like your other page
+    let start = tenant?.leaseEndDate
+      ? new Date(tenant.leaseEndDate)
+      : new Date(tenant?.leaseStartDate);
+
+    if (tenant?.leaseEndDate) {
+      start.setDate(start.getDate() + 1);
+    }
+
+    setStartDate(start.toISOString().split("T")[0]);
+
+    setFormData((prev) => ({ ...prev, tenantId }));
+  };
+
+  const handleBillTypeChange = (e) => {
+    const value = e.target.value;
+
+    const selectedType = paymentTypes.find(
+      (type) => type.id.toString() === value,
+    );
+
+    const hasRentWord = selectedType?.typeName?.toLowerCase().includes("rent");
+
+    setIsRentType(hasRentWord);
+
+    // ✅ If rent selected AND tenant already chosen → trigger recalculation
+    if (hasRentWord && formData.tenantId) {
+      const profile = profiles[selectedProfileIndex];
+      const tenant = profile?.tenant?.find(
+        (t) => t.tenantId.toString() === formData.tenantId,
+      );
+
+      if (tenant) {
+        setTenantRent(tenant.amount || "");
+        setLeaseStartDate(tenant.leaseStartDate || "");
+        setLeaseEndDate(tenant.leaseEndDate || "");
+
+        let start = tenant.leaseEndDate
+          ? new Date(tenant.leaseEndDate)
+          : new Date(tenant.leaseStartDate);
+
+        if (tenant.leaseEndDate) {
+          start.setDate(start.getDate() + 1);
+        }
+
+        setStartDate(start.toISOString().split("T")[0]);
+      }
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      billTypeId: value,
+      amount: hasRentWord ? prev.amount : "",
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -181,14 +258,14 @@ const handleBillTypeChange = (e) => {
     const requestData = {
       tenantId: formData.tenantId,
       message: formData.message,
-       billTypeId: formData.billTypeId,
+      billTypeId: formData.billTypeId,
       level: formData.level,
       amount: parseFloat(formData.amount), // Ensure amount is a number
       dueDate: formData.dueDate, // Ensure this is a valid date string
       repeatedFor: formData.repeatedFor,
-        startDate,
-  endDate,
-  paidDays
+      startDate,
+      endDate,
+      paidDays,
     };
     console.log("Final data being sent:", requestData);
 
@@ -243,10 +320,34 @@ const handleBillTypeChange = (e) => {
   // }, [profiles]);
 
   useEffect(() => {
-  if (!isRentType) {
-    setPaidDays("");
-  }
-}, [isRentType]);
+    if (!isRentType) return;
+    if (!formData.tenantId) return;
+    if (selectedProfileIndex === "") return;
+
+    const profile = profiles[selectedProfileIndex];
+
+    const tenant = profile?.tenant?.find(
+      (t) => t.tenantId === Number(formData.tenantId),
+    );
+
+    console.log("SYNC TENANT:", tenant);
+
+    if (!tenant) return;
+
+    setTenantRent(tenant.amount || "");
+    setLeaseStartDate(tenant.leaseStartDate || "");
+    setLeaseEndDate(tenant.leaseEndDate || "");
+
+    let start = tenant.leaseEndDate
+      ? new Date(tenant.leaseEndDate)
+      : new Date(tenant.leaseStartDate);
+
+    if (tenant.leaseEndDate) {
+      start.setDate(start.getDate() + 1);
+    }
+
+    setStartDate(start.toISOString().split("T")[0]);
+  }, [isRentType, formData.tenantId, selectedProfileIndex, profiles]);
 
   return (
     <>
@@ -296,12 +397,12 @@ const handleBillTypeChange = (e) => {
             <label className="block text-sm font-medium mb-1">
               Payment Type
             </label>
-<select
-  name="billTypeId"
-  value={formData.billTypeId}
-  onChange={handleBillTypeChange}
-  className="w-full bg-base-100 p-2 border rounded-md"
->
+            <select
+              name="billTypeId"
+              value={formData.billTypeId}
+              onChange={handleBillTypeChange}
+              className="w-full bg-base-100 p-2 border rounded-md"
+            >
               <option value="">Select Payment Type</option>
               {paymentTypes.map((type) => (
                 <option key={type.id} value={type.id}>
@@ -314,60 +415,114 @@ const handleBillTypeChange = (e) => {
             )}
           </div>
 
-          <div className="flex space-x-4">
-  <div className="flex-1">
-    <label>Months</label>
-    <input
-      type="number"
-      value={monthsCount}
-      onChange={(e)=>setMonthsCount(e.target.value)}
-      className="w-full p-2 border rounded"
-    />
-  </div>
+          {isRentType && formData.tenantId && (
+            <div className="mb-4 p-3 rounded-lg shadow flex space-x-6">
+              <div>
+                Lease Start:{" "}
+                <span className="font-medium">
+                  {leaseStartDate
+                    ? new Date(leaseStartDate).toISOString().split("T")[0]
+                    : "N/A"}
+                </span>
+              </div>
 
-  <div className="flex-1">
-    <label>Days</label>
-    <input
-      type="number"
-      value={daysCount}
-      onChange={(e)=>setDaysCount(e.target.value)}
-      className="w-full p-2 border rounded"
-    />
-  </div>
-</div>
+              <div>
+                Lease End:{" "}
+                <span className="font-medium">
+                  {leaseEndDate
+                    ? new Date(leaseEndDate).toISOString().split("T")[0]
+                    : "N/A"}
+                </span>
+              </div>
+
+              <div>
+                Monthly Rent:{" "}
+                <span className="font-semibold">
+                  {tenantRent ? `ETB ${tenantRent}` : "N/A"}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {!isRentType && tenantPayments.length > 0 && (
+            <div className="mb-4 p-3 rounded-lg shadow">
+              <h3 className="font-semibold mb-2">Recent Payments</h3>
+              <ul className="space-y-2">
+                {tenantPayments
+                  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) // latest first
+                  .map((p) => (
+                    <li key={p.id} className="border p-2 rounded">
+                      <div>
+                        <span className="font-medium">
+                          {p.BillType?.typeName || "N/A"}
+                        </span>{" "}
+                        – Paid: ETB {p.amountPaid ?? "N/A"}
+                      </div>
+                      <div>
+                        From:{" "}
+                        {p.startDate
+                          ? new Date(p.startDate).toISOString().split("T")[0]
+                          : "N/A"}
+                        &nbsp;To:{" "}
+                        {p.endDate
+                          ? new Date(p.endDate).toISOString().split("T")[0]
+                          : "N/A"}
+                      </div>
+                      <div>
+                        Method: {p.paymentMethod || "N/A"} | Status:{" "}
+                        <span className="font-medium">{p.status || "N/A"}</span>
+                      </div>
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
+
+          <div className="flex space-x-4">
+            <div className="flex-1">
+              <label>Months</label>
+              <input
+                type="number"
+                value={monthsCount}
+                onChange={(e) => setMonthsCount(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+            </div>
+
+            <div className="flex-1">
+              <label>Days</label>
+              <input
+                type="number"
+                value={daysCount}
+                onChange={(e) => setDaysCount(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+            </div>
+          </div>
 
           <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label>Rent From</label>
+              <SmartDateInput value={startDate} onChange={setStartDate} />
+            </div>
 
-<div>
-<label>Rent From</label>
-<SmartDateInput
- value={startDate}
- onChange={setStartDate}
-/>
-</div>
+            <div>
+              <label>Rent To</label>
+              <SmartDateInput value={endDate} onChange={setEndDate} />
+            </div>
+          </div>
 
-<div>
-<label>Rent To</label>
-<SmartDateInput
- value={endDate}
- onChange={setEndDate}
-/>
-</div>
-
-</div>
-
-{isRentType && (
-<div>
-<label>Paid Days</label>
-<input
- type="text"
- value={paidDays}
- readOnly
- className="w-full p-2 border rounded text-gray-400"
-/>
-</div>
-)}
-
+          {isRentType && (
+            <div>
+              <label>Paid Days</label>
+              <input
+                type="text"
+                value={paidDays}
+                readOnly
+                className="w-full p-2 border rounded text-gray-400"
+              />
+            </div>
+          )}
 
           {/* Amount */}
           <div>
@@ -435,7 +590,7 @@ const handleBillTypeChange = (e) => {
             )}
           </div>
 
-                    {/* Message */}
+          {/* Message */}
           <div>
             <label className="block text-sm font-medium mb-1">Message</label>
             <input

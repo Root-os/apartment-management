@@ -199,7 +199,6 @@ const tenantRoutes = [
     icon: <EyeIcon className={submenuIconClasses} />,
     name: "My Rooms ",
   },
-
 ];
 
 const employeeRoutes = [
@@ -439,6 +438,16 @@ const adminRoutes = [
         name: "Tenant Bills ",
       },
       {
+        path: "/app/payment-request-add",
+        icon: <PlusIcon className={submenuIconClasses} />,
+        name: "Add New Payment Request",
+      },
+      {
+        path: "/app/payment-request-view",
+        icon: <EyeIcon className={submenuIconClasses} />,
+        name: "View Payment Requests",
+      },
+      {
         path: "/app/expense-type-add",
         icon: <PlusIcon className={submenuIconClasses} />,
         name: "Add New Expense Type",
@@ -478,16 +487,7 @@ const adminRoutes = [
         icon: <EyeIcon className={submenuIconClasses} />,
         name: "View Payments Made",
       },
-      {
-        path: "/app/payment-request-add",
-        icon: <PlusIcon className={submenuIconClasses} />,
-        name: "Add New Payment Request",
-      },
-      {
-        path: "/app/payment-request-view",
-        icon: <EyeIcon className={submenuIconClasses} />,
-        name: "View Payment Requests",
-      },
+
       {
         path: "/app/add-mass-salary",
         icon: <PlusIcon className={submenuIconClasses} />,
@@ -931,25 +931,25 @@ const adminRoutes = [
         name: "Calendar Settings",
       },
       {
-        path: '/app/apply-punishment',
+        path: "/app/apply-punishment",
         icon: <CogIcon className={submenuIconClasses} />,
-        name: 'Apply Punishment   ',
+        name: "Apply Punishment   ",
       },
       {
-        path: '/app/add-account',
+        path: "/app/add-account",
         icon: <PlusIcon className={submenuIconClasses} />,
-        name: 'Add Account   ',
+        name: "Add Account   ",
       },
       {
-        path: '/app/view-payment-setting',
+        path: "/app/view-payment-setting",
         icon: <EyeIcon className={submenuIconClasses} />,
-        name: 'View Accounts   ',
+        name: "View Accounts   ",
       },
       {
-        path: '/app/gallery',
+        path: "/app/gallery",
         icon: <EyeIcon className={submenuIconClasses} />,
-        name: 'View Gallery   ',
-      }
+        name: "View Gallery   ",
+      },
     ],
   },
 ];
@@ -972,8 +972,8 @@ if (token) {
       for (const module of adminRoutes) {
         if (!module.name) continue;
 
-        const hasPermission = permissions.some(perm =>
-          perm.toLowerCase().includes(module.name.toLowerCase())
+        const hasPermission = permissions.some((perm) =>
+          perm.toLowerCase().includes(module.name.toLowerCase()),
         );
 
         if (hasPermission) {
@@ -986,6 +986,5 @@ if (token) {
     console.error("Token decode failed", error);
   }
 }
-
 
 export default routes;

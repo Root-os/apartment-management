@@ -4,7 +4,7 @@ import TableComponent from "../../components/table";
 import Modal from "../../components/Modal";
 import DisplayDate from "../../components/Common/displayDate";
 import SmartDateInput from "../../components/Common/smartDatePicker";
-import api from '../../utils/api';
+import api from "../../utils/api";
 
 const ViewBillPayment = () => {
   const [payments, setPayments] = useState([]);
@@ -58,23 +58,20 @@ const ViewBillPayment = () => {
   const handleEditSubmit = () => {
     setIsLoading(true);
 
-  const payload = {
-    ...newPaymentData,
-    amountPaid: Number(newPaymentData.amountPaid),
-  };
+    const payload = {
+      ...newPaymentData,
+      amountPaid: Number(newPaymentData.amountPaid),
+    };
 
     api
-      .put(
-        `tenant-payments/${selectedPayment.id}`,
-        newPaymentData
-      )
+      .put(`tenant-payments/${selectedPayment.id}`, newPaymentData)
       .then(() => {
         setPayments(
           payments.map((payment) =>
             payment.id === selectedPayment.id
               ? { ...payment, ...newPaymentData }
-              : payment
-          )
+              : payment,
+          ),
         );
         setIsEditModalOpen(false);
         setModalOpen(true);
@@ -99,12 +96,10 @@ const ViewBillPayment = () => {
 
   const handleDeleteConfirm = () => {
     api
-      .delete(
-        `tenant-payments/${selectedPayment.id}`
-      )
+      .delete(`tenant-payments/${selectedPayment.id}`)
       .then(() => {
         setPayments(
-          payments.filter((payment) => payment.id !== selectedPayment.id)
+          payments.filter((payment) => payment.id !== selectedPayment.id),
         );
         setIsDeleteModalOpen(false);
         setModalOpen(true);
@@ -117,11 +112,11 @@ const ViewBillPayment = () => {
         setMessageType("error");
         setModalMessage("Unable to delete payment");
       });
-    };
-    const handleDetailClick = (payment) => {
-      setSelectedPayment(payment);
-      setIsDetailModalOpen(true);
-    };
+  };
+  const handleDetailClick = (payment) => {
+    setSelectedPayment(payment);
+    setIsDetailModalOpen(true);
+  };
 
   const columns = [
     {
@@ -130,28 +125,27 @@ const ViewBillPayment = () => {
       render: (payment) => payment.Tenant.fullName,
     },
     {
-      key: 'floorNumber',
-      label: 'Floor',
-      render: (payment) => payment.Tenant?.Floor?.floorNumber || 'N/A',
+      key: "floorNumber",
+      label: "Floor",
+      render: (payment) => payment.Tenant?.Floor?.floorNumber || "N/A",
     },
     {
-      key: 'unitNumber',
-      label: 'Unit',
-      render: (payment) => payment.Tenant?.Unit?.unitNumber || 'N/A',
+      key: "unitNumber",
+      label: "Unit",
+      render: (payment) => payment.Tenant?.Unit?.unitNumber || "N/A",
     },
     {
       key: "billType",
       label: "Bill Type",
-      render: (payment) => payment.BillType.typeName,
+      render: (payment) => payment.BillType?.typeName || "N/A",
     },
     {
       key: "amountPaid",
       label: "Amount Paid",
       render: (payment) => {
-      const amount = Number(payment.amountPaid);
-      return `ETB ${!isNaN(amount) ? amount.toFixed(2) : "0.00"}`;
-    },
-
+        const amount = Number(payment.amountPaid);
+        return `ETB ${!isNaN(amount) ? amount.toFixed(2) : "0.00"}`;
+      },
     },
     { key: "status", label: "Status" },
     { key: "startDate", label: "Start Date", isDate: true },
@@ -194,8 +188,7 @@ const ViewBillPayment = () => {
         title="Tenant Bill Payments"
         data={payments}
         columns={columns}
-       rowsPerPageOptions={[5, 10, 15]}
-
+        rowsPerPageOptions={[5, 10, 15]}
         showSearch={true}
         exportable={true}
         onAdd={handleAddClick}
@@ -226,19 +219,20 @@ const ViewBillPayment = () => {
               <label className="block text-sm font-medium mb-2">
                 Amount Paid
               </label>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={newPaymentData.amountPaid}
-                  onChange={(e) =>
-                    setNewPaymentData({
-                      ...newPaymentData,
-                      amountPaid: e.target.value === "" ? "" : Number(e.target.value),
-                    })
-                  }
-                    className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-                />
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={newPaymentData.amountPaid}
+                onChange={(e) =>
+                  setNewPaymentData({
+                    ...newPaymentData,
+                    amountPaid:
+                      e.target.value === "" ? "" : Number(e.target.value),
+                  })
+                }
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+              />
             </div>
 
             <div className="mb-4">
@@ -437,7 +431,6 @@ const ViewBillPayment = () => {
         messageType={messageType}
         message={modalMessage}
         rowsPerPageOptions={[30, 50, 100]}
-
       />
     </div>
   );
