@@ -4,14 +4,14 @@ import TableComponent from "../../components/table";
 import Modal from "../../components/Modal";
 import LoadingComponent from "../../components/loading";
 import { useNavigate } from "react-router-dom";
-import { CalendarContext } from '../../context/calendarContext';
+import { CalendarContext } from "../../context/calendarContext";
 import SmartDateInput from "../../components/Common/smartDatePicker";
-import api from '../../utils/api';
-import normalizeDate from '../../utils/normalizedDate';
+import api from "../../utils/api";
+import normalizeDate from "../../utils/normalizedDate";
 
 const formatDate = (dateString) => {
-  if (!dateString) return '';
-  return new Date(dateString).toISOString().split('T')[0];
+  if (!dateString) return "";
+  return new Date(dateString).toISOString().split("T")[0];
 };
 
 const TenantList = () => {
@@ -29,9 +29,8 @@ const TenantList = () => {
   const [amount, setAmount] = useState("");
   const [errors, setErrors] = useState({});
 
-
-   const {  formatDateForDisplay } = useContext(CalendarContext);
-   const { isGregorian } = useContext(CalendarContext);
+  const { formatDateForDisplay } = useContext(CalendarContext);
+  const { isGregorian } = useContext(CalendarContext);
 
   const navigate = useNavigate();
 
@@ -42,20 +41,20 @@ const TenantList = () => {
     nationalId: "",
     leaseStartDate: "",
     leaseEndDate: "",
-    contractEndDate: "", 
+    contractEndDate: "",
     paymentStatus: "",
     additionalNotes: "",
     unitId: "",
     floorId: "",
     advance: "",
-    amount:"",
+    amount: "",
     tin: "",
     document: "",
     status: "",
     description: "",
-    carName: "", 
-    carPlate: "", 
-    // color: "", 
+    carName: "",
+    carPlate: "",
+    // color: "",
   });
 
   // Loading and Saving States
@@ -71,14 +70,10 @@ const TenantList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const tenantResponse = await api.get(
-          `tenant`
-        );
+        const tenantResponse = await api.get(`tenant`);
         setTenants(tenantResponse.data);
 
-        const floorResponse = await api.get(
-          `floor`
-        );
+        const floorResponse = await api.get(`floor`);
         setFloors(floorResponse.data);
 
         setIsPageLoading(false);
@@ -92,12 +87,10 @@ const TenantList = () => {
 
   const fetchFreeUnits = async (floorId) => {
     try {
-      const response = await api.get(
-        `floor/${floorId}`
-      );
+      const response = await api.get(`floor/${floorId}`);
       console.log("Fetched freeUnits:", response.data);
       setUnits(
-        Array.isArray(response.data.freeUnits) ? response.data.freeUnits : []
+        Array.isArray(response.data.freeUnits) ? response.data.freeUnits : [],
       );
     } catch (err) {
       setError("Failed to fetch freeUnits.");
@@ -105,15 +98,15 @@ const TenantList = () => {
   };
 
   const fetchUnitDetails = async (unitId) => {
-  try {
-    const response = await api.get(`unit/${unitId}`);
-    const rent = response.data?.taxedRentAmount || "";
-    setAmount(rent); // auto-fill rent input
-  } catch (err) {
-    console.error("Failed to fetch unit details:", err);
-    setError((prev) => ({ ...prev, api: "Failed to fetch unit rent." }));
-  }
-};
+    try {
+      const response = await api.get(`unit/${unitId}`);
+      const rent = response.data?.taxedRentAmount || "";
+      setAmount(rent); // auto-fill rent input
+    } catch (err) {
+      console.error("Failed to fetch unit details:", err);
+      setError((prev) => ({ ...prev, api: "Failed to fetch unit rent." }));
+    }
+  };
 
   // Handle file change for document upload
   const handleFileChange = (e) => {
@@ -156,110 +149,108 @@ const TenantList = () => {
     setIsDeleteModalOpen(true);
   };
 
-const handleUnitClick = async (unitId) => {
-  try {
-    const { data } = await api.get(`tenant/unit/${unitId}`);
+  const handleUnitClick = async (unitId) => {
+    try {
+      const { data } = await api.get(`tenant/unit/${unitId}`);
 
-    const tenant = data[0];
+      const tenant = data[0];
 
-    setUnitDetails({
-      ...tenant,
-      Unit: tenant?.Unit ?? {
-        unitNumber: "",
-        size: null,
-        status: "",
-        availableEquipments: "[]",
-        problems: "[]",
-        rentedDate: null,
-      },
-    });
-
-    setIsUnitModalOpen(true);
-  } catch (err) {
-    setError("Failed to fetch unit details.");
-  }
-};
-
-// Handle form submit
-const handleEditSubmit = async () => {
-  try {
-    if (!editData.fullName || !editData.phoneNumber) {
-      setModal({
-        isOpen: true,
-        messageType: "error",
-        message: "Please fill in all required fields",
+      setUnitDetails({
+        ...tenant,
+        Unit: tenant?.Unit ?? {
+          unitNumber: "",
+          size: null,
+          status: "",
+          availableEquipments: "[]",
+          problems: "[]",
+          rentedDate: null,
+        },
       });
-      return;
+
+      setIsUnitModalOpen(true);
+    } catch (err) {
+      setError("Failed to fetch unit details.");
     }
+  };
 
-    setIsSaving(true);
-
-    const normalizedData = {
-      ...editData,
-      status: editData.status?.toLowerCase() || "active",
-      unitId: editData.unitId ? Number(editData.unitId) : null,
-      floorId: editData.floorId ? Number(editData.floorId) : null,
-    };
-
-    const formData = new FormData();
-
-    Object.keys(normalizedData).forEach(key => {
-      if (key === "document" && normalizedData[key] instanceof File) {
-        formData.append(key, normalizedData[key]);
-      } else if (normalizedData[key] !== null && normalizedData[key] !== undefined) {
-        formData.append(key, normalizedData[key]);
-      }
-    });
-
-    if (editData.resetPassword) {
-      formData.set("resetPassword", "true"); 
-    }
-
-      const validationErrors = validateEditData(editData);
-
-  if (Object.keys(validationErrors).length > 0) {
-    setErrors(validationErrors);
-    return;
-  }
-
-
-    const response = await api.put(
-      `tenant/${selectedTenant.id}`,
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
-
-    // ✅ SINGLE modal decision
-    setModal({
-      isOpen: true,
-      messageType: "success",
-      message: response.data.newPassword
-        ? `Tenant updated successfully.\nNew password: ${response.data.newPassword}`
-        : "Tenant updated successfully",
-    });
-
-    const updatedTenants = tenants.map(t =>
-      t.id === selectedTenant.id ? response.data : t
-      );
-      setTenants(updatedTenants);
-      setIsEditModalOpen(false);
-      } catch (error) {
+  // Handle form submit
+  const handleEditSubmit = async () => {
+    try {
+      if (!editData.fullName || !editData.phoneNumber) {
         setModal({
           isOpen: true,
           messageType: "error",
-          message: error.response?.data?.message || "Failed to update tenant",
+          message: "Please fill in all required fields",
         });
-      } finally {
-        setIsSaving(false);
+        return;
       }
-    };
+
+      setIsSaving(true);
+
+      const normalizedData = {
+        ...editData,
+        status: editData.status?.toLowerCase() || "active",
+        unitId: editData.unitId ? Number(editData.unitId) : null,
+        floorId: editData.floorId ? Number(editData.floorId) : null,
+      };
+
+      const formData = new FormData();
+
+      Object.keys(normalizedData).forEach((key) => {
+        if (key === "document" && normalizedData[key] instanceof File) {
+          formData.append(key, normalizedData[key]);
+        } else if (
+          normalizedData[key] !== null &&
+          normalizedData[key] !== undefined
+        ) {
+          formData.append(key, normalizedData[key]);
+        }
+      });
+
+      if (editData.resetPassword) {
+        formData.set("resetPassword", "true");
+      }
+
+      const validationErrors = validateEditData(editData);
+
+      if (Object.keys(validationErrors).length > 0) {
+        setErrors(validationErrors);
+        return;
+      }
+
+      const response = await api.put(`tenant/${selectedTenant.id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      // ✅ SINGLE modal decision
+      setModal({
+        isOpen: true,
+        messageType: "success",
+        message: response.data.newPassword
+          ? `Tenant updated successfully.\nNew password: ${response.data.newPassword}`
+          : "Tenant updated successfully",
+      });
+
+      const updatedTenants = tenants.map((t) =>
+        t.id === selectedTenant.id ? response.data : t,
+      );
+      setTenants(updatedTenants);
+      setIsEditModalOpen(false);
+    } catch (error) {
+      setModal({
+        isOpen: true,
+        messageType: "error",
+        message: error.response?.data?.message || "Failed to update tenant",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   // Submit delete request to the API
   const handleDeleteSubmit = async () => {
     try {
-      await api.delete(
-        `tenant/${selectedTenant.id}`
-      );
+      await api.delete(`tenant/${selectedTenant.id}`);
       setTenants(tenants.filter((tenant) => tenant.id !== selectedTenant.id));
       setIsDeleteModalOpen(false);
       setModal({
@@ -281,7 +272,6 @@ const handleEditSubmit = async () => {
     setModal({ isOpen: false, messageType: "", message: "" });
   };
 
-
   const handleAddClick = () => {
     window.location.href = "/app/tenant-add";
   };
@@ -299,39 +289,37 @@ const handleEditSubmit = async () => {
     }
   };
   const validateEditData = (data) => {
-  const errors = {};
+    const errors = {};
 
-  // ---- Lease dates ----
-  if (
-    data.leaseStartDate &&
-    data.leaseEndDate &&
-    new Date(data.leaseEndDate) < new Date(data.leaseStartDate)
-  ) {
-    errors.leaseEndDate =
-      "Lease end date cannot be before lease start date";
-  }
-
-  if (
-    data.leaseStartDate &&
-    data.contractEndDate &&
-    new Date(data.contractEndDate) < new Date(data.leaseStartDate)
-  ) {
-    errors.contractEndDate =
-      "Contract end date cannot be before lease start date";
-  }
-
-  // ---- TIN ----
-  if (data.tin) {
-    if (!/^\d+$/.test(data.tin)) {
-      errors.tin = "TIN must contain digits only";
-    } else if (data.tin.length !== 10) {
-      errors.tin = "TIN must be exactly 10 digits";
+    // ---- Lease dates ----
+    if (
+      data.leaseStartDate &&
+      data.leaseEndDate &&
+      new Date(data.leaseEndDate) < new Date(data.leaseStartDate)
+    ) {
+      errors.leaseEndDate = "Lease end date cannot be before lease start date";
     }
-  }
 
-  return errors;
-};
+    if (
+      data.leaseStartDate &&
+      data.contractEndDate &&
+      new Date(data.contractEndDate) < new Date(data.leaseStartDate)
+    ) {
+      errors.contractEndDate =
+        "Contract end date cannot be before lease start date";
+    }
 
+    // ---- TIN ----
+    if (data.tin) {
+      if (!/^\d+$/.test(data.tin)) {
+        errors.tin = "TIN must contain digits only";
+      } else if (data.tin.length !== 10) {
+        errors.tin = "TIN must be exactly 10 digits";
+      }
+    }
+
+    return errors;
+  };
 
   return (
     <div>
@@ -406,7 +394,7 @@ const handleEditSubmit = async () => {
                 const daysText = passedDays === 1 ? "day" : "days";
 
                 return `${passedDays} ${daysText} passed`;
-              }
+              },
             },
 
             {
@@ -435,92 +423,108 @@ const handleEditSubmit = async () => {
                 const passedDays = Math.abs(diffDays);
                 const daysText = passedDays === 1 ? "day" : "days";
                 return `${passedDays} ${daysText} passed`;
-              }
+              },
             },
             {
               label: "Actions",
               key: "actions",
-              render: (row) => (
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleEditClick(row)}
-                    className="bg-blue-500 text-white py-1 px-2 rounded"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeleteClick(row)}
-                    className="bg-red-500 text-white py-1 px-2 rounded"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => handleDetailsClick(row)}
-                    className="bg-gray-400 text-white py-1 px-2 rounded"
-                  >
-                    Details
-                  </button>
-                  <button
-                    onClick={() => handleUnitClick(row.Unit.id)}
-                    className="bg-green-500 text-white py-1 px-2 rounded"
-                  >
-                    Units
-                  </button>
-                  <button
-                    onClick={() =>
-                      navigate(`/app/rent-collection-add?tenantId=${row.id}`)
-                    }
-                    className="bg-indigo-500 text-white py-1 px-2 rounded"
-                  >
-                    Rent
-                  </button>
-                  <button
-                    onClick={() => handleCarClick(row)} 
-                    className="bg-yellow-500 text-white py-1 px-2 rounded"
-                  >
-                    Car
-                  </button>
-                  <button
-                    onClick={() =>
-                      navigate(`/app/tenant-bill-add?tenantId=${row.id}`)
-                    }
-                    className="bg-gray-700 text-white py-1 px-2 rounded"
-                  >
-                    Bill
-                  </button>
-                  <button
-                    onClick={() =>
-                      navigate(`/app/add-in-out?tenantId=${row.id}`)
-                    }
-                    className="bg-pink-400 text-white py-1 px-2 rounded"
-                  >
-                    Item
-                  </button>
-                </div>
-              ),
+              render: (row) => {
+                const isInactive = row.status?.toLowerCase() !== "active";
+
+                return (
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleDetailsClick(row)}
+                      className="bg-gray-400 text-white py-1 px-2 rounded"
+                    >
+                      Details
+                    </button>
+                    <button
+                      onClick={() => handleEditClick(row)}
+                      className="bg-blue-500 text-white py-1 px-2 rounded"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteClick(row)}
+                      className="bg-red-500 text-white py-1 px-2 rounded"
+                    >
+                      Delete
+                    </button>
+
+                    {/* Disable other buttons if inactive */}
+                    <button
+                      onClick={() => handleUnitClick(row.Unit.id)}
+                      className={`bg-green-500 text-white py-1 px-2 rounded ${isInactive ? "opacity-50 cursor-not-allowed" : ""}`}
+                      disabled={isInactive}
+                    >
+                      Units
+                    </button>
+                    <button
+                      onClick={() =>
+                        navigate(`/app/rent-collection-add?tenantId=${row.id}`)
+                      }
+                      className={`bg-indigo-500 text-white py-1 px-2 rounded ${isInactive ? "opacity-50 cursor-not-allowed" : ""}`}
+                      disabled={isInactive}
+                    >
+                      Rent
+                    </button>
+                    <button
+                      onClick={() => handleCarClick(row)}
+                      className={`bg-yellow-500 text-white py-1 px-2 rounded ${isInactive ? "opacity-50 cursor-not-allowed" : ""}`}
+                      disabled={isInactive}
+                    >
+                      Car
+                    </button>
+                    <button
+                      onClick={() =>
+                        navigate(`/app/tenant-bill-add?tenantId=${row.id}`)
+                      }
+                      className={`bg-gray-700 text-white py-1 px-2 rounded ${isInactive ? "opacity-50 cursor-not-allowed" : ""}`}
+                      disabled={isInactive}
+                    >
+                      Bill
+                    </button>
+                    <button
+                      onClick={() =>
+                        navigate(`/app/add-in-out?tenantId=${row.id}`)
+                      }
+                      className={`bg-pink-400 text-white py-1 px-2 rounded ${isInactive ? "opacity-50 cursor-not-allowed" : ""}`}
+                      disabled={isInactive}
+                    >
+                      Item
+                    </button>
+                  </div>
+                );
+              },
             },
           ]}
           exportConfig={[
-            { label: "Full Name", getValue: r => r.fullName },
-            { label: "Phone Number", getValue: r => r.phoneNumber },
+            { label: "Full Name", getValue: (r) => r.fullName },
+            { label: "Phone Number", getValue: (r) => r.phoneNumber },
 
-            { label: "Email", getValue: r => r.email ?? "N/A" },
-            { label: "National ID", getValue: r => r.nationalId ?? "N/A" },
-            { label: "TIN", getValue: r => r.tin ?? "N/A" },
+            { label: "Email", getValue: (r) => r.email ?? "N/A" },
+            { label: "National ID", getValue: (r) => r.nationalId ?? "N/A" },
+            { label: "TIN", getValue: (r) => r.tin ?? "N/A" },
 
-            { label: "Rent", getValue: r => r.amount },
-            { label: "Advance", getValue: r => r.advance },
+            { label: "Rent", getValue: (r) => r.amount },
+            { label: "Advance", getValue: (r) => r.advance },
 
-            { label: "Unit Number", getValue: r => r.Unit?.unitNumber ?? "N/A" },
-            { label: "Floor", getValue: r => r.Floor?.floorNumber ?? "N/A" },
+            {
+              label: "Unit Number",
+              getValue: (r) => r.Unit?.unitNumber ?? "N/A",
+            },
+            { label: "Floor", getValue: (r) => r.Floor?.floorNumber ?? "N/A" },
 
-            { label: "Additional Notes", getValue: r => r.additionalNotes ?? "" },
+            {
+              label: "Additional Notes",
+              getValue: (r) => r.additionalNotes ?? "",
+            },
 
-            { label: "Lease Start Date", getValue: r => r.leaseStartDate },
-            { label: "Lease End Date", getValue: r => r.leaseEndDate },
-            { label: "Contract End Date", getValue: r => r.contractEndDate },
+            { label: "Lease Start Date", getValue: (r) => r.leaseStartDate },
+            { label: "Lease End Date", getValue: (r) => r.leaseEndDate },
+            { label: "Contract End Date", getValue: (r) => r.contractEndDate },
           ]}
-
         />
       )}
 
@@ -586,49 +590,49 @@ const handleEditSubmit = async () => {
               </label>
               <SmartDateInput
                 value={editData.leaseStartDate}
-                onChange={(gcDate) => setEditData({ ...editData, leaseStartDate: gcDate })}
+                onChange={(gcDate) =>
+                  setEditData({ ...editData, leaseStartDate: gcDate })
+                }
               />
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Lease End Date
               </label>
-           <SmartDateInput
-  value={editData.leaseEndDate}
-  onChange={(date) => {
-    const updated = { ...editData, leaseEndDate: date };
-    setEditData(updated);
-    setErrors(validateEditData(updated));
-  }}
-/>
+              <SmartDateInput
+                value={editData.leaseEndDate}
+                onChange={(date) => {
+                  const updated = { ...editData, leaseEndDate: date };
+                  setEditData(updated);
+                  setErrors(validateEditData(updated));
+                }}
+              />
 
-{errors.leaseEndDate && (
-  <p className="text-red-500 text-sm mt-1">
-    {errors.leaseEndDate}
-  </p>
-)}
-
+              {errors.leaseEndDate && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.leaseEndDate}
+                </p>
+              )}
             </div>
 
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Contract End Date
               </label>
-<SmartDateInput
-  value={editData.contractEndDate}
-  onChange={(date) => {
-    const updated = { ...editData, contractEndDate: date };
-    setEditData(updated);
-    setErrors(validateEditData(updated));
-  }}
-/>
+              <SmartDateInput
+                value={editData.contractEndDate}
+                onChange={(date) => {
+                  const updated = { ...editData, contractEndDate: date };
+                  setEditData(updated);
+                  setErrors(validateEditData(updated));
+                }}
+              />
 
-{errors.contractEndDate && (
-  <p className="text-red-500 text-sm mt-1">
-    {errors.contractEndDate}
-  </p>
-)}
-
+              {errors.contractEndDate && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.contractEndDate}
+                </p>
+              )}
             </div>
 
             <div className="mb-4">
@@ -645,7 +649,7 @@ const handleEditSubmit = async () => {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            
+
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Advance Payment
@@ -712,10 +716,13 @@ const handleEditSubmit = async () => {
                 ))}
               </select>
             </div>
-            
+
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
-                Unit {editData.status === 'active' && <span className="text-red-500">*</span>}
+                Unit{" "}
+                {editData.status === "active" && (
+                  <span className="text-red-500">*</span>
+                )}
               </label>
               <select
                 value={editData.unitId || ""}
@@ -742,24 +749,24 @@ const handleEditSubmit = async () => {
                   }
                 }}
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-                disabled={isSaving || editData.status === 'inactive'}
-                required={editData.status === 'active'}
+                disabled={isSaving || editData.status === "inactive"}
+                required={editData.status === "active"}
               >
                 <option value="">Select a unit</option>
                 {units.map((unit) => (
                   <option key={unit.id} value={unit.id}>
-                    {unit.unitNumber} {unit.status ? `(${unit.status})` : ''}
+                    {unit.unitNumber} {unit.status ? `(${unit.status})` : ""}
                   </option>
                 ))}
               </select>
 
-              {editData.status === 'inactive' && editData.unitId && (
+              {editData.status === "inactive" && editData.unitId && (
                 <p className="text-sm text-gray-500 mt-1">
                   Current unit will be marked as available when saved.
                 </p>
               )}
             </div>
-          
+
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">TIN</label>
               <input
@@ -781,7 +788,6 @@ const handleEditSubmit = async () => {
               {errors.tin && (
                 <p className="text-red-500 text-sm mt-1">{errors.tin}</p>
               )}
-
             </div>
             {/* Status select */}
             <div className="mb-4">
@@ -789,14 +795,14 @@ const handleEditSubmit = async () => {
                 Status <span className="text-red-500">*</span>
               </label>
               <select
-                value={editData.status || 'active'}
+                value={editData.status || "active"}
                 onChange={(e) => {
                   const newStatus = e.target.value;
-                  setEditData(prev => ({
+                  setEditData((prev) => ({
                     ...prev,
                     status: newStatus,
                     // If status is being set to inactive, clear the unit
-                    ...(newStatus === 'inactive' && { unitId: '' })
+                    ...(newStatus === "inactive" && { unitId: "" }),
                   }));
                 }}
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
@@ -805,9 +811,10 @@ const handleEditSubmit = async () => {
                 <option value="active">Active</option>
                 <option value="inactive">Inactive</option>
               </select>
-              {editData.status === 'inactive' && editData.unitId && (
+              {editData.status === "inactive" && editData.unitId && (
                 <p className="text-yellow-600 text-sm mt-1">
-                  Note: Setting status to inactive will remove the tenant from the current unit.
+                  Note: Setting status to inactive will remove the tenant from
+                  the current unit.
                 </p>
               )}
             </div>
@@ -835,8 +842,6 @@ const handleEditSubmit = async () => {
               </label>
             </div>
 
-
-
             <div className="flex justify-end space-x-2">
               <button
                 onClick={() => setIsEditModalOpen(false)}
@@ -855,14 +860,30 @@ const handleEditSubmit = async () => {
               >
                 {isSaving ? (
                   <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     Saving...
                   </span>
                 ) : (
-                  'Save'
+                  "Save"
                 )}
               </button>
             </div>
@@ -927,9 +948,7 @@ const handleEditSubmit = async () => {
               <p className="text-sm">{selectedTenant.nationalId}</p>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">
-                Tin No
-              </label>
+              <label className="block text-sm font-medium mb-2">Tin No</label>
               <p className="text-sm">{selectedTenant.tin}</p>
             </div>
             <div className="mb-4">
@@ -938,7 +957,9 @@ const handleEditSubmit = async () => {
               </label>
               <p className="text-sm">
                 {selectedTenant.leaseStartDate
-                  ? formatDateForDisplay(normalizeDate(selectedTenant.leaseStartDate))
+                  ? formatDateForDisplay(
+                      normalizeDate(selectedTenant.leaseStartDate),
+                    )
                   : "N/A"}
               </p>
             </div>
@@ -947,32 +968,42 @@ const handleEditSubmit = async () => {
                 Lease End Date
               </label>
               <p className="text-sm">
-              {selectedTenant.leaseEndDate
-                ? formatDateForDisplay(normalizeDate(selectedTenant.leaseEndDate))
-                : "N/A"}
-                          </p>
-                        </div>
-                                    <div className="mb-4">
-                          <label className="block text-sm font-medium mb-2">
-                            Contract End Date
-                          </label>
-                          <p className="text-sm">
-              {selectedTenant.contractEndDate
-                ? formatDateForDisplay(normalizeDate(selectedTenant.contractEndDate))
-                : "N/A"}
+                {selectedTenant.leaseEndDate
+                  ? formatDateForDisplay(
+                      normalizeDate(selectedTenant.leaseEndDate),
+                    )
+                  : "N/A"}
               </p>
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Rent Amount</label>
+              <label className="block text-sm font-medium mb-2">
+                Contract End Date
+              </label>
+              <p className="text-sm">
+                {selectedTenant.contractEndDate
+                  ? formatDateForDisplay(
+                      normalizeDate(selectedTenant.contractEndDate),
+                    )
+                  : "N/A"}
+              </p>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">
+                Rent Amount
+              </label>
               <p className="text-sm">{selectedTenant.amount || "N/A"}</p>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Advance</label>
               <p className="text-sm">{selectedTenant.advance || "N/A"}</p>
             </div>
-             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Aditional Note</label>
-              <p className="text-sm">{selectedTenant.additionalNotes || "N/A"}</p>
+            <div className="mb-4">
+              <label className="block text-sm font-medium mb-2">
+                Aditional Note
+              </label>
+              <p className="text-sm">
+                {selectedTenant.additionalNotes || "N/A"}
+              </p>
             </div>
 
             {/* Car details section */}
@@ -1175,7 +1206,9 @@ const handleEditSubmit = async () => {
               </label>
               <p className="text-sm">
                 {unitDetails.Unit.rentedDate
-                  ? formatDateForDisplay(normalizeDate(unitDetails.Unit.rentedDate))
+                  ? formatDateForDisplay(
+                      normalizeDate(unitDetails.Unit.rentedDate),
+                    )
                   : "N/A"}
               </p>
             </div>

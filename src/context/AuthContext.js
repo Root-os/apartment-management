@@ -4,19 +4,22 @@ import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext(null);
 
-const PUBLIC_ROUTES = ["/login", "/forgot-password", "/tenant-login"];
+const PUBLIC_ROUTES = ["/login", "/forgot-password", "/tenant-login", "/tenant/r/", "/test-date-picker", "/register"];
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const isPublicRoute = PUBLIC_ROUTES.includes(location.pathname);
+  // const isPublicRoute = PUBLIC_ROUTES.includes(location.pathname);
+    const isPublicRoute = PUBLIC_ROUTES.some(route => 
+    location.pathname === route || location.pathname.startsWith(route)
+  );
 
   const logout = (expired = false) => {
     localStorage.clear();
 
     if (expired) {
-      sessionStorage.setItem("sessionExpired", "true");
+      sessionStorage.setItem("sessionExpired", "true"); 
     }
 
     navigate("/login", { replace: true });

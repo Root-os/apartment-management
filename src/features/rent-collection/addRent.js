@@ -5,17 +5,14 @@ import Modal from "../../components/Modal";
 import { useSearchParams } from "react-router-dom";
 import SmartDateInput from "../../components/Common/smartDatePicker";
 import { CalendarContext } from "../../context/calendarContext";
-import api from '../../utils/api';
+import api from "../../utils/api";
 
 const AddCollectedRent = () => {
   const [searchParams] = useSearchParams();
   const tenantIdFromUrl = searchParams.get("tenantId");
 
-  const {
-    isGregorian,
-    convertToGregorian,
-    formatDateForDisplay
-  } = useContext(CalendarContext);
+  const { isGregorian, convertToGregorian, formatDateForDisplay } =
+    useContext(CalendarContext);
 
   const [tenantId, setTenantId] = useState("");
   const [paymentDate, setPaymentDate] = useState("");
@@ -37,6 +34,7 @@ const AddCollectedRent = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [messageType, setMessageType] = useState("success");
   const [message, setMessage] = useState("");
+  const [isCleared, setIsCleared] = useState(false);
 
   // Fetch tenants
   useEffect(() => {
@@ -56,7 +54,7 @@ const AddCollectedRent = () => {
     try {
       const res = await api.get(`punishments/${tenantId}`);
       if (Array.isArray(res.data) && res.data.length > 0) {
-        const latestUnpaid = res.data.find((p) => p.status !== "paid");
+        const latestUnpaid = res.data.find((p) => p.status === "unpaid");
         if (latestUnpaid) {
           setPunishmentAmount(latestUnpaid.amount || "");
           setIsPaid(false);
@@ -75,86 +73,80 @@ const AddCollectedRent = () => {
     }
   };
 
- 
-useEffect(() => {
-  if (tenants.length && tenantIdFromUrl) {
-    const tenant = tenants.find((t) => t.id.toString() === tenantIdFromUrl);
-    if (tenant) {
-      setTenantId(tenantIdFromUrl);
-      setAmount(tenant.amount || "");
-      setLeaseStartDate(tenant.leaseStartDate || "");
-      setLeaseEndDate(tenant.leaseEndDate || "");
+  useEffect(() => {
+    if (tenants.length && tenantIdFromUrl) {
+      const tenant = tenants.find((t) => t.id.toString() === tenantIdFromUrl);
+      if (tenant) {
+        setTenantId(tenantIdFromUrl);
+        setAmount(tenant.amount || "");
+        setLeaseStartDate(tenant.leaseStartDate || "");
+        setLeaseEndDate(tenant.leaseEndDate || "");
 
-      // Same logic as in handleTenantSelect
-      let start = tenant.leaseEndDate
-        ? new Date(tenant.leaseEndDate)
-        : new Date(tenant.leaseStartDate);
+        // Same logic as in handleTenantSelect
+        let start = tenant.leaseEndDate
+          ? new Date(tenant.leaseEndDate)
+          : new Date(tenant.leaseStartDate);
 
-     
-      if (tenant.leaseEndDate) {
-        start.setDate(start.getDate() + 1);
+        if (tenant.leaseEndDate) {
+          start.setDate(start.getDate() + 1);
+        }
+
+        const iso = start.toISOString().split("T")[0];
+        setPaymentDate(iso);
+
+        fetchPunishmentByTenant(tenantIdFromUrl);
       }
-
-      const iso = start.toISOString().split("T")[0];
-      setPaymentDate(iso);
-
-      fetchPunishmentByTenant(tenantIdFromUrl);
     }
-  }
-}, [tenants, tenantIdFromUrl]);
+  }, [tenants, tenantIdFromUrl]);
 
   // Helper function to add months with proper date handling
   const addMonths = (date, months) => {
     const result = new Date(date);
     const dayOfMonth = result.getDate();
     result.setMonth(result.getMonth() + months);
-    
-  
+
     if (result.getDate() !== dayOfMonth) {
-      result.setDate(0); 
+      result.setDate(0);
     }
-    
+
     return result;
   };
 
   // Auto-calculate nextDueDate
-useEffect(() => {
-  if (paymentDate && (monthsCount || daysCount)) {
-    let result = new Date(paymentDate);
+  useEffect(() => {
+    if (paymentDate && (monthsCount || daysCount)) {
+      let result = new Date(paymentDate);
 
-    if (monthsCount) {
-      result.setDate(result.getDate() + (parseInt(monthsCount) * 30));
+      if (monthsCount) {
+        result.setDate(result.getDate() + parseInt(monthsCount) * 30);
+      }
+
+      if (daysCount) {
+        result.setDate(result.getDate() + parseInt(daysCount));
+      }
+
+      result.setDate(result.getDate() - 1);
+      setNextDueDate(result.toISOString().split("T")[0]);
     }
-
-    if (daysCount) {
-      result.setDate(result.getDate() + parseInt(daysCount));
-    }
-
-    result.setDate(result.getDate() - 1);
-    setNextDueDate(result.toISOString().split("T")[0]);
-  }
-}, [paymentDate, monthsCount, daysCount]);
-
+  }, [paymentDate, monthsCount, daysCount]);
 
   // Calculate paidDays
-useEffect(() => { 
-  if (paymentDate && nextDueDate) {
-    const start = new Date(paymentDate);
-    const end = new Date(nextDueDate);
+  useEffect(() => {
+    if (paymentDate && nextDueDate) {
+      const start = new Date(paymentDate);
+      const end = new Date(nextDueDate);
 
-    start.setHours(0, 0, 0, 0);
-    end.setHours(0, 0, 0, 0);
+      start.setHours(0, 0, 0, 0);
+      end.setHours(0, 0, 0, 0);
 
-    const diffTime = end - start;
-    const calendarDays =
-      Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
+      const diffTime = end - start;
+      const calendarDays = Math.round(diffTime / (1000 * 60 * 60 * 24)) + 1;
 
-    setPaidDays(calendarDays);
-  } else {
-    setPaidDays("");
-  }
-}, [paymentDate, nextDueDate, monthsCount, daysCount]);
-
+      setPaidDays(calendarDays);
+    } else {
+      setPaidDays("");
+    }
+  }, [paymentDate, nextDueDate, monthsCount, daysCount]);
 
   // Calculate amountPaid
   useEffect(() => {
@@ -194,62 +186,67 @@ useEffect(() => {
     }
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
 
-  // DEBUG: Check what dates are being processed
-  // console.log("📅 Before submission:");
-  // console.log("Payment Date (UI):", paymentDate);
-  // console.log("Next Due Date (UI):", nextDueDate);
-  // console.log("Is Gregorian mode:", isGregorian);
+    // DEBUG: Check what dates are being processed
+    // console.log("📅 Before submission:");
+    // console.log("Payment Date (UI):", paymentDate);
+    // console.log("Next Due Date (UI):", nextDueDate);
+    // console.log("Is Gregorian mode:", isGregorian);
 
-  if (!tenantId || !paymentDate || !nextDueDate || !amountPaid) {
-    setError("Please fill in all required fields.");
-    return;
-  }
-  setLoading(true);
+    if (!tenantId || !paymentDate || !nextDueDate || !amountPaid) {
+      setError("Please fill in all required fields.");
+      return;
+    }
+    setLoading(true);
 
-  // SmartDateInput already gives Gregorian dates, so use them directly
-  const payload = {
-    tenantId: parseInt(tenantId),
-    paymentDate,
-    nextDueDate,
-    paymentMethod,
-    status,
-    punishment: punishmentAmount || "0",
-    isPaid,
+    // SmartDateInput already gives Gregorian dates, so use them directly
+    const payload = {
+      tenantId: parseInt(tenantId),
+      paymentDate,
+      nextDueDate,
+      paymentMethod,
+      status,
+      punishment: punishmentAmount || "0",
+      isPaid,
+      clearPunishment: isCleared,
+    };
+
+    // console.log("📅 Final payload:", payload);
+
+    try {
+      await api.post(`rent-collection`, payload);
+      setMessageType("success");
+      setMessage("Rent collected successfully!");
+      setModalOpen(true);
+      setTenantId("");
+      setMonthsCount("");
+      setDaysCount("");
+      setPaymentDate("");
+      setNextDueDate("");
+      setAmountPaid("");
+
+      setIsPaid(false);
+      setIsCleared(false);
+      setPunishmentAmount("");
+    } catch (error) {
+      // console.log("FULL ERROR OBJECT:", error);
+      // console.log("RESPONSE:", error.response);
+      // console.log("RESPONSE DATA:", error.response?.data);
+
+      const backendMessage =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        error.message ||
+        "Something went wrong. Please try again.";
+
+      setError(backendMessage);
+    } finally {
+      setLoading(false);
+    }
   };
-
-  // console.log("📅 Final payload:", payload);
-
-  try {
-    await api.post(`rent-collection`, payload);
-    setMessageType("success");
-    setMessage("Rent collected successfully!");
-    setModalOpen(true);
-    setTenantId("");
-    setMonthsCount("");
-    setDaysCount("");
-    setPaymentDate("");
-    setNextDueDate("");
-    setAmountPaid("");
-  } catch (error) {
-  // console.log("FULL ERROR OBJECT:", error);
-  // console.log("RESPONSE:", error.response);
-  // console.log("RESPONSE DATA:", error.response?.data);
-
-  const backendMessage =
-    error.response?.data?.message ||
-    error.message ||
-    "Something went wrong. Please try again.";
-
-  setError(backendMessage);
-}
- finally {
-    setLoading(false);
-  }
-};
 
   return (
     <>
@@ -291,7 +288,6 @@ const handleSubmit = async (e) => {
                   Lease Start:{" "}
                   <span className="font-medium">
                     {formatDateForDisplay(leaseStartDate)}
-
                   </span>
                 </div>
               )}
@@ -303,10 +299,11 @@ const handleSubmit = async (e) => {
                   </span>
                 </div>
               )}
-              
+
               {amount && (
                 <div>
-                  Monthly Rent: <span className="font-semibold">ETB {amount}</span>
+                  Monthly Rent:{" "}
+                  <span className="font-semibold">ETB {amount}</span>
                 </div>
               )}
               {punishmentAmount && (
@@ -330,7 +327,7 @@ const handleSubmit = async (e) => {
                 type="number"
                 value={monthsCount}
                 onChange={(e) => setMonthsCount(e.target.value)}
-                onWheel={(e) => e.target.blur()} 
+                onWheel={(e) => e.target.blur()}
                 className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg"
                 min="0"
               />
@@ -343,7 +340,7 @@ const handleSubmit = async (e) => {
                 type="number"
                 value={daysCount}
                 onChange={(e) => setDaysCount(e.target.value)}
-                onWheel={(e) => e.target.blur()} 
+                onWheel={(e) => e.target.blur()}
                 className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg"
                 min="0"
               />
@@ -423,6 +420,23 @@ const handleSubmit = async (e) => {
                 />
                 <label className="text-sm font-medium text-white-700">
                   Punishment Paid
+                </label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  checked={isCleared}
+                  onChange={(e) => setIsCleared(e.target.checked)}
+                  // onChange={(e) => {
+                  //   const checked = e.target.checked;
+                  //   setIsCleared(checked);
+                  //   if (checked) setIsPaid(false);
+                  // }}
+                  className="w-5 h-5 text-green-500 border-gray-300 rounded"
+                />
+                <label className="text-sm font-medium">
+                  Punishment Cleared
                 </label>
               </div>
             </div>

@@ -11,7 +11,7 @@ const TableComponent = ({
   title, 
   data, 
   columns, 
-  rowsPerPageOptions = [30, 50, 100], 
+  rowsPerPageOptions = [100, 50, 30], 
   showSearch = true,
   exportable = true, 
   onAdd,
