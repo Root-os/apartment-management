@@ -86,21 +86,21 @@ function App() {
           />
 
           {/* Catch-all route */}
-          <Route
-            path="*"
-            element={
-              role ? (
-                role === "tenant" ? (
-                  <Navigate to="/tenant-login" replace />
-                ) : (
-                  <Navigate to="/login" replace />
-                )
-              ) : (
-                <Navigate to="/login" replace />
-                // <Choice />
-              )
-            }
-          />
+          // <Route
+          //   path="*"
+          //   element={
+          //     role ? (
+          //       role === "tenant" ? (
+          //         <Navigate to="/tenant-login" replace />
+          //       ) : (
+          //         <Navigate to="/login" replace />
+          //       )
+          //     ) : (
+          //       <Navigate to="/login" replace />
+          //       // <Choice />
+          //     )
+          //   }
+          // />
         </Routes>
     </CalendarProvider>
   );
