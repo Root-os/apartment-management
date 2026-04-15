@@ -40,7 +40,7 @@ const AddCollectedRent = () => {
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const res = await api.get(`tenant`);
+        const res = await api.get(`tenant?status=active`);
         setTenants(res.data);
       } catch {
         setError("Failed to fetch tenants.");

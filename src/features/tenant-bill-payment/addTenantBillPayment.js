@@ -5,7 +5,7 @@ import TitleCard from "../../components/Cards/TitleCard";
 import { useSearchParams } from "react-router-dom";
 import SmartDateInput from "../../components/Common/smartDatePicker";
 import { CalendarContext } from "../../context/calendarContext";
-import api from '../../utils/api';
+import api from "../../utils/api";
 
 const AddBillPayment = () => {
   const [tenantId, setTenantId] = useState("");
@@ -36,13 +36,8 @@ const AddBillPayment = () => {
   const [profiles, setProfiles] = useState([]);
   const [selectedProfileIndex, setSelectedProfileIndex] = useState("");
 
-
-
-    const {
-    isGregorian,
-    convertToGregorian,
-    formatDateForDisplay
-  } = useContext(CalendarContext);
+  const { isGregorian, convertToGregorian, formatDateForDisplay } =
+    useContext(CalendarContext);
 
   useEffect(() => {
     const tenantIdFromUrl = searchParams.get("tenantId");
@@ -52,7 +47,7 @@ const AddBillPayment = () => {
 
     const fetchTenants = async () => {
       try {
-        const response = await api.get(`tenant/floor-units`)
+        const response = await api.get(`tenant/floor-units`);
 
         setProfiles(response.data);
       } catch (error) {
@@ -62,9 +57,7 @@ const AddBillPayment = () => {
 
     const fetchBillTypes = async () => {
       try {
-        const response = await api.get(
-          `bill-type`
-        );
+        const response = await api.get(`bill-type`);
         setBillTypes(response.data);
       } catch (error) {
         console.error("Error fetching bill types:", error);
@@ -76,72 +69,67 @@ const AddBillPayment = () => {
   }, [searchParams]);
 
   useEffect(() => {
-  const fetchLastPayment = async () => {
-    if (!tenantId || !billPaymentTypeId) {
-      setLastPayment(null);
-      return;
-    }
+    const fetchLastPayment = async () => {
+      if (!tenantId || !billPaymentTypeId) {
+        setLastPayment(null);
+        return;
+      }
 
-    setLoadingLastPayment(true);
+      setLoadingLastPayment(true);
 
-    try {
-      const response = await api.get(
-        `tenant-payments/last`,
-        {
+      try {
+        const response = await api.get(`tenant-payments/last`, {
           params: {
             tenantId,
             billPaymentTypeId,
           },
-        }
-      );
-
-      if (response.data) {
-        const { startDate, endDate } = response.data;
-
-        setLastPayment({
-          startDate,
-          endDate,
         });
 
-        setStartDate(addOneDay(endDate));
-      } else {
+        if (response.data) {
+          const { startDate, endDate } = response.data;
+
+          setLastPayment({
+            startDate,
+            endDate,
+          });
+
+          setStartDate(addOneDay(endDate));
+        } else {
+          setLastPayment(null);
+        }
+      } catch (error) {
+        console.error("No previous payment found");
         setLastPayment(null);
+      } finally {
+        setLoadingLastPayment(false);
       }
-    } catch (error) {
-      console.error("No previous payment found");
-      setLastPayment(null);
-    } finally {
-      setLoadingLastPayment(false);
+    };
+
+    fetchLastPayment();
+  }, [tenantId, billPaymentTypeId]);
+
+  useEffect(() => {
+    const tenantIdFromUrl = Number(searchParams.get("tenantId"));
+    if (!tenantIdFromUrl || profiles.length === 0) return;
+
+    for (let i = 0; i < profiles.length; i++) {
+      const tenant = profiles[i].tenant.find(
+        (t) => t.tenantId === tenantIdFromUrl,
+      );
+
+      if (tenant) {
+        setSelectedProfileIndex(i);
+        setTenantId(tenant.tenantId);
+        break;
+      }
     }
-  };
-
-  fetchLastPayment();
-}, [tenantId, billPaymentTypeId]);
-
-useEffect(() => {
-  const tenantIdFromUrl = Number(searchParams.get("tenantId"));
-  if (!tenantIdFromUrl || profiles.length === 0) return;
-
-  for (let i = 0; i < profiles.length; i++) {
-    const tenant = profiles[i].tenant.find(
-      (t) => t.tenantId === tenantIdFromUrl
-    );
-
-    if (tenant) {
-      setSelectedProfileIndex(i);
-      setTenantId(tenant.tenantId);
-      break; 
-    }
-  }
-}, [profiles, searchParams]);
-
-
+  }, [profiles, searchParams]);
 
   const addOneDay = (dateString) => {
-  const date = new Date(dateString);
-  date.setDate(date.getDate() + 1);
-  return date.toISOString().split("T")[0];
-};
+    const date = new Date(dateString);
+    date.setDate(date.getDate() + 1);
+    return date.toISOString().split("T")[0];
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -181,21 +169,16 @@ useEffect(() => {
       endDate: formatDate(endDate),
       status: status,
       paymentMethod: paymentMethod,
-  
     };
 
     console.log("Payload being sent:", payload);
 
     try {
-      const response = await api.post(
-        `tenant-payments`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await api.post(`tenant-payments`, payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
       console.log("API response:", response.data);
 
       setModalOpen(true);
@@ -215,9 +198,9 @@ useEffect(() => {
     } catch (error) {
       console.error(
         "Error details:",
-        error.response ? error.response.data : error
+        error.response ? error.response.data : error,
       );
-    
+
       //add backend error message if available
       const errorMessage =
         error.response?.data?.message ||
@@ -225,22 +208,20 @@ useEffect(() => {
       setModalMessage(errorMessage);
       setModalOpen(true);
       setMessageType("error");
-    
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-  // Auto-select unit if tenant has only one unit
-  if (
-    selectedProfileIndex !== "" &&
-    profiles[selectedProfileIndex].tenant.length === 1
-  ) {
-    setTenantId(profiles[selectedProfileIndex].tenant[0].tenantId);
-  }
-}, [selectedProfileIndex, profiles]);
-
+    // Auto-select unit if tenant has only one unit
+    if (
+      selectedProfileIndex !== "" &&
+      profiles[selectedProfileIndex].tenant.length === 1
+    ) {
+      setTenantId(profiles[selectedProfileIndex].tenant[0].tenantId);
+    }
+  }, [selectedProfileIndex, profiles]);
 
   return (
     <div>
@@ -253,38 +234,38 @@ useEffect(() => {
             >
               Tenant
             </label>
-              <select
-                className="bg-base-100 w-full p-3 border rounded"
-                value={selectedProfileIndex}
-                onChange={(e) => {
-                  setSelectedProfileIndex(e.target.value);
-                  setTenantId("");
-                }}
-              >
-                <option value="">Select Tenant</option>
-                {profiles.map((profile, index) => (
-                  <option key={profile.phoneNumber} value={index}>
-                    {profile.fullName} ({profile.phoneNumber})
-                  </option>
-                ))}
-              </select>
+            <select
+              className="bg-base-100 w-full p-3 border rounded"
+              value={selectedProfileIndex}
+              onChange={(e) => {
+                setSelectedProfileIndex(e.target.value);
+                setTenantId("");
+              }}
+            >
+              <option value="">Select Tenant</option>
+              {profiles.map((profile, index) => (
+                <option key={profile.phoneNumber} value={index}>
+                  {profile.fullName} ({profile.phoneNumber})
+                </option>
+              ))}
+            </select>
           </div>
-{selectedProfileIndex !== "" && (
-  <select
-    className="bg-base-100 w-full p-3 border rounded mt-2"
-    value={tenantId}
-    onChange={(e) => setTenantId(e.target.value)}
-  >
-    {profiles[selectedProfileIndex].tenant.length > 1 && (
-      <option value="">Select Unit</option>
-    )}
-    {profiles[selectedProfileIndex].tenant.map((t) => (
-      <option key={t.tenantId} value={t.tenantId}>
-        Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
-      </option>
-    ))}
-  </select>
-)}
+          {selectedProfileIndex !== "" && (
+            <select
+              className="bg-base-100 w-full p-3 border rounded mt-2"
+              value={tenantId}
+              onChange={(e) => setTenantId(e.target.value)}
+            >
+              {profiles[selectedProfileIndex].tenant.length > 1 && (
+                <option value="">Select Unit</option>
+              )}
+              {profiles[selectedProfileIndex].tenant.map((t) => (
+                <option key={t.tenantId} value={t.tenantId}>
+                  Unit {t.unit.unitNumber} – Floor {t.floor.floorNumber}
+                </option>
+              ))}
+            </select>
+          )}
           <div>
             <label
               htmlFor="billPaymentTypeId"
@@ -334,7 +315,7 @@ useEffect(() => {
           </div> */}
 
           {lastPayment && (
-           <div className="p-3 rounded bg-gray-100 dark:bg-gray-800 text-sm">
+            <div className="p-3 rounded bg-gray-100 dark:bg-gray-800 text-sm">
               <p className="font-medium text-gray-700 dark:text-gray-300">
                 Last Payment Period
               </p>
@@ -376,7 +357,7 @@ useEffect(() => {
             />
           </div>
 
-                    <div>
+          <div>
             <label
               htmlFor="amountPaid"
               className="block text-sm font-medium text-gray-700 dark:text-gray-300"
@@ -389,7 +370,7 @@ useEffect(() => {
               className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
               value={amountPaid}
               onChange={(e) => setAmountPaid(e.target.value)}
-              onWheel={(e)=> e.target.blur()}
+              onWheel={(e) => e.target.blur()}
               required
               min="0"
               step="0.01"

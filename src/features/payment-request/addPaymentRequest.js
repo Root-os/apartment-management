@@ -239,7 +239,6 @@ const AddPaymentRequest = () => {
     // Validation
     const validationErrors = {};
     if (!formData.tenantId) validationErrors.tenantId = "Tenant is required";
-    if (!formData.message) validationErrors.message = "Message is required";
     if (!formData.billTypeId)
       validationErrors.billTypeId = "Payment Type is required";
     if (!formData.amount || isNaN(formData.amount))
@@ -272,8 +271,8 @@ const AddPaymentRequest = () => {
     // Send POST request
     try {
       setIsLoading(true);
-      const response = await axios.post(
-        `${process.env.REACT_APP_BASE_URL}payment-requests`,
+      const response = await api.post(
+        `payment-requests`,
         requestData,
       );
 
@@ -289,7 +288,7 @@ const AddPaymentRequest = () => {
       // Check if error response contains useful information
       setModalOpen(true);
       setMessageType("error");
-      setMessage(error.response.data.message);
+      setMessage(error.response.data.error || error.response.data.message || "Unable to add payment request");
       // if (error.response) {
       //   console.error("API Error:", error.response.data);
       //   setModalOpen(true);
@@ -468,10 +467,10 @@ const AddPaymentRequest = () => {
                           ? new Date(p.endDate).toISOString().split("T")[0]
                           : "N/A"}
                       </div>
-                      <div>
+                      {/* <div>
                         Method: {p.paymentMethod || "N/A"} | Status:{" "}
                         <span className="font-medium">{p.status || "N/A"}</span>
-                      </div>
+                      </div> */}
                     </li>
                   ))}
               </ul>

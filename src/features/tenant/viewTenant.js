@@ -663,22 +663,6 @@ const TenantList = () => {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            {/* <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">
-                Payment Status
-              </label>
-              <select
-                value={editData.paymentStatus}
-                onChange={(e) =>
-                  setEditData({ ...editData, paymentStatus: e.target.value })
-                }
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              >
-                <option value="paid">Paid</option>
-                <option value="due">Due</option>
-                <option value="overDue">Over Due</option>
-              </select>
-            </div> */}
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Additional Notes
@@ -715,7 +699,20 @@ const TenantList = () => {
                   </option>
                 ))}
               </select>
-            </div>
+            </div>        <label className="block text-sm font-medium mb-2">
+                {/* Unit
+                {editData.status === "active" && (
+                  <span className="text-red-500">*</span>
+                )} */}
+                {selectedTenant?.Unit?.unitNumber && (
+                  <span className="ml-2 text-gray-500 text-sm">
+                    (Current Unit: {selectedTenant.Unit.unitNumber})
+                  </span>
+                )}
+              </label>
+
+            
+            
 
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">

@@ -19,7 +19,7 @@ const TenDaysTenant = () => {
     const fetchTenants = async () => {
       try {
         const response = await api.get(
-          `tenant/10days/remaining`
+          `tenant/3days/remaining`
         );
         setTenants(response.data);
         setError("");
