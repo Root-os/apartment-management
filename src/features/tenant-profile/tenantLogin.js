@@ -67,7 +67,7 @@ const TenantLoginPage = () => {
   localStorage.setItem("role", decodedToken.role);
   localStorage.setItem("userId", decodedToken.id);
 
-  navigate(redirectTo, { replace: true });
+  window.location.href = redirectTo;
 }
  else {
         setError('Login failed. Please check your credentials.');
