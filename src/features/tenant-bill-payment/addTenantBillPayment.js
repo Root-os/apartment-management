@@ -162,7 +162,7 @@ const AddBillPayment = () => {
 
     const payload = {
       tenantId: parseInt(tenantId),
-      billPaymentTypeId: parseInt(billPaymentTypeId),
+      billTypeId: parseInt(billPaymentTypeId),
       // amount: parseFloat(amount),
       amountPaid: parseFloat(amountPaid),
       startDate: formatDate(startDate),
@@ -179,7 +179,7 @@ const AddBillPayment = () => {
           "Content-Type": "application/json",
         },
       });
-      console.log("API response:", response.data);
+      // console.log("API response:", response.data);
 
       setModalOpen(true);
       setMessageType("success");
@@ -283,15 +283,19 @@ const AddBillPayment = () => {
               <option value="" disabled>
                 Select
               </option>
-              {billTypes.map((billType) => (
-                <option
-                  key={billType.id}
-                  value={billType.id}
-                  className="text-black dark:text-gray-300"
-                >
-                  {billType.typeName}
-                </option>
-              ))}
+              {billTypes
+                .filter((billType) =>
+                  !billType.typeName.toLowerCase().includes("rent")
+                )
+                .map((billType) => (
+                  <option
+                    key={billType.id}
+                    value={billType.id}
+                    className="text-black dark:text-gray-300"
+                  >
+                    {billType.typeName}
+                  </option>
+                ))}
             </select>
           </div>
 

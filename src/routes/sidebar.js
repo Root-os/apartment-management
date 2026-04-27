@@ -199,6 +199,11 @@ const tenantRoutes = [
     icon: <EyeIcon className={submenuIconClasses} />,
     name: "My Rooms ",
   },
+  {
+    path: "/app/tenant-add-rent",
+    icon: <PlusIcon className={submenuIconClasses} />,
+    name: "Pay Rent",
+  },
 ];
 
 const employeeRoutes = [

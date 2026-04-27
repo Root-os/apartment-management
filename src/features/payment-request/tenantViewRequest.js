@@ -158,12 +158,9 @@ const TenantPaymentRequestsPage = () => {
       render: (row) => `${Math.round(row.amount)}`,
     },
     {
-      key: 'paymentTypeId',
+      key: 'billTypeId',
       label: 'Payment Type',
-      render: (row) => {
-        const paymentType = paymentTypes.find((type) => type.id === row.paymentTypeId);
-        return paymentType ? paymentType.name : 'Unknown';
-      },
+      render: (row) => row.BillType?.typeName || 'Unknown',
     },
     {
       key: 'dueDate',

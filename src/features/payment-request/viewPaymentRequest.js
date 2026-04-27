@@ -98,7 +98,7 @@ const PaymentRequestsPage = () => {
     setDueDate(new Date(request.dueDate).toISOString().split('T')[0]); 
     setRepeatedFor(request.repeatedFor);
     setTenantId(request.tenantId);
-    setPaymentTypeId(request.paymentTypeId);  
+    setPaymentTypeId(request.billTypeId);  
     setIsEditModalOpen(true);
   };
 
