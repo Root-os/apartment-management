@@ -100,6 +100,8 @@ const PaymentRequestsPage = () => {
     setTenantId(request.tenantId);
     setPaymentTypeId(request.billTypeId);  
     setIsEditModalOpen(true);
+    setStatus(request.status);
+
   };
 
   // Handle delete button click
