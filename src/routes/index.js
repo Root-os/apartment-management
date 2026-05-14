@@ -69,6 +69,7 @@ const TenantViewRent = lazy(
 
 const RentAdd = lazy(() => import("../pages/protected/RentAdd"));
 const RentView = lazy(() => import("../pages/protected/RentView"));
+const PunishmentView = lazy(() => import("../pages/protected/Rent/ViewPunishment"));
 
 const ParkingAdd = lazy(() => import("../pages/protected/ParkingAdd"));
 const ParkingView = lazy(() => import("../pages/protected/ParkingView"));
@@ -490,6 +491,7 @@ const adminRoutes = [
       { path: "/rent-collection-view", component: RentView },
       { path: "/add-tenant-vehicle", component: NewVehicle },
       { path: "/tenant/:tenantId/vehicles", component: TenantVehicles },
+      { path: "/punishment-view", component: PunishmentView },
     ],
   },
   {

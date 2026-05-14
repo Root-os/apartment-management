@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import TableComponent from "../../components/table";
 import Modal from "../../components/Modal";
 import DisplayDate from "../../components/Common/displayDate";
@@ -16,6 +15,15 @@ const ViewBillPayment = () => {
   const [modalMessage, setModalMessage] = useState("");
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [receiptModalOpen, setReceiptModalOpen] = useState(false);
+  const [paymentTypes, setPaymentTypes] = useState([]);
+  const [receiptForm, setReceiptForm] = useState({
+    id: null,
+    rentCollectionId: null,
+    status: "pending",
+    fsNo: "",
+    deliveryStatus: "pending",
+  });
   const [newPaymentData, setNewPaymentData] = useState({
     tenantId: "",
     billPaymentTypeId: "",
@@ -24,7 +32,7 @@ const ViewBillPayment = () => {
     endDate: "",
     status: "",
     amountPaid: "",
-    paymentMethod: "",
+    paymentTypeId: "",
     // paymentDate: "",
   });
 
@@ -39,6 +47,17 @@ const ViewBillPayment = () => {
       });
   }, []);
 
+  useEffect(() => {
+    api
+      .get(`payment-settings`)
+      .then((response) => {
+          setPaymentTypes(response.data.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching payment types:", error);
+      });
+  }, []);
+
   const handleEditClick = (payment) => {
     setSelectedPayment(payment);
     setNewPaymentData({
@@ -49,7 +68,7 @@ const ViewBillPayment = () => {
       endDate: payment.endDate.split("T")[0],
       status: payment.status,
       amountPaid: payment.amountPaid || "",
-      paymentMethod: payment.paymentMethod || "",
+      paymentTypeId: payment.paymentTypeId || payment.billPaymentTypeId || "",  
       // paymentDate: payment.paymentDate ? payment.paymentDate.split("T")[0] : "",
     });
     setIsEditModalOpen(true);
@@ -118,6 +137,56 @@ const ViewBillPayment = () => {
     setIsDetailModalOpen(true);
   };
 
+ const openReceiptModal = async (payment) => {
+  const tenantPaymentId = payment.id; 
+
+  console.log("Calling API with tenantPaymentId:", tenantPaymentId);
+
+  try {
+    const res = await api.get(
+      `rent-receipt/tenantPayment/${tenantPaymentId}`
+    );
+
+    setReceiptForm({
+      id: res.data.id,
+      tenantPaymentId: tenantPaymentId,
+      status: res.data.status,
+      fsNo: res.data.fsNo || "",
+      deliveryStatus: res.data.deliveryStatus,
+    });
+  } catch (error) {
+    setReceiptForm({
+      id: null,
+      tenantPaymentId: tenantPaymentId,
+      status: "pending",
+      fsNo: "",
+      deliveryStatus: "pending",
+    });
+  }
+
+  setReceiptModalOpen(true);
+};
+
+  const handleSaveReceipt = async () => {
+    try {
+      if (receiptForm.id) {
+        await api.put(`rent-receipt/${receiptForm.id}`, receiptForm);
+      } else {
+        await api.post(`rent-receipt`, receiptForm);
+      }
+
+      setReceiptModalOpen(false);
+
+      setModalOpen(true);
+      setMessageType("success");
+      setModalMessage("Receipt saved successfully!");
+    } catch (error) {
+      setModalOpen(true);
+      setMessageType("error");
+      setModalMessage(error.response?.data?.message || "Error saving receipt");
+    }
+  };
+
   const columns = [
     {
       key: "tenantName",
@@ -172,6 +241,12 @@ const ViewBillPayment = () => {
             className="bg-gray-500 text-white py-1 px-2 rounded hover:bg-gray-700"
           >
             Detail
+          </button>
+          <button
+            onClick={() => openReceiptModal(payment)}
+            className="bg-purple-500 text-white px-2 py-1 rounded hover:bg-purple-600"
+          >
+            Receipt
           </button>
         </div>
       ),
@@ -300,25 +375,31 @@ const ViewBillPayment = () => {
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">
-                Payment Method
-              </label>
-              <select
-                value={newPaymentData.paymentMethod}
-                onChange={(e) =>
-                  setNewPaymentData({
-                    ...newPaymentData,
-                    paymentMethod: e.target.value,
-                  })
-                }
-                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
-              >
-                <option value="">Select Payment Method</option>
-                <option value="Credit Card">Credit Card</option>
-                <option value="Bank Transfer">Bank Transfer</option>
-                <option value="Cash">Cash</option>
-              </select>
-            </div>
+  <label className="block text-sm font-medium mb-2">
+    Payment Method
+  </label>
+
+  <select
+    value={newPaymentData.paymentTypeId || ""}
+    onChange={(e) =>
+      setNewPaymentData({
+        ...newPaymentData,
+        paymentTypeId: Number(e.target.value),
+      })
+    }
+    className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+    required
+  >
+    <option value="">Select Payment Method</option>
+
+    {Array.isArray(paymentTypes) &&
+      paymentTypes.map((type) => (
+        <option key={type.id} value={type.id}>
+          {type.paymentMethod}
+        </option>
+      ))}
+  </select>
+</div>
 
             <div className="flex justify-end space-x-2">
               <button
@@ -402,7 +483,7 @@ const ViewBillPayment = () => {
               </p>
               <p>
                 <strong>Payment Method:</strong>{" "}
-                {selectedPayment.paymentMethod || "N/A"}
+                {selectedPayment.PaymentSetting?.paymentMethod || "N/A"}
               </p>
               {/* <p>
                 <strong>Payment Date:</strong>{" "}
@@ -425,6 +506,107 @@ const ViewBillPayment = () => {
         </div>
       )}
 
+      {receiptModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-base-100 p-6 rounded-lg w-full max-w-md">
+            <h2 className="text-xl mb-4">
+              {receiptForm.id ? "Edit Receipt" : "Create Receipt"}
+            </h2>
+
+            {/* STATUS */}
+            <div className="mb-4">
+              <label>Status</label>
+              <select
+                value={receiptForm.status}
+                onChange={(e) =>
+                  setReceiptForm({ ...receiptForm, status: e.target.value })
+                }
+                className={`w-full p-2 border rounded
+                  ${
+                    receiptForm.status === "cutted"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }
+                `}
+              >
+                <option value="pending">Pending</option>
+                <option value="cutted">Cutted</option>
+              </select>
+            </div>
+
+            {/* FS NUMBER */}
+            <div className="mb-4">
+              <label>FS Number</label>
+              <input
+                type="text"
+                value={receiptForm.fsNo}
+                onChange={(e) =>
+                  setReceiptForm({ ...receiptForm, fsNo: e.target.value })
+                }
+                className="w-full p-2 border rounded"
+                placeholder="Enter FS Number"
+                // Editable if status is 'cutted' OR if editing an existing receipt
+                disabled={receiptForm.status !== "cutted" && !receiptForm.id}
+              />
+            </div>
+
+            {/* DELIVERY STATUS */}
+            <div className="mb-4">
+              <label>Delivery Status</label>
+              <select
+                value={receiptForm.deliveryStatus}
+                onChange={(e) =>
+                  setReceiptForm({
+                    ...receiptForm,
+                    deliveryStatus: e.target.value,
+                  })
+                }
+                className={`w-full p-2 border rounded
+                  ${
+                    receiptForm.deliveryStatus === "delivered"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }
+                `}
+                disabled={receiptForm.status !== "cutted" || !receiptForm.fsNo}
+              >
+                <option value="pending">Pending</option>
+                <option value="delivered">Delivered</option>
+              </select>
+            </div>
+
+            {/* ACTIONS */}
+            <div className="flex justify-between">
+              {/* LEFT SIDE (DELETE) */}
+              {/* {receiptForm.id && (
+                <button
+                  onClick={handleDeleteReceipt}
+                  className="bg-red-500 text-white px-4 py-2 rounded"
+                >
+                  Delete
+                </button>
+              )} */}
+
+              {/* RIGHT SIDE */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setReceiptModalOpen(false)}
+                  className="bg-gray-400 text-white px-4 py-2 rounded"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={handleSaveReceipt}
+                  className="bg-blue-500 text-white px-4 py-2 rounded"
+                >
+                  {receiptForm.id ? "Update" : "Create"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

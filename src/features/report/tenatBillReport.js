@@ -21,6 +21,7 @@ const TenantBillReport = () => {
     endDate: "",
     billPaymentTypeId: "",
     tenantId: "",
+    paymentTypeId: "",
   });
    const {  formatDateForDisplay } = useContext(CalendarContext);
 
@@ -71,9 +72,19 @@ const TenantBillReport = () => {
       }
     };
 
+    const fetchPaymentTypes = async () => {
+      try {
+        const res = await api.get(`payment-settings`);
+        setPaymentTypes(res.data.data);
+      } catch (error) {
+        console.error("Error fetching payment types:", error);
+      }
+    };
+
     fetchTenants();
     fetchBillTypes();
      fetchUniqueTenants();
+      fetchPaymentTypes();
  // Fetch payment types
   }, []);
 
@@ -102,6 +113,7 @@ const TenantBillReport = () => {
     endDate: "",
     billPaymentTypeId: "",
     tenantId: "",
+    paymentTypeId: "",
     });
   };
   const columns = [
@@ -113,6 +125,7 @@ const TenantBillReport = () => {
     { key: 'startDate', label: 'Start Date', render: (payment) => payment.startDate ? formatDateForDisplay(payment.startDate) : '-'},
     { key: 'endDate', label: 'End Date', render: (payment) => formatDateForDisplay(payment.endDate)},
     { key: 'status', label: 'Status', render: (payment) => payment?.status || 'N/A' },
+    { key: 'paymentMethod', label: 'Payment Method', render: (payment) => payment?.PaymentSetting?.paymentMethod || 'N/A' },
   ];
 
   return (
@@ -171,6 +184,22 @@ const TenantBillReport = () => {
               ))}
             </select>
           </div>
+           
+          <div>
+            <label htmlFor="paymentTypeId" className="block text-sm font-medium text-white-600 dark:text-gray-300">Payment Method</label>
+            <select
+              id="paymentTypeId"
+              className="w-full p-2 border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300"
+              value={filterParams.paymentTypeId}
+              onChange={(e) => setFilterParams({ ...filterParams, paymentTypeId: e.target.value })}
+            >
+              <option value="">Select Payment Method</option>
+              {paymentTypes.map((type) => (
+                <option key={type.id} value={type.id}>{type.paymentMethod}</option>
+              ))}
+            </select>
+          </div>
+
           <div className="col-span-4 flex justify-end gap-2">
             <button
               type="button"

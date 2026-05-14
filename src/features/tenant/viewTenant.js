@@ -28,6 +28,7 @@ const TenantList = () => {
 
   const [amount, setAmount] = useState("");
   const [errors, setErrors] = useState({});
+  const [currency, setCurrency] = useState("");
 
   const { formatDateForDisplay } = useContext(CalendarContext);
   const { isGregorian } = useContext(CalendarContext);
@@ -48,6 +49,7 @@ const TenantList = () => {
     floorId: "",
     advance: "",
     amount: "",
+    currency: "",
     tin: "",
     document: "",
     status: "",
@@ -129,6 +131,7 @@ const TenantList = () => {
       floorId: tenant.floorId || "",
       advance: tenant.advance || "",
       amount: tenant.amount || "",
+      currency: tenant.currency || "",
       tin: tenant.tin || "",
       document: tenant.document || "",
       status: tenant.status || "active",
@@ -343,10 +346,22 @@ const TenantList = () => {
             {
               label: "rent",
               key: "amount",
+              render: (row) => {
+                if (row.amount) {
+                  return `${row.amount} ${row.currency || ""}`;
+                }
+                return "N/A";
+              },
             },
             {
               label: "Advance",
               key: "advance",
+              render: (row) => {
+                if (row.advance) {
+                  return `${row.advance} ${row.currency || ""}`;
+                }
+                return "N/A";
+              },
             },
             {
               label: "Unit Number",
@@ -393,7 +408,11 @@ const TenantList = () => {
                 const passedDays = Math.abs(diffDays);
                 const daysText = passedDays === 1 ? "day" : "days";
 
-                return `${passedDays} ${daysText} passed`;
+                return (
+                  <span style={{ color: "red" }}>
+                    {passedDays} {daysText} passed
+                  </span>
+                );
               },
             },
 
@@ -422,7 +441,11 @@ const TenantList = () => {
 
                 const passedDays = Math.abs(diffDays);
                 const daysText = passedDays === 1 ? "day" : "days";
-                return `${passedDays} ${daysText} passed`;
+                return (
+                  <span style={{ color: "red" }}>
+                    {passedDays} {daysText} passed
+                  </span>
+                );
               },
             },
             {
@@ -533,7 +556,6 @@ const TenantList = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 mt-12">
           <div className="bg-base-100 p-6 rounded-lg w-96 max-h-[80vh] overflow-y-auto">
             <h2 className="text-xl mb-4">Edit Tenant</h2>
-
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Full Name
@@ -614,7 +636,6 @@ const TenantList = () => {
                 </p>
               )}
             </div>
-
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Contract End Date
@@ -634,7 +655,21 @@ const TenantList = () => {
                 </p>
               )}
             </div>
-
+            {/* <div>
+              <label className="block text-sm font-medium mb-2">Currency</label>
+              <select
+                value={editData.currency}
+                onChange={(e) =>
+                  setEditData({ ...editData, currency: e.target.value })
+                }
+                className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+              >
+                <option value="">Select currency</option>
+                <option value="USD">USD</option>
+                <option value="ETB">ETB</option>
+                <option value="EUR">EUR</option>
+              </select>
+            </div> */}
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Rent Amount
@@ -649,7 +684,6 @@ const TenantList = () => {
                 className="bg-base-100 w-full p-2 border border-gray-300 rounded"
               />
             </div>
-
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Advance Payment
@@ -682,7 +716,6 @@ const TenantList = () => {
                   </div>
                 )}
             </div>
-
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Floor</label>
               <select
@@ -699,21 +732,18 @@ const TenantList = () => {
                   </option>
                 ))}
               </select>
-            </div>        <label className="block text-sm font-medium mb-2">
-                {/* Unit
+            </div>{" "}
+            <label className="block text-sm font-medium mb-2">
+              {/* Unit
                 {editData.status === "active" && (
                   <span className="text-red-500">*</span>
                 )} */}
-                {selectedTenant?.Unit?.unitNumber && (
-                  <span className="ml-2 text-gray-500 text-sm">
-                    (Current Unit: {selectedTenant.Unit.unitNumber})
-                  </span>
-                )}
-              </label>
-
-            
-            
-
+              {selectedTenant?.Unit?.unitNumber && (
+                <span className="ml-2 text-gray-500 text-sm">
+                  (Current Unit: {selectedTenant.Unit.unitNumber})
+                </span>
+              )}
+            </label>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">
                 Unit{" "}
@@ -763,7 +793,6 @@ const TenantList = () => {
                 </p>
               )}
             </div>
-
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">TIN</label>
               <input
@@ -815,7 +844,6 @@ const TenantList = () => {
                 </p>
               )}
             </div>
-
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Document</label>
               <input
@@ -838,7 +866,6 @@ const TenantList = () => {
                 Reset password and send SMS
               </label>
             </div>
-
             <div className="flex justify-end space-x-2">
               <button
                 onClick={() => setIsEditModalOpen(false)}
@@ -988,11 +1015,19 @@ const TenantList = () => {
               <label className="block text-sm font-medium mb-2">
                 Rent Amount
               </label>
-              <p className="text-sm">{selectedTenant.amount || "N/A"}</p>
+              <p className="text-sm">
+                {selectedTenant.amount
+                  ? `${selectedTenant.amount} ${selectedTenant.currency}`
+                  : "N/A"}
+              </p>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Advance</label>
-              <p className="text-sm">{selectedTenant.advance || "N/A"}</p>
+              <p className="text-sm">
+                {selectedTenant.advance
+                  ? `${selectedTenant.advance} ${selectedTenant.currency}`
+                  : "N/A"}
+              </p>
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">

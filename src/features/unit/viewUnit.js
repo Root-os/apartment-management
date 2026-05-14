@@ -807,6 +807,16 @@ const handleModeChange = (mode) => {
                   {problems.map((prob, i) => <li key={i}>{prob}</li>)}
                 </ul>
               </div>
+              {unitDetails.Tenants?.length > 0 && (
+  <div className="mt-4">
+    <strong>The Rent amount that the tenant is paying for the unit:</strong>
+
+    <p className="text-sm mt-1">
+      {unitDetails.Tenants[0].amount}{" "}
+      {unitDetails.Tenants[0].currency}
+    </p>
+  </div>
+)}
               
                 {unitDetails.images && unitDetails.images.length > 0 && (
                   <div className="mt-4">
@@ -830,6 +840,7 @@ const handleModeChange = (mode) => {
                     </div>
                   </div>
                 )}
+                
               <div className="mt-6 text-right">
                 <button
                   onClick={() => setIsDetailModalOpen(false)}

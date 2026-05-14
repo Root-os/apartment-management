@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import api from '../../utils/api';
-import LoadingComponent from '../../components/loading';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import api from "../../utils/api";
+import LoadingComponent from "../../components/loading";
 
 const PaymentReceiptPage = () => {
   const { paymentRequestId } = useParams();
@@ -17,14 +17,14 @@ const PaymentReceiptPage = () => {
   const fetchReceipt = async () => {
     try {
       const response = await api.get(
-        `payment-response/request/${paymentRequestId}`
+        `payment-response/request/${paymentRequestId}`,
       );
 
       if (response.data.success && response.data.data.length > 0) {
         setReceipt(response.data.data[0]);
       }
     } catch (error) {
-      console.error('Failed to load receipt', error);
+      console.error("Failed to load receipt", error);
     } finally {
       setLoading(false);
     }
@@ -35,7 +35,9 @@ const PaymentReceiptPage = () => {
   if (!receipt) {
     return (
       <div className="p-6 text-center">
-        <p className="text-red-600 text-lg">No receipt found for this payment.</p>
+        <p className="text-red-600 text-lg">
+          No receipt found for this payment.
+        </p>
         <button
           onClick={() => navigate(-1)}
           className="mt-4 px-4 py-2 bg-gray-600 text-white rounded"
@@ -51,7 +53,6 @@ const PaymentReceiptPage = () => {
   return (
     <div className="max-w-3xl mx-auto p-6 print:p-0">
       <div className="border rounded-lg shadow-lg p-6 bg-white print:shadow-none">
-
         {/* Header */}
         <div className="text-center border-b pb-4 mb-6">
           <h1 className="text-2xl font-bold">Payment Receipt</h1>
@@ -64,9 +65,9 @@ const PaymentReceiptPage = () => {
         <div className="mb-6 text-center">
           <span
             className={`px-4 py-1 rounded text-sm font-semibold ${
-              receipt.status === 'approved'
-                ? 'bg-green-100 text-green-700'
-                : 'bg-red-100 text-red-700'
+              receipt.status === "approved"
+                ? "bg-green-100 text-green-700"
+                : "bg-red-100 text-red-700"
             }`}
           >
             {receipt.status.toUpperCase()}
@@ -75,10 +76,13 @@ const PaymentReceiptPage = () => {
 
         {/* Receipt Details */}
         <div className="text-sm divide-y">
-
           <div className="flex py-2">
-            <div className="w-1/3 text-gray-500 font-medium">Payment Method</div>
-            <div className="w-2/3 text-right">{receipt.paymentMethod}</div>
+            <div className="w-1/3 text-gray-500 font-medium">
+              Payment Method
+            </div>
+            <div className="w-2/3 text-right">
+              {receipt?.PaymentSetting?.paymentMethod}
+            </div>
           </div>
 
           <div className="flex py-2">
@@ -100,24 +104,20 @@ const PaymentReceiptPage = () => {
           <div className="flex py-2">
             <div className="w-1/3 text-gray-500 font-medium">Reference No</div>
             <div className="w-2/3 text-right">
-              {metadata.referenceNo || '-'}
+              {metadata.referenceNo || "-"}
             </div>
           </div>
 
           <div className="flex py-2">
             <div className="w-1/3 text-gray-500 font-medium">Receiver Name</div>
-            <div className="w-2/3 text-right">
-              {receipt.receiverName}
-            </div>
+            <div className="w-2/3 text-right">{receipt.receiverName}</div>
           </div>
 
           <div className="flex py-2">
             <div className="w-1/3 text-gray-500 font-medium">
               Receiver Account
             </div>
-            <div className="w-2/3 text-right">
-              {receipt.receiverAccount}
-            </div>
+            <div className="w-2/3 text-right">{receipt.receiverAccount}</div>
           </div>
 
           <div className="flex py-2">
@@ -126,7 +126,6 @@ const PaymentReceiptPage = () => {
               {new Date(receipt.createdAt).toLocaleString()}
             </div>
           </div>
-
         </div>
 
         {/* Footer */}
@@ -142,7 +141,11 @@ const PaymentReceiptPage = () => {
             {metadata.receiptUrl && (
               <button
                 onClick={() =>
-                  window.open(metadata.receiptUrl, '_blank', 'noopener,noreferrer')
+                  window.open(
+                    metadata.receiptUrl,
+                    "_blank",
+                    "noopener,noreferrer",
+                  )
                 }
                 className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded"
               >
@@ -158,8 +161,6 @@ const PaymentReceiptPage = () => {
             </button>
           </div>
         </div>
-
-
       </div>
     </div>
   );

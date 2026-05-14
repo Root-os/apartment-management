@@ -4,8 +4,8 @@ import TableComponent from "../../../components/table";
 import Modal from "../../../components/Modal";
 import LoadingComponent from "../../../components/loading";
 import SmartDateInput from "../../../components/Common/smartDatePicker";
-import { CalendarContext } from '../../../context/calendarContext';
-import api from '../../../utils/api';
+import { CalendarContext } from "../../../context/calendarContext";
+import api from "../../../utils/api";
 
 const WithdrawalRequests = () => {
   const [data, setData] = useState([]);
@@ -26,7 +26,7 @@ const WithdrawalRequests = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [requestToDelete, setRequestToDelete] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedRequest, setSelectedRequest] = useState(null); 
+  const [selectedRequest, setSelectedRequest] = useState(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [tenantDetailModalOpen, setTenantDetailModalOpen] = useState(false);
   const [tenantDetail, setTenantDetail] = useState(null);
@@ -35,21 +35,18 @@ const WithdrawalRequests = () => {
   const [messageType, setMessageType] = useState("success");
   const [message, setMessage] = useState("");
 
-   const {  formatDateForDisplay } = useContext(CalendarContext);
+  const { formatDateForDisplay } = useContext(CalendarContext);
 
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api.get(
-          `withdrawal-request/all`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await api.get(`withdrawal-request/all`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setData(response.data);
         setLoading(false);
       } catch (error) {
@@ -64,14 +61,11 @@ const WithdrawalRequests = () => {
   useEffect(() => {
     const fetchTenants = async () => {
       try {
-        const response = await api.get(
-          `tenant`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await api.get(`tenant`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setTenants(response.data);
       } catch (error) {
         console.error("Error fetching tenants: ", error);
@@ -84,14 +78,11 @@ const WithdrawalRequests = () => {
   useEffect(() => {
     const fetchusers = async () => {
       try {
-        const response = await api.get(
-          `auth/employee`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await api.get(`auth/employee`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setUsers(response.data.users);
       } catch (error) {
         console.error("Error fetching users: ", error);
@@ -132,13 +123,13 @@ const WithdrawalRequests = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       setData((prevData) =>
         prevData.map((request) =>
-          request.id === requestToUpdate.id ? response.data.request : request
-        )
+          request.id === requestToUpdate.id ? response.data.request : request,
+        ),
       );
 
       setIsStatusModalOpen(false);
@@ -184,7 +175,7 @@ const WithdrawalRequests = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       // Update the specific request in the data array with the new assigned employee
@@ -195,11 +186,11 @@ const WithdrawalRequests = () => {
                 ...request,
                 assignedEmployeeId: employeeId,
                 assignedEmployee: users.find(
-                  (user) => user.id === parseInt(employeeId)
+                  (user) => user.id === parseInt(employeeId),
                 ), // Get employee details from users array
               }
-            : request
-        )
+            : request,
+        ),
       );
 
       setIsAssignModalOpen(false);
@@ -237,13 +228,13 @@ const WithdrawalRequests = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       setData((prevData) =>
         prevData.map((req) =>
-          req.id === requestToFinalize.id ? response.data.request : req
-        )
+          req.id === requestToFinalize.id ? response.data.request : req,
+        ),
       );
       setIsFinalizeModalOpen(false);
       setRequestToFinalize(null);
@@ -259,7 +250,7 @@ const WithdrawalRequests = () => {
       setModalOpen(true);
       setMessageType("error");
       setMessage(
-        "There was an error finalizing the request. Please try again."
+        "There was an error finalizing the request. Please try again.",
       );
     } finally {
       setIsLoading(false);
@@ -273,16 +264,13 @@ const WithdrawalRequests = () => {
 
   const handleDelete = async () => {
     try {
-      await api.delete(
-        `withdrawal-request/delete/${requestToDelete.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await api.delete(`withdrawal-request/delete/${requestToDelete.id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setData((prevData) =>
-        prevData.filter((request) => request.id !== requestToDelete.id)
+        prevData.filter((request) => request.id !== requestToDelete.id),
       );
       setIsDeleteModalOpen(false);
       setRequestToDelete(null);
@@ -298,20 +286,17 @@ const WithdrawalRequests = () => {
   };
 
   const handleDetailClick = (request) => {
-    setSelectedRequest(request); 
-    setIsDetailsModalOpen(true); 
+    setSelectedRequest(request);
+    setIsDetailsModalOpen(true);
   };
 
   const handleCheckTenant = async (tenantId) => {
     try {
-      const response = await api.get(
-        `withdrawal-request/details/${tenantId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await api.get(`withdrawal-request/details/${tenantId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       const tenant = response.data.tenant;
 
@@ -326,7 +311,7 @@ const WithdrawalRequests = () => {
           }
           return latest;
         },
-        null
+        null,
       );
 
       // Get latest bill per billTypeId
@@ -423,18 +408,21 @@ const WithdrawalRequests = () => {
     };
   };
 
-
   const columns = [
     {
       key: "tenantId",
       label: "Tenant Name",
       render: (row) => getTenantNameById(row.tenantId),
     },
-    { label: 'Floor', key: 'floorNumber',
-      render: (row) => row?.Tenant?.Floor?.floorNumber || 'N/A'
+    {
+      label: "Floor",
+      key: "floorNumber",
+      render: (row) => row?.Tenant?.Floor?.floorNumber || "N/A",
     },
-    { label: 'Unit Number', key: 'unitNumber',
-      render: (row) => row?.Tenant?.Unit?.unitNumber || 'N/A'
+    {
+      label: "Unit Number",
+      key: "unitNumber",
+      render: (row) => row?.Tenant?.Unit?.unitNumber || "N/A",
     },
     {
       key: "employeeId",
@@ -450,8 +438,7 @@ const WithdrawalRequests = () => {
     {
       key: "terminationDate",
       label: "Termination Date",
-      render: (row) =>
-        formatDateForDisplay(row.terminationDate) ,
+      render: (row) => formatDateForDisplay(row.terminationDate),
     },
     { key: "status", label: "Status" },
     { key: "adminResponse", label: "Admin Response" },
@@ -534,6 +521,9 @@ const WithdrawalRequests = () => {
     },
   ];
 
+  const isImage = (url) => {
+    return /\.(jpg|jpeg|png|gif)$/i.test(url);
+  };
   return (
     <div className="p-6">
       {loading ? (
@@ -582,7 +572,7 @@ const WithdrawalRequests = () => {
                 id="adminResponse"
                 value={adminResponse}
                 onChange={(e) => setAdminResponse(e.target.value)}
-                  className="
+                className="
                       mt-1 block w-full
                       px-3 py-2
                       rounded-md
@@ -591,7 +581,8 @@ const WithdrawalRequests = () => {
                       focus:outline-none
                       focus:ring-2 focus:ring-indigo-500
                       focus:border-indigo-500
-                    "rows="4"
+                    "
+                rows="4"
               />
             </div>
             <div className="flex justify-end space-x-2">
@@ -612,7 +603,7 @@ const WithdrawalRequests = () => {
           </div>
         </div>
       )}
-       {/* assign staff */}
+      {/* assign staff */}
       {isAssignModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 p-6 rounded-lg w-96">
@@ -656,7 +647,7 @@ const WithdrawalRequests = () => {
           </div>
         </div>
       )}
-       {/* finalize reques */}
+      {/* finalize reques */}
       {isFinalizeModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 p-6 rounded-lg w-96">
@@ -698,7 +689,7 @@ const WithdrawalRequests = () => {
           </div>
         </div>
       )}
-       {/* delete request */}
+      {/* delete request */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 p-6 rounded-lg w-98">
@@ -722,7 +713,7 @@ const WithdrawalRequests = () => {
           </div>
         </div>
       )}
-        {/* see detail */}
+      {/* see detail */}
       {isDetailsModalOpen && selectedRequest && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 p-6 rounded-lg w-96">
@@ -737,9 +728,7 @@ const WithdrawalRequests = () => {
               </p>
               <p>
                 <strong>Termination Date:</strong>{" "}
-                {
-                  formatDateForDisplay(selectedRequest.terminationDate)
-                }
+                {formatDateForDisplay(selectedRequest.terminationDate)}
               </p>
               <p>
                 <strong>Status:</strong> {selectedRequest.status}
@@ -755,6 +744,41 @@ const WithdrawalRequests = () => {
                 <strong>Deposit Refund Status:</strong>{" "}
                 {selectedRequest.depositRefundStatus}
               </p>
+              <div className="mt-4">
+                <p>
+                  <strong>Attachment:</strong>
+                </p>
+
+                {selectedRequest.attachment ? (
+                  <>
+                    {isImage(selectedRequest.attachment) ? (
+                      <img
+                        src={selectedRequest.attachment}
+                        alt="attachment"
+                        className="mt-2 max-h-60 rounded border"
+                      />
+                    ) : (
+                      <iframe
+                        src={selectedRequest.attachment}
+                        title="Attachment Preview"
+                        className="w-full h-64 mt-2 border rounded"
+                      />
+                    )}
+
+                    {/* Open / Download */}
+                    <a
+                      href={selectedRequest.attachment}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block mt-2 text-blue-500 underline"
+                    >
+                      Open / Download Attachment
+                    </a>
+                  </>
+                ) : (
+                  <p className="text-gray-500">No attachment</p>
+                )}
+              </div>
             </div>
             <div className="flex justify-end space-x-2">
               <button
@@ -768,7 +792,7 @@ const WithdrawalRequests = () => {
         </div>
       )}
 
-       {/* check info */}
+      {/* check info */}
       {tenantDetailModalOpen && tenantDetail && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-base-100 rounded-lg shadow-lg p-6 w-[90%] max-w-xl max-h-[90vh] overflow-y-auto">
@@ -778,15 +802,26 @@ const WithdrawalRequests = () => {
               <p>
                 <strong>Full Name:</strong> {tenantDetail.fullName}
               </p>
-              <p><strong>Rent :</strong>{tenantDetail.amount}</p>
-              <p><strong>Advance :</strong> {tenantDetail.advance}</p>
-              <p><strong>Rented At :</strong>{" "}{formatDateForDisplay(tenantDetail.leaseStartDate)}</p>
-              <p><strong>Rent Paid Till :</strong>{" "}{formatDateForDisplay(tenantDetail.leaseEndDate)}</p>
+              <p>
+                <strong>Rent :</strong>
+                {tenantDetail.amount}
+              </p>
+              <p>
+                <strong>Advance :</strong> {tenantDetail.advance}
+              </p>
+              <p>
+                <strong>Rented At :</strong>{" "}
+                {formatDateForDisplay(tenantDetail.leaseStartDate)}
+              </p>
+              <p>
+                <strong>Rent Paid Till :</strong>{" "}
+                {formatDateForDisplay(tenantDetail.leaseEndDate)}
+              </p>
               <p>
                 <strong>Requested at:</strong>{" "}
-                  {formatDateForDisplay(
-                    tenantDetail.WithdrawalRequests?.[0]?.terminationDate
-                  )}
+                {formatDateForDisplay(
+                  tenantDetail.WithdrawalRequests?.[0]?.terminationDate,
+                )}
               </p>
               <div className="mt-2">
                 <h3 className="font-medium text-blue-600 bold">Unit Info</h3>
@@ -799,7 +834,7 @@ const WithdrawalRequests = () => {
                 <p>
                   <strong>Available Equipments:</strong>{" "}
                   {JSON.parse(
-                    tenantDetail.Unit?.availableEquipments || "[]"
+                    tenantDetail.Unit?.availableEquipments || "[]",
                   ).join(", ")}
                 </p>
                 <p>
@@ -809,40 +844,43 @@ const WithdrawalRequests = () => {
               </div>
 
               <div className="mt-2">
-                <h2 className="font-large text-blue-600">Payment Histories</h2> 
+                <h2 className="font-large text-blue-600">Payment Histories</h2>
                 <h3 className="font-medium">Rent Summary</h3>
                 {tenantDetail.latestRent ? (
                   <>
                     <p>
                       Rent up to{" "}
                       <strong>
-                        {
-                          formatDateForDisplay(tenantDetail.latestRent.nextDueDate)
-                        }
+                        {formatDateForDisplay(
+                          tenantDetail.latestRent.nextDueDate,
+                        )}
                       </strong>{" "}
                       is <strong>paid</strong>.
                     </p>
                     {tenantDetail.WithdrawalRequests?.[0]?.terminationDate &&
                       (() => {
-                        const due = new Date(tenantDetail.latestRent.nextDueDate);
+                        const due = new Date(
+                          tenantDetail.latestRent.nextDueDate,
+                        );
                         const term = new Date(
-                          tenantDetail.WithdrawalRequests[0].terminationDate
+                          tenantDetail.WithdrawalRequests[0].terminationDate,
                         );
 
                         const diff = Math.ceil(
-                          (due - term) / (1000 * 60 * 60 * 24)
+                          (due - term) / (1000 * 60 * 60 * 24),
                         );
 
                         const rentStatus = calculateRentStatus(
                           tenantDetail.amount,
-                          diff
+                          diff,
                         );
 
                         if (rentStatus.type === "credit") {
                           return (
                             <p className="text-green-600">
-                              Tenant has <strong>{rentStatus.days}</strong> day(s) remaining  
-                              — Credit: <strong>{rentStatus.amount}</strong>
+                              Tenant has <strong>{rentStatus.days}</strong>{" "}
+                              day(s) remaining — Credit:{" "}
+                              <strong>{rentStatus.amount}</strong>
                             </p>
                           );
                         }
@@ -850,8 +888,9 @@ const WithdrawalRequests = () => {
                         if (rentStatus.type === "debt") {
                           return (
                             <p className="text-red-600">
-                              Tenant has <strong>{rentStatus.days}</strong> overdue day(s)  
-                              — Debt: <strong>{rentStatus.amount}</strong>
+                              Tenant has <strong>{rentStatus.days}</strong>{" "}
+                              overdue day(s) — Debt:{" "}
+                              <strong>{rentStatus.amount}</strong>
                             </p>
                           );
                         }
@@ -867,9 +906,7 @@ const WithdrawalRequests = () => {
                   <p>
                     Rent has not been paid since{" "}
                     <strong>
-                      {
-                       formatDateForDisplay(tenantDetail.leaseStartDate)
-                      }
+                      {formatDateForDisplay(tenantDetail.leaseStartDate)}
                     </strong>
                     .
                   </p>
@@ -881,7 +918,7 @@ const WithdrawalRequests = () => {
                 {[...(tenantDetail.latestBills || [])].map(([id, bill], i) => {
                   const end = new Date(bill.endDate);
                   const term = new Date(
-                    tenantDetail.WithdrawalRequests?.[0]?.terminationDate
+                    tenantDetail.WithdrawalRequests?.[0]?.terminationDate,
                   );
                   const endDateStr = end.toISOString().split("T")[0];
 
@@ -890,8 +927,8 @@ const WithdrawalRequests = () => {
                     statusLower === "completed"
                       ? "paid"
                       : statusLower === "in progress"
-                      ? "due"
-                      : bill.status;
+                        ? "due"
+                        : bill.status;
 
                   const diff = Math.ceil((end - term) / (1000 * 60 * 60 * 24));
                   let dateNote = "";

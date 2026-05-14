@@ -24,6 +24,7 @@ import UnitStatusReport from './components/diagram';
 import RemainingTenants from './components/tenDaysTenant';
 import LowStockAlert from './components/lowStockAlert';
 import RecentComplaintList from './components/recentComplent';
+import api from "../../utils/api";
 
 const Dashboard = () => {
   const [counts, setCounts] = useState(null);
@@ -43,7 +44,7 @@ const Dashboard = () => {
       }
       console.log('Request URL:', `${process.env.REACT_APP_BASE_URL}dashboard`, params);
 
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}dashboard`, {
+      const response = await api.get(`dashboard`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Cache-Control': 'no-cache',
@@ -164,42 +165,41 @@ const Dashboard = () => {
     overdueRentCollections: 'Overdue Rent Collections',
   };
 
-const iconMapping = {
-  notifications: <FaBell className="text-white text-5xl" title="Notifications" />,
-  paymentsRequest: <FaCreditCard className="text-white text-5xl" title="Payments Request" />,
-  complaints: <FaExclamationCircle className="text-white text-5xl" title="Complaints" />,
-  units: <FaBuilding className="text-white text-5xl" title="Units" />,
-  tenants: <FaUserFriends className="text-white text-5xl" title="Tenants" />,
-  tenantVehicles: <FaCar className="text-white text-5xl" title="Tenant Vehicles" />,
-  expenses: <FaDollarSign className="text-white text-5xl" title="Expenses" />,
-  emails: <FaEnvelope className="text-white text-5xl" title="Emails" />,
-  employees: <FaUser className="text-white text-5xl" title="Employees" />,
-  stockouts: <FaDolly className="text-white text-5xl" title="Stockouts" />,
-  // tenantPayments: <FaMoneyBillAlt className="text-white text-5xl" title="Tenant Payments" />,
-  billPayments: <FaFileInvoiceDollar className="text-white text-5xl" title="Bill Payments" />,
-  rentCollections: <FaHome className="text-white text-5xl" title="Rent Collections" />,
-};
+  const iconMapping = {
+    notifications: <FaBell className="text-white text-5xl" title="Notifications" />,
+    paymentsRequest: <FaCreditCard className="text-white text-5xl" title="Payments Request" />,
+    complaints: <FaExclamationCircle className="text-white text-5xl" title="Complaints" />,
+    units: <FaBuilding className="text-white text-5xl" title="Units" />,
+    tenants: <FaUserFriends className="text-white text-5xl" title="Tenants" />,
+    tenantVehicles: <FaCar className="text-white text-5xl" title="Tenant Vehicles" />,
+    expenses: <FaDollarSign className="text-white text-5xl" title="Expenses" />,
+    emails: <FaEnvelope className="text-white text-5xl" title="Emails" />,
+    employees: <FaUser className="text-white text-5xl" title="Employees" />,
+    stockouts: <FaDolly className="text-white text-5xl" title="Stockouts" />,
+    // tenantPayments: <FaMoneyBillAlt className="text-white text-5xl" title="Tenant Payments" />,
+    billPayments: <FaFileInvoiceDollar className="text-white text-5xl" title="Bill Payments" />,
+    rentCollections: <FaHome className="text-white text-5xl" title="Rent Collections" />,
+  };
 
-const routeMapping = {
-  notifications: '/app/all-notfication',
-  paymentsRequest: '/app/payment-request-view',
-  complaints: '/app/complain-from-tenant',
-  units: '/app/view-unit',
-  floors: '/app/view-floor',
-  tenantInventories: '/app/view-in-out',
-  tenants: '/app/tenant-view',
-  withdrawals: '/app/view-withdraw-requests',
-  // tenantVehicles: '/vehicles',
-  expenses: '/app/expense-view',
-  items: '/app/item-view',
-  emails: '/app/send-bulk-email',
-  employees: '/app/view-employee',
-  stockouts: '/app/see-out-requests',
-  tenantPayments: '/app/tenant-bill-view',
-  billPayments: '/app/view-payment-for-goverment',
-  rentCollections: '/app/rent-collection-view',
-};
-
+  const routeMapping = {
+    notifications: '/app/all-notfication',
+    paymentsRequest: '/app/payment-request-view',
+    complaints: '/app/complain-from-tenant',
+    units: '/app/view-unit',
+    floors: '/app/view-floor',
+    tenantInventories: '/app/view-in-out',
+    tenants: '/app/tenant-view',
+    withdrawals: '/app/view-withdraw-requests',
+    // tenantVehicles: '/vehicles',
+    expenses: '/app/expense-view',
+    items: '/app/item-view',
+    emails: '/app/send-bulk-email',
+    employees: '/app/view-employee',
+    stockouts: '/app/see-out-requests',
+    tenantPayments: '/app/tenant-bill-view',
+    billPayments: '/app/view-payment-for-goverment',
+    rentCollections: '/app/rent-collection-view',
+  };
 
   const handleWrapToggle = () => {
     setIsWrapped(!isWrapped);
@@ -283,32 +283,45 @@ const routeMapping = {
             isWrapped ? 'grid-cols-1' : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-3'
           }`}
         >
-          {Object.keys(counts).map((key) => (
-            <Link to={routeMapping[key] || "#"} key={key}>
-              <div
-                className="card hover:shadow-xl transition-all transform hover:scale-105 relative cursor-pointer"
-                style={{ backgroundColor: generateRandomColor() }}
-              >
-                <div className="absolute top-3 left-3 flex items-center space-x-3">
-                  <div className="flex-shrink-0">
-                    {iconMapping[key] || <FaQuestionCircle className="text-white text-5xl" title="Unknown" />}
-                  </div>
-                  <h3 className="text-base sm:text-xl md:text-2xl font-semibold text-white break-words whitespace-normal">
-                    {keyMapping[key] || key}
-                  </h3>
-                </div>
-                <div className="card-body p-8 mt-12">
-                  <ul className="text-l text-white font-bold">
-                    {Object.keys(counts[key]).map((subKey) => (
-                      <li key={subKey}>
-                        {subKey}: {counts[key][subKey]}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </Link>
-          ))}
+{Object.keys(counts).map((key) => (
+  <div
+    key={key}
+    className="card hover:shadow-xl transition-all transform hover:scale-105 relative"
+    style={{ backgroundColor: generateRandomColor() }}
+  >
+    <div className="absolute top-3 left-3 flex items-center space-x-3">
+      <div className="flex-shrink-0">
+        {iconMapping[key] || (
+          <FaQuestionCircle className="text-white text-5xl" />
+        )}
+      </div>
+
+      <h3 className="text-base sm:text-xl md:text-2xl font-semibold text-white">
+        {keyMapping[key] || key}
+      </h3>
+    </div>
+
+    <div className="card-body p-8 mt-12">
+      <ul className="text-l text-white font-bold">
+        {Object.keys(counts[key]).map((subKey) => (
+          <li key={subKey}>
+            {subKey}: {counts[key][subKey]}
+          </li>
+        ))}
+      </ul>
+
+{routeMapping[key] && (
+  <div className="flex justify-end mt-4">
+    <Link to={routeMapping[key]}>
+      <button className="bg-white text-black px-4 py-2 rounded hover:bg-gray-200">
+        view
+      </button>
+    </Link>
+  </div>
+)}
+    </div>
+  </div>
+))}
         </div>
       ) : (
         <div className="text-gray-500 text-xl">No data available</div>

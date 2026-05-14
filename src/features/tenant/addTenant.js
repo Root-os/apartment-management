@@ -3,9 +3,8 @@ import axios from "axios";
 import TitleCard from "../../components/Cards/TitleCard";
 import Modal from "../../components/Modal";
 import SmartDateInput from "../../components/Common/smartDatePicker";
-import api from '../../utils/api';
+import api from "../../utils/api";
 import ImportTenantsModal from "../tenant/importExcelModal";
-
 
 const AddTenant = () => {
   // State variables for form fields
@@ -39,7 +38,7 @@ const AddTenant = () => {
   const [selectedTenantId, setSelectedTenantId] = useState("");
   const [profiles, setProfiles] = useState([]);
   const [importModalOpen, setImportModalOpen] = useState(false);
-
+  const [currency, setCurrency] = useState("ETB");
 
   // State for individual field errors
   const [errors, setErrors] = useState({
@@ -70,7 +69,7 @@ const AddTenant = () => {
         const tenants = res.data
           .filter((person) => person.tenant && person.tenant.length > 0)
           .map((person) => ({
-            id: person.tenant[0].tenantId, 
+            id: person.tenant[0].tenantId,
             fullName: person.fullName,
             phoneNumber: person.phoneNumber,
           }));
@@ -84,16 +83,14 @@ const AddTenant = () => {
     fetchTenants();
   }, []);
 
-    // Fetch floor data for dropdown
+  // Fetch floor data for dropdown
   useEffect(() => {
     const fetchFloors = async () => {
       try {
-        const response = await api.get(
-          `floor`
-        );
+        const response = await api.get(`floor`);
 
         const activeFloors = response.data.filter(
-          (floor) => floor.status === "active"
+          (floor) => floor.status === "active",
         );
 
         setFloors(activeFloors);
@@ -108,11 +105,9 @@ const AddTenant = () => {
   // Fetch freeUnits when floor is selected
   const fetchFreeUnits = async (id) => {
     try {
-      const response = await api.get(
-        `floor/${id}`
-      );
+      const response = await api.get(`floor/${id}`);
       setFreeUnits(
-        Array.isArray(response.data.freeUnits) ? response.data.freeUnits : []
+        Array.isArray(response.data.freeUnits) ? response.data.freeUnits : [],
       );
     } catch (err) {
       setErrors((prev) => ({ ...prev, api: "Failed to fetch free units." }));
@@ -121,9 +116,7 @@ const AddTenant = () => {
 
   const fetchUnitDetails = async (unitId) => {
     try {
-      const response = await api.get(
-        `unit/${unitId}`
-      );
+      const response = await api.get(`unit/${unitId}`);
       const rent = response.data?.taxedRentAmount || "";
       setAmount(rent);
     } catch (err) {
@@ -143,7 +136,6 @@ const AddTenant = () => {
     return "";
   };
 
-
   const validateEmail = (value) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (value && !emailRegex.test(value))
@@ -152,10 +144,9 @@ const AddTenant = () => {
   };
 
   const validatePhoneNumber = (value) => {
-    const phoneRegex = /^(09|07)\d{8}$/;
+    const phoneRegex = /^[\d+\-\s()]+$/;
     if (!value) return "Phone Number is required.";
-    if (!phoneRegex.test(value))
-      return "Phone Number must be 10 digits and start with 09 or 07.";
+    if (!phoneRegex.test(value)) return "Please enter a valid phone number.";
     return "";
   };
 
@@ -254,7 +245,7 @@ const AddTenant = () => {
       contractEndDate: validateContractEndDate(
         contractEndDate,
         leaseStartDate,
-        leaseEndDate
+        leaseEndDate,
       ),
       amount: validateAmount(amount),
       advance: validateAdvance(advance),
@@ -279,9 +270,11 @@ const AddTenant = () => {
       newErrors.amount,
       newErrors.advance,
       ...(hasCar
-        ? [newErrors.carName, newErrors.carPlate
-          // newErrors.color
-        ]
+        ? [
+            newErrors.carName,
+            newErrors.carPlate,
+            // newErrors.color
+          ]
         : []),
     ].some((error) => error !== "");
 
@@ -316,6 +309,7 @@ const AddTenant = () => {
     formData.append("contractEndDate", contractEndDate);
     formData.append("amount", amount);
     formData.append("advance", advance);
+    formData.append("currency", currency);
 
     if (hasCar) {
       formData.append("carName", carName);
@@ -324,112 +318,107 @@ const AddTenant = () => {
     }
     if (document) formData.append("document", document);
 
- if (tenantType === "existing") {
-  formData.append("isExisting", "true"); 
-} else {
-  formData.append("isExisting", "false");
-}
-
-
-    try {
-  const response = await api.post(
-    `tenant`,
-    formData,
-    { headers: { "Content-Type": "multipart/form-data" } }
-  );
-  console.log("API Response:", response.data);
-
-  // Reset form fields
-  setFullName("");
-  setEmail("");
-  setDocument(null);
-  setPhoneNumber("");
-  setHasCar(false);
-  setCarName("");
-  setCarPlate("");
-  // setColor("");
-  setNationalId("");
-  setTin("");
-  setFloorId("");
-  setUnitId("");
-  setLeaseStartDate("");
-  setContractEndDate("");
-  setLeaseEndDate("");
-  setAmount("");
-  setAdditionalNotes("");
-  setAdvance("");
-  setErrors({});
-
-  const password = response.data?.password || "";
-  const isExisting = response.data?.isExisting;
-
-  setModalOpen(true);
-  setMessageType("success");
-  if (isExisting) {
-    setMessage(
-      `Tenant occupied another unit Successfully.`
-    );
-  } else {
-    setMessage(
-      `Tenant added successfully.\n\nTemporary Password: ${password}`
-    );
-  }
-
-  } catch (err) {
-    const errorMessage =
-      err.response?.data?.error || "Unknown error occurred";
-    console.error("Error Response:", err.response?.data);
-    setErrors((prev) => ({
-      ...prev,
-      api: "Failed to add tenant: " + errorMessage,
-    }));
-    setModalOpen(true);
-    setMessageType("error");
-    setMessage("Failed to add tenant: " + errorMessage);
-  } finally {
-    setLoading(false);
-  }
-
-  };
-
-const handleTenantSelect = async (tenantId) => {
-  if (!tenantId) return;
-
-  try {
-    const res = await api.get(`tenant/${tenantId}`);
-    const tenant = res.data?.[0];
-
-    if (!tenant) {
-      console.warn("Tenant not found");
-      return;
+    if (tenantType === "existing") {
+      formData.append("isExisting", "true");
+    } else {
+      formData.append("isExisting", "false");
     }
 
-    setFullName(tenant.fullName ?? "");
-    setPhoneNumber(tenant.phoneNumber ?? "");
-    setEmail(tenant.email ?? "");
-    setNationalId(tenant.nationalId ?? "");
-    setTin(tenant.tin ?? "");
+    try {
+      const response = await api.post(`tenant`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      console.log("API Response:", response.data);
 
-  } catch (error) {
-    console.error("Error fetching tenant", error);
-  }
-};
+      // Reset form fields
+      setFullName("");
+      setEmail("");
+      setDocument(null);
+      setPhoneNumber("");
+      setHasCar(false);
+      setCarName("");
+      setCarPlate("");
+      // setColor("");
+      setNationalId("");
+      setTin("");
+      setFloorId("");
+      setUnitId("");
+      setLeaseStartDate("");
+      setContractEndDate("");
+      setLeaseEndDate("");
+      setAmount("");
+      setAdditionalNotes("");
+      setAdvance("");
+      setErrors({});
+      setCurrency("ETB");
+
+      const password = response.data?.password || "";
+      const isExisting = response.data?.isExisting;
+
+      setModalOpen(true);
+      setMessageType("success");
+      if (isExisting) {
+        setMessage(`Tenant occupied another unit Successfully.`);
+      } else {
+        setMessage(
+          `Tenant added successfully.\n\nTemporary Password: ${password}`,
+        );
+      }
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.error || "Unknown error occurred";
+      console.error("Error Response:", err.response?.data);
+      setErrors((prev) => ({
+        ...prev,
+        api: "Failed to add tenant: " + errorMessage,
+      }));
+      setModalOpen(true);
+      setMessageType("error");
+      setMessage("Failed to add tenant: " + errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleTenantSelect = async (tenantId) => {
+    if (!tenantId) return;
+
+    try {
+      const res = await api.get(`tenant/${tenantId}`);
+      const tenant = res.data?.[0];
+
+      if (!tenant) {
+        console.warn("Tenant not found");
+        return;
+      }
+
+      setFullName(tenant.fullName ?? "");
+      setPhoneNumber(tenant.phoneNumber ?? "");
+      setEmail(tenant.email ?? "");
+      setNationalId(tenant.nationalId ?? "");
+      setTin(tenant.tin ?? "");
+    } catch (error) {
+      console.error("Error fetching tenant", error);
+    }
+  };
 
   return (
     <>
       <TitleCard title={"Add Tenant"} topMargin={"mt-2"}>
-      <div className="flex justify-between items-center mb-4"> 
-        <h5 className="text-md font-semibold italic text-blue-400"> Register manualy or import excel</h5>
+        <div className="flex justify-between items-center mb-4">
+          <h5 className="text-md font-semibold italic text-blue-400">
+            {" "}
+            Register manualy or import excel
+          </h5>
 
-        <button
-          onClick={() => setImportModalOpen(true)}
-          className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-        >
-          Import Excel
-        </button>
-      </div>
+          <button
+            onClick={() => setImportModalOpen(true)}
+            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+          >
+            Import Excel
+          </button>
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
-
           {/* Tenant Type */}
           <div>
             <label className="block text-sm font-semibold mb-2">
@@ -651,7 +640,7 @@ const handleTenantSelect = async (tenantId) => {
                 if (selectedUnitId) {
                   fetchUnitDetails(selectedUnitId); // ← auto-fetch rent
                 } else {
-                  setAmount(""); 
+                  setAmount("");
                 }
               }}
               className={`bg-base-100 w-full p-3 border rounded-md ${
@@ -673,14 +662,23 @@ const handleTenantSelect = async (tenantId) => {
           {/* Amount */}
           <div>
             <label className="block text-sm font-semibold mb-2">
-              Rent <span className="text-red-500">*</span>
+              Rent  <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
               value={amount}
-              min="o"
-              step="1"
               readOnly
+              // onChange={(e) => {
+              //   setAmount(e.target.value);
+              //   setErrors((prev) => ({
+              //     ...prev,
+              //     amount: validateAmount(e.target.value),
+              //   }));
+              // }}
+              onWheel={(e) => e.target.blur()}
+              min="0"
+              step="1"
+              // readOnly
               className={`bg-base-100 w-full p-3 border rounded-md ${
                 errors.amount ? "border-red-500" : "border-gray-300"
               }`}
@@ -689,6 +687,23 @@ const handleTenantSelect = async (tenantId) => {
               <p className="text-red-500 text-sm mt-1">{errors.amount}</p>
             )}
           </div>
+
+          {/* Currency */}
+          {/* <div>
+            <label className="block text-sm font-semibold mb-2">
+              Currency <span className="text-red-500">*</span>
+            </label>
+
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
+            >
+              <option value="ETB">ETB</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+            </select>
+          </div> */}
 
           {/* Lease Start Date */}
           <div>
@@ -776,7 +791,7 @@ const handleTenantSelect = async (tenantId) => {
                   advance: validateAdvance(e.target.value),
                 }));
               }}
-              onWheel={(e) => e.target.blur()}   
+              onWheel={(e) => e.target.blur()}
               className={`bg-base-100 w-full p-3 border rounded-md ${
                 errors.advance ? "border-red-500" : "border-gray-300"
               }`}
@@ -929,10 +944,10 @@ const handleTenantSelect = async (tenantId) => {
         messageType={messageType}
       />
 
-    <ImportTenantsModal
-      isOpen={importModalOpen}
-      onClose={() => setImportModalOpen(false)}
-    />
+      <ImportTenantsModal
+        isOpen={importModalOpen}
+        onClose={() => setImportModalOpen(false)}
+      />
     </>
   );
 };

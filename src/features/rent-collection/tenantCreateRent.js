@@ -14,7 +14,7 @@ const AddTenantRent = () => {
   const [monthsCount, setMonthsCount] = useState("");
   const [daysCount, setDaysCount] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("Cash");
-  const [status, setStatus] = useState("Paid");
+  const [status, setStatus] = useState("Pending");
   const [amount, setAmount] = useState("");
   const [amountPaid, setAmountPaid] = useState("");
   const [paidDays, setPaidDays] = useState("");
@@ -25,11 +25,15 @@ const AddTenantRent = () => {
   const [isCleared, setIsCleared] = useState(false);
   const [units, setUnits] = useState([]);
   const [selectedTenantId, setSelectedTenantId] = useState("");
+  const [paymentTypes, setPaymentTypes] = useState([]);
+  const [paymentTypeId, setPaymentTypeId] = useState("");
+  const [description, setDescription] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const [attachment, setAttachment] = useState(null);
 
   // ✅ AUTO FETCH TENANT DATA
   useEffect(() => {
@@ -46,8 +50,8 @@ const AddTenantRent = () => {
         const activeUnits = allUnits.filter((u) => u.status === "active");
 
         if (!activeUnits.length) {
-        setError("No active units found.");
-        return;
+          setError("No active units found.");
+          return;
         }
 
         // ✅ Set filtered units first
@@ -55,7 +59,7 @@ const AddTenantRent = () => {
 
         // ✅ If only one active unit → auto select
         if (activeUnits.length === 1) {
-        handleTenantSelection(activeUnits[0]); 
+          handleTenantSelection(activeUnits[0]);
         }
       } catch (err) {
         console.error(err);
@@ -63,85 +67,95 @@ const AddTenantRent = () => {
       }
     };
 
+    const fetchPaymentTypes = async () => {
+      try {
+        const res = await api.get(`payment-settings`);
+        setPaymentTypes(res.data.data);
+      } catch {
+        setError("Failed to fetch payment types.");
+      }
+    };
+
     fetchTenantData();
+    fetchPaymentTypes();
   }, []);
 
   const fetchPunishmentByTenant = async (tenantId) => {
-  try {
-    const res = await api.get(`punishments/${tenantId}`);
+    try {
+      const res = await api.get(`punishments/${tenantId}`);
 
-    if (Array.isArray(res.data) && res.data.length > 0) {
-      const unpaid = res.data.find((p) => p.status === "unpaid");
+      if (Array.isArray(res.data) && res.data.length > 0) {
+        const unpaid = res.data.find((p) => p.status === "unpaid");
 
-      if (unpaid) {
-        setPunishmentAmount(unpaid.amount ?? "");
-        setIsPaid(false);
+        if (unpaid) {
+          setPunishmentAmount(unpaid.amount ?? "");
+          setIsPaid(false);
+        } else {
+          setPunishmentAmount("");
+          setIsPaid(true);
+        }
       } else {
         setPunishmentAmount("");
-        setIsPaid(true);
+        setIsPaid(false);
       }
-    } else {
+    } catch (err) {
+      console.error(err);
       setPunishmentAmount("");
       setIsPaid(false);
     }
-  } catch (err) {
-    console.error(err);
-    setPunishmentAmount("");
-    setIsPaid(false);
-  }
-};
+  };
 
   const handleTenantSelection = async (unitOrId) => {
-  try {
-    let selected;
+    try {
+      let selected;
 
-    // ✅ Handle both cases (dropdown = id, autofill = object)
-    if (typeof unitOrId === "object") {
-      selected = unitOrId;
-    } else {
-      selected = units.find((u) => u.tenantId == unitOrId);
-    }
+      // ✅ Handle both cases (dropdown = id, autofill = object)
+      if (typeof unitOrId === "object") {
+        selected = unitOrId;
+      } else {
+        selected = units.find((u) => u.tenantId == unitOrId);
+      }
 
-    if (!selected) {
-      setError("Unit not found");
-      return;
-    }
+      if (!selected) {
+        setError("Unit not found");
+        return;
+      }
 
-    setSelectedTenantId(selected.tenantId);
-    setTenantId(selected.tenantId);
+      setSelectedTenantId(selected.tenantId);
+      setTenantId(selected.tenantId);
 
-    // ✅ Now it works because selected is guaranteed
-    setAmount(selected.amount || "");
-    setLeaseStartDate(selected.leaseStartDate || "");
-    setLeaseEndDate(selected.leaseEndDate || "");
+      // ✅ Now it works because selected is guaranteed
+      setAmount(selected.amount || "");
+      setLeaseStartDate(selected.leaseStartDate || "");
+      setLeaseEndDate(selected.leaseEndDate || "");
 
-    const baseDate = selected.leaseEndDate || selected.leaseStartDate;
+      const baseDate = selected.leaseEndDate || selected.leaseStartDate;
 
-    if (!baseDate) {
-      setError("Missing lease dates");
-      return;
-    }
+      if (!baseDate) {
+        setError("Missing lease dates");
+        return;
+      }
 
-    const start = new Date(baseDate);
+      const start = new Date(baseDate);
 
-    if (isNaN(start)) {
-      setError("Invalid date from server");
-      return;
-    }
+      if (isNaN(start)) {
+        setError("Invalid date from server");
+        return;
+      }
 
-    if (selected.leaseEndDate) {
-      start.setDate(start.getDate() + 1);
-    }
+      if (selected.leaseEndDate) {
+        start.setDate(start.getDate() + 1);
+      }
 
-    setPaymentDate(start.toISOString().split("T")[0]);
+      setPaymentDate(start.toISOString().split("T")[0]);
 
-    // punishment API
-    await fetchPunishmentByTenant(selected.tenantId);
+      // punishment API
+      await fetchPunishmentByTenant(selected.tenantId);
     } catch (err) {
-        console.error(err);
-        setError("Failed to load tenant details.");
+      console.error(err);
+      setError("Failed to load tenant details.");
     }
-    };
+  };
 
   // ✅ Calculate nextDueDate
   useEffect(() => {
@@ -192,19 +206,27 @@ const AddTenantRent = () => {
 
     setLoading(true);
 
-    const payload = {
-      tenantId: parseInt(tenantId),
-      paymentDate,
-      nextDueDate,
-      paymentMethod,
-      status,
-      punishment: punishmentAmount || "0",
-      isPaid,
-      clearPunishment: isCleared,
-    };
+    const formData = new FormData();
+
+    formData.append("tenantId", parseInt(tenantId));
+    formData.append("paymentDate", paymentDate);
+    formData.append("nextDueDate", nextDueDate);
+    formData.append("paymentTypeId", parseInt(paymentTypeId));
+    formData.append("status", status);
+    formData.append("punishment", punishmentAmount || "0");
+    formData.append("isPaid", isPaid);
+    formData.append("description", description);
+
+    if (attachment) {
+      formData.append("attachment", attachment);
+    }
 
     try {
-      await api.post("rent-collection", payload);
+      await api.post("rent-collection", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       setMessage("Rent collected successfully!");
       setModalOpen(true);
     } catch (err) {
@@ -255,7 +277,9 @@ const AddTenantRent = () => {
           {leaseStartDate && (
             <div>Lease Start: {formatDateForDisplay(leaseStartDate)}</div>
           )}
-          {leaseEndDate && <div>Lease End: {formatDateForDisplay(leaseEndDate)}</div>}
+          {leaseEndDate && (
+            <div>Lease End: {formatDateForDisplay(leaseEndDate)}</div>
+          )}
           {amount && <div>Monthly Rent: ETB {amount}</div>}
           {punishmentAmount && (
             <div className="text-red-500">
@@ -371,22 +395,22 @@ const AddTenantRent = () => {
                 </label>
               </div>
 
-              <div className="flex items-center space-x-2">
+              {/* <div className="flex items-center space-x-2">
                 <input
                   type="checkbox"
                   checked={isCleared}
                   onChange={(e) => setIsCleared(e.target.checked)}
-                  // onChange={(e) => {
-                  //   const checked = e.target.checked;
-                  //   setIsCleared(checked);
-                  //   if (checked) setIsPaid(false);
-                  // }}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setIsCleared(checked);
+                    if (checked) setIsPaid(false);
+                  }}
                   className="w-5 h-5 text-green-500 border-gray-300 rounded"
                 />
                 <label className="text-sm font-medium">
                   Punishment Cleared
                 </label>
-              </div>
+              </div> */}
             </div>
           )}
 
@@ -396,15 +420,20 @@ const AddTenantRent = () => {
               <label className="block text-sm font-medium text-white-700">
                 Payment Method
               </label>
+
               <select
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
+                value={paymentTypeId}
+                onChange={(e) => setPaymentTypeId(e.target.value)}
                 className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg"
                 required
               >
-                <option value="Cash">Cash</option>
-                <option value="Bank">Bank</option>
-                <option value="Mobile">Mobile</option>
+                <option value="">Select payment method</option>
+
+                {paymentTypes.map((type) => (
+                  <option key={type.id} value={type.id}>
+                    {type.paymentMethod}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
@@ -416,12 +445,39 @@ const AddTenantRent = () => {
                 onChange={(e) => setStatus(e.target.value)}
                 className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg"
                 required
+                disabled
               >
                 <option value="Paid">Paid</option>
                 <option value="Pending">Pending</option>
                 <option value="Overdue">Overdue</option>
               </select>
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-white-700">
+              Description (Optional)
+            </label>
+
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg"
+              rows={3}
+              placeholder="Description or notes about this rent payment..."
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-white-700">
+              Receipt (PDF or Image)
+            </label>
+
+            <input
+              type="file"
+              accept=".pdf,image/*"
+              onChange={(e) => setAttachment(e.target.files[0])}
+              className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg"
+            />
           </div>
 
           <button

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
 import TitleCard from "../../components/Cards/TitleCard";
 import Modal from "../../components/Modal";
 import { useSearchParams } from "react-router-dom";
@@ -19,7 +18,6 @@ const AddCollectedRent = () => {
   const [nextDueDate, setNextDueDate] = useState("");
   const [monthsCount, setMonthsCount] = useState("");
   const [daysCount, setDaysCount] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState("Cash");
   const [status, setStatus] = useState("Paid");
   const [amount, setAmount] = useState("");
   const [amountPaid, setAmountPaid] = useState("");
@@ -28,6 +26,7 @@ const AddCollectedRent = () => {
   const [leaseEndDate, setLeaseEndDate] = useState("");
   const [punishmentAmount, setPunishmentAmount] = useState("");
   const [isPaid, setIsPaid] = useState(false);
+  const [description, setDescription] = useState("");
   const [tenants, setTenants] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -35,6 +34,11 @@ const AddCollectedRent = () => {
   const [messageType, setMessageType] = useState("success");
   const [message, setMessage] = useState("");
   const [isCleared, setIsCleared] = useState(false);
+  const [paymentTypes, setPaymentTypes] = useState([]);
+  const [paymentTypeId, setPaymentTypeId] = useState("");
+  const [isNegotiated, setIsNegotiated] = useState(false);
+  const [negotiatedAmount, setNegotiatedAmount] = useState("");
+  const [punishmentAction, setPunishmentAction] = useState("");
 
   // Fetch tenants
   useEffect(() => {
@@ -46,7 +50,17 @@ const AddCollectedRent = () => {
         setError("Failed to fetch tenants.");
       }
     };
+    const fetchPaymentTypes = async () => {
+      try {
+        const res = await api.get(`payment-settings`);
+        setPaymentTypes(res.data.data);
+      } catch {
+        setError("Failed to fetch payment types.");
+      }
+    };
+
     fetchTenants();
+    fetchPaymentTypes();
   }, []);
 
   // Fetch punishment info
@@ -204,19 +218,29 @@ const AddCollectedRent = () => {
 
     // SmartDateInput already gives Gregorian dates, so use them directly
     const payload = {
-      tenantId: parseInt(tenantId),
+      tenantId: Number(tenantId),
       paymentDate,
       nextDueDate,
-      paymentMethod,
+      paymentTypeId: Number(paymentTypeId),
       status,
-      punishment: punishmentAmount || "0",
-      isPaid,
-      clearPunishment: isCleared,
+      punishment: Number(punishmentAmount || 0),
+
+      isPaid: punishmentAction === "paid" || punishmentAction === "negotiated",
+
+      clearPunishment: punishmentAction === "cleared",
+
+      negotiatePunishment: punishmentAction === "negotiated",
+
+      negotiatedAmount:
+        punishmentAction === "negotiated" ? Number(negotiatedAmount) : 0,
+
+      description,
     };
 
     // console.log("📅 Final payload:", payload);
 
     try {
+      console.log("PAYLOAD:", payload);
       await api.post(`rent-collection`, payload);
       setMessageType("success");
       setMessage("Rent collected successfully!");
@@ -231,6 +255,7 @@ const AddCollectedRent = () => {
       setIsPaid(false);
       setIsCleared(false);
       setPunishmentAmount("");
+      setDescription("");
     } catch (error) {
       // console.log("FULL ERROR OBJECT:", error);
       // console.log("RESPONSE:", error.response);
@@ -411,34 +436,58 @@ const AddCollectedRent = () => {
                   className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg text-gray-400 cursor-not-allowed"
                 />
               </div>
-              <div className="flex items-center space-x-2 mt-6">
-                <input
-                  type="checkbox"
-                  checked={isPaid}
-                  onChange={(e) => setIsPaid(e.target.checked)}
-                  className="w-5 h-5 text-blue-500 border-gray-300 rounded focus:ring-blue-500"
-                />
-                <label className="text-sm font-medium text-white-700">
+              <div className="flex flex-col gap-3 mt-4">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="punishmentAction"
+                    value="paid"
+                    checked={punishmentAction === "paid"}
+                    onChange={(e) => setPunishmentAction(e.target.value)}
+                  />
                   Punishment Paid
+                </label>
+
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="punishmentAction"
+                    value="cleared"
+                    checked={punishmentAction === "cleared"}
+                    onChange={(e) => setPunishmentAction(e.target.value)}
+                  />
+                  Punishment Cleared
+                </label>
+
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="punishmentAction"
+                    value="negotiated"
+                    checked={punishmentAction === "negotiated"}
+                    onChange={(e) => setPunishmentAction(e.target.value)}
+                  />
+                  Negotiate Punishment
                 </label>
               </div>
 
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  checked={isCleared}
-                  onChange={(e) => setIsCleared(e.target.checked)}
-                  // onChange={(e) => {
-                  //   const checked = e.target.checked;
-                  //   setIsCleared(checked);
-                  //   if (checked) setIsPaid(false);
-                  // }}
-                  className="w-5 h-5 text-green-500 border-gray-300 rounded"
-                />
-                <label className="text-sm font-medium">
-                  Punishment Cleared
-                </label>
-              </div>
+              {punishmentAction === "negotiated" && (
+                <div className="mt-3">
+                  <label className="block text-sm font-medium text-white-700">
+                    Negotiated Amount
+                  </label>
+
+                  <input
+                    type="number"
+                    value={negotiatedAmount}
+                    onChange={(e) => setNegotiatedAmount(e.target.value)}
+                    className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg"
+                    min="0"
+                    required
+                    onWheel={(e) => e.target.blur()}
+                  />
+                </div>
+              )}
             </div>
           )}
 
@@ -448,15 +497,20 @@ const AddCollectedRent = () => {
               <label className="block text-sm font-medium text-white-700">
                 Payment Method
               </label>
+
               <select
-                value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value)}
+                value={paymentTypeId}
+                onChange={(e) => setPaymentTypeId(e.target.value)}
                 className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg"
                 required
               >
-                <option value="Cash">Cash</option>
-                <option value="Bank">Bank</option>
-                <option value="Mobile">Mobile</option>
+                <option value="">Select payment method</option>
+
+                {paymentTypes.map((type) => (
+                  <option key={type.id} value={type.id}>
+                    {type.paymentMethod}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
@@ -474,6 +528,19 @@ const AddCollectedRent = () => {
                 <option value="Overdue">Overdue</option>
               </select>
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-white-700">
+              Description (Optional)
+            </label>
+
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg"
+              rows={3}
+              placeholder="Description or notes about this rent payment..."
+            />
           </div>
 
           {/* Submit */}

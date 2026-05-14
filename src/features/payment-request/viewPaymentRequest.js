@@ -29,27 +29,24 @@ const PaymentRequestsPage = () => {
   const [messageType, setMessageType] = useState('status');
   const [modalMessage, setModalMessage] = useState('');
   const [verifyModalOpen, setVerifyModalOpen] = useState(false);
-  const [verifyPaymentMethod, setVerifyPaymentMethod] = useState('cbe');
+  const [verifyPaymentMethod, setVerifyPaymentMethod] = useState('');
   const [transactionNumber, setTransactionNumber] = useState('');
   const [verifyLoading, setVerifyLoading] = useState(false);
 
-  const [apiPaymentSettings, setApiPaymentSettings] = useState([]); // full objects
+  const [apiPaymentSettings, setApiPaymentSettings] = useState([]);
   const [receiverInfo, setReceiverInfo] = useState({ name: '', account: '' });
 
   const navigate = useNavigate();
 
   
   const fetchData = () => {
-    setPageLoading(true); // Set loading to true when the fetch starts
-  
-    // Use Promise.all to wait for all requests to finish
+    setPageLoading(true);
     Promise.all([
       axios.get(`${process.env.REACT_APP_BASE_URL}payment-requests`),
       axios.get(`${process.env.REACT_APP_BASE_URL}tenant`),
       axios.get(`${process.env.REACT_APP_BASE_URL}payment-types`)
     ])
     .then((responses) => {
-      // Destructure the responses and set the state accordingly
       const [paymentRequestsResponse, tenantsResponse, billTypesResponse] = responses;
 
       setPaymentRequests(paymentRequestsResponse.data);
@@ -60,7 +57,7 @@ const PaymentRequestsPage = () => {
       console.error('There was an error fetching the data:', error);
     })
     .finally(() => {
-      setPageLoading(false); // Set loading to false when all requests have finished
+      setPageLoading(false); 
     });
    };
 
@@ -68,16 +65,14 @@ const PaymentRequestsPage = () => {
     try {
       const response = await api.get('payment-settings');
       setApiPaymentSettings(response.data.data);
-
-      // optional: set default selected method
-      if (response.data.data.length > 0) {
-        const firstMethod = response.data.data[0];
-        setVerifyPaymentMethod(firstMethod.paymentMethod);
-        setReceiverInfo({
-          name: firstMethod.receiverName,
-          account: firstMethod.receiverAccountNumber,
-        });
-      }
+      // if (response.data.data.length > 0) {
+      //   const firstMethod = response.data.data[0];
+      //   setVerifyPaymentMethod(firstMethod.paymentMethod);
+      //   setReceiverInfo({
+      //     name: firstMethod.receiverName,
+      //     account: firstMethod.receiverAccountNumber,
+      //   });
+      // }
     } catch (error) {
       console.error('Failed to fetch payment settings', error);
     }
@@ -173,7 +168,7 @@ const PaymentRequestsPage = () => {
   const response = await api.post(
     `payment-requests/${selectedRequest.id}/verify`,
     {
-      paymentMethod: verifyPaymentMethod,
+      paymentMethodId: Number(verifyPaymentMethod),
       transactionNumber,
     },
     {
@@ -272,21 +267,21 @@ const PaymentRequestsPage = () => {
           >
             Delete
           </button>
-            {row.status === 'approved' && (
+            {/* {row.status === 'approved' && (
               <button
                 onClick={() => navigate(`/app/view-reciept/${row.id}`)} 
                 className="px-2 py-1 rounded bg-green-600 text-white text-sm"
               >
                 View Receipt
               </button>
-            )}
+            )} */}
 
                 {/* Conditional Verify or View Receipt */}
           {row.status === 'pending' ? (
             <button
               onClick={() => {
                 setSelectedRequest(row);
-                setVerifyPaymentMethod('cbe');
+                setVerifyPaymentMethod('');
                 setTransactionNumber('');
                 setVerifyModalOpen(true);
               }}
@@ -472,29 +467,31 @@ const PaymentRequestsPage = () => {
               <div>
                 <label className="block mb-1 font-medium">Payment Method</label>
                 <select
-                  value={verifyPaymentMethod}
-                  onChange={(e) => {
-                    setVerifyPaymentMethod(e.target.value);
-                    const selected = apiPaymentSettings.find(
-                      (m) => m.paymentMethod === e.target.value
-                    );
-                    if (selected) {
-                      setReceiverInfo({
-                        name: selected.receiverName,
-                        account: selected.receiverAccountNumber,
-                      });
-                    } else {
-                      setReceiverInfo({ name: '', account: '' });
-                    }
-                  }}
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  {apiPaymentSettings.map((method) => (
-                    <option key={method.id} value={method.paymentMethod}>
-                      {method.paymentMethod}
-                    </option>
-                  ))}
-                </select>   
+  value={verifyPaymentMethod}
+  onChange={(e) => {
+    const id = e.target.value;
+    setVerifyPaymentMethod(id);
+
+    const selected = apiPaymentSettings.find(
+      (m) => m.id.toString() === id
+    );
+
+    if (selected) {
+      setReceiverInfo({
+        name: selected.receiverName,
+        account: selected.receiverAccountNumber,
+      });
+    }
+  }}
+  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+>
+  <option value="">-- Select Payment Method --</option>
+  {apiPaymentSettings.map((method) => (
+    <option key={method.id} value={method.id}>
+      {method.paymentMethod}
+    </option>
+  ))}
+</select>   
 
               </div>
 

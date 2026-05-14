@@ -28,6 +28,7 @@ const RentCollectionPage = () => {
 
   const [tenantList, setTenantList] = useState([]);
   const [filterLoading, setFilterLoading] = useState(false);
+  const [paymentTypes, setPaymentTypes] = useState([]);
 
   const [receiptModalOpen, setReceiptModalOpen] = useState(false);
   const [receiptForm, setReceiptForm] = useState({
@@ -46,6 +47,7 @@ const RentCollectionPage = () => {
     paymentFrequency: "",
     status: "",
     tenantId: "",
+    paymentTypeId: "",
   });
 
   const { formatDateForDisplay } = useContext(CalendarContext);
@@ -94,10 +96,20 @@ const RentCollectionPage = () => {
     }
   };
 
+  const fetchPaymentTypes = async () => {
+    try {
+      const res = await api.get(`payment-settings`);
+      setPaymentTypes(res.data.data);
+    } catch (error) {
+      console.error("Error fetching payment types:", error);
+    }
+  };
+
   useEffect(() => {
     fetchRentData();
     fetchTenantData();
     fetchUniqueTenants();
+    fetchPaymentTypes();
   }, []);
 
   useEffect(() => {
@@ -172,6 +184,7 @@ const RentCollectionPage = () => {
       tenantRent: tenant ? tenant.amount : 0,
       paymentDate,
       nextDueDate,
+      description: rent.description || "",
     });
 
     setEditModalOpen(true);
@@ -212,10 +225,11 @@ const RentCollectionPage = () => {
         nextDueDate: currentRent.nextDueDate,
         paidDays: currentRent.paidDays,
         amountPaid: currentRent.amountPaid,
-        paymentMethod: currentRent.paymentMethod,
+        paymentTypeId: currentRent.paymentTypeId,
         status: currentRent.status,
         isPaid: currentRent.isPaid,
         punishment: currentRent.punishment,
+        description: currentRent.description,
       };
       await api.put(`rent-collection/${currentRent.id}`, updatedRent);
       fetchRentData();
@@ -303,6 +317,7 @@ const RentCollectionPage = () => {
       nextDueDateTo: "",
       status: "",
       tenantId: "",
+      paymentTypeId: "",
     });
   };
 
@@ -319,8 +334,7 @@ const RentCollectionPage = () => {
 
   const openReceiptModal = async (rent) => {
     try {
-      // try get existing receipt
-      const res = await api.get(`rent-receipt/${rent.id}`);
+      const res = await api.get(`rent-receipt/rentCollection/${rent.id}`);
 
       setReceiptForm({
         id: res.data.id,
@@ -330,7 +344,6 @@ const RentCollectionPage = () => {
         deliveryStatus: res.data.deliveryStatus,
       });
     } catch (error) {
-      // no receipt → create mode
       setReceiptForm({
         id: null,
         rentCollectionId: rent.id,
@@ -346,10 +359,8 @@ const RentCollectionPage = () => {
   const handleSaveReceipt = async () => {
     try {
       if (receiptForm.id) {
-        // ✅ UPDATE
         await api.put(`rent-receipt/${receiptForm.id}`, receiptForm);
       } else {
-        // ✅ CREATE
         await api.post(`rent-receipt`, receiptForm);
       }
 
@@ -383,7 +394,7 @@ const RentCollectionPage = () => {
     {
       key: "tenantName",
       label: "Tenant Name",
-      render: (rent) => rent.Tenant.fullName,
+      render: (rent) => rent.Tenant?.fullName || "N/A",
     },
     {
       key: "floorNumber",
@@ -540,6 +551,35 @@ const RentCollectionPage = () => {
         </div>
         <div>
           <label
+            htmlFor="paymentTypeId"
+            className="dark:text-gray-300 block text-sm font-medium text-gray-700"
+          >
+            Payment Method
+          </label>
+
+          <select
+            id="paymentTypeId"
+            name="paymentTypeId"
+            value={filterParams.paymentTypeId}
+            onChange={(e) =>
+              setFilterParams((prev) => ({
+                ...prev,
+                paymentTypeId: e.target.value,
+              }))
+            }
+            className="mt-1 block w-full p-2 border border-gray-300 rounded"
+          >
+            <option value="">Select Payment Method</option>
+
+            {paymentTypes.map((type) => (
+              <option key={type.id} value={type.id}>
+                {type.paymentMethod}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label
             htmlFor="status"
             className=" dark:text-gray-300 block text-sm font-medium text-gray-700"
           >
@@ -553,7 +593,7 @@ const RentCollectionPage = () => {
             className="mt-1 block w-full p-2 border border-gray-300 rounded"
           >
             <option value="">Select Status</option>
-            <option value="Pending">Pending</option>
+            <option value="Pending">Pending by Tenants</option>
             <option value="Paid">Paid</option>
             <option value="Overdue">Overdue</option>
           </select>
@@ -664,19 +704,24 @@ const RentCollectionPage = () => {
                 <label className="block text-sm font-medium mb-2">
                   Payment Method
                 </label>
+
                 <select
-                  value={currentRent?.paymentMethod || ""}
+                  value={currentRent?.paymentTypeId || ""}
                   onChange={(e) =>
                     setCurrentRent({
                       ...currentRent,
-                      paymentMethod: e.target.value,
+                      paymentTypeId: parseInt(e.target.value),
                     })
                   }
                   className="bg-base-100 w-full p-2 border border-gray-300 rounded"
                 >
-                  <option value="Cash">Cash</option>
-                  <option value="Bank">Bank</option>
-                  <option value="Mobile Banking">Mobile</option>
+                  <option value="">Select payment method</option>
+
+                  {paymentTypes.map((type) => (
+                    <option key={type.id} value={type.id}>
+                      {type.paymentMethod}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="mb-4">
@@ -720,6 +765,25 @@ const RentCollectionPage = () => {
                 <label htmlFor="isPaid" className="text-sm font-medium">
                   Is Paid
                 </label>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">
+                  Description
+                </label>
+
+                <textarea
+                  value={currentRent?.description || ""}
+                  onChange={(e) =>
+                    setCurrentRent({
+                      ...currentRent,
+                      description: e.target.value,
+                    })
+                  }
+                  className="bg-base-100 w-full p-2 border border-gray-300 rounded"
+                  rows={3}
+                  placeholder="Add notes (optional)"
+                />
               </div>
 
               <div className="flex justify-end space-x-2">
@@ -773,18 +837,20 @@ const RentCollectionPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 px-4">
           <div className="bg-base-100 p-6 rounded-lg w-full max-w-2xl mx-4">
             <h2 className="text-xl mb-4">
-              Details for {currentRent.Tenant.fullName}
+              Details for {currentRent.Tenant?.fullName || "N/A"}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <p>
-                <strong>Tenant Name:</strong> {currentRent.Tenant.fullName}
+                <strong>Tenant Name:</strong>{" "}
+                {currentRent.Tenant?.fullName || "N/A"}
               </p>
               <p>
-                <strong>Phone Number:</strong> {currentRent.Tenant.phoneNumber}
+                <strong>Phone Number:</strong>{" "}
+                {currentRent.Tenant?.phoneNumber || "N/A"}
               </p>
               <p>
                 <strong>Tenant Email:</strong>{" "}
-                {currentRent.Tenant.email || "No Email"}
+                {currentRent.Tenant?.email || "No Email"}
               </p>
               <p>
                 <strong>Paid From:</strong>{" "}
@@ -792,7 +858,7 @@ const RentCollectionPage = () => {
               </p>
               <p>
                 <strong>Floor Number:</strong>{" "}
-                {currentRent.Tenant.Floor.floorNumber}
+                {currentRent.Tenant?.Floor?.floorNumber || "N/A"}
               </p>
               <p>
                 <strong>Paid To:</strong>{" "}
@@ -800,7 +866,7 @@ const RentCollectionPage = () => {
               </p>
               <p>
                 <strong>Unit Number:</strong>{" "}
-                {currentRent.Tenant.Unit.unitNumber}
+                {currentRent.Tenant?.Unit?.unitNumber || "N/A"}
               </p>
               <p>
                 <strong>Paid Days:</strong> {currentRent.paidDays}
@@ -813,13 +879,42 @@ const RentCollectionPage = () => {
                 <strong>Payment Statuss:</strong> {currentRent.status}
               </p>
               <p>
-                <strong>Payment Method:</strong> {currentRent.paymentMethod}
+                <strong>Payment Method:</strong>{" "}
+                {currentRent.PaymentSetting?.paymentMethod || "N/A"}
+              </p>
+              <p>
+                <strong>Amount Paid:</strong>{" "}
+                {currentRent.amountPaid?.toLocaleString() || 0} ETB
+              </p>
+
+              <p>
+                <strong>Extra Amount:</strong>{" "}
+                {currentRent.extraAmount?.toLocaleString() || 0} ETB
               </p>
               <p>
                 <strong>Punishment:</strong> {currentRent.punishment}
               </p>
               <p>
                 <strong>Is Paid:</strong> {currentRent.isPaid ? "Yes" : "No"}
+              </p>
+              <p>
+                <strong>Description:</strong>{" "}
+                {currentRent?.description || "N/A"}
+              </p>
+              <p>
+                <strong>Attachment:</strong>{" "}
+                {currentRent.attachment ? (
+                  <a
+                    href={currentRent.attachment}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 underline"
+                  >
+                    View Attachment
+                  </a>
+                ) : (
+                  "No Attachment"
+                )}
               </p>
             </div>
             <div className="flex justify-center mt-4">
@@ -935,6 +1030,7 @@ const RentCollectionPage = () => {
           </div>
         </div>
       )}
+
       <Modal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}

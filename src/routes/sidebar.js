@@ -388,6 +388,12 @@ const adminRoutes = [
         icon: <EyeIcon className={submenuIconClasses} />,
         name: "Collected Rents ",
       },
+     {
+        path: "/app/punishment-view",
+        icon: <EyeIcon className={submenuIconClasses} />,
+        name: "View Punishments",
+      },
+      
     ],
   },
   {

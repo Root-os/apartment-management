@@ -35,6 +35,8 @@ const AddBillPayment = () => {
 
   const [profiles, setProfiles] = useState([]);
   const [selectedProfileIndex, setSelectedProfileIndex] = useState("");
+    const [paymentTypes, setPaymentTypes] = useState([]);
+  const [paymentTypeId, setPaymentTypeId] = useState("");
 
   const { isGregorian, convertToGregorian, formatDateForDisplay } =
     useContext(CalendarContext);
@@ -64,8 +66,18 @@ const AddBillPayment = () => {
       }
     };
 
+        const fetchPaymentTypes = async () => {
+      try {
+        const res = await api.get(`payment-settings`);
+        setPaymentTypes(res.data.data);
+      } catch {
+        setError("Failed to fetch payment types.");
+      }
+    };
+
     fetchTenants();
     fetchBillTypes();
+    fetchPaymentTypes();
   }, [searchParams]);
 
   useEffect(() => {
@@ -141,7 +153,7 @@ const AddBillPayment = () => {
       !amountPaid ||
       !startDate ||
       !endDate ||
-      !paymentMethod
+      !paymentTypeId 
     ) {
       setError("Please fill in all required fields.");
       setIsSuccess(false);
@@ -168,7 +180,7 @@ const AddBillPayment = () => {
       startDate: formatDate(startDate),
       endDate: formatDate(endDate),
       status: status,
-      paymentMethod: paymentMethod,
+      paymentTypeId: parseInt(paymentTypeId),
     };
 
     console.log("Payload being sent:", payload);
@@ -192,7 +204,7 @@ const AddBillPayment = () => {
       setAmountPaid("");
       setStartDate("");
       setEndDate("");
-      setPaymentMethod("");
+      setPaymentTypeId("");
       setPaymentDate("");
       setStatus("due");
     } catch (error) {
@@ -382,28 +394,26 @@ const AddBillPayment = () => {
             />
           </div>
 
-          <div>
-            <label
-              htmlFor="paymentMethod"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-            >
-              Payment Method
-            </label>
-            <select
-              id="paymentMethod"
-              className="bg-base-100 w-full p-3 border border-gray-300 rounded-md"
-              value={paymentMethod}
-              onChange={(e) => setPaymentMethod(e.target.value)}
-              required
-            >
-              <option value="" disabled>
-                Select Payment Method
-              </option>
-              <option value="telebirr">Telebirr</option>
-              <option value="Bank Transfer">Bank Transfer</option>
-              <option value="Cash">Cash</option>
-            </select>
-          </div>
+           <div>
+              <label className="block text-sm font-medium text-white-700">
+                Payment Method
+              </label>
+
+              <select
+                value={paymentTypeId}
+                onChange={(e) => setPaymentTypeId(e.target.value)}
+                className="bg-base-100 mt-1 px-4 py-2 w-full border rounded-lg"
+                required
+              >
+                <option value="">Select payment method</option>
+
+                {paymentTypes.map((type) => (
+                  <option key={type.id} value={type.id}>
+                    {type.paymentMethod}
+                  </option>
+                ))}
+              </select>
+            </div>
           <div>
             <label
               htmlFor="status"
