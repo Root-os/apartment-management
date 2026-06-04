@@ -395,11 +395,13 @@ const RentCollectionPage = () => {
       key: "tenantName",
       label: "Tenant Name",
       render: (rent) => rent.Tenant?.fullName || "N/A",
+      searchValue: (rent) => rent?.Tenant?.fullName || '',
     },
     {
       key: "floorNumber",
       label: "Floor",
       render: (rent) => rent.Tenant?.Floor?.floorNumber || "N/A",
+      
     },
     {
       label: "Unit Number",

@@ -484,6 +484,8 @@ const adminRoutes = [
       { path: "/tenant-view", component: TenantView },
       { path: "/ten-days-tenant", component: TenDays },
       { path: "/tenant-filter", component: TenantFilter },
+      { path: "/tenant-report", component: TenantReportPageTwo },
+      { path: "/tenant-bill-report", component: TenantReportPage },
       { path: "/complain-from-tenant", component: ComplainFromTenant },
       { path: "/admin-view-assigneds", component: AssignedStaff },
       { path: "/view-withdraw-requests", component: ViewWithdrawRequests },
