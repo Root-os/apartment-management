@@ -256,6 +256,38 @@ const TenantReport = () => {
           columns={columns}
           showSearch={true}
           exportable={true}
+          exportConfig={[
+    {
+      label: "Tenant Name",
+      getValue: (r) => r?.fullName ?? "N/A",
+    },
+    {
+      label: "Floor",
+      getValue: (r) => r?.Floor?.floorNumber ?? "N/A",
+    },
+    {
+      label: "Unit",
+      getValue: (r) => r?.Unit?.unitNumber ?? "N/A",
+    },
+    {
+      label: "Status",
+      getValue: (r) => r?.status ?? "N/A",
+    },
+    {
+      label: "Lease Start Date",
+      getValue: (r) =>
+        r?.leaseStartDate
+          ? new Date(r.leaseStartDate).toLocaleDateString()
+          : "N/A",
+    },
+    {
+      label: "Lease End Date",
+      getValue: (r) =>
+        r?.leaseEndDate
+          ? new Date(r.leaseEndDate).toLocaleDateString()
+          : "N/A",
+    },
+  ]}
         />
       ) : (
         <div className="mt-4 text-center text-gray-500 dark:text-gray-400">

@@ -237,6 +237,48 @@ const TenantBillReport = () => {
             columns={columns}
             showSearch={false}
             exportable={false}
+            exportConfig={[
+    {
+      label: "Tenant Name",
+      getValue: (r) => r?.Tenant?.fullName ?? "N/A",
+    },
+    {
+      label: "Phone",
+      getValue: (r) => r?.Tenant?.phoneNumber ?? "N/A",
+    },
+    {
+      label: "Floor",
+      getValue: (r) => r?.Tenant?.Floor?.floorNumber ?? "N/A",
+    },
+    {
+      label: "Unit",
+      getValue: (r) => r?.Tenant?.Unit?.unitNumber ?? "N/A",
+    },
+    {
+      label: "Bill Type",
+      getValue: (r) => r?.BillType?.typeName ?? "N/A",
+    },
+    {
+      label: "Amount Paid",
+      getValue: (r) => r?.amountPaid ?? 0,
+    },
+    {
+      label: "Payment Method",
+      getValue: (r) => r?.PaymentSetting?.paymentMethod ?? "N/A",
+    },
+    {
+      label: "Start Date",
+      getValue: (r) => (r?.startDate ? new Date(r.startDate).toLocaleDateString() : "N/A"),
+    },
+    {
+      label: "End Date",
+      getValue: (r) => (r?.endDate ? new Date(r.endDate).toLocaleDateString() : "N/A"),
+    },
+    {
+      label: "Status",
+      getValue: (r) => r?.status ?? "N/A",
+    },
+  ]}
           />
           <p>No data available for the selected filters.</p>
         </div>

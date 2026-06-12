@@ -523,7 +523,13 @@ const TenantList = () => {
             },
           ]}
           exportConfig={[
-            { label: "Full Name", getValue: (r) => r.fullName },
+            {
+              label: "Full Name",
+              getValue: (r) => {
+                console.log("ID:", r.id, "fullName:", r.fullName);
+                return r.fullName;
+              },
+            },
             { label: "Phone Number", getValue: (r) => r.phoneNumber },
 
             { label: "Email", getValue: (r) => r.email ?? "N/A" },

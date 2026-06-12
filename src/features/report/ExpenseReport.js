@@ -146,6 +146,25 @@ const ExpenseReport = () => {
 
           showSearch={true}
           exportable={true}
+           exportConfig={[
+    {
+      label: "Expense Type",
+      getValue: (r) => r?.expenseType?.name ?? "N/A",
+    },
+    {
+      label: "Amount",
+      getValue: (r) => r?.amount ?? 0,
+    },
+    {
+      label: "Date",
+      getValue: (r) =>
+        r?.date ? new Date(r.date).toLocaleDateString() : "N/A",
+    },
+    {
+      label: "Description",
+      getValue: (r) => r?.description ?? "",
+    },
+  ]}
         />
       )}
 

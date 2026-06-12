@@ -534,7 +534,62 @@ const WithdrawalRequests = () => {
           data={data}
           columns={columns}
           showSearch={true}
-          exportable={true}
+          // exportable={true}
+          exportConfig={[
+    {
+      label: "Tenant Name",
+      getValue: (r) => r.Tenant?.fullName ?? "N/A",
+    },
+    {
+      label: "Phone Number",
+      getValue: (r) => r.Tenant?.phoneNumber ?? "N/A",
+    },
+    {
+      label: "Unit Number",
+      getValue: (r) => r.Tenant?.Unit?.unitNumber ?? "N/A",
+    },
+    {
+      label: "Floor",
+      getValue: (r) => r.Tenant?.Floor?.floorNumber ?? "N/A",
+    },
+    {
+      label: "Termination Date",
+      getValue: (r) =>
+        r.terminationDate
+          ? new Date(r.terminationDate).toLocaleDateString()
+          : "N/A",
+    },
+    {
+      label: "Reason",
+      getValue: (r) => r.reason ?? "",
+    },
+    {
+      label: "Status",
+      getValue: (r) => r.status ?? "N/A",
+    },
+    {
+      label: "Deposit Refund Status",
+      getValue: (r) => r.depositRefundStatus ?? "N/A",
+    },
+    {
+      label: "Admin Response",
+      getValue: (r) => r.adminResponse ?? "",
+    },
+    {
+      label: "Assigned Employee",
+      getValue: (r) =>
+        r.assignedEmployee
+          ? `${r.assignedEmployee.fname || ""} ${r.assignedEmployee.lname || ""}`.trim()
+          : "Not Assigned",
+    },
+    // {
+    //   label: "Created At",
+    //   getValue: (r) =>
+    //     r.createdAt
+    //       ? new Date(r.createdAt).toLocaleDateString()
+    //       : "N/A",
+    // },
+  ]}
         />
       )}
 

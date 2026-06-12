@@ -194,6 +194,55 @@ const PurchaseReport = () => {
 
         showSearch={true}
         exportable={true}
+        exportConfig={[
+    {
+      label: "Vendor Name",
+      getValue: (r) =>
+        r?.Vendor
+          ? `${r.Vendor.fname} ${r.Vendor.lname}`
+          : "N/A",
+    },
+    {
+      label: "Vendor Phone",
+      getValue: (r) => r?.Vendor?.phone ?? "N/A",
+    },
+    // {
+    //   label: "Item Category",
+    //   getValue: (r) => r?.Item?.ItemCategory?.categoryName ?? "N/A",
+    // },
+    {
+      label: "Item Name",
+      getValue: (r) => r?.Item?.itemName ?? "N/A",
+    },
+    {
+      label: "Amount",
+      getValue: (r) => r?.amount ?? 0,
+    },
+    {
+      label: "Price",
+      getValue: (r) => r?.price ?? 0,
+    },
+    {
+      label: "Total Price",
+      getValue: (r) => r?.totalPrice ?? 0,
+    },
+    {
+      label: "Purchase Date",
+      getValue: (r) =>
+        r?.date ? new Date(r.date).toLocaleDateString() : "N/A",
+    },
+    // {
+    //   label: "Expiration Date",
+    //   getValue: (r) =>
+    //     r?.expirationDate
+    //       ? new Date(r.expirationDate).toLocaleDateString()
+    //       : "N/A",
+    // },
+    // {
+    //   label: "Description",
+    //   getValue: (r) => r?.description ?? "",
+    // },
+  ]}
       />
 
       {/* Modal for displaying error message */}

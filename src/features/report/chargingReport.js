@@ -315,6 +315,40 @@ const handleResetFilters = () => {
 
           showSearch={true}
           exportable={true}
+          exportConfig={[
+  {
+    label: "Car Plate",
+    getValue: (r) => r.carPlate ?? "N/A",
+  },
+  {
+    label: "Car Name",
+    getValue: (r) => r.carName ?? "N/A",
+  },
+  {
+    label: "Charging Start Time",
+    getValue: (r) =>
+      r.chargingStartTime
+        ? new Date(r.chargingStartTime).toLocaleString()
+        : "N/A",
+  },
+  {
+    label: "Status",
+    getValue: (r) => r.status ?? "N/A",
+  },
+  {
+    label: "Charging Cost",
+    getValue: (r) => r.chargingCost ?? 0,
+  },
+  {
+    label: "Name",
+    getValue: (r) => {
+      if (r.isTenant) {
+        return r.Tenant?.fullName ?? "Unknown Tenant";
+      }
+      return r.driverName ?? "Unknown Driver";
+    },
+  },
+]}
         />
       )}
 

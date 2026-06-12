@@ -244,9 +244,31 @@ const EmployeeList = () => {
         title="Employee List"
         data={employees}
         columns={columns}
-        exportable={true}
+        // exportable={true}
         showSearch={true}
         onAdd={handleAdd}
+        exportConfig={[
+    {
+      label: "First Name",
+      getValue: (r) => r.fname ?? "",
+    },
+    {
+      label: "Last Name",
+      getValue: (r) => r.lname ?? "",
+    },
+    {
+      label: "Phone",
+      getValue: (r) => r.phone ?? "",
+    },
+    {
+      label: "Email",
+      getValue: (r) => r.email ?? "",
+    },
+    {
+      label: "Role",
+      getValue: (r) => r.Role?.name ?? "N/A",
+    },
+  ]}
       />
 
       {/* Detail Modal */}

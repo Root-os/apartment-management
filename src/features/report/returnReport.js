@@ -196,6 +196,34 @@ const ReturnReport = () => {
 
         showSearch={true}
         exportable={true}
+        exportConfig={[
+    {
+      label: "Vendor Name",
+      getValue: (r) =>
+        r?.Vendor
+          ? `${r.Vendor.fname} ${r.Vendor.lname}`
+          : "N/A",
+    },
+    {
+      label: "Item Name",
+      getValue: (r) => r?.Item?.itemName ?? "N/A",
+    },
+    {
+      label: "Quantity",
+      getValue: (r) => r?.quantity ?? 0,
+    },
+    {
+      label: "Reason",
+      getValue: (r) => r?.reason ?? "",
+    },
+    {
+      label: "Return Date",
+      getValue: (r) =>
+        r?.returnDate
+          ? new Date(r.returnDate).toLocaleDateString()
+          : "N/A",
+    },
+  ]}
       /> 
       </div>)}
       {/* Modal for displaying error message */}

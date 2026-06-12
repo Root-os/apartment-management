@@ -184,6 +184,27 @@ const ItemAssignmentReport = () => {
 
             showSearch={true}
             exportable={true}
+            exportConfig={[
+  {
+    label: "Item Name",
+    getValue: (r) => r.item?.itemName ?? "N/A",
+  },
+  {
+    label: "Assigned To",
+    getValue: (r) =>
+      `${r.assignto?.fname ?? ""} ${r.assignto?.lname ?? ""}`.trim() ||
+      "N/A",
+  },
+  {
+    label: "Assignment Date",
+    getValue: (r) =>
+      r.assignDate ? new Date(r.assignDate).toLocaleDateString() : "N/A",
+  },
+  {
+    label: "Assignment Type",
+    getValue: (r) => r.assignType ?? "N/A",
+  },
+]}
           />
           {itemAssignments.length === 0 && (
             <div className="text-center text-gray-500 mt-4">

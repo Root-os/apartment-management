@@ -8,8 +8,6 @@ import SmartDateInput from '../../components/Common/smartDatePicker';
 import api from '../../utils/api';
 
 
-
-
 const GovBillPaymentPage = () => {
   const [billPayments, setBillPayments] = useState([]);
   const [billTypes, setBillTypes] = useState([]);
@@ -36,9 +34,6 @@ const GovBillPaymentPage = () => {
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
  const {  formatDateForDisplay } = useContext(CalendarContext);
-
-
-
 
   useEffect(() => {
     const fetchBillPayments = async () => {
@@ -240,8 +235,44 @@ const handleDetailClick = (payment) => {
          rowsPerPageOptions={[5, 10, 15]}
 
           showSearch={true}
-          exportable={true}
+          // exportable={true}
           onAdd={handleAddClick}
+          exportConfig={[
+    {
+      label: "Bill Type",
+      getValue: (r) => r.BillType?.typeName ?? "N/A",
+    },
+    {
+      label: "Amount",
+      getValue: (r) => r.amount ?? "0",
+    },
+    {
+      label: "Start Date",
+      getValue: (r) =>
+        r.startDate
+          ? new Date(r.startDate).toLocaleDateString()
+          : "N/A",
+    },
+    {
+      label: "End Date",
+      getValue: (r) =>
+        r.endDate
+          ? new Date(r.endDate).toLocaleDateString()
+          : "N/A",
+    },
+    {
+      label: "Status",
+      getValue: (r) => r.status ?? "N/A",
+    },
+    {
+      label: "Payment Method",
+      getValue: (r) => r.paymentMethod ?? "N/A",
+    },
+    {
+      label: "Description",
+      getValue: (r) => r.description ?? "",
+    },
+  ]}
         />
       )}
 

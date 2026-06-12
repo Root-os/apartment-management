@@ -1,39 +1,39 @@
-import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
-import TableComponent from '../../components/table';
-import DeleteConfirmationModal from '../../components/editDeleteModal';
-import Modal from '../../components/Modal';
-import LoadingComponent from '../../components/loading';
-import { CalendarContext } from '../../context/calendarContext';
-import SmartDateInput from '../../components/Common/smartDatePicker';
+import React, { useState, useEffect, useContext } from "react";
+import axios from "axios";
+import TableComponent from "../../components/table";
+import DeleteConfirmationModal from "../../components/editDeleteModal";
+import Modal from "../../components/Modal";
+import LoadingComponent from "../../components/loading";
+import { CalendarContext } from "../../context/calendarContext";
+import SmartDateInput from "../../components/Common/smartDatePicker";
 
 const PurchasesPage = () => {
   const [data, setData] = useState([]);
   const [items, setItems] = useState([]);
-  const [itemCategories, setItemCategories] = useState([]); 
-  const [vendors, setVendors] = useState([]); 
+  const [itemCategories, setItemCategories] = useState([]);
+  const [vendors, setVendors] = useState([]);
   const [selectedPurchase, setSelectedPurchase] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false); 
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
   // Form state variables
-  const [vendorId, setVendorId] = useState('');
-  const [amount, setAmount] = useState('');
-  const [price, setPrice] = useState('');
+  const [vendorId, setVendorId] = useState("");
+  const [amount, setAmount] = useState("");
+  const [price, setPrice] = useState("");
   // const [totalPrice, setTotalPrice] = useState('');
-  const [date, setDate] = useState('');
-  const [description, setDescription] = useState('');
-  const [expirationDate, setExpirationDate] = useState('');
-  const [itemId, setItemId] = useState('');
-  const [itemCategoryId, setItemCategoryId] = useState('');
+  const [date, setDate] = useState("");
+  const [description, setDescription] = useState("");
+  const [expirationDate, setExpirationDate] = useState("");
+  const [itemId, setItemId] = useState("");
+  const [itemCategoryId, setItemCategoryId] = useState("");
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
-  const [messageType, setMessageType] = useState('success');
-  const [modalMessage, setModalMessage] = useState('');
+  const [messageType, setMessageType] = useState("success");
+  const [modalMessage, setModalMessage] = useState("");
 
- const { formatDateForDisplay} = useContext(CalendarContext);
+  const { formatDateForDisplay } = useContext(CalendarContext);
 
   useEffect(() => {
     axios
@@ -42,8 +42,7 @@ const PurchasesPage = () => {
         setData(response.data);
       })
       .catch((error) => {
-        console.error('Error fetching purchases:', error);
-        
+        console.error("Error fetching purchases:", error);
       });
 
     axios
@@ -52,7 +51,7 @@ const PurchasesPage = () => {
         setItems(response.data);
       })
       .catch((error) => {
-        console.error('Error fetching items:', error);
+        console.error("Error fetching items:", error);
       });
 
     axios
@@ -61,7 +60,7 @@ const PurchasesPage = () => {
         setItemCategories(response.data);
       })
       .catch((error) => {
-        console.error('Error fetching item categories:', error);
+        console.error("Error fetching item categories:", error);
       });
 
     // Fetch vendors
@@ -71,7 +70,7 @@ const PurchasesPage = () => {
         setVendors(response.data); // Set vendors from the external API
       })
       .catch((error) => {
-        console.error('Error fetching vendors:', error);
+        console.error("Error fetching vendors:", error);
       })
       .finally(() => {
         setPageLoading(false);
@@ -80,14 +79,18 @@ const PurchasesPage = () => {
 
   const handleEditClick = (purchase) => {
     setSelectedPurchase(purchase);
-    setVendorId(purchase.vendorId ? purchase.vendorId.toString() : '');
-    setAmount(purchase.amount ? purchase.amount.toString() : '');
-    setPrice(purchase.price ? purchase.price.toString() : '');
-    setDescription(purchase.description || '');
-    setExpirationDate(purchase.expirationDate ? purchase.expirationDate.split('T')[0] : '');
-    setItemId(purchase.itemId ? purchase.itemId.toString() : '');
-    setItemCategoryId(purchase.ItemCategoryId ? purchase.ItemCategoryId.toString() : '');
-    setDate(purchase.date ? purchase.date.split('T')[0] : '');
+    setVendorId(purchase.vendorId ? purchase.vendorId.toString() : "");
+    setAmount(purchase.amount ? purchase.amount.toString() : "");
+    setPrice(purchase.price ? purchase.price.toString() : "");
+    setDescription(purchase.description || "");
+    setExpirationDate(
+      purchase.expirationDate ? purchase.expirationDate.split("T")[0] : "",
+    );
+    setItemId(purchase.itemId ? purchase.itemId.toString() : "");
+    setItemCategoryId(
+      purchase.ItemCategoryId ? purchase.ItemCategoryId.toString() : "",
+    );
+    setDate(purchase.date ? purchase.date.split("T")[0] : "");
     setIsEditModalOpen(true);
   };
 
@@ -109,36 +112,38 @@ const PurchasesPage = () => {
         ItemCategoryId: parseInt(itemCategoryId, 10), // Convert to integer
         date,
       };
-  
+
       const response = await axios.put(
         `${process.env.REACT_APP_BASE_URL}purchases/${selectedPurchase.id}`,
-        updatedPurchase
+        updatedPurchase,
       );
-  
+
       const updatedPurchaseData = response.data;
-  
+
       const updatedData = data.map((purchase) =>
-        purchase.id === selectedPurchase.id ? { ...purchase, ...updatedPurchaseData } : purchase
+        purchase.id === selectedPurchase.id
+          ? { ...purchase, ...updatedPurchaseData }
+          : purchase,
       );
       setData(updatedData);
-  
+
       setIsEditModalOpen(false);
       setSelectedPurchase(null);
       setModalOpen(true);
-      setMessageType('success');
-      setModalMessage('Purchase updated successfully');
+      setMessageType("success");
+      setModalMessage("Purchase updated successfully");
     } catch (error) {
-      console.error('Error updating purchase:', error);
+      console.error("Error updating purchase:", error);
       setModalOpen(true);
-      setMessageType('error');
-      setModalMessage(error.response?.data?.message || 'Unable to update purchase');
+      setMessageType("error");
+      setModalMessage(
+        error.response?.data?.message || "Unable to update purchase",
+      );
     } finally {
       setLoading(false);
     }
   };
-  
-  
-  
+
   const handleDeleteClick = (purchase) => {
     setSelectedPurchase(purchase);
     setIsDeleteModalOpen(true);
@@ -146,43 +151,55 @@ const PurchasesPage = () => {
 
   const handleDelete = async (purchaseId) => {
     try {
-      await axios.delete(`${process.env.REACT_APP_BASE_URL}purchases/${purchaseId}`);
+      await axios.delete(
+        `${process.env.REACT_APP_BASE_URL}purchases/${purchaseId}`,
+      );
       setData(data.filter((purchase) => purchase.id !== purchaseId));
       setIsDeleteModalOpen(false);
       setModalOpen(true);
-      setMessageType('success');
-      setModalMessage('Purchase deleted successfully');
+      setMessageType("success");
+      setModalMessage("Purchase deleted successfully");
     } catch (error) {
       setModalOpen(true);
-      setMessageType('error');
-      setModalMessage('Unable to delete purchase');
+      setMessageType("error");
+      setModalMessage("Unable to delete purchase");
     }
   };
 
   const columns = [
     {
-      label: 'Vendor Name',
-      key: 'vendorName',
-      render: (row) => row.Vendor ? `${row.Vendor.fname} ${row.Vendor.lname}` : 'N/A'
+      label: "Vendor Name",
+      key: "vendorName",
+      render: (row) =>
+        row.Vendor ? `${row.Vendor.fname} ${row.Vendor.lname}` : "N/A",
     },
     {
-      label: 'Vendor Phone',
-      key: 'vendorPhone',
-      render: (row) => row.Vendor ? row.Vendor.phone : 'N/A'
+      label: "Vendor Phone",
+      key: "vendorPhone",
+      render: (row) => (row.Vendor ? row.Vendor.phone : "N/A"),
     },
     {
-      label: 'Item Name',
-      key: 'Item.itemName',
-      render: (row) => row.Item ? row.Item.itemName : 'N/A',
+      label: "Item Name",
+      key: "Item.itemName",
+      render: (row) => (row.Item ? row.Item.itemName : "N/A"),
     },
-    { label: 'Description', key: 'description' },
-    { label: 'Amount', key: 'amount', render: (row) => row.amount != null ? Math.round(row.amount) : 'N/A' },
-     {
-        label: 'Single Price',
-        key: 'price',
-        render: (row) => row.price != null ? Math.round(row.price) : 'N/A',
-      },
-    { label: 'Total Price', key: 'totalPrice', render: (row) => row.totalPrice != null ? Math.round(row.totalPrice) : 'N/A', },
+    { label: "Description", key: "description" },
+    {
+      label: "Amount",
+      key: "amount",
+      render: (row) => (row.amount != null ? Math.round(row.amount) : "N/A"),
+    },
+    {
+      label: "Single Price",
+      key: "price",
+      render: (row) => (row.price != null ? Math.round(row.price) : "N/A"),
+    },
+    {
+      label: "Total Price",
+      key: "totalPrice",
+      render: (row) =>
+        row.totalPrice != null ? Math.round(row.totalPrice) : "N/A",
+    },
     // {
     //   label: 'Expiration Date',
     //   key: 'expirationDate',
@@ -195,8 +212,8 @@ const PurchasesPage = () => {
     //   }
     // },
     {
-      label: 'Actions',
-      key: 'actions',
+      label: "Actions",
+      key: "actions",
       render: (row) => (
         <div className="flex space-x-1">
           <button
@@ -223,7 +240,7 @@ const PurchasesPage = () => {
   ];
 
   const handleAddClick = () => {
-    window.location.href = '/app/add-purchase';
+    window.location.href = "/app/add-purchase";
   };
 
   return (
@@ -238,6 +255,53 @@ const PurchasesPage = () => {
           exportable={true}
           showSearch={true}
           onAdd={handleAddClick}
+          exportConfig={[
+            {
+              label: "Item Name",
+              getValue: (r) => r.Item?.itemName ?? "N/A",
+            },
+            // {
+            //   label: "Category",
+            //   getValue: (r) => r.ItemCategory?.categoryName ?? "N/A",
+            // },
+            {
+              label: "Vendor",
+              getValue: (r) =>
+                `${r.Vendor?.fname ?? ""} ${r.Vendor?.lname ?? ""}`.trim(),
+            },
+            {
+              label: "Vendor Phone",
+              getValue: (r) => r.Vendor?.phone ?? "N/A",
+            },
+            {
+              label: "Quantity",
+              getValue: (r) => r.amount ?? 0,
+            },
+            {
+              label: "Unit Price",
+              getValue: (r) => r.price ?? 0,
+            },
+            {
+              label: "Total Price",
+              getValue: (r) => r.totalPrice ?? 0,
+            },
+            {
+              label: "Purchase Date",
+              getValue: (r) =>
+                r.date ? new Date(r.date).toLocaleDateString() : "N/A",
+            },
+            // {
+            //   label: "Expiration Date",
+            //   getValue: (r) =>
+            //     r.expirationDate
+            //       ? new Date(r.expirationDate).toLocaleDateString()
+            //       : "N/A",
+            // },
+            // {
+            //   label: "Description",
+            //   getValue: (r) => r.description ?? "",
+            // },
+          ]}
         />
       )}
       {/* Edit Modal */}
@@ -245,9 +309,19 @@ const PurchasesPage = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center mt-12">
           <div className="bg-base-100 p-6 rounded-md w-11/12 sm:w-1/3 max-h-[80vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">Edit Purchase</h2>
-            <form onSubmit={(e) => { e.preventDefault(); handleEdit(); }}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleEdit();
+              }}
+            >
               <div className="mb-4">
-                <label htmlFor="vendorId" className="block text-sm font-medium text-white-700">Vendor</label>
+                <label
+                  htmlFor="vendorId"
+                  className="block text-sm font-medium text-white-700"
+                >
+                  Vendor
+                </label>
                 <select
                   id="vendorId"
                   value={vendorId}
@@ -264,26 +338,36 @@ const PurchasesPage = () => {
                 </select>
               </div>
               <div className="mb-4">
-                <label htmlFor="amount" className="block text-sm font-medium text-white-700">Amount</label>
+                <label
+                  htmlFor="amount"
+                  className="block text-sm font-medium text-white-700"
+                >
+                  Amount
+                </label>
                 <input
                   type="number"
                   id="amount"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  onWheel={(e)=> e.target.blur()}
+                  onWheel={(e) => e.target.blur()}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   min="1"
                   required
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="price" className="block text-sm font-medium text-white-700">Price</label>
+                <label
+                  htmlFor="price"
+                  className="block text-sm font-medium text-white-700"
+                >
+                  Price
+                </label>
                 <input
                   type="number"
                   id="price"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  onWheel={(e)=> e.target.blur()}
+                  onWheel={(e) => e.target.blur()}
                   className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   min="0"
                   step="0.01"
@@ -291,7 +375,12 @@ const PurchasesPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="description" className="block text-sm font-medium text-white-700">Description</label>
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium text-white-700"
+                >
+                  Description
+                </label>
                 <input
                   type="text"
                   id="description"
@@ -301,31 +390,42 @@ const PurchasesPage = () => {
                 />
               </div>
               <div className="mb-4">
-              <label htmlFor="date" className="block text-sm font-medium text-white-700">
-                Purchase Date
-              </label>
-              <SmartDateInput
-                id="date"
-                value={date}
-                onChange={(gcDate) => setDate(gcDate)}
-                className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
-            </div>
+                <label
+                  htmlFor="date"
+                  className="block text-sm font-medium text-white-700"
+                >
+                  Purchase Date
+                </label>
+                <SmartDateInput
+                  id="date"
+                  value={date}
+                  onChange={(gcDate) => setDate(gcDate)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
+              </div>
 
-<div className="mb-4">
-  <label htmlFor="expirationDate" className="block text-sm font-medium text-white-700">
-    Expiration Date
-  </label>
-  <SmartDateInput
-    id="expirationDate"
-    value={expirationDate}
-    onChange={(gcDate) => setExpirationDate(gcDate)}
-    className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-  />
-</div>
               <div className="mb-4">
-                <label htmlFor="itemId" className="block text-sm font-medium text-white-700">Item</label>
+                <label
+                  htmlFor="expirationDate"
+                  className="block text-sm font-medium text-white-700"
+                >
+                  Expiration Date
+                </label>
+                <SmartDateInput
+                  id="expirationDate"
+                  value={expirationDate}
+                  onChange={(gcDate) => setExpirationDate(gcDate)}
+                  className="mt-1 bg-base-100 block w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="itemId"
+                  className="block text-sm font-medium text-white-700"
+                >
+                  Item
+                </label>
                 <select
                   id="itemId"
                   value={itemId}
@@ -335,12 +435,19 @@ const PurchasesPage = () => {
                 >
                   <option value="">Select Item</option>
                   {items.map((item) => (
-                    <option key={item.id} value={item.id}>{item.itemName}</option>
+                    <option key={item.id} value={item.id}>
+                      {item.itemName}
+                    </option>
                   ))}
                 </select>
               </div>
               <div className="mb-4">
-                <label htmlFor="itemCategoryId" className="block text-sm font-medium text-white-700">Category</label>
+                <label
+                  htmlFor="itemCategoryId"
+                  className="block text-sm font-medium text-white-700"
+                >
+                  Category
+                </label>
                 <select
                   id="itemCategoryId"
                   value={itemCategoryId}
@@ -350,7 +457,9 @@ const PurchasesPage = () => {
                 >
                   <option value="">Select Category</option>
                   {itemCategories.map((category) => (
-                    <option key={category.id} value={category.id}>{category.typeName || category.categoryName}</option>
+                    <option key={category.id} value={category.id}>
+                      {category.typeName || category.categoryName}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -360,7 +469,7 @@ const PurchasesPage = () => {
                   className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
                   disabled={loading}
                 >
-                  {loading ? 'Saving...' : 'Save'}
+                  {loading ? "Saving..." : "Save"}
                 </button>
                 <button
                   type="button"
@@ -380,15 +489,39 @@ const PurchasesPage = () => {
           <div className="bg-base-100 p-6 rounded-md w-11/12 sm:w-1/3 max-h-[80vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4">Purchase Details</h2>
             {/* Display the details of the selected purchase */}
-            <p><strong>Vendor Name:</strong> {selectedPurchase?.Vendor?.fname} {selectedPurchase?.Vendor?.lname}</p>
-            <p><strong>Item Name:</strong> {selectedPurchase?.Item?.itemName}</p>
-            <p><strong>Item Category:</strong> {selectedPurchase?.ItemCategory?.categoryName}</p>
-            <p><strong>Amount:</strong> {selectedPurchase?.amount}</p>
-            <p><strong>Single Price:</strong> {selectedPurchase?.price}</p>
-            <p><strong>Total Price:</strong> {selectedPurchase?.totalPrice}</p>
-            <p><strong>Description:</strong> {selectedPurchase?.description}</p>
-            <p><strong>Expiration Date:</strong> {selectedPurchase.expirationDate ? formatDateForDisplay(selectedPurchase?.expirationDate): 'N/A'}</p>
-            <p><strong>Purchase Date:</strong> {formatDateForDisplay(selectedPurchase?.date)}</p>
+            <p>
+              <strong>Vendor Name:</strong> {selectedPurchase?.Vendor?.fname}{" "}
+              {selectedPurchase?.Vendor?.lname}
+            </p>
+            <p>
+              <strong>Item Name:</strong> {selectedPurchase?.Item?.itemName}
+            </p>
+            <p>
+              <strong>Item Category:</strong>{" "}
+              {selectedPurchase?.ItemCategory?.categoryName}
+            </p>
+            <p>
+              <strong>Amount:</strong> {selectedPurchase?.amount}
+            </p>
+            <p>
+              <strong>Single Price:</strong> {selectedPurchase?.price}
+            </p>
+            <p>
+              <strong>Total Price:</strong> {selectedPurchase?.totalPrice}
+            </p>
+            <p>
+              <strong>Description:</strong> {selectedPurchase?.description}
+            </p>
+            <p>
+              <strong>Expiration Date:</strong>{" "}
+              {selectedPurchase.expirationDate
+                ? formatDateForDisplay(selectedPurchase?.expirationDate)
+                : "N/A"}
+            </p>
+            <p>
+              <strong>Purchase Date:</strong>{" "}
+              {formatDateForDisplay(selectedPurchase?.date)}
+            </p>
             {/* Add any other details you wish to show */}
             <div className="flex justify-end mt-4">
               <button

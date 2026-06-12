@@ -625,6 +625,62 @@ const RentCollectionPage = () => {
         columns={columns}
         showSearch={true}
         exportable={true}
+        exportConfig={[
+    {
+      label: "Tenant Name",
+      getValue: (r) => r.Tenant?.fullName ?? "N/A",
+    },
+    {
+      label: "Phone Number",
+      getValue: (r) => r.Tenant?.phoneNumber ?? "N/A",
+    },
+    {
+      label: "Unit Number",
+      getValue: (r) => r.Tenant?.Unit?.unitNumber ?? "N/A",
+    },
+    {
+      label: "Floor",
+      getValue: (r) => r.Tenant?.Floor?.floorNumber ?? "N/A",
+    },
+    {
+      label: "Amount Paid",
+      getValue: (r) => r.amountPaid ?? 0,
+    },
+    {
+      label: "Extra Amount",
+      getValue: (r) => r.extraAmount ?? 0,
+    },
+    {
+      label: "Paid Days",
+      getValue: (r) => r.paidDays ?? 0,
+    },
+    {
+      label: "Payment Method",
+      getValue: (r) => r.PaymentSetting?.paymentMethod ?? "N/A",
+    },
+    {
+      label: "Payment Date",
+      getValue: (r) =>
+        r.paymentDate
+          ? new Date(r.paymentDate).toLocaleDateString()
+          : "N/A",
+    },
+    {
+      label: "Next Due Date",
+      getValue: (r) =>
+        r.nextDueDate
+          ? new Date(r.nextDueDate).toLocaleDateString()
+          : "N/A",
+    },
+    {
+      label: "Status",
+      getValue: (r) => r.status ?? "N/A",
+    },
+    {
+      label: "Punishment",
+      getValue: (r) => r.punishment ?? 0,
+    },
+  ]}
       />
 
       {rentData.length === 0 && noDataMessage && (

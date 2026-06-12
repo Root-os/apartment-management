@@ -230,6 +230,38 @@ const PaymentReport = () => {
 
           showSearch={true}
           exportable={true}
+          exportConfig={[
+{
+  label: "Vendor",
+  getValue: (r) =>
+    r?.Vendor
+      ? `${r.Vendor.fname ?? ""} ${r.Vendor.lname ?? ""}`.trim()
+      : "N/A",
+},
+  {
+    label: "Price",
+    getValue: (r) => r.price ?? 0,
+  },
+  {
+    label: "Payment Method",
+    getValue: (r) => r.paymentMethod ?? "N/A",
+  },
+  {
+    label: "Status",
+    getValue: (r) => r.status ?? "N/A",
+  },
+  {
+    label: "Left Money",
+    getValue: (r) => r.leftMoney ?? 0,
+  },
+  {
+    label: "Payment Date",
+    getValue: (r) =>
+      r.paymentDate
+        ? new Date(r.paymentDate).toLocaleDateString()
+        : "N/A",
+  },
+]}
         />
          {paymentData && paymentData.length === 0 && (
             <div className="text-center text-gray-500 mt-4">

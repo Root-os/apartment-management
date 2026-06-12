@@ -202,6 +202,43 @@ const handleAuditHistoryClick = (item) => {
         exportable={true}
         showSearch={true}
         onAdd={handleAddClick}
+         exportConfig={[
+    {
+      label: "Item Name",
+      getValue: (r) => r.itemName ?? "N/A",
+    },
+    {
+      label: "Category",
+      getValue: (r) => r.ItemCategory?.categoryName ?? "N/A",
+    },
+    {
+      label: "Quantity",
+      getValue: (r) => r.itemAmount ?? 0,
+    },
+    {
+      label: "Unit",
+      getValue: (r) => r.unit ?? "N/A",
+    },
+    {
+      label: "Item Type",
+      getValue: (r) => r.itemType ?? "N/A",
+    },
+    // {
+    //   label: "Minimum Quantity",
+    //   getValue: (r) => r.min_amount ?? 0,
+    // },
+    // {
+    //   label: "Expiration Date",
+    //   getValue: (r) =>
+    //     r.expirationDate
+    //       ? new Date(r.expirationDate).toLocaleDateString()
+    //       : "N/A",
+    // },
+    // {
+    //   label: "Item Details",
+    //   getValue: (r) => r.itemDetails ?? "",
+    // },
+  ]}
       />
     )}
       {/* Edit Modal */}

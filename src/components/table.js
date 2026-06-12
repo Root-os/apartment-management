@@ -37,10 +37,10 @@ const TableComponent = ({
   const [density, setDensity] = useState("comfortable");
   const { isGregorian, formatDateForDisplay } = useContext(CalendarContext);
 
-  console.log(
-    `🧭 Table "${title}" using calendar:`,
-    isGregorian ? "Gregorian" : "Ethiopian",
-  );
+  // console.log(
+  //   `🧭 Table "${title}" using calendar:`,
+  //   isGregorian ? "Gregorian" : "Ethiopian",
+  // );
 
   const normalizeDateString = (value) => {
     if (!value) return value;
@@ -67,26 +67,22 @@ const TableComponent = ({
   };
 
   const getExportRows = () => {
+    // console.log(
+    //   "EXPORT LABELS:",
+    //   exportConfig.map((c) => c.label),
+    // );
+
     if (!exportConfig?.length) return [];
 
     return data.map((row) => {
       const obj = {};
+
       exportConfig.forEach((col) => {
         let value = col.getValue(row);
 
-        // format dates like PDF
-        if (typeof value === "string" && value.includes("T")) {
-          value = formatDateForDisplay(normalizeDateString(value));
-        }
+        console.log("LABEL:", col.label, "VALUE:", value);
 
-if (
-  (typeof value === "string" || typeof value === "number") &&
-  /^\d{8,}$/.test(String(value))
-) {
-  value = `'${value}`;
-}
-
-obj[col.label] = value ?? "";
+        obj[col.label] = value ?? "";
       });
 
       return obj;
@@ -94,16 +90,11 @@ obj[col.label] = value ?? "";
   };
 
   const handleExportPDF = () => {
-    if (!exportConfig?.length) return;
-
     const doc = new jsPDF({
-      orientation: "landscape", // wider table
-      unit: "pt", // points (better control)
-      format: "a4", // A4 page
+      orientation: "landscape",
+      unit: "pt",
+      format: "a4",
     });
-
-    doc.setFontSize(12); // increase default font size
-    doc.text(title, 40, 40); // adjust title position
 
     const headers = exportConfig.map((col) => col.label);
 
@@ -111,37 +102,23 @@ obj[col.label] = value ?? "";
       exportConfig.map((col) => {
         let value = col.getValue(row);
 
-        if (typeof value === "string" && value.includes("T")) {
+        if (typeof value === "string" && /^\d{4}-\d{2}-\d{2}T/.test(value)) {
           value = formatDateForDisplay(normalizeDateString(value));
         }
 
-        return value ?? "";
+        return String(value ?? "");
       }),
     );
 
+    // 👇 ADD THIS
+    console.table(rows);
+
     doc.autoTable({
-      startY: 60, // space below title
       head: [headers],
       body: rows,
-      styles: {
-        fontSize: 11, // font size for table
-        cellPadding: 6, // more padding for clarity
-      },
-      headStyles: {
-        fillColor: [41, 128, 185], // blue header
-        textColor: 255,
-        fontStyle: "bold",
-      },
-      columnStyles: {
-        // auto-width or you can fix widths for specific columns
-        0: { cellWidth: 100 }, // first column
-        1: { cellWidth: 80 }, // second column
-      },
-      margin: { top: 60, left: 40, right: 40 }, // page margins
-      pageBreak: "auto", // auto handle multi-page
     });
 
-    doc.save(`${title}.pdf`);
+    doc.save("test.pdf");
   };
 
   const handlePrint = () => {
@@ -211,29 +188,33 @@ obj[col.label] = value ?? "";
               <FaPlus className="text-lg" /> <span>Add</span>
             </button>
           )}
-          {exportable && (
-            <>
-              <CSVLink
-                data={getExportRows()}
-                filename={`${title}.csv`}
-                className="flex items-center space-x-1 px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm transition-all duration-300"
-              >
-                <FaDownload className="text-lg" /> <span>Export CSV</span>
-              </CSVLink>
-              <button
-                className="flex items-center space-x-1 px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm transition-all duration-300"
-                onClick={handleExportPDF}
-              >
-                <FaDownload className="text-lg" /> <span>Export PDF</span>
-              </button>
-              <button
-                className="flex items-center space-x-1 px-3 py-1 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 text-sm transition-all duration-300"
-                onClick={handlePrint}
-              >
-                <FaPrint className="text-lg" /> <span>Print</span>
-              </button>
-            </>
-          )}
+  {exportable && (
+  <>
+    {exportConfig?.length > 0 && (
+      <>
+        <CSVLink
+          data={getExportRows()}
+          filename={`${title}.csv`}
+          className="flex items-center space-x-1 px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm transition-all duration-300"
+        >
+          <FaDownload className="text-lg" /> <span>Export CSV</span>
+        </CSVLink>
+        <button
+          className="flex items-center space-x-1 px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm transition-all duration-300"
+          onClick={handleExportPDF}
+        >
+          <FaDownload className="text-lg" /> <span>Export PDF</span>
+        </button>
+      </>
+    )}
+    <button
+      className="flex items-center space-x-1 px-3 py-1 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 text-sm transition-all duration-300"
+      onClick={handlePrint}
+    >
+      <FaPrint className="text-lg" /> <span>Print</span>
+    </button>
+  </>
+)}
         </div>
       </div>
       <div className="flex justify-between items-center mb-4">

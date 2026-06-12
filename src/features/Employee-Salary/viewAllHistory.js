@@ -278,6 +278,65 @@ const SalaryPayments = () => {
           title="All Employee Salary Payments"
           data={salaryData}
           columns={columns}
+          showSearch={true}
+          exportConfig={[
+    {
+      label: "Employee Name",
+      getValue: (r) =>
+        `${r.User?.fname ?? ""} ${r.User?.lname ?? ""}`.trim(),
+    },
+    {
+      label: "Email",
+      getValue: (r) => r.User?.email ?? "N/A",
+    },
+    {
+      label: "Gross Salary",
+      getValue: (r) => r.amount ?? 0,
+    },
+    {
+      label: "Allowance",
+      getValue: (r) => r.allowance ?? 0,
+    },
+    {
+      label: "Pension Contribution",
+      getValue: (r) => r.pensionContribution ?? 0,
+    },
+    {
+      label: "Income Tax",
+      getValue: (r) => r.incomeTax ?? 0,
+    },
+    {
+      label: "Net Salary",
+      getValue: (r) => r.netSalary ?? 0,
+    },
+    {
+      label: "Payment Method",
+      getValue: (r) => r.paymentMethod ?? "N/A",
+    },
+    {
+      label: "Status",
+      getValue: (r) => r.status ?? "N/A",
+    },
+    {
+      label: "Payment From",
+      getValue: (r) =>
+        r.paymentFromDate
+          ? new Date(r.paymentFromDate).toLocaleDateString()
+          : "N/A",
+    },
+    {
+      label: "Payment To",
+      getValue: (r) =>
+        r.paymentToDate
+          ? new Date(r.paymentToDate).toLocaleDateString()
+          : "N/A",
+    },
+    {
+      label: "Bank Account",
+      getValue: (r) =>
+        r.User?.EmployeeDetail?.bankAccount || "N/A",
+    },
+  ]}
         />
       )}
       {/* Edit Modal */}

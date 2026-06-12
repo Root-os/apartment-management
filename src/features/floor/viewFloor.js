@@ -163,9 +163,7 @@ const handleDetailClick = (floor) => {
         title="Floor List"
         data={floors}
         columns={columns}
-
         showSearch={true}
-        // exportable={true}
         onAdd={handleAddClick}
       />
     )}

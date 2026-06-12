@@ -265,8 +265,66 @@ const ViewBillPayment = () => {
         columns={columns}
         rowsPerPageOptions={[5, 10, 15]}
         showSearch={true}
-        exportable={true}
+        // exportable={true}
         onAdd={handleAddClick}
+        exportConfig={[
+    {
+      label: "Tenant Name",
+      getValue: (r) => r.Tenant?.fullName ?? "N/A",
+    },
+    {
+      label: "Unit Number",
+      getValue: (r) => r.Tenant?.Unit?.unitNumber ?? "N/A",
+    },
+    {
+      label: "Floor",
+      getValue: (r) => r.Tenant?.Floor?.floorNumber ?? "N/A",
+    },
+    {
+      label: "Bill Type",
+      getValue: (r) => r.BillType?.typeName ?? "N/A",
+    },
+    {
+      label: "Amount Paid",
+      getValue: (r) => r.amountPaid ?? 0,
+    },
+    {
+      label: "Payment Method",
+      getValue: (r) => r.PaymentSetting?.paymentMethod ?? "N/A",
+    },
+    {
+      label: "Status",
+      getValue: (r) => r.status || "N/A",
+    },
+    {
+      label: "Start Date",
+      getValue: (r) =>
+        r.startDate
+          ? new Date(r.startDate).toLocaleDateString()
+          : "N/A",
+    },
+    {
+      label: "End Date",
+      getValue: (r) =>
+        r.endDate
+          ? new Date(r.endDate).toLocaleDateString()
+          : "N/A",
+    },
+    // {
+    //   label: "Lease Start Date",
+    //   getValue: (r) =>
+    //     r.Tenant?.leaseStartDate
+    //       ? new Date(r.Tenant.leaseStartDate).toLocaleDateString()
+    //       : "N/A",
+    // },
+    // {
+    //   label: "Lease End Date",
+    //   getValue: (r) =>
+    //     r.Tenant?.leaseEndDate
+    //       ? new Date(r.Tenant.leaseEndDate).toLocaleDateString()
+    //       : "N/A",
+    // },
+  ]}
       />
 
       {/* Edit Modal */}

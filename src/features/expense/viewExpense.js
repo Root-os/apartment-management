@@ -177,8 +177,29 @@ const ExpensePage = () => {
          rowsPerPageOptions={[5, 10, 15]}
 
           showSearch={true}
-          exportable={true}
+          // exportable={true}
           onAdd={handleAddClick}
+          exportConfig={[
+    {
+      label: "Expense Type",
+      getValue: (r) => r.expenseType?.name ?? "N/A",
+    },
+    {
+      label: "Amount",
+      getValue: (r) => r.amount ?? 0,
+    },
+    {
+      label: "Date",
+      getValue: (r) =>
+        r.date
+          ? new Date(r.date).toLocaleDateString()
+          : "N/A",
+    },
+    {
+      label: "Description",
+      getValue: (r) => r.description ?? "",
+    },
+  ]}
         />
       )}
       <div className="mt-4 text-right text-lg font-semibold text-gray-800 px-4">

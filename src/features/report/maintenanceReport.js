@@ -247,6 +247,34 @@ const MaintenanceReport = () => {
 
             showSearch={true}
             exportable={true}
+            exportConfig={[
+  {
+    label: "Unit Number",
+    getValue: (r) => r.maintenanceUnit?.unitNumber ?? "N/A",
+  },
+  {
+    label: "Name",
+    getValue: (r) =>
+      r.isItem
+        ? r.maintenanceItem?.itemName ?? "N/A"
+        : r.name ?? "N/A",
+  },
+  {
+    label: "Maintenance Date",
+    getValue: (r) =>
+      r.maintenanceDate
+        ? new Date(r.maintenanceDate).toLocaleDateString()
+        : "N/A",
+  },
+  {
+    label: "Maintenance Cost",
+    getValue: (r) => r.cost ?? 0,
+  },
+  // {
+  //   label: "Description",
+  //   getValue: (r) => r.description ?? "",
+  // },
+]}
           />
         </div>
       )}
